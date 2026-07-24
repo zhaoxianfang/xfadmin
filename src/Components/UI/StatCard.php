@@ -33,12 +33,14 @@ class StatCard extends Component
             'counter' => null,
             'prefix'  => '',
             'suffix'  => '',
+            'width'   => null,   // 响应式列宽：null=不包裹；数组=['sm'=>6,'xl'=>3] 生成 col-sm-6 col-xl-3；整数=col-md-N col-xl-N
         ];
     }
 
     protected function html(): string
     {
         $variant = $this->e($this->get('variant'));
+        $width   = $this->get('width');
 
         $value = $this->get('counter') !== null
             ? '<span data-xf="counter" data-xf-config="' . $this->e(json_encode([
@@ -48,7 +50,7 @@ class StatCard extends Component
             ])) . '">0</span>'
             : $this->e($this->get('prefix')) . $this->e($this->get('value')) . $this->e($this->get('suffix'));
 
-        $html  = '<div' . $this->attrs(['class' => 'card']) . '><div class="card-body">';
+        $html  = '<div' . $this->attrs(['class' => 'card' . ($width ? ' h-100' : '')]) . '><div class="card-body">';
         $html .= '<div class="d-flex align-items-center justify-content-between">';
         $html .= '<div><h5 class="text-muted fs-13 text-uppercase" title="' . $this->e($this->get('title')) . '">' . $this->e($this->get('title')) . '</h5>';
         $html .= '<div class="d-flex align-items-center gap-2 my-2 py-1">';
@@ -72,6 +74,18 @@ class StatCard extends Component
             $html .= '<a href="' . $this->e($this->get('url')) . '" class="link-secondary fs-24"><i class="ti ti-chevron-right"></i></a>';
         }
         $html .= '</div></div></div>';
+
+        if ($width) {
+            $colClass = 'col-12';
+            if (is_array($width)) {
+                foreach ($width as $bp => $cols) {
+                    $colClass .= ' col-' . $bp . '-' . (int) $cols;
+                }
+            } elseif (is_numeric($width)) {
+                $colClass .= ' col-md-' . (int) $width . ' col-xl-' . (int) $width;
+            }
+            return '<div class="' . $colClass . '">' . $html . '</div>';
+        }
 
         return $html;
     }

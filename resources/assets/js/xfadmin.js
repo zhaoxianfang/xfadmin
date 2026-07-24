@@ -104,6 +104,296 @@
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
         });
     }
+    XFAdmin.escapeHtml = escapeHtml;
+
+    /* {field} / {a.b.c} 占位符插值（值经 HTML 转义） */
+    XFAdmin.tpl = function (tpl, row) {
+        return String(tpl == null ? '' : tpl).replace(/\{(\w+(?:\.\w+)*)\}/g, function (_, path) {
+            var v = path.split('.').reduce(function (o, k) { return o == null ? '' : o[k]; }, row || {});
+            return escapeHtml(v == null ? '' : v);
+        });
+    };
+
+    /* 读取 CSRF Token（Laravel <meta name="csrf-token">，可选） */
+    XFAdmin.csrf = function () {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    };
+
+    /**
+     * 统一 AJAX 请求（自动携带 CSRF / JSON 解析 / 错误 toast）
+     * XFAdmin.request('/api/xx', { method: 'POST', data: {...}, silent: false })
+     *   => Promise<{ok, status, data}>
+     */
+    XFAdmin.request = function (url, opts) {
+        opts = opts || {};
+        var method = (opts.method || 'GET').toUpperCase();
+        var headers = Object.assign({
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }, opts.headers || {});
+        var init = { method: method, headers: headers, credentials: 'same-origin' };
+        if (method !== 'GET' && method !== 'HEAD') {
+            var token = XFAdmin.csrf();
+            if (token) headers['X-CSRF-TOKEN'] = token;
+            if (opts.data instanceof FormData) {
+                init.body = opts.data;
+            } else if (opts.data != null) {
+                headers['Content-Type'] = 'application/json;charset=utf-8';
+                init.body = JSON.stringify(opts.data);
+            }
+        }
+        return fetch(url, init).then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (data) {
+                var result = { ok: res.ok, status: res.status, data: data };
+                if (!res.ok && !opts.silent) {
+                    XFAdmin.toast({ body: (data && data.message) || '请求失败(' + res.status + ')', variant: 'danger' });
+                }
+                return result;
+            });
+        }).catch(function (err) {
+            if (!opts.silent) XFAdmin.toast({ body: '网络错误，请稍后重试', variant: 'danger' });
+            return { ok: false, status: 0, data: {}, error: err };
+        });
+    };
+
+    /* 复制到剪贴板（navigator.clipboard 优先，textarea 兜底） */
+    XFAdmin.copyText = function (text, tip) {
+        function done() { XFAdmin.toast({ body: tip || '已复制！', variant: 'success', delay: 1500 }); }
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text).then(done).catch(function () { fallback(); });
+        }
+        fallback();
+        function fallback() {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;opacity:0;';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) { /* noop */ }
+            ta.remove();
+        }
+    };
+
+    /* DataTables 中文语言包（缺省内置，可被配置覆盖） */
+    XFAdmin.dtLanguage = {
+        processing: '处理中...',
+        lengthMenu: '每页 _MENU_ 条',
+        zeroRecords: '没有匹配的记录',
+        info: '第 _START_ 至 _END_ 条，共 _TOTAL_ 条',
+        infoEmpty: '共 0 条记录',
+        infoFiltered: '（由 _MAX_ 条记录过滤）',
+        search: '搜索:',
+        emptyTable: '表中数据为空',
+        loadingRecords: '载入中...',
+        paginate: { first: '首页', previous: '上一页', next: '下一页', last: '末页' },
+        aria: { sortAscending: ': 升序排列', sortDescending: ': 降序排列' },
+        select: { rows: { _: '已选择 %d 行', 0: '', 1: '已选择 1 行' } },
+        buttons: { copy: '复制', csv: 'CSV', excel: 'Excel', print: '打印', pdf: 'PDF', colvis: '列显示', copyTitle: '已复制到剪贴板', copySuccess: { _: '已复制 %d 行', 1: '已复制 1 行' } }
+    };
+
+    /* ------------------------------------------------------------------
+     * DataTable 富单元格渲染器（可通过 XFAdmin.cellRenderers.xxx 扩展）
+     * 每个渲染器：function (data, row, cfg, meta) => html 字符串
+     * ---------------------------------------------------------------- */
+    function str(v) { return v == null ? '' : String(v); }
+
+    XFAdmin.cellRenderers = {
+        /* 纯文本（转义） */
+        text: function (d) { return escapeHtml(d); },
+
+        /* 单元格输入框：cfg = {size, url(可选，change 时 PATCH 提交), placeholder} */
+        input: function (d, row, cfg) {
+            return '<input type="text" class="form-control form-control-' + (cfg.size || 'sm') + ' xf-cell-input" value="' + escapeHtml(d) +
+                '"' + (cfg.placeholder ? ' placeholder="' + escapeHtml(cfg.placeholder) + '"' : '') +
+                (cfg.url ? ' data-xf-url="' + escapeHtml(XFAdmin.tpl(cfg.url, row)) + '"' : '') +
+                ' data-xf-field="' + escapeHtml(cfg.field || '') + '" data-xf-id="' + escapeHtml(row && (row.id != null ? row.id : '') || '') + '">';
+        },
+
+        /* 带复制按钮的输入框 */
+        copy: function (d, row, cfg) {
+            var v = escapeHtml(d);
+            return '<div class="input-group input-group-sm flex-nowrap xf-cell-copy" style="min-width:120px">' +
+                '<input type="text" class="form-control" value="' + v + '" readonly>' +
+                '<button type="button" class="btn btn-soft-secondary" data-xf-copy="' + v + '" title="复制"><i class="ti ti-copy"></i></button></div>';
+        },
+
+        /* IP 地址：等宽字体 + 点击复制 */
+        ip: function (d) {
+            var v = escapeHtml(d);
+            if (!v) return '<span class="text-muted">-</span>';
+            return '<span class="font-monospace badge bg-light text-dark border xf-pointer" data-xf-copy="' + v + '" title="点击复制">' + v + '</span>';
+        },
+
+        /* 状态开关：cfg = {url({id} 占位), field, on: 1, off: 0} */
+        switch: function (d, row, cfg) {
+            var on = cfg.on !== undefined ? cfg.on : 1;
+            var checked = String(d) === String(on) || d === true;
+            return '<div class="form-check form-switch d-inline-block mb-0">' +
+                '<input type="checkbox" class="form-check-input xf-cell-switch" role="switch"' + (checked ? ' checked' : '') +
+                (cfg.url ? ' data-xf-url="' + escapeHtml(XFAdmin.tpl(cfg.url, row)) + '"' : '') +
+                ' data-xf-field="' + escapeHtml(cfg.field || '') + '" data-xf-on="' + escapeHtml(str(on)) + '" data-xf-off="' + escapeHtml(str(cfg.off !== undefined ? cfg.off : 0)) +
+                '" data-xf-id="' + escapeHtml(row && (row.id != null ? row.id : '') || '') + '"></div>';
+        },
+
+        /* 标签组：值为数组或逗号分隔字符串；cfg = {variant / variants: [...轮换色]} */
+        tags: function (d, row, cfg) {
+            var arr = Array.isArray(d) ? d : str(d).split(/[,，;；]/);
+            var palette = cfg.variants || ['primary', 'success', 'info', 'warning', 'secondary'];
+            var html = '';
+            arr.forEach(function (t, i) {
+                t = String(t).trim();
+                if (!t) return;
+                var v = cfg.variant || palette[i % palette.length];
+                html += '<span class="badge bg-' + v + '-subtle text-' + v + ' me-1">' + escapeHtml(t) + '</span>';
+            });
+            return html || '<span class="text-muted">-</span>';
+        },
+
+        /* 颜色块：值为 #hex / rgb() */
+        color: function (d) {
+            var v = escapeHtml(d);
+            if (!v) return '<span class="text-muted">-</span>';
+            return '<span class="d-inline-flex align-items-center gap-1 xf-pointer" data-xf-copy="' + v + '" title="点击复制">' +
+                '<span class="d-inline-block rounded border" style="width:1.2em;height:1.2em;background:' + v + '"></span>' +
+                '<code>' + v + '</code></span>';
+        },
+
+        /* 图片：cfg = {height, rounded, circle} */
+        image: function (d, row, cfg) {
+            var v = escapeHtml(d);
+            if (!v) return '<span class="text-muted">-</span>';
+            var cls = cfg.circle ? 'rounded-circle' : (cfg.rounded === false ? '' : 'rounded');
+            return '<img src="' + v + '" class="' + cls + '" style="height:' + (cfg.height || 32) + 'px" loading="lazy" alt="">';
+        },
+
+        /* 头像 + 名称：cfg = {name_field} */
+        avatar: function (d, row, cfg) {
+            var name = escapeHtml(cfg.name_field ? row[cfg.name_field] : '');
+            var img = d ? '<img src="' + escapeHtml(d) + '" class="rounded-circle me-1" style="width:28px;height:28px;object-fit:cover" alt="">'
+                : '<span class="avatar-xs bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center me-1" style="width:28px;height:28px">' + escapeHtml(String(name || '?').charAt(0).toUpperCase()) + '</span>';
+            return '<span class="d-inline-flex align-items-center">' + img + name + '</span>';
+        },
+
+        /* 进度条：cfg = {variant, striped, max} */
+        progress: function (d, row, cfg) {
+            var pct = Math.max(0, Math.min(100, Math.round((parseFloat(d) || 0) / (cfg.max || 100) * 100)));
+            var variant = cfg.variant || (pct >= 80 ? 'success' : pct >= 40 ? 'info' : 'warning');
+            return '<div class="d-flex align-items-center gap-2" style="min-width:100px">' +
+                '<div class="progress flex-grow-1" style="height:6px"><div class="progress-bar bg-' + variant + (cfg.striped ? ' progress-bar-striped' : '') + '" style="width:' + pct + '%"></div></div>' +
+                '<small class="text-muted">' + pct + '%</small></div>';
+        },
+
+        /* 布尔：√ / × 图标 */
+        bool: function (d) {
+            var truthy = d === true || d === 1 || d === '1' || d === 'true' || d === 'yes' || d === 'on';
+            return truthy ? '<i class="ti ti-circle-check-filled text-success fs-5"></i>'
+                : '<i class="ti ti-circle-x-filled text-danger fs-5"></i>';
+        },
+
+        /* 链接：cfg = {href({占位}), target, text} */
+        link: function (d, row, cfg) {
+            var href = cfg.href ? XFAdmin.tpl(cfg.href, row) : escapeHtml(d);
+            var text = cfg.text ? XFAdmin.tpl(cfg.text, row) : escapeHtml(d);
+            if (!href) return '<span class="text-muted">-</span>';
+            return '<a href="' + href + '"' + (cfg.target ? ' target="' + escapeHtml(cfg.target) + '"' : '') + ' class="link-primary">' + text + '</a>';
+        },
+
+        /* 代码片段 */
+        code: function (d) {
+            var v = escapeHtml(d);
+            return v ? '<code class="xf-pointer" data-xf-copy="' + v + '" title="点击复制">' + v + '</code>' : '<span class="text-muted">-</span>';
+        },
+
+        /* 日期时间：cfg = {ago: true 显示相对时间} */
+        datetime: function (d, row, cfg) {
+            var v = str(d);
+            if (!v) return '<span class="text-muted">-</span>';
+            if (cfg.ago) {
+                var t = new Date(v.replace(/-/g, '/')).getTime();
+                if (!isNaN(t)) {
+                    var diff = Math.floor((Date.now() - t) / 1000);
+                    var ago = diff < 60 ? '刚刚' : diff < 3600 ? Math.floor(diff / 60) + ' 分钟前'
+                        : diff < 86400 ? Math.floor(diff / 3600) + ' 小时前'
+                        : diff < 2592000 ? Math.floor(diff / 86400) + ' 天前' : v.slice(0, 10);
+                    return '<span title="' + escapeHtml(v) + '">' + escapeHtml(ago) + '</span>';
+                }
+            }
+            return '<span class="text-nowrap">' + escapeHtml(v) + '</span>';
+        },
+
+        /* 金额：cfg = {prefix: '¥', decimals: 2} */
+        money: function (d, row, cfg) {
+            var n = parseFloat(d) || 0;
+            var s = n.toFixed(cfg.decimals !== undefined ? cfg.decimals : 2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return '<span class="font-monospace' + (n < 0 ? ' text-danger' : '') + '">' + escapeHtml(cfg.prefix !== undefined ? cfg.prefix : '¥') + s + '</span>';
+        },
+
+        /* 截断长文本：cfg = {length: 30} */
+        truncate: function (d, row, cfg) {
+            var v = str(d);
+            var len = cfg.length || 30;
+            if (v.length <= len) return escapeHtml(v);
+            return '<span title="' + escapeHtml(v) + '">' + escapeHtml(v.slice(0, len)) + '…</span>';
+        },
+
+        /* 星级评分：cfg = {max: 5} */
+        rating: function (d, row, cfg) {
+            var max = cfg.max || 5;
+            var n = Math.max(0, Math.min(max, parseFloat(d) || 0));
+            var html = '<span class="text-warning text-nowrap">';
+            for (var i = 1; i <= max; i++) {
+                html += '<i class="ti ti-star' + (i <= n ? '-filled' : (i - n < 1 ? '-half-filled' : '')) + '"></i>';
+            }
+            return html + '</span>';
+        },
+
+        /* 图标：值即图标类名；或 cfg = {map: {value: 'ti ti-xxx text-success'}} 映射 */
+        icon: function (d, row, cfg) {
+            if (cfg.map) {
+                var cls = cfg.map[d];
+                return cls ? '<i class="' + escapeHtml(cls) + ' fs-5"></i>' : escapeHtml(d);
+            }
+            return d ? '<i class="' + escapeHtml(d) + ' fs-4" title="' + escapeHtml(d) + '"></i>' : '<span class="text-muted">-</span>';
+        },
+
+        /* 行操作栏：cfg.items = [{label, icon, class, url, ajax, method, confirm, reload, action, dropdown}] */
+        actions: function (d, row, cfg) {
+            var html = '<div class="btn-group btn-group-sm xf-row-actions" role="group">';
+            (cfg.items || []).forEach(function (item, idx) {
+                if (item.dropdown) {
+                    html += '<div class="btn-group btn-group-sm" role="group">' +
+                        '<button type="button" class="btn ' + escapeHtml(item.class || 'btn-soft-secondary') + ' dropdown-toggle" data-bs-toggle="dropdown">' +
+                        (item.icon ? '<i class="' + escapeHtml(item.icon) + '"></i> ' : '') + escapeHtml(item.label || '更多') + '</button><ul class="dropdown-menu">';
+                    item.dropdown.forEach(function (sub, sidx) {
+                        if (sub.type === 'divider') { html += '<li><hr class="dropdown-divider"></li>'; return; }
+                        html += '<li>' + actionAnchor(sub, row, idx + '-' + sidx, 'dropdown-item') + '</li>';
+                    });
+                    html += '</ul></div>';
+                    return;
+                }
+                html += actionAnchor(item, row, String(idx), 'btn ' + (item.class || 'btn-soft-primary'));
+            });
+            return html + '</div>';
+
+            function actionAnchor(item, row, key, cls) {
+                var attrs = ' class="' + escapeHtml(cls) + '"';
+                var inner = (item.icon ? '<i class="' + escapeHtml(item.icon) + '"></i>' : '') +
+                    (item.label && item.icon ? ' ' : '') + (item.label ? escapeHtml(item.label) : '');
+                if (item.title) attrs += ' title="' + escapeHtml(item.title) + '"';
+                if (item.url) {
+                    return '<a href="' + XFAdmin.tpl(item.url, row) + '"' + attrs + (item.target ? ' target="' + escapeHtml(item.target) + '"' : '') + '>' + inner + '</a>';
+                }
+                attrs += ' data-xf-act="' + escapeHtml(item.action || 'ajax') + '"';
+                if (item.ajax) attrs += ' data-xf-url="' + escapeHtml(XFAdmin.tpl(item.ajax, row)) + '"';
+                if (item.method) attrs += ' data-xf-method="' + escapeHtml(item.method) + '"';
+                if (item.confirm) attrs += ' data-xf-confirm="' + escapeHtml(item.confirm) + '"';
+                if (item.reload) attrs += ' data-xf-reload="1"';
+                if (item.event) attrs += ' data-xf-event="' + escapeHtml(item.event) + '"';
+                return '<button type="button"' + attrs + '>' + inner + '</button>';
+            }
+        }
+    };
 
     XFAdmin.scan = function (root) {
         root = root || document;
@@ -137,37 +427,154 @@
      * 内置组件初始化器
      * ---------------------------------------------------------------- */
 
-    // ---------- DataTable（含模板列 / 徽章列 / 列筛选） ----------
+    // ---------- DataTable 列显隐下拉（colvis 模块未随包发布，自行实现） ----------
+    function xfColvisToggle(dt, btn) {
+        var existing = document.getElementById('xf-colvis-menu');
+        if (existing) {
+            if (existing._xfClose) document.removeEventListener('click', existing._xfClose);
+            existing.remove();
+            return;
+        }
+        var menu = document.createElement('div');
+        menu.id = 'xf-colvis-menu';
+        menu.className = 'dropdown-menu show p-2 shadow';
+        menu.style.position = 'absolute';
+        menu.style.zIndex = 2100;
+        var r = btn.getBoundingClientRect();
+        menu.style.top = (window.pageYOffset + r.bottom + 4) + 'px';
+        menu.style.left = (window.pageXOffset + r.left) + 'px';
+        menu.style.minWidth = '200px';
+        dt.columns().every(function (i) {
+            var col = this;
+            var header = col.header();
+            var title = (header ? header.textContent.trim() : '') || ('列 ' + (i + 1));
+            if (!title) return;
+            var wrap = document.createElement('div');
+            wrap.className = 'form-check mb-1';
+            var cb = document.createElement('input');
+            cb.type = 'checkbox'; cb.className = 'form-check-input me-1'; cb.checked = col.visible();
+            cb.id = 'xf-colvis-' + i;
+            cb.addEventListener('change', function () { col.visible(cb.checked); });
+            var lab = document.createElement('label');
+            lab.className = 'form-check-label small'; lab.htmlFor = cb.id; lab.textContent = title;
+            wrap.appendChild(cb); wrap.appendChild(lab);
+            menu.appendChild(wrap);
+        });
+        document.body.appendChild(menu);
+        setTimeout(function () {
+            var onDoc = function (ev) {
+                if (menu && !menu.contains(ev.target) && ev.target !== btn) {
+                    document.removeEventListener('click', onDoc);
+                    menu.remove();
+                }
+            };
+            menu._xfClose = onDoc;
+            document.addEventListener('click', onDoc);
+        }, 0);
+    }
+
+    // ---------- DataTable（含模板列 / 徽章列 / 富渲染器 / 列筛选） ----------
     XFAdmin.register('datatable', function (el, config) {
         if (!global.DataTable) return;
         var dt = config.dt || {};
+
+        // 注册缺失的 colvis 按钮类型（其扩展模块未随包发布），避免
+        // “Cannot extend unknown button type: colvis” 导致整个初始化抛出并中断
+        var XF_DT = global.DataTable;
+        if (XF_DT.ext && XF_DT.ext.buttons && !XF_DT.ext.buttons.colvis) {
+            XF_DT.ext.buttons.colvis = {
+                text: '<i class="ti ti-columns"></i> 列显示',
+                className: 'btn btn-sm btn-secondary buttons-colvis',
+                action: function (e, api, node) {
+                    if (e && e.preventDefault) e.preventDefault();
+                    if (e && e.stopPropagation) e.stopPropagation();
+                    var btnEl = node && node.get ? node.get(0) : node;
+                    xfColvisToggle(api, btnEl);
+                }
+            };
+        }
+        // 注册 xfButton 基础类型，供 refresh / fullscreen 包内扩展按钮使用，
+        // 避免 “Cannot extend unknown button type: xfButton”
+        if (XF_DT.ext && XF_DT.ext.buttons && !XF_DT.ext.buttons.xfButton) {
+            XF_DT.ext.buttons.xfButton = {
+                text: '',
+                action: function () {}
+            };
+        }
+
+        // 缺省中文语言包（配置传入的 language 优先）
+        dt.language = Object.assign({}, XFAdmin.dtLanguage, dt.language || {});
 
         (dt.columns || []).forEach(function (col) {
             if (col.xfTemplate) {
                 var tpl = col.xfTemplate;
                 col.render = function (data, type, row) {
-                    return tpl.replace(/\{(\w+(?:\.\w+)*)\}/g, function (_, path) {
-                        var v = path.split('.').reduce(function (o, k) {
-                            return o == null ? '' : o[k];
-                        }, row);
-                        return escapeHtml(v);
-                    });
+                    if (type && type !== 'display') return data;
+                    return XFAdmin.tpl(tpl, row);
                 };
                 if (col.orderable === undefined) col.orderable = false;
                 delete col.xfTemplate;
             }
             if (col.xfBadges) {
                 var badges = col.xfBadges;
-                col.render = function (data) {
+                col.render = function (data, type) {
+                    if (type && type !== 'display') return data;
                     var variant = badges[data];
                     var safe = escapeHtml(data);
                     return variant ? '<span class="badge bg-' + variant + '-subtle text-' + variant + '">' + safe + '</span>' : safe;
                 };
                 delete col.xfBadges;
             }
+            if (col.xfRender) {
+                var cfg = col.xfRender;
+                var renderer = XFAdmin.cellRenderers[cfg.type] || XFAdmin.cellRenderers.text;
+                col.render = function (data, type, row, meta) {
+                    if (type && type !== 'display') return cfg.type === 'actions' ? '' : data;
+                    return renderer(data, row || {}, cfg, meta);
+                };
+                delete col.xfRender;
+            }
         });
 
-        var table = new global.DataTable(el, dt);
+        // 包内扩展按钮（refresh / fullscreen）
+        (dt.buttons || []).forEach(function (btn, i) {
+            if (!btn || !btn.xfButton) return;
+            var kind = btn.xfButton;
+            delete btn.xfButton;
+            if (kind === 'refresh') {
+                btn.text = '<i class="ti ti-refresh"></i> 刷新';
+                btn.action = function (e, api) { api.ajax && api.ajax.url() ? api.ajax.reload(null, false) : api.draw(false); };
+            } else if (kind === 'fullscreen') {
+                btn.text = '<i class="ti ti-maximize"></i> 全屏';
+                btn.action = function () {
+                    var card = el.closest('.card') || el.closest('.table-responsive') || el.parentElement;
+                    if (!document.fullscreenElement) { card.requestFullscreen && card.requestFullscreen(); }
+                    else { document.exitFullscreen && document.exitFullscreen(); }
+                };
+            }
+        });
+
+        // AJAX 错误优雅提示（阻止 DataTables 原生 alert 弹窗）
+        try { global.DataTable.ext.errMode = 'none'; } catch (e) { /* noop */ }
+        el.addEventListener('error.dt', function () {
+            XFAdmin.toast({ body: '表格数据加载失败，请检查网络或稍后重试', variant: 'danger' });
+        });
+        if (global.jQuery) {
+            global.jQuery(el).on('error.dt', function (e, settings, techNote, message) {
+                console.warn('[XfAdmin] DataTables:', message);
+                XFAdmin.toast({ body: '表格数据加载失败，请稍后重试', variant: 'danger' });
+            });
+        }
+
+        var table;
+        try {
+            table = new global.DataTable(el, dt);
+            el.__xfTable = table;
+        } catch (err) {
+            console.error('[XfAdmin] 初始化表格失败:', err);
+            XFAdmin.toast({ body: '表格初始化失败：' + (err && err.message ? err.message : err), variant: 'danger' });
+            return null;
+        }
 
         // 每列筛选输入框
         if (config.columnFilters) {
@@ -180,15 +587,260 @@
                 input.type = 'text';
                 input.className = 'form-control form-control-sm';
                 input.placeholder = '筛选 ' + th.textContent.trim();
+                var timer = null;
                 input.addEventListener('input', function () {
-                    table.column(idx).search(this.value).draw();
+                    var v = this.value;
+                    clearTimeout(timer);
+                    timer = setTimeout(function () { table.column(idx).search(v).draw(); }, 300);
                 });
                 td.appendChild(input);
                 filterRow.appendChild(td);
             });
             el.querySelector('thead').appendChild(filterRow);
         }
+
+        // 过滤工具栏（filter_bar）：变更 => 拼查询参数 => 重载
+        if (config.filterBar) {
+            var bar = document.querySelector('form[data-xf-filter-for="' + el.id + '"]');
+            if (bar) {
+                var baseUrl = (typeof dt.ajax === 'string' ? dt.ajax : (dt.ajax && dt.ajax.url) || '').split('?')[0];
+                var reloadWithFilters = function () {
+                    var qs = [];
+                    bar.querySelectorAll('.xf-filter').forEach(function (c) {
+                        if (c.value) qs.push(encodeURIComponent(c.dataset.filter) + '=' + encodeURIComponent(c.value));
+                    });
+                    bar.querySelectorAll('.xf-filter-radio').forEach(function (g) {
+                        var activeBtn = g.querySelector('.active');
+                        var v = activeBtn ? activeBtn.dataset.value : '';
+                        if (v) qs.push(encodeURIComponent(g.dataset.filter) + '=' + encodeURIComponent(v));
+                    });
+                    if (baseUrl) {
+                        table.ajax.url(baseUrl + (qs.length ? '?' + qs.join('&') : '')).load();
+                    } else {
+                        table.draw();
+                    }
+                };
+                var filterTimer = null;
+                bar.querySelectorAll('.xf-filter').forEach(function (c) {
+                    c.addEventListener('change', reloadWithFilters);
+                    if (c.type === 'text') {
+                        c.addEventListener('input', function () {
+                            clearTimeout(filterTimer);
+                            filterTimer = setTimeout(reloadWithFilters, 400);
+                        });
+                        c.addEventListener('keyup', function (e) { if (e.key === 'Enter') reloadWithFilters(); });
+                    }
+                });
+                bar.querySelectorAll('.xf-filter-radio').forEach(function (g) {
+                    g.addEventListener('click', function (e) {
+                        var btn = e.target.closest('[data-value]');
+                        if (!btn) return;
+                        g.querySelectorAll('.btn').forEach(function (b) { b.classList.remove('active'); });
+                        btn.classList.add('active');
+                        reloadWithFilters();
+                    });
+                });
+                var resetBtn = bar.querySelector('.xf-filter-reset');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', function () {
+                        bar.querySelectorAll('.xf-filter').forEach(function (c) { c.value = ''; });
+                        bar.querySelectorAll('.xf-filter-radio').forEach(function (g) {
+                            g.querySelectorAll('.btn').forEach(function (b, i) { b.classList.toggle('active', i === 0); });
+                        });
+                        reloadWithFilters();
+                    });
+                }
+            }
+        }
         return table;
+    });
+
+    /* 获取已初始化的 DataTable 实例：XFAdmin.table('dt-users') */
+    XFAdmin.table = function (idOrEl) {
+        var el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+        return el ? el.__xfTable : null;
+    };
+
+    /* 重载表格数据（服务端模式重新请求，本地模式重绘）；url 可选（切换数据源） */
+    XFAdmin.reloadTable = function (idOrEl, url) {
+        var table = XFAdmin.table(idOrEl);
+        if (!table) return;
+        if (table.ajax && table.ajax.url()) {
+            if (url) table.ajax.url(url);
+            table.ajax.reload(null, false);
+        } else {
+            table.draw(false);
+        }
+    };
+
+    /* ------------------------------------------------------------------
+     * 表格单元格交互（全局事件委托，一次绑定）：
+     * - [data-xf-copy]           点击复制
+     * - .xf-cell-switch          状态开关（可选 AJAX 提交）
+     * - .xf-cell-input           单元格输入框（change 时可选 AJAX 提交）
+     * - [data-xf-act]            行操作按钮（ajax / view / copy-row / 自定义事件）
+     * ---------------------------------------------------------------- */
+    function rowOf(target) {
+        var tr = target.closest('tr');
+        var tableEl = target.closest('table');
+        var table = tableEl && tableEl.__xfTable;
+        if (table && tr) {
+            try { return table.row(tr).data() || null; } catch (e) { return null; }
+        }
+        return null;
+    }
+
+    document.addEventListener('click', function (e) {
+        // 点击复制
+        var copyEl = e.target.closest('[data-xf-copy]');
+        if (copyEl) {
+            XFAdmin.copyText(copyEl.getAttribute('data-xf-copy'));
+            return;
+        }
+        // 行操作按钮
+        var actEl = e.target.closest('[data-xf-act]');
+        if (!actEl) return;
+        var act = actEl.getAttribute('data-xf-act');
+        var row = rowOf(actEl);
+        var tableEl = actEl.closest('table');
+
+        // 自定义事件：任何 action 均派发 xf:action，供业务侧监听扩展
+        var detail = { action: act, row: row, el: actEl, table: tableEl && tableEl.__xfTable };
+        document.dispatchEvent(new CustomEvent('xf:action', { detail: detail }));
+        if (actEl.getAttribute('data-xf-event')) {
+            document.dispatchEvent(new CustomEvent(actEl.getAttribute('data-xf-event'), { detail: detail }));
+            return;
+        }
+
+        if (act === 'copy-row') {
+            XFAdmin.copyText(JSON.stringify(row || {}, null, 2), '行数据已复制');
+            return;
+        }
+        if (act === 'view') {
+            XFAdmin.viewRow(row);
+            return;
+        }
+        if (act === 'ajax') {
+            var url = actEl.getAttribute('data-xf-url');
+            if (!url) return;
+            var doIt = function () {
+                actEl.disabled = true;
+                XFAdmin.request(url, { method: actEl.getAttribute('data-xf-method') || 'POST' }).then(function (res) {
+                    actEl.disabled = false;
+                    if (res.ok) {
+                        XFAdmin.toast({ body: (res.data && res.data.message) || '操作成功', variant: 'success' });
+                        if (actEl.getAttribute('data-xf-reload') && tableEl) XFAdmin.reloadTable(tableEl);
+                    }
+                });
+            };
+            var confirmMsg = actEl.getAttribute('data-xf-confirm');
+            if (confirmMsg) { XFAdmin.confirm(confirmMsg, doIt); } else { doIt(); }
+        }
+    });
+
+    /* 确认弹窗（Bootstrap Modal，无 Modal 时回退原生 confirm） */
+    XFAdmin.confirm = function (message, onOk, onCancel) {
+        if (!global.bootstrap || !global.bootstrap.Modal) {
+            if (window.confirm(message)) { onOk && onOk(); } else { onCancel && onCancel(); }
+            return;
+        }
+        var modalEl = document.getElementById('xf-confirm-modal');
+        if (!modalEl) {
+            modalEl = document.createElement('div');
+            modalEl.id = 'xf-confirm-modal';
+            modalEl.className = 'modal fade';
+            modalEl.tabIndex = -1;
+            modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content">' +
+                '<div class="modal-body text-center pt-4"><i class="ti ti-alert-circle text-warning" style="font-size:2.5rem"></i>' +
+                '<p class="mt-2 mb-0 xf-confirm-msg"></p></div>' +
+                '<div class="modal-footer border-0 justify-content-center pb-4">' +
+                '<button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">取消</button>' +
+                '<button type="button" class="btn btn-sm btn-danger xf-confirm-ok">确定</button></div></div></div>';
+            document.body.appendChild(modalEl);
+        }
+        modalEl.querySelector('.xf-confirm-msg').textContent = message;
+        var modal = global.bootstrap.Modal.getOrCreateInstance(modalEl);
+        var okBtn = modalEl.querySelector('.xf-confirm-ok');
+        var newOk = okBtn.cloneNode(true);
+        okBtn.parentNode.replaceChild(newOk, okBtn);
+        newOk.addEventListener('click', function () {
+            modal.hide();
+            onOk && onOk();
+        });
+        modal.show();
+    };
+
+    /* 行详情弹窗（键值对表格展示） */
+    XFAdmin.viewRow = function (row, title) {
+        row = row || {};
+        var body = '<table class="table table-sm table-striped mb-0"><tbody>';
+        Object.keys(row).forEach(function (k) {
+            var v = row[k];
+            if (v !== null && typeof v === 'object') v = JSON.stringify(v);
+            body += '<tr><th class="text-muted" style="width:30%">' + escapeHtml(k) + '</th><td class="text-break">' + escapeHtml(v) + '</td></tr>';
+        });
+        body += '</tbody></table>';
+        XFAdmin.dialog({ title: title || '详细信息', body: body, size: 'lg' });
+    };
+
+    /* 通用弹窗 */
+    XFAdmin.dialog = function (opts) {
+        opts = opts || {};
+        if (!global.bootstrap || !global.bootstrap.Modal) return;
+        var modalEl = document.getElementById('xf-dialog-modal');
+        if (modalEl) modalEl.remove();
+        modalEl = document.createElement('div');
+        modalEl.id = 'xf-dialog-modal';
+        modalEl.className = 'modal fade';
+        modalEl.tabIndex = -1;
+        modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable' + (opts.size ? ' modal-' + opts.size : '') + '">' +
+            '<div class="modal-content"><div class="modal-header"><h5 class="modal-title">' + escapeHtml(opts.title || '') + '</h5>' +
+            '<button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>' +
+            '<div class="modal-body">' + (opts.body || '') + '</div></div></div>';
+        document.body.appendChild(modalEl);
+        var modal = new global.bootstrap.Modal(modalEl);
+        modalEl.addEventListener('hidden.bs.modal', function () { modalEl.remove(); });
+        modal.show();
+        return modal;
+    };
+
+    /* 开关 / 输入框 变更提交 */
+    document.addEventListener('change', function (e) {
+        var target = e.target;
+        // 状态开关
+        if (target.classList && target.classList.contains('xf-cell-switch')) {
+            var value = target.checked ? target.getAttribute('data-xf-on') : target.getAttribute('data-xf-off');
+            var detail = { el: target, checked: target.checked, value: value, field: target.getAttribute('data-xf-field'), id: target.getAttribute('data-xf-id'), row: rowOf(target) };
+            document.dispatchEvent(new CustomEvent('xf:switch', { detail: detail }));
+            var url = target.getAttribute('data-xf-url');
+            if (!url) return;
+            target.disabled = true;
+            var payload = {};
+            payload[target.getAttribute('data-xf-field') || 'status'] = value;
+            payload.id = target.getAttribute('data-xf-id');
+            XFAdmin.request(url, { method: 'POST', data: payload }).then(function (res) {
+                target.disabled = false;
+                if (res.ok) {
+                    XFAdmin.toast({ body: (res.data && res.data.message) || '状态已更新', variant: 'success', delay: 1500 });
+                } else {
+                    target.checked = !target.checked; // 失败回滚
+                }
+            });
+            return;
+        }
+        // 单元格输入框
+        if (target.classList && target.classList.contains('xf-cell-input')) {
+            var detail2 = { el: target, value: target.value, field: target.getAttribute('data-xf-field'), id: target.getAttribute('data-xf-id'), row: rowOf(target) };
+            document.dispatchEvent(new CustomEvent('xf:cell-input', { detail: detail2 }));
+            var url2 = target.getAttribute('data-xf-url');
+            if (!url2) return;
+            var payload2 = {};
+            payload2[target.getAttribute('data-xf-field') || 'value'] = target.value;
+            payload2.id = target.getAttribute('data-xf-id');
+            XFAdmin.request(url2, { method: 'POST', data: payload2 }).then(function (res) {
+                if (res.ok) XFAdmin.toast({ body: (res.data && res.data.message) || '已保存', variant: 'success', delay: 1500 });
+            });
+        }
     });
 
     // ---------- 图表 ----------
@@ -468,10 +1120,14 @@
             var submitBtn = form.querySelector('[type="submit"]');
             if (submitBtn) submitBtn.disabled = true;
 
+            var formHeaders = { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' };
+            var csrfToken = XFAdmin.csrf();
+            if (csrfToken) formHeaders['X-CSRF-TOKEN'] = csrfToken;
             fetch(form.action || window.location.href, {
                 method: form.getAttribute('method') || 'POST',
                 body: new FormData(form),
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                credentials: 'same-origin',
+                headers: formHeaders
             }).then(function (res) {
                 return res.json().catch(function () { return {}; }).then(function (data) {
                     return { ok: res.ok, status: res.status, data: data };

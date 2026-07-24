@@ -50,19 +50,35 @@ class Table extends Component
         ];
     }
 
-    /** 规范化列定义 */
+    /** 规范化列定义（兼容 DataTables 原生风格：title/data/orderable/xfBadges/xfTemplate 别名） */
     protected function columns(): array
     {
         $columns = [];
         foreach ((array) $this->get('columns', []) as $key => $col) {
             if (is_int($key)) {
                 $col = is_array($col) ? $col : ['key' => $col, 'label' => $col];
-                $key = $col['key'] ?? '';
+                $key = $col['key'] ?? $col['data'] ?? '';
             } elseif (! is_array($col)) {
                 $col = ['label' => $col];
             }
-            $col['key']   ??= $key;
-            $col['label'] ??= $key;
+            // DataTables 原生风格别名
+            if (isset($col['data']) && ! isset($col['key'])) {
+                $col['key'] = (string) $col['data'];
+            }
+            if (isset($col['title']) && ! isset($col['label'])) {
+                $col['label'] = $col['title'];
+            }
+            if (isset($col['orderable']) && ! isset($col['sortable'])) {
+                $col['sortable'] = (bool) $col['orderable'];
+            }
+            if (isset($col['xfBadges']) && ! isset($col['badges'])) {
+                $col['badges'] = $col['xfBadges'];
+            }
+            if (isset($col['xfTemplate']) && ! isset($col['template'])) {
+                $col['template'] = $col['xfTemplate'];
+            }
+            $col['key']   ??= is_string($key) ? $key : '';
+            $col['label'] ??= $col['key'];
             $columns[]      = $col;
         }
 

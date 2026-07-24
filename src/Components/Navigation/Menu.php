@@ -75,8 +75,13 @@ class Menu extends Component
             return '';
         }
         $badge = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
+        $class = $badge['class'] ?? 'bg-danger';
+        // INSPINIA 侧栏徽标约定：rounded-pill 外观（可通过传入 pill => false 关闭）
+        if (($badge['pill'] ?? true) && ! str_contains($class, 'rounded')) {
+            $class .= ' rounded-pill';
+        }
 
-        return '<span class="badge ' . $this->e($badge['class'] ?? 'bg-danger') . '">' . $this->e($badge['text'] ?? '') . '</span>';
+        return '<span class="badge ' . $this->e($class) . '">' . $this->e($badge['text'] ?? '') . '</span>';
     }
 
     // ------------------------------------------------------------------
@@ -104,7 +109,7 @@ class Menu extends Component
                 $html .= '<li class="' . Html::cls('side-nav-item', ['active' => $active]) . '">';
                 $html .= '<a data-bs-toggle="collapse" href="#' . $this->e($cid) . '" aria-expanded="' . ($active ? 'true' : 'false')
                     . '" aria-controls="' . $this->e($cid) . '" class="' . Html::cls('side-nav-link', ['disabled' => $disabled]) . '">'
-                    . $icon . $text . $this->badge($item) . '</a>';
+                    . $icon . $text . $this->badge($item) . '<span class="menu-arrow"></span></a>';
                 $html .= '<div class="' . Html::cls('collapse', ['show' => $active]) . '" id="' . $this->e($cid) . '">';
                 $html .= '<ul class="sub-menu">' . $this->renderSideItems($children, $level + 1) . '</ul>';
                 $html .= '</div></li>';

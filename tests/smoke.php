@@ -279,6 +279,116 @@ $assert(is_string(XfAdmin::asset('css/xfadmin.css')) && str_contains(XfAdmin::as
 $assert(trim((string) XfAdmin::dateRangePicker(['name' => 'd', 'label' => '日期'])) !== '', 'dateRangePicker 别名可正常渲染');
 $assert(trim((string) XfAdmin::clipboardButton(['text' => 'hi'])) !== '', 'clipboardButton 别名可正常渲染');
 
+// 8) DataTables 服务端处理（DataSet / XfAdmin::dataResponse）
+echo "\n== DataTables 服务端处理（DataSet） ==\n";
+
+$rows = [];
+for ($i = 1; $i <= 53; $i++) {
+    $rows[] = [
+        'id'         => $i,
+        'name'       => '用户' . $i,
+        'email'      => 'u' . $i . '@x.com',
+        'status'     => $i % 2 ? 'on' : 'off',
+        'created_at' => '2026-07-' . str_pad((string) (($i % 28) + 1), 2, '0'),
+    ];
+}
+$searchCols = [
+    ['data' => 'id', 'searchable' => 'false'],
+    ['data' => 'name', 'searchable' => 'true'],
+    ['data' => 'email', 'searchable' => 'true'],
+    ['data' => 'status', 'searchable' => 'false'],
+];
+$ds = \zxf\XfAdmin\Support\DataSet::response($rows, [
+    'draw'    => 2,
+    'start'   => 0,
+    'length'  => 10,
+    'search'  => ['value' => '用户1'],
+    'columns' => $searchCols,
+    'order'   => [['column' => 1, 'dir' => 'asc']],
+], ['searchable' => ['name', 'email'], 'filters' => ['status']]);
+$assert($ds['draw'] === 2, 'DataSet draw 透传');
+$assert($ds['recordsTotal'] === 53, 'DataSet recordsTotal = 全量');
+$assert($ds['recordsFiltered'] === 11 && count($ds['data']) === 10, 'DataSet 全局搜索「用户1」=> 11 条 / 分页 10 条');
+$assert($ds['data'][0]['name'] === '用户1', 'DataSet 按 name 升序首行');
+
+$dsOn = \zxf\XfAdmin\Support\DataSet::response($rows, ['length' => 10, 'search' => ['value' => ''], 'status' => 'on'], ['filters' => ['status']]);
+$assert($dsOn['recordsFiltered'] === 27, 'DataSet 自定义过滤 status=on => 27 条');
+
+$dsNull = \zxf\XfAdmin\Support\DataSet::response($rows, ['length' => 10, 'search' => ['value' => null], 'columns' => []], []);
+$assert($dsNull['recordsFiltered'] === 53, 'DataSet 兼容 search[value]=null（ConvertEmptyStringsToNull 场景不崩）');
+
+$dr = XfAdmin::dataResponse($rows, ['length' => 5], []);
+$assert(isset($dr['draw'], $dr['recordsTotal'], $dr['recordsFiltered'], $dr['data']) && $dr['recordsTotal'] === 53, 'XfAdmin::dataResponse 委托 DataSet');
+
+// 9) Tabs：footer / form / item badge
+echo "\n== Tabs footer / form / badge ==\n";
+$tabs = XfAdmin::tabs([
+    'items' => [
+        ['title' => '基础配置', 'badge' => '新', 'content' => 'a'],
+        ['title' => '邮件配置', 'content' => 'b'],
+    ],
+    'footer' => '<button class="btn btn-primary">统一保存</button>',
+]);
+$tabsHtml = (string) $tabs;
+$assert(str_contains($tabsHtml, 'xf-tabs-footer') && str_contains($tabsHtml, '统一保存'), 'Tabs footer 渲染');
+$assert(str_contains($tabsHtml, 'badge'), 'Tabs item badge 渲染');
+
+$tabsForm = XfAdmin::tabs([
+    'items'  => [['title' => 'A', 'content' => 'a'], ['title' => 'B', 'content' => 'b']],
+    'footer' => '<button class="btn">提交</button>',
+    'form'   => ['action' => '/save', 'method' => 'POST', 'ajax' => true],
+]);
+$tf = (string) $tabsForm;
+$assert(str_contains($tf, '<form') && str_contains($tf, 'data-xf="form"') && str_contains($tf, '/save'), 'Tabs form 包裹（多标签一次提交）');
+
+// 10) Menu：子菜单箭头 + 徽标
+echo "\n== Menu 箭头 + 徽标 ==\n";
+$menuHtml = (string) XfAdmin::menu([
+    'items' => [
+        ['title' => '配置'],
+        ['text' => '系统', 'icon' => 'ti ti-settings', 'badge' => ['text' => '谨慎', 'class' => 'bg-warning'], 'children' => [
+            ['text' => '用户管理', 'url' => '/users'],
+        ]],
+    ],
+    'current_url' => '/users',
+]);
+$assert(str_contains($menuHtml, 'menu-arrow'), 'Menu 子菜单小箭头标记');
+$assert(str_contains($menuHtml, 'rounded-pill'), 'Menu badge rounded-pill 外观');
+
+// 11) DataTable：filter_bar + 富单元格渲染器配置
+echo "\n== DataTable filter_bar + 富单元格 ==\n";
+$dt = XfAdmin::dataTable([
+    'columns' => [
+        'id'     => 'ID',
+        'name'   => ['label' => '姓名', 'render' => 'input', 'xfCellInput' => ['url' => '/cell']],
+        'ip'     => ['label' => 'IP', 'render' => 'ip'],
+        'status' => ['label' => '状态', 'render' => 'switch', 'xfSwitch' => ['url' => '/switch']],
+        'tags'   => ['label' => '标签', 'render' => 'tags'],
+        'color'  => ['label' => '颜色', 'render' => 'color'],
+        'op'     => ['label' => '操作', 'actions' => [
+            ['text' => '查看', 'icon' => 'ti ti-eye', 'act' => 'view'],
+            ['text' => '删除', 'icon' => 'ti ti-trash', 'act' => 'ajax', 'url' => '/del', 'confirm' => '确定删除？'],
+        ]],
+    ],
+    'data'       => [],
+    'filter_bar' => [
+        ['name' => 'status', 'label' => '状态', 'options' => ['on' => '启用', 'off' => '停用']],
+        ['name' => 'keyword', 'label' => '关键词', 'type' => 'text'],
+    ],
+]);
+$dtHtml = (string) $dt;
+$assert(str_contains($dtHtml, 'xf-filter-bar'), 'DataTable filter_bar 渲染');
+$assert(str_contains($dtHtml, 'xfRender'), 'DataTable 富单元格渲染器配置输出');
+$assert(str_contains($dtHtml, 'data-xf="datatable"'), 'DataTable 标记 data-xf=datatable');
+
+// 12) StatCard 响应式列宽
+echo "\n== StatCard 响应式列宽 ==\n";
+$sc = (string) XfAdmin::statCard(['title' => '总数', 'value' => '99', 'width' => ['sm' => 6, 'xl' => 3]]);
+$assert(str_contains($sc, 'col-sm-6') && str_contains($sc, 'col-xl-3') && str_contains($sc, 'h-100'), 'StatCard 响应式列宽包裹 + h-100');
+$scNo = (string) XfAdmin::statCard(['title' => '总数', 'value' => '99']);
+$assert(!str_contains($scNo, 'col-') && str_contains($scNo, 'card'), 'StatCard 无 width 时不包裹列');
+echo "ok\n";
+
 Assets::reset();
 
 echo "\n";

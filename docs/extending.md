@@ -142,3 +142,135 @@ XFAdmin.toast({ title: '成功', message: '已保存', variant: 'success' });
 ```
 
 > Ajax 局部刷新后务必调用 `XFAdmin.init(container)`，让新插入的组件重新绑定。
+
+---
+
+## 六、表格交互事件与扩展点
+
+包内的 `dataTable` 富单元格（输入框、开关、操作栏）通过**事件委托**统一处理：所有交互会在 DOM 上派发标准 `CustomEvent`，你只需监听即可接管任意行为，无需修改包源码。
+
+### 单元格输入 `xf:cell-input`
+
+`render: 'input'` 的输入框失焦/回车时触发。前端自动 `POST xfCellInput.url`，`body` 为 `{ id, field, value, value_type }`；后端返回非 2xx 时自动回滚为原值。
+
+```html
+<!-- 自动生成的标记（无需手写） -->
+<input class="xf-cell-input" data-field="nickname" data-xf-event="cellInput" ...>
+```
+
+```js
+document.addEventListener('xf:cell-input', function (e) {
+    const { el, field, value, valueType, rowId } = e.detail;
+    console.log('单元格保存', rowId, field, value);
+    // 自定义保存逻辑；返回 false 可阻止默认 POST
+});
+```
+
+### 状态开关 `xf:switch`
+
+`render: 'switch'` 的开关切换时触发。前端自动 `POST xfSwitch.url`，`body` 为 `{ id, field, value }`；请求失败自动回滚开关状态。
+
+```js
+document.addEventListener('xf:switch', function (e) {
+    const { el, field, value, rowId } = e.detail;
+    // value 为新的开关值（'on' / 'off'）
+});
+```
+
+### 行操作 `xf:action`
+
+操作栏按钮（或任意带 `data-xf-act` 的元素）点击时触发。`act` 取值决定默认行为：
+
+| act | 默认行为 | 是否派发事件 |
+|-----|----------|--------------|
+| `view` | 弹窗展示整行 | 否 |
+| `link` | 跳转 `url`（`{id}` 占位） | 否 |
+| `copy-row` | 复制整行 JSON | 否 |
+| `ajax` | `fetch` 到 `url`，可选 `confirm`，成功后 toast + 重载表格 | 否 |
+| `custom` | 仅派发 `xf:action` | **是** |
+
+```html
+<button data-xf-act="custom" data-xf-event="approve" data-xf-confirm="确认通过？">通过</button>
+```
+
+```js
+// 监听默认（custom）行为
+document.addEventListener('xf:action', function (e) {
+    const { el, act, rowId, row } = e.detail;
+    // 自定义逻辑（如打开自己的弹窗 / 调用 XFAdmin.request）
+});
+
+// 监听自定义事件名（data-xf-event 指定的名称优先）
+document.addEventListener('approve', function (e) {
+    const { el, rowId, row } = e.detail;
+});
+```
+
+- `data-xf-confirm="提示语"`：点击先弹确认框，取消则不触发。
+- 自定义 `data-xf-event` 会让该按钮以指定事件名派发，**同时**仍会触发 `xf:action`（除非你 `e.stopPropagation()` 或在监听里 `return false`）。
+
+### 复制 `xf:copy`
+
+任意带 `data-xf-copy`（复制元素文本）或 `data-xf-copy-value="xxx"`（复制指定值）的元素点击即复制，并 toast 提示。
+
+```html
+<span data-xf-copy class="xf-copy">点击复制这段文本</span>
+<button data-xf-copy-value="sk-xxxx">复制 Token</button>
+```
+
+### 前端请求 `XFAdmin.request`
+
+统一封装 `fetch`，**自动携带 CSRF**（读取 `<meta name="csrf-token">`），返回 JSON，失败自动 toast：
+
+```js
+const res = await XFAdmin.request('/api/cell/nickname', {
+    method: 'POST',
+    body: { id: 12, field: 'nickname', value: '新昵称' },
+});
+// res.ok / res.data
+```
+
+---
+
+## 七、单元格渲染器扩展
+
+所有前端单元格渲染器挂在 `XFAdmin.cellRenderers` 上，键名即列定义里的 `render` 值。
+
+```js
+// 注册自定义渲染器
+XFAdmin.cellRenderers.scoreBar = function (cell, row, col) {
+    const v = Number(row[col.key] ?? 0);
+    return '<div class="progress"><div class="progress-bar" style="width:' + (v * 10) + '%"></div></div>';
+};
+
+// 列定义即可使用 'scoreBar'
+// 'score' => ['label' => '评分', 'render' => 'scoreBar']
+```
+
+- `cell`：当前单元格 `<td>` DOM；`row`：整行数据；`col`：列配置对象（含 `key`、`xf*` 等）。
+- 返回值直接作为单元格 HTML（已做上下文转义的用户数据请使用 `XFAdmin.escapeHtml`）。
+
+你也可以覆盖内置渲染器（如 `input`、`switch`、`tags`），实现项目特有的交互样式。
+
+---
+
+## 八、前端 API 速查
+
+`window.XFAdmin` 主要成员：
+
+| 成员 | 说明 |
+|------|------|
+| `XFAdmin.init(el?)` | 初始化（或重新初始化）范围内组件；Ajax 局部刷新后调用 |
+| `XFAdmin.register(name, fn)` | 注册自定义 `data-xf` 行为 |
+| `XFAdmin.toast(opts)` | 顶部 toast 提示 |
+| `XFAdmin.escapeHtml(str)` | HTML 转义（用户输入必过） |
+| `XFAdmin.tpl(tpl, row)` | 模板插值，`'{name}'` → `row.name`，支持 `a.b.c` |
+| `XFAdmin.csrf()` | 读取 CSRF token |
+| `XFAdmin.request(url, opts)` | fetch 封装（自动 CSRF + toast + JSON） |
+| `XFAdmin.copyText(text)` | 复制文本到剪贴板 |
+| `XFAdmin.confirm(opts)` | 确认弹窗（返回 Promise） |
+| `XFAdmin.dialog(opts)` | 通用弹窗（可嵌 HTML/表单） |
+| `XFAdmin.viewRow(row)` | 整行数据只读弹窗 |
+| `XFAdmin.cellRenderers` | 单元格渲染器注册表（可扩展/覆盖） |
+| `XFAdmin.dtLanguage` | DataTables 中文语言包对象 |
+| `XFAdmin.reloadTable(id, params?)` | 按条件重载指定表格 |

@@ -323,6 +323,21 @@ final class XfAdmin
         return Assets::instance()->url($path);
     }
 
+    /**
+     * DataTables 服务端响应（搜索/过滤/排序/分页全部由包内完成）
+     *
+     * return response()->json(XfAdmin::dataResponse($rows, request()->all(), [
+     *     'searchable' => ['name', 'email'],
+     *     'filters'    => ['status', 'keyword' => ['name', 'email']],
+     * ]));
+     *
+     * @param  iterable|object  $rows  数组数据 / Laravel 查询构造器
+     */
+    public static function dataResponse(iterable|object $rows, array $params = [], array $options = []): array
+    {
+        return Support\DataSet::response($rows, $params, $options);
+    }
+
     public static function __callStatic(string $name, array $arguments): Component
     {
         return self::component($name, $arguments[0] ?? []);

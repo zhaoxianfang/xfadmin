@@ -182,6 +182,7 @@ XfAdmin::sidenav([
 ```
 - **输出**：纯服务端 HTML 片段（无 JS 行为，可直接嵌入 `page()` 的 `content`）。
 - **输入参数**：见组件文档注释 / 上方示例。
+  - 菜单项（`menu`）通过 `Menu` 组件构建：含 `children` 的项自动追加 `<span class="menu-arrow">` 小箭头标记；项可加 `badge => ['text' => '谨慎', 'class' => 'bg-warning']` 在右侧显示徽标（默认 `rounded-pill`，`pill => false` 关闭）。详见[表格](tables.md) 的导航说明与 `Menu` 组件注释。
 
 ### `topnav`
 
@@ -263,8 +264,40 @@ XfAdmin::dataTable([
         'status' => ['label' => '状态', 'badges' => ['启用' => 'success', '禁用' => 'danger']],
         'op'     => ['label' => '操作', 'template' => '<a href="/user/{id}/edit" class="btn btn-sm btn-soft-primary">编辑</a>', 'sortable' => false],
 ```
-- **输出**：带 `data-xf="datatable"` 的根元素 + 自动注册对应插件资源（CSS/JS）与内联初始化脚本；交互行为由前端控件完成。
+- **服务端模式（Ajax）+ 富单元格**：
+```php
+XfAdmin::dataTable([
+    'id'         => 'user-table',
+    'server_side'=> true,
+    'ajax'       => '/api/users/datatable',   // 返回 DataTables 协议 JSON
+    'filter_bar' => [                         // 自动渲染筛选控件并重载表格
+        ['name' => 'status', 'label' => '状态', 'options' => ['on' => '启用', 'off' => '停用']],
+        ['name' => 'keyword', 'label' => '关键词', 'type' => 'text'],
+    ],
+    'columns' => [
+        'id'      => ['label' => 'ID'],
+        'nickname'=> ['label' => '昵称', 'render' => 'input', 'xfCellInput' => ['url' => '/api/cell/nickname']],
+        'token'   => ['label' => 'Token', 'render' => 'copy', 'xfCopy' => ['text' => true]],
+        'ip'      => ['label' => 'IP', 'render' => 'ip'],
+        'status'  => ['label' => '状态', 'render' => 'switch', 'xfSwitch' => ['url' => '/api/switch/status']],
+        'tags'    => ['label' => '角色', 'render' => 'tags'],
+        'color'   => ['label' => '主题色', 'render' => 'color'],
+        'op'      => ['label' => '操作', 'actions' => [
+            ['text' => '查看', 'icon' => 'ti ti-eye', 'act' => 'view'],
+            ['text' => '删除', 'icon' => 'ti ti-trash', 'act' => 'ajax', 'url' => '/del/{id}', 'confirm' => '确定？'],
+        ]],
+    ],
+]);
+// 后端：return XfAdmin::dataResponse($rows, $request->all(), [
+//     'searchable' => ['name', 'email'],
+//     'filters'    => ['status', 'keyword' => ['name', 'email']],
+// ]);
+```
+- **输出**：带 `data-xf="datatable"` 的根元素 + 自动注册对应插件资源（CSS/JS）与内联初始化脚本；交互行为由前端控件完成。默认 `errMode: 'none'`，请求失败以 toast 提示而非原生 `alert`。
 - **输入参数**：见组件文档注释 / 上方示例。
+  - `server_side` + `ajax`：服务端分页/搜索/排序（协议由 `XfAdmin::dataResponse` / `DataSet` 生成）。
+  - `filter_bar`：数组，每项 `['name', 'label', 'type' => select|text|date|radio, 'options']`，变更自动重载。
+  - 列 `render`：富单元格渲染器（`input`/`copy`/`ip`/`switch`/`tags`/`color`/`progress`/`rating`/`money`/`bool`/`link`/`image`/`avatar`/`datetime`/`truncate`/`code`/`icon`/`view`），对应 `xfCellInput`/`xfCopy`/`xfSwitch` 等配置其交互 URL；`actions` 定义行操作栏。详见[表格](tables.md)。
 
 ### `table`
 
@@ -1011,10 +1044,16 @@ XfAdmin::tabs([
     'style' => 'tabs',                 // tabs | pills | underline
     'items' => [
         ['title' => '基本信息', 'icon' => 'ti ti-home', 'content' => '...', 'active' => true],
-        ['title' => '安全设置', 'content' => $form],
+        ['title' => '安全设置', 'content' => $form, 'badge' => '新'],   // 标签徽标
+    ],
+    'footer' => '<button class="btn btn-primary">统一保存</button>',    // tab 下方公共区域
+    'form'   => ['action' => '/save', 'method' => 'POST', 'ajax' => true], // 用 <form> 包裹全部面板+footer
 ```
-- **输出**：纯服务端 HTML 片段（无 JS 行为，可直接嵌入 `page()` 的 `content`）。
+- **输出**：纯服务端 HTML 片段（无 JS 行为，可直接嵌入 `page()` 的 `content`）。`footer` 渲染在 `tab-content` 下方的 `.xf-tabs-footer`；`form` 用 `<form data-xf="form">` 包裹全部面板与 footer，实现「多标签一次提交」。
 - **输入参数**：见组件文档注释 / 上方示例。
+  - `items[].badge`：标签右侧徽标（字符串或 `['text', 'class']`）。
+  - `footer`：HTML 字符串，渲染在所有标签面板下方（如统一提交按钮）。
+  - `form`：`['action', 'method' => GET|POST, 'ajax' => true|false]`；设置后用 `<form>` 包裹面板 + footer，提交由前端 `data-xf="form"` 接管（`ajax => true` 时自动 fetch 并以 toast 提示）。
 
 ### `timeline`
 

@@ -102,14 +102,45 @@ $assets->inlineJs('console.log("ready")');// 内联脚本（可传第二参 key 
 
 若浏览器控制台出现 `GET /zxf/xfadmin/css/xfadmin.css` 等 **全部 404**，说明请求的资源路径与文件实际位置不一致。按使用场景逐项核对：
 
-### 1. Laravel / ThinkPHP（框架）
+### 1. Laravel（开箱即用，无需发布）
 
-资源需先发布到 `public/zxf/xfadmin`（`assets_url` 的默认值即指向此处）：
+自 v1.0.0 起，Laravel 服务Provider 已内置**资源自动托管路由**：当请求路径以 `assets_url`
+前缀（默认 `/zxf/xfadmin`）开头时，若 `public/zxf/xfadmin` 下没有对应静态文件，Laravel 会
+自动把请求映射到本包 `resources/assets` 目录并流式返回（与 `demo/index.php` 行为一致）。
+因此**默认情况下无需执行发布命令即可直接运行**，浏览器不会再出现全部 404。
+
+发布到 `public` 仍然是**推荐的生产做法**（由 Web 服务器直接服务静态文件，性能更好、不进 PHP）：
 
 ```bash
-# Laravel
 php artisan vendor:publish --tag=xfadmin-assets
-# ThinkPHP
+```
+
+- 已发布的文件：Web 服务器直接命中，路由不触发；
+- 未发布 / 仅发布部分：`public` 中缺失的文件自动回退到包内 `resources/assets`；
+- 改过 `assets_url`：自动托管路由会跟随该前缀，请确保包内 `resources/assets` 下文件完整。
+
+#### 自动托管的安全与缓存（参照 zxf/trace 的资源控制器）
+
+`zxf\XfAdmin\Laravel\AssetController` 采用「控制器方法」而非闭包路由提供资源，确保
+`php artisan route:cache` / `php artisan optimize` 能安全序列化（闭包路由会递归序列化整个
+应用容器导致内存耗尽）。其安全与缓存策略：
+
+- **扩展名白名单**：路由层与控制器层双重限制，仅允许 `css/js/mjs/map/json/svg/png/jpg/
+  gif/ico/webp/avif/woff/woff2/ttf/eot/otf` 等静态资源，杜绝 `.php` 等被当作资源输出；
+- **路径穿越防护**：`realpath` 后必须位于 `resources/assets` 根目录内，否则 404；
+- **ETag + 304 Not Modified**：客户端已缓存且未变更时直接返回 304，零流量；
+- **强缓存**：`Cache-Control: public, max-age=31536000` + `Expires` 1 年，配合 `?v={version}`
+  做缓存刷新（升级版本号即让浏览器重新拉取）。
+
+> 若仍 404，确认：① `assets_url` 前缀与访问路径一致；② 项目根 `vendor/zxf/xfadmin/resources/assets`
+> 目录完整；③ 若手动改过 `config/xfadmin.php` 中的 `assets_url`，请清理配置缓存
+> `php artisan config:clear`。
+
+### 1b. ThinkPHP（需发布）
+
+ThinkPHP 暂无自动托管路由，资源需先发布到 `public/zxf/xfadmin`：
+
+```bash
 php think xfadmin:publish
 ```
 

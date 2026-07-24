@@ -66,3 +66,20 @@
 /* ---------- 通用工具 ---------- */
 .flex-centered { display: flex; align-items: center; justify-content: center; }
 .cursor-pointer { cursor: pointer; }
+
+/* ---------- DataTable 富单元格 / 行操作 ---------- */
+.xf-pointer { cursor: pointer; }
+.xf-filter-row td { padding: .35rem .5rem; }
+.xf-row-actions .btn { white-space: nowrap; }
+.xf-cell-copy input { min-width: 0; }
+table.dataTable td .form-check.form-switch { min-height: auto; }
+table.dataTable.fullscreen-table, .card:fullscreen { background: var(--bs-body-bg, #fff); overflow: auto; padding: 1rem; }
+
+/* ---------- DataTables 处理中遮罩微调 ---------- */
+div.dt-processing { z-index: 10; }
+
+/* ---------- 响应式：小屏表格工具栏折行 ---------- */
+@media (max-width: 575.98px) {
+    div.dt-layout-row { flex-direction: column; gap: .5rem; }
+    .xf-row-actions .btn span { display: none; }
+}

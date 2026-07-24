@@ -54,6 +54,7 @@ class Page extends Component
             'head'        => null,   // <head> 附加内容
             'scripts'     => null,   // </body> 前附加内容
             'body_class'  => null,
+            'csrf'        => null,   // CSRF Token（Laravel 下自动注入 csrf_token()）
         ];
     }
 
@@ -158,6 +159,18 @@ class Page extends Component
         }
         if ($this->get('author')) {
             $doc .= '<meta name="author" content="' . $this->e($this->get('author')) . '">' . "\n";
+        }
+        // CSRF meta：显式传入 csrf 或 Laravel 环境自动注入（前端 AJAX 自动携带）
+        $csrf = $this->get('csrf');
+        if ($csrf === null && function_exists('csrf_token')) {
+            try {
+                $csrf = csrf_token();
+            } catch (\Throwable) {
+                $csrf = null;
+            }
+        }
+        if (is_string($csrf) && $csrf !== '') {
+            $doc .= '<meta name="csrf-token" content="' . $this->e($csrf) . '">' . "\n";
         }
         $doc .= '<link rel="shortcut icon" href="' . $this->e($favicon) . '">' . "\n";
         $doc .= $assets->head();

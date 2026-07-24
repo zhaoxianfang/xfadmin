@@ -4,6 +4,69 @@
 
 ---
 
+## 重要修复（按钮类型缺失导致全表崩溃）
+
+- **根因**：`buttons.colVis.min.js` 未随包发布，`colvis` 按钮类型在 DataTables 中未注册；`refresh`/`fullscreen` 使用的 `xfButton` 基础类型也从未注册。任意含 `colvis`/`refresh`/`fullscreen` 的表格在 `new DataTable()` 时抛出 `Cannot extend unknown button type`，导致该表初始化中断、无法渲染/筛选/刷新（演示中所有表格默认都带这两个按钮，故「全部表格异常」）。
+- **修复**：在 `datatable` 初始化器内注册缺失的 `colvis`（自实现列显隐下拉菜单，纯前端、零依赖）与 `xfButton`（空基础类型，具体行为由刷新/全屏处理器接管）；`new DataTable()` 包 `try/catch`，单表异常不再中断其余组件初始化。
+- **StatCard 响应式**：新增 `width` 选项（`['sm'=>6,'xl'=>3]` 生成 `col-sm-6 col-xl-3` 列包裹 + 卡片 `h-100`），仪表盘统计卡片改为响应式网格排版。
+- `tests/smoke.php` 新增 StatCard 响应式列宽回归断言。
+
+---
+
+## 重要变更（v1.0.0 第二阶段维护更新）
+
+本批更新以「消除 DataTable Ajax 原生报错、补齐富单元格与交互、完善导航与多标签表单」为目标，所有能力均在**包内完成**，使用方只需提供数据与最小接线代码。
+
+### 新增：DataTables 服务端处理 `DataSet`
+
+- 新增 `zxf\XfAdmin\Support\DataSet` 与门面方法 `XfAdmin::dataResponse($rows, $params, $options)`，统一生成 DataTables serverSide 协议
+  （`draw` / `recordsTotal` / `recordsFiltered` / `data`）。全局搜索、列搜索、自定义 `filters`、多列排序、分页、行 `transform` **全部在包内完成**。
+- 双管线：数组数据 / Laravel 查询构造器（鸭子类型识别 `count`/`forPage`/`get`，不强依赖 Laravel）。
+- 全面容错：兼容 `ConvertEmptyStringsToNull` 把 `search[value]` 转为 `null`、参数为数组/标量混杂、字段缺失等场景，绝不 500；`length` 超上限自动收敛到 1000。
+- 前端 `dataTable` 服务端模式默认 `errMode: 'none'` + `error.dt` 以 toast 提示，彻底消除 `DataTables warning: table id=xxxx - Ajax error` 原生弹窗。
+
+### 新增：富单元格渲染器体系
+
+- `dataTable` 列支持 19 种单元格渲染器：`text` / `input` / `copy` / `ip` / `switch` / `tags` / `color` / `image` / `avatar` /
+  `progress` / `bool` / `link` / `code` / `datetime` / `money` / `truncate` / `rating` / `icon` / `view`，以及 `actions` 操作栏。
+- 可编辑输入框（`input`）与状态开关（`switch`）在前端通过事件委托自动 POST 指定 URL，失败回滚；操作栏支持
+  图标按钮、下拉菜单、`confirm` 确认、`ajax` 提交、整行复制与自定义事件。`XFAdmin.cellRenderers` 支持运行时扩展/覆盖。
+
+### 新增：过滤工具栏 `filter_bar`
+
+- `dataTable` 配置 `filter_bar` 后自动渲染 `select` / `text` / `date` / `radio` 筛选控件，变更后前端自动拼接查询串并重载表格，
+  并附带「重置」按钮。后端 `DataSet` 通过 `filters` 选项直接消费这些参数，无需手动接线。
+
+### 新增：Tabs 多标签一次提交
+
+- `Tabs` 组件新增 `footer`（tab-content 下方的公共区域，如统一提交按钮）与 `form`（用 `<form>` 包裹全部面板 + footer，支持 `ajax`
+  自动挂 `data-xf="form"`），实现「多标签、一次提交」。每个 `item` 支持 `badge` 标记。
+
+### 新增：菜单箭头与徽标
+
+- 侧边栏含子菜单的项自动追加 `<span class="menu-arrow">` 小箭头标记。
+- 菜单项 `badge` 支持 `['text' => '谨慎', 'class' => 'bg-warning']`，默认 `rounded-pill` 外观（`pill => false` 可关闭）。
+
+### 新增：CSRF 自动注入与前端请求封装
+
+- `Page` 在 `csrf` 选项开启（或检测到 `csrf_token()` 函数）时自动注入 `<meta name="csrf-token">`。
+- 前端 `XFAdmin.request` 封装 `fetch`，自动携带 CSRF、解析 JSON、失败 toast；`XFAdmin.copyText` / `confirm` / `dialog` /
+  `viewRow` / `reloadTable` 等便捷 API 一并提供。
+
+### 文档
+
+- [表格](tables.md) 补充：服务端 `DataSet`/`dataResponse`、`filter_bar`、富单元格渲染器总表与操作栏用法。
+- [扩展组件](extending.md) 补充：前端交互事件（`xf:action` / `xf:switch` / `xf:cell-input` / `data-xf-event` / `xf:copy`）、
+  单元格渲染器扩展与 `XFAdmin` API 速查。
+- [组件详细参考](components-reference.md) 补充 Tabs（footer/form/badge）与 Menu（箭头/徽标）条目。
+
+### 测试
+
+- `tests/smoke.php` 新增 `DataSet` 服务端处理、`XfAdmin::dataResponse`、Tabs（footer/form/badge）、Menu（箭头/徽标）、
+  DataTable（filter_bar/富单元格）的回归断言，全量冒烟通过。
+
+---
+
 ## 重要变更（v1.0.0 维护更新）
 
 本批更新以“与 Composer 包名 `zxf/xfadmin` 完全一致、并修复资源加载”为目标：
@@ -27,6 +90,23 @@
 - `demo/index.php` 现在在脚本内直接自托管 `/zxf/xfadmin/*` 请求（映射到 `resources/assets`，带正确
   Content-Type 与缓存头），无需手动发布即可在浏览器正常加载 CSS/JS。
 - `demo/router.php` 同步适配新前缀，并增加路径穿越（`..`）防护。
+
+### 修复：Laravel 项目中所有 JS/CSS/图片资源 404
+
+- 根因：Laravel 应用没有像 `demo/index.php` 那样的自托管拦截，资源仅在执行
+  `vendor:publish --tag=xfadmin-assets` 发布到 `public/zxf/xfadmin` 后才可达；未发布时
+  `/zxf/xfadmin/*` 请求进入 Laravel 路由却无匹配项，导致全部 404。
+- 新增 `zxf\XfAdmin\Laravel\AssetController` 与 `XfAdminServiceProvider::boot()` 中的自动托管路由：
+  请求到达时若 `public/zxf/xfadmin` 不存在对应静态文件，自动从包内 `resources/assets` 流式返回
+  （带正确 Content-Type 与缓存头，含路径穿越 `..` 防护），**实现 Laravel 开箱即用、无需发布**。
+- 已发布的静态文件由 Web 服务器直接服务、路由不命中；仅发布部分资源时，缺失文件自动回退到包内，无需重新全量发布。
+- 控制器参照 `zxf/trace` 的 `AssetController` 实现强化：
+  - 采用「控制器方法」而非闭包路由，确保 `route:cache` / `optimize` 能安全序列化（避免递归序列化
+    应用容器导致内存耗尽）；
+  - 路由层 + 控制器层**双重扩展名白名单**，仅放行静态资源（css/js/svg/png/jpg/gif/ico/json/
+    map/woff/woff2/ttf 等），杜绝 `.php` 等被当作资源输出；
+  - 新增 **ETag + 304 Not Modified** 与 **Cache-Control: max-age=31536000**（1 年）强缓存。
+- ThinkPHP 暂无自动托管路由，仍需 `php think xfadmin:publish`。
 
 ### 修复：插件样式在 head 之后丢失
 

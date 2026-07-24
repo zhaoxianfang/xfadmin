@@ -48,6 +48,18 @@ class XfAdminServiceProvider extends ServiceProvider
             ], 'xfadmin-config');
         }
 
+        // 资源自动托管：未发布（或未完全发布）资源时，把 `assets_url` 前缀下的请求直接映射到
+        // 包内 resources/assets 流式返回，开箱即用（与 demo/index.php 行为一致）。
+        // 发布到 public 后由 Web 服务器直接服务，本路由不会命中；缺失文件自动回退。
+        // 仅在本地前缀时注册（远程 CDN 前缀无需、也不能自托管）。
+        // 路由层 + 控制器层双重限制扩展名白名单，杜绝 .php 等被当作资源输出。
+        $prefix = AssetController::prefix();
+        if ($prefix !== '' && ! preg_match('#^https?://#', $prefix)) {
+            \Illuminate\Support\Facades\Route::get($prefix . '/{path}', [AssetController::class, 'serve'])
+                ->where('path', '(?i).*\.(css|js|mjs|map|json|svg|png|jpe?g|gif|ico|webp|avif|woff2?|ttf|eot|otf)$')
+                ->name('xfadmin.assets');
+        }
+
         Blade::directive('xfHead', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::head(); ?>");
         Blade::directive('xfScripts', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::scripts(); ?>");
         Blade::directive('xf', fn ($expression) => "<?php echo \\zxf\XfAdmin\\XfAdmin::component({$expression}); ?>");
