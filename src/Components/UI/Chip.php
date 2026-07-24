@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\UI;
+namespace zxf\XfAdmin\Components\UI;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 标签/胶囊（Chip / Tag）—— 可带头像、图标、关闭按钮
@@ -43,7 +43,7 @@ class Chip extends Component
 
         $html = '<' . $tag . $this->attrs($attrs) . '>';
         if ($this->get('avatar')) {
-            $html .= '<img src="' . $this->e(\XfAdmin\XfAdmin::asset('images/' . ltrim((string) $this->get('avatar'), '/'))) . '" class="rounded-circle" width="20" height="20" alt="">';
+            $html .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::asset('images/' . ltrim((string) $this->get('avatar'), '/'))) . '" class="rounded-circle" width="20" height="20" alt="">';
         } elseif ($this->get('icon')) {
             $html .= '<i class="' . $this->e($this->get('icon')) . '"></i>';
         }

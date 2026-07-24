@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Form;
+namespace zxf\XfAdmin\Components\Form;
 
-use XfAdmin\Components\Form\Concerns\FieldWrapper;
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 输入掩码（Inputmask，form-pickers.html / form-other-plugins.html）

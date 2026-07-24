@@ -34,7 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "XfAdmin\\": "src/"
+            "zxf\\XfAdmin\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -42,21 +42,21 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "XfAdmin\\Tests\\": "tests/"
+            "zxf\\XfAdmin\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "XfAdmin\\Laravel\\XfAdminServiceProvider"
+                "zxf\\XfAdmin\\Laravel\\XfAdminServiceProvider"
             ],
             "aliases": {
-                "XfAdmin": "XfAdmin\\Laravel\\Facades\\XfAdmin"
+                "XfAdmin": "zxf\\XfAdmin\\Laravel\\Facades\\XfAdmin"
             }
         },
         "think": {
             "services": [
-                "XfAdmin\\ThinkPHP\\Service"
+                "zxf\\XfAdmin\\ThinkPHP\\Service"
             ],
             "config": {
                 "xfadmin": "config/xfadmin.php"

@@ -42,7 +42,7 @@
 | `glightbox` | 图片灯箱 | — |
 | `jstree` | 树形 | jquery |
 
-> 完整句柄见 `XfAdmin\Assets\Assets::PLUGINS`。
+> 完整句柄见 `zxf\XfAdmin\Assets\Assets::PLUGINS`。
 
 基础资源（Bootstrap、模板核心样式与脚本）随 `vendors.min.css`、`app.min.css`、`xfadmin.css`、`config.js`、`app.js`、`xfadmin.js` 由整页组件始终输出。
 
@@ -71,18 +71,18 @@ $assets->inlineJs('console.log("ready")');// 内联脚本（可传第二参 key 
 
 ## 资源基础路径
 
-由配置 `xfadmin.assets_url` 决定（默认 `/vendor/xfadmin`）。发布资源后即对应 `public/vendor/xfadmin`。可在配置中改为 CDN 前缀或版本化路径。
+由配置 `xfadmin.assets_url` 决定（默认 `/zxf/xfadmin`）。发布资源后即对应 `public/zxf/xfadmin`。可在配置中改为 CDN 前缀或版本化路径。
 
 ```php
 // config/xfadmin.php
-'assets_url' => '/vendor/xfadmin',
+'assets_url' => '/zxf/xfadmin',
 'version'    => '1.0.0',   // 追加 ?v= 做缓存刷新
 ```
 
 ### 使用 `XfAdmin::asset()` 生成资源 URL
 
 ```php
-// 自动拼接 assets_url 与 version，输出：/vendor/xfadmin/css/xfadmin.css?v=1.0.0
+// 自动拼接 assets_url 与 version，输出：/zxf/xfadmin/css/xfadmin.css?v=1.0.0
 <link rel="stylesheet" href="<?= XfAdmin::asset('css/xfadmin.css') ?>">
 ```
 
@@ -97,3 +97,42 @@ $assets->inlineJs('console.log("ready")');// 内联脚本（可传第二参 key 
 ## 版本号缓存
 
 所有资源 URL 自动附加 `?v={version}`，升级时改配置即可让浏览器刷新缓存。
+
+## 排错：资源全部 404
+
+若浏览器控制台出现 `GET /zxf/xfadmin/css/xfadmin.css` 等 **全部 404**，说明请求的资源路径与文件实际位置不一致。按使用场景逐项核对：
+
+### 1. Laravel / ThinkPHP（框架）
+
+资源需先发布到 `public/zxf/xfadmin`（`assets_url` 的默认值即指向此处）：
+
+```bash
+# Laravel
+php artisan vendor:publish --tag=xfadmin-assets
+# ThinkPHP
+php think xfadmin:publish
+```
+
+发布后 `public/zxf/xfadmin/css/xfadmin.css` 等文件必须存在。若你改过 `assets_url`，
+请确保该目录与 `assets_url` 前缀一一对应（例如改为 CDN 时，文件必须能在 CDN 上以同样的相对路径访问）。
+
+### 2. 原生 PHP 演示（`demo/`）
+
+`demo/index.php` 已内置**自托管能力**：当请求路径以 `/zxf/xfadmin/` 开头时，直接把
+`resources/assets/` 下的对应文件流式返回（带正确的 Content-Type 与缓存头）。因此：
+
+- 直接以 `php -S 127.0.0.1:8900 demo/index.php` 运行即可，**无需手动发布**；
+- 也可用内置服务器路由：`php -S 127.0.0.1:8900 demo/router.php`（行为一致）。
+
+> 若仍 404，请确认访问地址确实以 `/zxf/xfadmin/` 为前缀，且项目根目录下 `resources/assets`
+> 目录完整（包含所有 `css/`、`js/`、`plugins/` 等）。
+
+### 3. 自定义资源路径
+
+`assets_url` 既可为本地路径（如 `/zxf/xfadmin`），也可为远程 CDN（如 `https://cdn.example.com/xfadmin`）。
+无论哪种，文件都必须在该前缀下**物理可达**，否则必然 404。
+
+### 4. 固定 `?v=1.0.0` 拼参导致 404？
+
+不会。`?v=...` 只是查询串，Web 服务器按路径 `/zxf/xfadmin/css/xfadmin.css` 寻址，忽略 `?` 之后的版本号。
+若路径本身存在则返回 200，浏览器再按 `?v` 做缓存区分。

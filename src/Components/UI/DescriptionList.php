@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\UI;
+namespace zxf\XfAdmin\Components\UI;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 描述列表（键值对，详情页常用：invoice / product / order 详情）

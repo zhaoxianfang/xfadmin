@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Chart;
+namespace zxf\XfAdmin\Components\Chart;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * Leaflet 交互地图（maps-leaflet.html）

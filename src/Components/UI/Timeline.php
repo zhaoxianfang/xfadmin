@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\UI;
+namespace zxf\XfAdmin\Components\UI;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * 时间线

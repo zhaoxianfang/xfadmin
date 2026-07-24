@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\UI;
+namespace zxf\XfAdmin\Components\UI;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 加载/忙碌按钮（misc-loading-buttons）—— 点击后显示 spinner，避免重复提交

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Layout;
+namespace zxf\XfAdmin\Components\Layout;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * 空状态占位（pages-empty.html / pages-search-results.html 无结果）
@@ -34,7 +34,7 @@ class EmptyState extends Component
     {
         $html = '<div' . $this->attrs(['class' => 'text-center py-5']) . '>';
         if ($this->get('image')) {
-            $html .= '<img src="' . $this->e(\XfAdmin\XfAdmin::asset('images/' . ltrim((string) $this->get('image'), '/'))) . '" alt="" style="max-height:180px;" class="mb-3">';
+            $html .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::asset('images/' . ltrim((string) $this->get('image'), '/'))) . '" alt="" style="max-height:180px;" class="mb-3">';
         } elseif ($this->get('icon')) {
             $html .= '<i class="' . $this->e($this->get('icon')) . '" style="font-size:64px;line-height:1;" ></i>';
         }

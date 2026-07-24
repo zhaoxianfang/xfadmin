@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Misc;
+namespace zxf\XfAdmin\Components\Misc;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 可拖拽排序列表（SortableJS，支持跨列表拖拽、把手、嵌套）

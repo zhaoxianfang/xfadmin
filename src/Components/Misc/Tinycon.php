@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Misc;
+namespace zxf\XfAdmin\Components\Misc;
 
-use XfAdmin\Components\Component;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 浏览器标签角标通知（misc-live-favicon）—— 在 favicon 上显示未读数量

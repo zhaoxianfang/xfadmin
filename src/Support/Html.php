@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Support;
+namespace zxf\XfAdmin\Support;
 
 /**
  * HTML 构建工具：转义 / 属性拼装 / class 合并 / JSON 属性

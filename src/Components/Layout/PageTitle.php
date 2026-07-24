@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Layout;
+namespace zxf\XfAdmin\Components\Layout;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * 页面标题 + 面包屑

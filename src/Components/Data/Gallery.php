@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Data;
+namespace zxf\XfAdmin\Components\Data;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 图片画廊 / 作品集（pages-gallery.html）—— 支持 masonry 瀑布流与 lightbox 灯箱
  *
  * XfAdmin::gallery([
  *     'items' => [
- *         ['src' => 'images/01.jpg', 'thumb' => 'images/01.jpg', 'title' => '项目A', 'caption' => '说明', 'group' => 'design'],
- *         ['src' => 'images/02.jpg', 'title' => '项目B', 'group' => 'photo'],
+ *         ['src' => 'images/gallery/1.jpg', 'thumb' => 'images/gallery/1.jpg', 'title' => '项目A', 'caption' => '说明', 'group' => 'design'],
+ *         ['src' => 'images/gallery/2.jpg', 'title' => '项目B', 'group' => 'photo'],
  *     ],
  *     'masonry'  => true,        // 瀑布流布局（需 masonry 插件）
  *     'lightbox' => true,        // 点击放大（需 glightbox）

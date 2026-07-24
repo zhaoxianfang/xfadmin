@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\ThinkPHP;
+namespace zxf\XfAdmin\ThinkPHP;
 
 use think\Service as BaseService;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * ThinkPHP 8+ 服务

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Data;
+namespace zxf\XfAdmin\Components\Data;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 商品卡片（ecommerce-products-grid.html）
@@ -61,7 +61,7 @@ class ProductCard extends Component
         $html .= '<h5 class="my-1"><a href="' . $this->e($this->get('href')) . '" class="text-body">' . $this->e($this->get('title')) . '</a></h5>';
 
         if ($this->get('rating') !== null) {
-            $html .= (new \XfAdmin\Components\UI\Rating([
+            $html .= (new \zxf\XfAdmin\Components\UI\Rating([
                 'value' => (float) $this->get('rating'),
                 'count' => $this->get('rating_count'),
                 'size'  => 'fs-6',

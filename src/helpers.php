@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use XfAdmin\Components\Component;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\XfAdmin;
 
 if (! function_exists('xf_admin')) {
     /**

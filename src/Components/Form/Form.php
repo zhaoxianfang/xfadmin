@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Form;
+namespace zxf\XfAdmin\Components\Form;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 表单容器（支持浏览器原生校验样式 / AJAX 提交 / 行内布局）

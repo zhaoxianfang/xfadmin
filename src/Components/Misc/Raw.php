@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Misc;
+namespace zxf\XfAdmin\Components\Misc;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * 原样输出（用于把任意 HTML 混入组件树，同时可声明所需插件资源）
@@ -32,7 +32,7 @@ class Raw extends Component
 
     protected function html(): string
     {
-        $assets = \XfAdmin\Assets\Assets::instance();
+        $assets = \zxf\XfAdmin\Assets\Assets::instance();
         if ($this->get('js') !== null) {
             $assets->inlineJs((string) $this->get('js'), $this->get('js_key'));
         }

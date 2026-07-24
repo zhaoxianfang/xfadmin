@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Data;
+namespace zxf\XfAdmin\Components\Data;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * 文件管理器网格（file-manager.html）

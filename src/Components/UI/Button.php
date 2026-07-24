@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\UI;
+namespace zxf\XfAdmin\Components\UI;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 按钮（支持 soft/outline/ghost 风格、图标、加载态 Ladda、链接按钮、模态/抽屉触发）

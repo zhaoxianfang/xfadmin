@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components;
+namespace zxf\XfAdmin\Components;
 
 use Stringable;
-use XfAdmin\Assets\Assets;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Assets\Assets;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 组件基类

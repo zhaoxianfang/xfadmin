@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Misc;
+namespace zxf\XfAdmin\Components\Misc;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 文本对比（misc-text-diff）—— 基于本地 jsdiff 渲染行内/并排差异

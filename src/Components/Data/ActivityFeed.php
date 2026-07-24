@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Data;
+namespace zxf\XfAdmin\Components\Data;
 
-use XfAdmin\Components\Component;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 动态/活动流（project-activity.html）

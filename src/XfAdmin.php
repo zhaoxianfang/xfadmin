@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin;
+namespace zxf\XfAdmin;
 
 use InvalidArgumentException;
-use XfAdmin\Assets\Assets;
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Assets\Assets;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * XfAdmin 组件工厂 / 全局配置入口
@@ -247,9 +247,9 @@ final class XfAdmin
     {
         if ($config !== null) {
             self::$config = array_replace_recursive(self::$config, $config);
-        if (isset($config['assets_url'])) {
-            Assets::instance()->setBaseUrl((string) $config['assets_url']);
-        }
+            if (isset($config['assets_url'])) {
+                Assets::instance()->setBaseUrl((string) $config['assets_url']);
+            }
             if (array_key_exists('version', $config)) {
                 Assets::instance()->setVersion($config['version'] ?: null);
             }

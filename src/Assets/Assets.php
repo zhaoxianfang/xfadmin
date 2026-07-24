@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Assets;
+namespace zxf\XfAdmin\Assets;
 
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 资源管理器（单例）
@@ -18,7 +18,7 @@ final class Assets
 {
     private static ?self $instance = null;
 
-    private string $baseUrl = '/vendor/xfadmin';
+    private string $baseUrl = '/zxf/xfadmin';
     private ?string $version = null;
 
     /** @var array<string,bool> 已加载插件 */
@@ -34,6 +34,11 @@ final class Assets
 
     private bool $headRendered = false;
     private bool $scriptsRendered = false;
+
+    /** head() 已输出的 CSS（用于 scripts() 兜底补输出渲染期新注册的 CSS） */
+    private array $headCssEmitted = [];
+    /** head() 已输出的内联 CSS key */
+    private array $headInlineCssEmitted = [];
 
     /**
      * 插件注册表：name => [css[], js[], deps[]]
@@ -277,6 +282,10 @@ final class Assets
             $html .= "<style>\n{$css}\n</style>\n";
         }
 
+        // 记录 head() 已输出的 CSS，便于 scripts() 兜底补输出渲染期间新注册的 CSS
+        $this->headCssEmitted = array_keys($this->css);
+        $this->headInlineCssEmitted = array_keys($this->inlineCss);
+
         return $html;
     }
 
@@ -297,6 +306,18 @@ final class Assets
 
         $html .= '<script src="' . Html::e($this->url('js/app.js')) . '"></script>' . "\n";
         $html .= '<script src="' . Html::e($this->url('js/xfadmin.js')) . '"></script>' . "\n";
+
+        // 兜底：head() 之后组件渲染期新注册的 CSS / 内联 CSS（避免插件样式丢失）
+        foreach (array_keys($this->css) as $css) {
+            if (! in_array($css, $this->headCssEmitted, true)) {
+                $html .= '<link href="' . Html::e($this->url($css)) . '" rel="stylesheet" type="text/css">' . "\n";
+            }
+        }
+        foreach ($this->inlineCss as $key => $css) {
+            if (! in_array($key, $this->headInlineCssEmitted, true)) {
+                $html .= "<style>\n{$css}\n</style>\n";
+            }
+        }
 
         foreach ($this->inlineJs as $js) {
             $html .= "<script>\n{$js}\n</script>\n";

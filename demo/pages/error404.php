@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 http_response_code(404);
 

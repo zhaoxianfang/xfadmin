@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Misc;
+namespace zxf\XfAdmin\Components\Misc;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * 树形视图（jsTree，支持复选框、拖拽、无限层级）

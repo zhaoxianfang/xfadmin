@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Chart;
+namespace zxf\XfAdmin\Components\Chart;
 
-use XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Component;
 
 /**
  * Apache ECharts 图表（支持全部 ECharts 图表类型与配置）

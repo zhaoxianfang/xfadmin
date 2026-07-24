@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Laravel;
+namespace zxf\XfAdmin\Laravel;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * Laravel 11+ 服务提供者
@@ -40,7 +40,7 @@ class XfAdminServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../../resources/assets' => public_path('vendor/xfadmin'),
+                __DIR__ . '/../../resources/assets' => public_path('zxf/xfadmin'),
             ], 'xfadmin-assets');
 
             $this->publishes([
@@ -48,8 +48,8 @@ class XfAdminServiceProvider extends ServiceProvider
             ], 'xfadmin-config');
         }
 
-        Blade::directive('xfHead', fn () => "<?php echo \\XfAdmin\\XfAdmin::head(); ?>");
-        Blade::directive('xfScripts', fn () => "<?php echo \\XfAdmin\\XfAdmin::scripts(); ?>");
-        Blade::directive('xf', fn ($expression) => "<?php echo \\XfAdmin\\XfAdmin::component({$expression}); ?>");
+        Blade::directive('xfHead', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::head(); ?>");
+        Blade::directive('xfScripts', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::scripts(); ?>");
+        Blade::directive('xf', fn ($expression) => "<?php echo \\zxf\XfAdmin\\XfAdmin::component({$expression}); ?>");
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Layout;
+namespace zxf\XfAdmin\Components\Layout;
 
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 维护中页（maintenance.html）

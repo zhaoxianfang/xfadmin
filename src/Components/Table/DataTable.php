@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Table;
+namespace zxf\XfAdmin\Components\Table;
 
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 全功能数据表格（基于 DataTables，前端由 xfadmin.js 自动初始化）

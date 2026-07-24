@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Layout;
+namespace zxf\XfAdmin\Components\Layout;
 
-use XfAdmin\Components\Component;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 锁屏页（auth-lock-screen.html）—— 全屏锁定，输入密码解锁

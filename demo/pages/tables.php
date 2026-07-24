@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 $rows = [];
 $names = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十'];

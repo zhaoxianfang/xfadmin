@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Laravel\Facades;
+namespace zxf\XfAdmin\Laravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @mixin \XfAdmin\XfAdmin
+ * @mixin \zxf\XfAdmin\XfAdmin
  */
 class XfAdmin extends Facade
 {
@@ -19,6 +19,6 @@ class XfAdmin extends Facade
     public static function __callStatic($method, $args)
     {
         // 全部转发到静态工厂（组件均为无状态工厂方法）
-        return \XfAdmin\XfAdmin::$method(...$args);
+        return \zxf\XfAdmin\XfAdmin::$method(...$args);
     }
 }

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Form;
+namespace zxf\XfAdmin\Components\Form;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
 
 /**
  * 范围滑块（noUiSlider）

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\ThinkPHP;
+namespace zxf\XfAdmin\ThinkPHP;
 
 use think\console\Command;
 use think\console\Input;
@@ -10,19 +10,19 @@ use think\console\Output;
 
 /**
  * php think xfadmin:publish
- * 将扩展包静态资源发布到 public/vendor/xfadmin
+ * 将扩展包静态资源发布到 public/zxf/xfadmin
  */
 class PublishCommand extends Command
 {
     protected function configure(): void
     {
-        $this->setName('xfadmin:publish')->setDescription('发布 XfAdmin 静态资源到 public/vendor/xfadmin');
+        $this->setName('xfadmin:publish')->setDescription('发布 XfAdmin 静态资源到 public/zxf/xfadmin');
     }
 
     protected function execute(Input $input, Output $output): int
     {
         $source = realpath(__DIR__ . '/../../resources/assets');
-        $target = $this->app->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'xfadmin';
+        $target = $this->app->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'zxf' . DIRECTORY_SEPARATOR . 'xfadmin';
 
         if ($source === false) {
             $output->error('未找到资源目录');

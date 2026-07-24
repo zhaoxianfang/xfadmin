@@ -5,10 +5,10 @@
  */
 return [
     // 静态资源基础 URL（发布后指向 public 下的目录）
-    // Laravel: php artisan vendor:publish --tag=xfadmin-assets  => public/vendor/xfadmin
-    // ThinkPHP: php think xfadmin:publish                       => public/vendor/xfadmin
+    // Laravel: php artisan vendor:publish --tag=xfadmin-assets  => public/zxf/xfadmin
+    // ThinkPHP: php think xfadmin:publish                       => public/zxf/xfadmin
     // 也可指向远程 CDN，例如 https://cdn.example.com/xfadmin
-    'assets_url' => '/vendor/xfadmin',
+    'assets_url' => '/zxf/xfadmin',
 
     // 资源版本号（附加 ?v= 用于浏览器缓存刷新）
     'version' => '1.0.0',

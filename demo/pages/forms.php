@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 echo XfAdmin::page([
     'title'       => '表单 - XfAdmin Demo',

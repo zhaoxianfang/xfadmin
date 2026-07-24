@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Form;
+namespace zxf\XfAdmin\Components\Form;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Components\Form\Concerns\FieldWrapper;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 文件上传（原生 / Dropzone 拖拽 / FilePond）

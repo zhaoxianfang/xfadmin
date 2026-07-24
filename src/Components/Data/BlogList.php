@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Data;
+namespace zxf\XfAdmin\Components\Data;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 博客文章列表（blog.html / blog-details.html）—— 卡片网格或列表视图
@@ -14,11 +14,11 @@ use XfAdmin\XfAdmin;
  * XfAdmin::blogList([
  *     'items' => [
  *         [
- *             'image'   => 'images/blog/1.jpg',
+ *             'image'   => 'images/blog/blog-1.jpg',
  *             'category'=> '技术',
  *             'title'   => '如何构建后台系统',
  *             'excerpt' => '本文介绍……',
- *             'author'  => ['name' => '张三', 'avatar' => 'users/avatar-1.jpg'],
+ *             'author'  => ['name' => '张三', 'avatar' => 'users/user-2.jpg'],
  *             'date'    => '2026-07-01',
  *             'comments'=> 12,
  *             'views'   => 320,

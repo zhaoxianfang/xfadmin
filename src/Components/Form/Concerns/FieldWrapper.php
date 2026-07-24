@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Form\Concerns;
+namespace zxf\XfAdmin\Components\Form\Concerns;
 
 /**
  * 表单字段通用包装：label / 帮助文本 / 校验反馈 / 外层间距

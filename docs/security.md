@@ -36,7 +36,7 @@
 在组件内联 JS（`inlineJs`）里需要把组件参数（尤其是 `url`、`id` 等）拼进 `<script>` 块时，**禁止**直接 `json_encode($v)`，否则值里若含 `</script>`、双引号或换行会破坏脚本甚至注入。正确写法：
 
 ```php
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Support\Html;
 
 $js = 'var url=' . Html::scriptJson($url) . ';';   // ✅ 带 JSON_HEX_TAG
 // 禁止：'var url=' . json_encode($url) . ';'      // ❌ 可被 </script> 截断

@@ -67,14 +67,14 @@ composer require zxf/xfadmin
 服务提供者与门面通过 `extra.laravel` 自动注册。发布静态资源与配置：
 
 ```bash
-php artisan vendor:publish --tag=xfadmin-assets   # 发布到 public/vendor/xfadmin
+php artisan vendor:publish --tag=xfadmin-assets   # 发布到 public/zxf/xfadmin
 php artisan vendor:publish --tag=xfadmin-config   # 发布配置（可选）
 ```
 
 在控制器中：
 
 ```php
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 public function index()
 {
@@ -98,7 +98,7 @@ public function index()
 
 ```php
 return [
-    \XfAdmin\ThinkPHP\Service::class,
+    \zxf\XfAdmin\ThinkPHP\Service::class,
 ];
 ```
 
@@ -111,6 +111,16 @@ php think xfadmin:publish
 ### 原生 PHP（独立使用）
 
 参考 `demo/` 目录：配置 `XfAdmin::config()` 后直接 `echo XfAdmin::page([...])` 即可，无需框架。
+
+运行演示（资源会自动从 `/zxf/xfadmin` 前缀自托管，无需发布）：
+
+```bash
+php -S 127.0.0.1:8900 demo/index.php     # 直接运行
+# 或：php -S 127.0.0.1:8900 demo/router.php
+```
+
+若浏览器中 CSS/JS 全部 404，请检查资源前缀是否为 `/zxf/xfadmin`，以及资源是否发布/自托管（见
+[资源与去重机制 · 排错](docs/assets.md)）。
 
 ---
 
@@ -168,7 +178,7 @@ echo XfAdmin::assets()->scripts();  // 放在 </body> 前
 ```php
 XfAdmin::has('dataTable');          // 是否已注册
 XfAdmin::version();                 // '1.0.0'
-XfAdmin::asset('css/xfadmin.css');  // /vendor/xfadmin/css/xfadmin.css?v=1.0.0
+XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=1.0.0
 ```
 
 ---
@@ -185,7 +195,7 @@ XfAdmin::asset('css/xfadmin.css');  // /vendor/xfadmin/css/xfadmin.css?v=1.0.0
 
 ## 🧩 扩展自定义组件
 
-继承 `XfAdmin\Component` 实现 `render()`，调用 `XfAdmin::extend('myWidget', MyWidget::class)` 即可像内置组件一样使用。
+继承 `zxf\XfAdmin\Component` 实现 `render()`，调用 `XfAdmin::extend('myWidget', MyWidget::class)` 即可像内置组件一样使用。
 Laravel 用户可注册 Blade 指令与服务提供者。详见 [自定义与扩展](docs/extending.md) 与 [ThinkPHP 集成](docs/thinkphp.md)。
 
 ---
@@ -195,6 +205,7 @@ Laravel 用户可注册 Blade 指令与服务提供者。详见 [自定义与扩
 | 文档 | 说明 |
 |------|------|
 | [组件总览](docs/components.md) | 全部 99 个组件的参数、事件与门面全局方法 |
+| [组件详细参考](docs/components-reference.md) | 每个组件的数据输入/输出、前端控件（data-xf）与可复制用法示例 |
 | [布局与页面](docs/layout.md) | `page` / `authPage` / `errorPage` 等整页骨架与布局变体 |
 | [表格](docs/tables.md) | 静态 `table` 与全功能 `dataTable` |
 | [表单](docs/forms.md) | 字段、富文本、上传、向导、密码强度等 |

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 echo XfAdmin::authPage([
     'title'      => '登录 - XfAdmin Demo',

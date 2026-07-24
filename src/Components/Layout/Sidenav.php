@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Layout;
+namespace zxf\XfAdmin\Components\Layout;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Components\Navigation\Menu;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Navigation\Menu;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 侧边栏（Logo + 可选用户卡片 + 无限极菜单）

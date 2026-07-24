@@ -14,7 +14,7 @@ composer require xfadmin/xfadmin
 
 ```php
 return [
-    \XfAdmin\ThinkPHP\Service::class,
+    \zxf\XfAdmin\ThinkPHP\Service::class,
 ];
 ```
 
@@ -24,7 +24,7 @@ return [
 php think xfadmin:publish
 ```
 
-资源会复制到 `public/vendor/xfadmin`（对应默认 `assets_url`）。
+资源会复制到 `public/zxf/xfadmin`（对应默认 `assets_url`）。
 
 ## 配置
 
@@ -32,7 +32,7 @@ php think xfadmin:publish
 
 ```php
 return [
-    'assets_url' => '/vendor/xfadmin',
+    'assets_url' => '/zxf/xfadmin',
     'version'    => '1.0.0',
     'theme'      => 'light',
     'layout'     => 'vertical',
@@ -44,7 +44,7 @@ return [
 ```php
 namespace app\controller;
 
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\XfAdmin;
 
 class Index
 {
@@ -77,7 +77,7 @@ ThinkPHP 模板里可直接调用（若已注册助手函数）：
 或在模板顶部 `use`：
 
 ```php
-<?php use XfAdmin\XfAdmin; ?>
+<?php use zxf\XfAdmin\XfAdmin; ?>
 <?= XfAdmin::dataTable(['columns' => ['ID', '名称'], 'data' => $list]) ?>
 ```
 
@@ -96,6 +96,6 @@ XfAdmin::form(['csrf' => false, 'fields' => [...]]);
 | 服务注册 | 自动（extra.laravel） | 手动加 `Service` |
 | 资源发布 | `vendor:publish` | `php think xfadmin:publish` |
 | CSRF | `@csrf` token | `token()` |
-| 门面 | `XfAdmin\Laravel\Facades\XfAdmin` | 直接用 `XfAdmin\XfAdmin` |
+| 门面 | `zxf\XfAdmin\Laravel\Facades\XfAdmin` | 直接用 `zxf\XfAdmin\XfAdmin` |
 
 其余组件 API 完全一致。

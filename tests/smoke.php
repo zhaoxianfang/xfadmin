@@ -7,8 +7,8 @@ declare(strict_types=1);
  */
 
 spl_autoload_register(function (string $class): void {
-    if (str_starts_with($class, 'XfAdmin\\')) {
-        $path = __DIR__ . '/../src/' . str_replace('\\', '/', substr($class, 8)) . '.php';
+    if (str_starts_with($class, 'zxf\XfAdmin\\')) {
+        $path = __DIR__ . '/../src/' . str_replace('\\', '/', substr($class, 12)) . '.php';
         if (is_file($path)) {
             require $path;
         }
@@ -16,9 +16,9 @@ spl_autoload_register(function (string $class): void {
 });
 require __DIR__ . '/../src/helpers.php';
 
-use XfAdmin\Assets\Assets;
-use XfAdmin\Support\Html;
-use XfAdmin\XfAdmin;
+use zxf\XfAdmin\Assets\Assets;
+use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 XfAdmin::config(require __DIR__ . '/../config/xfadmin.php');
 
@@ -188,7 +188,7 @@ if (trim($nested) === '') {
 
 echo "\n== 资源去重 ==\n";
 Assets::reset();
-XfAdmin::config(['assets_url' => '/vendor/xfadmin', 'version' => '1.0.0']);
+XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => '1.0.0']);
 // 同一组件渲染 3 次 + 多组件共用插件
 XfAdmin::dataTable(['columns' => ['a' => 'A'], 'data' => []])->render();
 XfAdmin::dataTable(['columns' => ['a' => 'A'], 'data' => []])->render();
@@ -215,9 +215,18 @@ $assert(substr_count($head, 'vendors.min.css') === 1, 'head 含 vendors.min.css 
 $assert(substr_count($scripts, 'xfadmin.js') === 1, 'scripts 含 xfadmin.js 一次');
 $assert(str_contains($head, '?v=1.0.0'), '版本号附加');
 
+// 兜底：head() 先于组件渲染时，渲染期注册的插件 CSS 不应丢失（修复样式丢失）
+Assets::reset();
+XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => '1.0.0']);
+$headLate    = Assets::instance()->head(); // 此时尚无任何插件 CSS
+XfAdmin::dataTable(['columns' => [['key' => 'a', 'title' => 'A']], 'data' => []])->render();
+$scriptsLate = Assets::instance()->scripts();
+$assert(str_contains($scriptsLate, 'datatables'), 'head() 之后渲染的 dataTable 插件 CSS 经 scripts() 兜底输出（修复样式丢失）');
+$assert(! str_contains($headLate, 'datatables'), 'head() 先于渲染时插件 CSS 不在 head（验证兜底路径生效）');
+
 echo "\n== 整页渲染 ==\n";
 Assets::reset();
-XfAdmin::config(['assets_url' => '/vendor/xfadmin']);
+XfAdmin::config(['assets_url' => '/zxf/xfadmin']);
 $check('page(vertical)', fn () => XfAdmin::page([
     'title'      => '仪表盘',
     'menu'       => $menu,

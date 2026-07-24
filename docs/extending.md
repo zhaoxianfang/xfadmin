@@ -4,13 +4,13 @@
 
 ## 一、编写自定义组件
 
-继承 `XfAdmin\Components\Component`，实现 `defaults()` 与 `html()`：
+继承 `zxf\XfAdmin\Components\Component`，实现 `defaults()` 与 `html()`：
 
 ```php
 namespace App\Admin\Components;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 class PriceTag extends Component
 {
@@ -71,8 +71,8 @@ protected function html(): string
 {
     XfAdmin::assets()
         ->plugin('jquery')                                 // 复用内置句柄
-        ->css('/vendor/xfadmin/plugins/my-lib/my.css')     // 追加自有 CSS
-        ->js('/vendor/xfadmin/plugins/my-lib/my.js')       // 追加自有 JS
+        ->css('/zxf/xfadmin/plugins/my-lib/my.css')     // 追加自有 CSS
+        ->js('/zxf/xfadmin/plugins/my-lib/my.js')       // 追加自有 JS
         ->inlineJs('MyLib.init("#' . $this->resolveId('ml') . '")', 'mylib-' . $this->get('id'));
 
     return '<div id="' . $this->e($this->get('id')) . '"></div>';
@@ -91,7 +91,7 @@ protected function html(): string
 XfAdmin::extend('card', \App\Admin\Components\MyCard::class);
 ```
 
-建议 `MyCard extends \XfAdmin\Components\UI\Card` 复用原逻辑。
+建议 `MyCard extends \zxf\XfAdmin\Components\UI\Card` 复用原逻辑。
 
 ---
 
@@ -100,7 +100,7 @@ XfAdmin::extend('card', \App\Admin\Components\MyCard::class);
 ```php
 // config/xfadmin.php
 return [
-    'assets_url' => '/vendor/xfadmin',   // 资源基础路径（可改为 CDN）
+    'assets_url' => '/zxf/xfadmin',   // 资源基础路径（可改为 CDN）
     'version'    => '1.0.0',             // 资源缓存版本号（?v=）
     'theme'      => [                     // 默认外观（运行时可被 config.js 持久化覆盖）
         'skin'   => 'classic',

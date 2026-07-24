@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Form;
+namespace zxf\XfAdmin\Components\Form;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Components\Form\Concerns\FieldWrapper;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 密码强度计（misc-pass-meter）
@@ -96,7 +96,7 @@ class PasswordStrength extends Component
             . 'el.dispatchEvent(new CustomEvent("xf.pw.score",{detail:{score:r.s,ok:r.ok},bubbles:true}));'
             . 'if(min>0&&el.form){var btn=el.form.querySelector("button[type=submit]");if(btn)btn.disabled=r.s<min;}}'
             . 'el.addEventListener("input",upd);upd();});';
-        \XfAdmin\XfAdmin::assets()->inlineJs($js, 'xf-pw-strength');
+        \zxf\XfAdmin\XfAdmin::assets()->inlineJs($js, 'xf-pw-strength');
 
         return $this->wrapField($html, $id);
     }

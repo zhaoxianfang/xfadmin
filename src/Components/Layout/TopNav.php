@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Layout;
+namespace zxf\XfAdmin\Components\Layout;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Components\Navigation\Menu;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Navigation\Menu;
 
 /**
  * 水平导航（horizontal 布局，配合 <html data-layout="topnav">）

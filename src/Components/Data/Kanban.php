@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace XfAdmin\Components\Data;
+namespace zxf\XfAdmin\Components\Data;
 
-use XfAdmin\Components\Component;
-use XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 看板（project-kanban.html）—— 支持拖拽排序（SortableJS）
@@ -89,7 +89,7 @@ class Kanban extends Component
         if ($members) {
             $html .= '<div class="avatar-group">';
             foreach ($members as $m) {
-                $html .= '<div class="avatar avatar-xs"><img src="' . $this->e(\XfAdmin\XfAdmin::asset('images/' . ltrim((string) $m, '/'))) . '" class="rounded-circle" alt=""></div>';
+                $html .= '<div class="avatar avatar-xs"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::asset('images/' . ltrim((string) $m, '/'))) . '" class="rounded-circle" alt=""></div>';
             }
             $html .= '</div>';
         } else {

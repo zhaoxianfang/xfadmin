@@ -2,6 +2,15 @@
 
 所有组件通过 `XfAdmin::<name>(array $options)` 调用。下表列出全部组件、用途与关键参数。所有组件均支持传入 `id`、`class`、`attributes`（自定义 HTML 属性数组）等通用键。
 
+> 每个组件的**数据输入 / 输出、前端控件（`data-xf`）与可复制用法示例**见 → [组件详细参考](components-reference.md)（由代码反射自动生成，覆盖全部 99 个组件）。
+
+## 数据输入与输出约定
+
+- **输入**：统一为关联数组 `XfAdmin::<name>(['key' => 'val'])`；也支持 `XfAdmin::<name>([])->key('val')` 链式设置（组件均提供同名 setter）。含用户数据的字段一律经 `Html::e()` 转义，防止 XSS。
+- **输出（HTML）**：组件 `render()` 返回 HTML 字符串片段；整页组件（`page` / `authPage` / `errorPage`）返回完整 `<!DOCTYPE html>` 文档。
+- **输出（CSS/JS）**：组件在渲染期声明所需插件资源，`XfAdmin` 自动去重登记到 `head()`（CSS）与 `scripts()`（JS + 初始化脚本）。
+- **前端交互**：需 JS 行为的组件在根元素输出 `data-xf="<widget>"`，由 `xfadmin.js` 或组件内联 `XFAdmin.register` 初始化，并派发 `xf.<name>.*` 标准事件。
+
 ## XfAdmin 门面全局方法
 
 除 `XfAdmin::<name>($options)` 渲染组件外，门面还提供以下全局方法：
@@ -11,7 +20,7 @@
 | `XfAdmin::config(array $cfg)` | 运行时覆盖配置：`assets_url`、`version`、`theme`、`brand`、`defaults`、`footer` 等 |
 | `XfAdmin::page(array $options)` | 快捷渲染整页并返回 `Page` 对象（可继续 `->head()` / `->scripts()`） |
 | `XfAdmin::component(string $name, array $options = [])` | 以字符串别名动态创建组件实例（等价于 `XfAdmin::<name>()`） |
-| `XfAdmin::extend(string $alias, string $class)` | 注册自定义组件类（需继承 `XfAdmin\Component`） |
+| `XfAdmin::extend(string $alias, string $class)` | 注册自定义组件类（需继承 `zxf\XfAdmin\Component`） |
 | `XfAdmin::has(string $alias): bool` | 判断组件 / 别名是否已注册 |
 | `XfAdmin::componentList(): array` | 返回全部已注册组件（别名 => 类名） |
 | `XfAdmin::version(): string` | 返回扩展包版本号（常量 `XfAdmin::VERSION`） |
