@@ -1,0 +1,70 @@
+{
+    "name": "zxf/xfadmin",
+    "description": "XfAdmin - 基于 INSPINIA v4.1.0 的 PHP 管理后台组件化扩展包（99 个组件）。将后台模板拆分为可独立调用的布局/表格/表单/图表/UI 组件，支持数据渲染与按需去重加载资源，纯原生 JS（不依赖 Node.js）、离线可用，支持 Laravel 11/12 与 ThinkPHP 8+。",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "admin",
+        "dashboard",
+        "inspinia",
+        "bootstrap5",
+        "laravel",
+        "thinkphp",
+        "components",
+        "ui-components",
+        "admin-template",
+        "offline",
+        "vanilla-js"
+    ],
+    "authors": [
+        {
+            "name": "zxf"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "suggest": {
+        "laravel/framework": "^11.0|^12.0 - 在 Laravel 11+ 中自动注册服务提供者、Blade 指令与资源发布",
+        "topthink/framework": "^8.0 - 在 ThinkPHP 8+ 中自动注册服务与助手函数"
+    },
+    "autoload": {
+        "psr-4": {
+            "XfAdmin\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "XfAdmin\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "XfAdmin\\Laravel\\XfAdminServiceProvider"
+            ],
+            "aliases": {
+                "XfAdmin": "XfAdmin\\Laravel\\Facades\\XfAdmin"
+            }
+        },
+        "think": {
+            "services": [
+                "XfAdmin\\ThinkPHP\\Service"
+            ],
+            "config": {
+                "xfadmin": "config/xfadmin.php"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "config": {
+        "sort-packages": true
+    }
+}

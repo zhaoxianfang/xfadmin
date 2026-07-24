@@ -1,0 +1,68 @@
+/*!
+ * XfAdmin 组件补充样式（不依赖构建，纯 CSS）
+ * 仅覆盖模板自带样式之外、由本扩展包新增组件所需的样式。
+ */
+
+/* ---------- 步骤条 Stepper ---------- */
+.xf-stepper { display: flex; }
+.xf-stepper-horizontal { flex-direction: row; }
+.xf-stepper-vertical { flex-direction: column; }
+.xf-stepper-item { display: flex; align-items: flex-start; position: relative; flex: 1; }
+.xf-stepper-horizontal .xf-stepper-item { flex-direction: column; align-items: center; text-align: center; }
+.xf-stepper-vertical .xf-stepper-item { padding-bottom: 1.5rem; }
+.xf-stepper-dot {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; flex-shrink: 0; z-index: 2;
+}
+.xf-stepper-vertical .xf-stepper-body { margin-left: .75rem; }
+.xf-stepper-horizontal .xf-stepper-body { margin-top: .5rem; }
+/* 连接线 */
+.xf-stepper-horizontal .xf-stepper-item:not(:last-child)::after {
+    content: ""; position: absolute; top: 20px; left: 50%; width: 100%; height: 2px;
+    background: var(--bs-border-color, #e5e7eb); z-index: 1;
+}
+.xf-stepper-horizontal .xf-stepper-item.done:not(:last-child)::after { background: var(--bs-primary, #3e60d5); }
+.xf-stepper-vertical .xf-stepper-item:not(:last-child)::before {
+    content: ""; position: absolute; top: 40px; left: 19px; width: 2px; height: calc(100% - 40px);
+    background: var(--bs-border-color, #e5e7eb);
+}
+.xf-stepper-vertical .xf-stepper-item.done:not(:last-child)::before { background: var(--bs-primary, #3e60d5); }
+
+/* ---------- 缎带 Ribbon ---------- */
+.ribbon {
+    position: absolute; top: 12px; z-index: 2; padding: .25rem .75rem;
+    font-size: .75rem; font-weight: 600; line-height: 1.4;
+}
+.ribbon-start { left: -6px; border-radius: 0 3px 3px 0; }
+.ribbon-end { right: -6px; border-radius: 3px 0 0 3px; }
+.ribbon-start::before, .ribbon-end::before {
+    content: ""; position: absolute; bottom: -6px; border: 3px solid transparent;
+}
+.ribbon-start::before { left: 0; border-right-color: rgba(0,0,0,.35); border-bottom-color: rgba(0,0,0,.35); }
+.ribbon-end::before { right: 0; border-left-color: rgba(0,0,0,.35); border-bottom-color: rgba(0,0,0,.35); }
+.ribbon-round { border-radius: 999px; }
+
+/* ---------- 看板 Kanban ---------- */
+.kanban-board { min-height: 200px; }
+.kanban-item { cursor: grab; transition: box-shadow .15s ease; }
+.kanban-item:active { cursor: grabbing; }
+.kanban-item:hover { box-shadow: 0 .25rem .75rem rgba(0,0,0,.08); }
+.kanban-content .bg-primary-subtle { opacity: .5; box-shadow: 0 .25rem .75rem rgba(62,96,213,.25); }
+.kanban-item.dragging { opacity: .9; }
+
+/* ---------- 向导 Wizard ---------- */
+.xf-wizard-nav .nav-link { cursor: pointer; }
+.xf-wizard-nav .nav-link.done { opacity: .85; }
+
+/* ---------- 个人资料封面 ---------- */
+.profile-cover { background-position: center; background-size: cover; }
+
+/* ---------- 头像组重叠 ---------- */
+.avatar-group { display: inline-flex; }
+.avatar-group .avatar:not(:first-child), .avatar-group > *:not(:first-child) { margin-left: -10px; }
+.avatar-group img { border: 2px solid var(--bs-card-bg, #fff); }
+
+/* ---------- 通用工具 ---------- */
+.flex-centered { display: flex; align-items: center; justify-content: center; }
+.cursor-pointer { cursor: pointer; }
