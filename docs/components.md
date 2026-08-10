@@ -2,7 +2,7 @@
 
 所有组件通过 `XfAdmin::<name>(array $options)` 调用。下表列出全部组件、用途与关键参数。所有组件均支持传入 `id`、`class`、`attributes`（自定义 HTML 属性数组）等通用键。
 
-> 每个组件的**数据输入 / 输出、前端控件（`data-xf`）与可复制用法示例**见 → [组件详细参考](components-reference.md)（由代码反射自动生成，覆盖全部 99 个组件）。
+> 每个组件的**数据输入 / 输出、前端控件（`data-xf`）、全部默认选项、链式方法与可复制用法示例**见 → [组件详细参考](components-reference.md)（由 `tools/gen_docs.php` 自动生成，当前包共 140 个组件 / 142 个别名，随组件增减自动同步）。
 
 ## 数据输入与输出约定
 
@@ -54,7 +54,6 @@
 | `lockScreen` | 锁屏整页（输入密码解锁） | `user`(`name`/`avatar`) `action` `heading` `brand` |
 | `sidenav` | 左侧栏（含 logo、菜单、用户） | `menu` `user` `brand` |
 | `topbar` | 顶部栏（搜索、通知、用户菜单） | `user` `notifications` `apps` `search` |
-| `topnav` | 水平顶部导航（horizontal 布局） | `menu` |
 | `pageTitle` | 页面标题 + 面包屑 | `title` `breadcrumb` `actions` |
 | `footer` | 页脚 | `copyright` `links` |
 | `customizer` | 右侧主题定制面板 | `options` |
@@ -126,6 +125,9 @@ XfAdmin::row(['gutter' => 3, 'cols' => [
 | `eChart` | ECharts | `options`（完整 ECharts 配置） `height` |
 | `vectorMap` | 矢量地图（jsVectorMap） | `map` `markers` `options` |
 | `leafletMap` | Leaflet 交互地图（标记/圆/多边形；底图可离线关闭） | `markers` `circles` `polygons` `tiles`(null=离线) `center` `zoom` |
+| `apexTree` | 组织架构树（apextree，节点头像/四方向/展开收起，离线可用） | `data` `direction` `node_width` `node_height` `collapsible` |
+| `apexSankey` | 桑基图（apexsankey + svg.js，流量/能源/漏斗流向，离线可用） | `nodes` `edges` `node_width` `toolbar` `order` `options` |
+| `googleMap` | 谷歌地图（免 Key iframe 嵌入，需外网） | `place` `center` `zoom` `maptype` `language` |
 
 详见 [图表](charts.md)。
 
@@ -209,6 +211,9 @@ XfAdmin::row(['gutter' => 3, 'cols' => [
 | `idleTimer` | 空闲计时器（无操作超时触发跳转/回调） | `timeout` `warn` `onIdleUrl` `onIdle` |
 | `pdfViewer` | PDF 查看器（pdf.js，完全离线） | `url` `height` `toolbar` `download` |
 | `textDiff` | 文本差异对比（jsdiff） | `old` `new` `mode`(inline/split) |
+| `animate` | CSS 动画包装器（animate.css，load/hover/click/scroll 触发） | `animation` `trigger` `infinite` `delay` `speed` `content` |
+| `metricCard` | 指标卡（数值滚动计数 + 趋势徽标 + ECharts 迷你图） | `title` `value` `trend` `chart` `data` `prefix` `suffix` |
+| `terms` | 条款/协议页（侧栏目录 scrollspy + 分节正文） | `title` `sections` `toc` `updated_at` `accept` |
 
 ---
 

@@ -60,7 +60,7 @@ class LoadingButton extends Component
             $attrs['value'] = $this->get('value');
         }
 
-        $html = '<button' . Html::attrs($attrs) . '>';
+        $html = '<button' . $this->attrs($attrs) . '>';
         $html .= '<span class="xf-lbtn-label">' . $icon . $this->e($this->get('text')) . '</span>';
         $html .= '<span class="xf-lbtn-spinner spinner-border spinner-border-sm d-none" role="status"></span>';
         $html .= '</button>';

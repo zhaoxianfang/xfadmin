@@ -61,13 +61,17 @@ class AuthPage extends Component
         $logoDk = $brand['logo_dark'] ?? $assets->url('images/logo-black.png');
         $url    = $brand['url'] ?? $brand['home_url'] ?? '/';
 
-        $body  = '<div class="auth-box overflow-hidden align-items-center d-flex">';
-        $body .= '<div class="container"><div class="row justify-content-center">';
+        $body  = '<div class="auth-page-wrapper">';
+        $body .= '<div class="auth-one-bg"></div>';
+        $body .= '<div class="auth-one-bg-position">';
+        $body .= '<div class="container">';
+        $body .= '<div class="row justify-content-center">';
         $body .= '<div class="' . $this->e($this->get('width')) . '">';
+        $body .= '<div class="auth-box overflow-hidden align-items-center d-flex flex-column">';
 
         $body .= '<div class="auth-brand text-center mb-4">'
-            . '<a href="' . $this->e($url) . '" class="logo-dark"><img src="' . $this->e($logoDk) . '" alt="dark logo" height="32"></a>'
-            . '<a href="' . $this->e($url) . '" class="logo-light"><img src="' . $this->e($logo) . '" alt="logo" height="32"></a>';
+            . '<a href="' . $this->e($url) . '" class="logo-dark"><img src="' . $this->e($logoDk) . '" alt="dark logo" height="32" style="height:32px;"></a>'
+            . '<a href="' . $this->e($url) . '" class="logo-light"><img src="' . $this->e($logo) . '" alt="logo" height="32" style="height:32px;"></a>';
         if ($this->get('heading')) {
             $body .= '<h4 class="fw-bold mt-3">' . $this->e($this->get('heading')) . '</h4>';
         }
@@ -77,7 +81,7 @@ class AuthPage extends Component
         $body .= '</div>';
 
         $content = $this->raw($this->get('content'));
-        $body   .= $this->get('card') ? '<div class="card p-4 rounded-4">' . $content . '</div>' : $content;
+        $body   .= $this->get('card') ? '<div class="card p-4 rounded-4 w-100">' . $content . '</div>' : $content;
 
         if ($this->get('below') !== null) {
             $body .= '<div class="text-center mt-3">' . $this->raw($this->get('below')) . '</div>';
@@ -85,7 +89,7 @@ class AuthPage extends Component
 
         $copyright = $this->get('copyright') ?? ('© ' . date('Y') . ' ' . XfAdmin::setting('brand.name', 'XfAdmin'));
         $body     .= '<p class="text-center text-muted mt-4 mb-0">' . $this->raw($copyright) . '</p>';
-        $body     .= '</div></div></div></div>';
+        $body     .= '</div></div></div></div></div></div>';
 
         $favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url('images/favicon.ico');
 
@@ -99,6 +103,9 @@ class AuthPage extends Component
             . $assets->scripts()
             . $this->raw($this->get('scripts'))
             . "\n</body>\n</html>";
+
+        // 完整文档已生成：清空资源收集状态，避免同请求多文档渲染互相污染
+        $assets->resetCollected();
 
         return $doc;
     }

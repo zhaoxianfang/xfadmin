@@ -43,6 +43,24 @@ class Dropdown extends Component
 
     protected function html(): string
     {
+        // 键名容错：text / label 等价（按钮与菜单项同理），url / href 等价
+        if (($this->get('text') === '' || $this->get('text') === null) && $this->get('label') !== null) {
+            $this->options['text'] = $this->get('label');
+        }
+        $items = (array) $this->get('items', []);
+        foreach ($items as &$it) {
+            if (is_array($it)) {
+                if (! isset($it['text']) && isset($it['label'])) {
+                    $it['text'] = $it['label'];
+                }
+                if (! isset($it['url']) && isset($it['href'])) {
+                    $it['url'] = $it['href'];
+                }
+            }
+        }
+        unset($it);
+        $this->options['items'] = $items;
+
         $dirClass = match ($this->get('direction')) {
             'up'    => 'btn-group dropup',
             'start' => 'btn-group dropstart',
@@ -55,7 +73,7 @@ class Dropdown extends Component
         if ($this->get('toggle') !== null) {
             $html .= $this->raw($this->get('toggle'));
         } else {
-            $btnClass = Html::cls('btn', 'btn-' . $this->get('variant'), $this->get('size') ? 'btn-' . $this->get('size') : '');
+            $btnClass = Html::cls('btn', 'btn-' . $this->e($this->get('variant')), $this->get('size') ? 'btn-' . $this->e($this->get('size')) : '');
             if ($this->get('split')) {
                 $html .= '<button type="button" class="' . $btnClass . '">' . $this->e($this->get('text')) . '</button>';
                 $html .= '<button type="button" class="' . $btnClass . ' dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">Toggle</span></button>';

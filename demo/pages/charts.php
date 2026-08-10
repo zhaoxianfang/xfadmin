@@ -36,6 +36,46 @@ echo XfAdmin::page([
                 'height' => 300,
                 'markers' => [['name' => '北京', 'coords' => [39.9, 116.4]], ['name' => '纽约', 'coords' => [40.7, -74.0]]],
             ])])],
+            // ---------- 新增：组织架构树（apextree 插件，离线可用） ----------
+            ['width' => ['lg' => 7], 'content' => XfAdmin::card(['title' => '组织架构树（ApexTree）', 'body' => XfAdmin::apexTree([
+                'height' => 360, 'direction' => 'top',
+                'data'   => [
+                    'id' => '1', 'name' => '王一', 'role' => 'CEO', 'avatar' => 'users/user-1.jpg', 'color' => '#3e60d5',
+                    'children' => [
+                        ['id' => '2', 'name' => '李二', 'role' => '技术 VP', 'avatar' => 'users/user-2.jpg', 'color' => '#47ad77', 'children' => [
+                            ['id' => '4', 'name' => '张四', 'role' => '前端组长', 'avatar' => 'users/user-4.jpg'],
+                            ['id' => '5', 'name' => '陈五', 'role' => '后端组长', 'avatar' => 'users/user-5.jpg'],
+                        ]],
+                        ['id' => '3', 'name' => '赵三', 'role' => '市场 VP', 'avatar' => 'users/user-3.jpg', 'color' => '#fa5c7c'],
+                    ],
+                ],
+            ])])],
+            // ---------- 新增：桑基图（apexsankey 插件，离线可用） ----------
+            ['width' => 12, 'content' => XfAdmin::card(['title' => '桑基图（ApexSankey）', 'body' => XfAdmin::apexSankey([
+                'height' => 380,
+                'nodes'  => [
+                    ['id' => 'search', 'title' => '搜索引擎'],
+                    ['id' => 'social', 'title' => '社交媒体'],
+                    ['id' => 'direct', 'title' => '直接访问'],
+                    ['id' => 'visit',  'title' => '访问量'],
+                    ['id' => 'signup', 'title' => '注册'],
+                    ['id' => 'lost',   'title' => '流失'],
+                    ['id' => 'paid',   'title' => '付费转化'],
+                ],
+                'edges'  => [
+                    ['source' => 'search', 'target' => 'visit',  'value' => 60],
+                    ['source' => 'social', 'target' => 'visit',  'value' => 25],
+                    ['source' => 'direct', 'target' => 'visit',  'value' => 15],
+                    ['source' => 'visit',  'target' => 'signup', 'value' => 40],
+                    ['source' => 'visit',  'target' => 'lost',   'value' => 60, 'color' => '#dddddd'],
+                    ['source' => 'signup', 'target' => 'paid',   'value' => 12, 'color' => '#ffbc0b'],
+                    ['source' => 'signup', 'target' => 'lost',   'value' => 28, 'color' => '#dddddd'],
+                ],
+            ])])],
+            // ---------- 新增：谷歌地图（iframe 免 Key 嵌入，需外网） ----------
+            ['width' => ['lg' => 5], 'content' => XfAdmin::card(['title' => '谷歌地图（GoogleMap）', 'body' => XfAdmin::googleMap([
+                'height' => 360, 'place' => '北京市朝阳区', 'zoom' => 12,
+            ])])],
             ['width' => 12, 'content' => XfAdmin::card(['title' => '日历（FullCalendar）', 'body' => XfAdmin::calendar([
                 'events' => [
                     ['title' => '产品评审会', 'start' => date('Y-m-d'), 'className' => 'bg-primary'],

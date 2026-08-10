@@ -45,7 +45,7 @@ class Widget extends Component
         $html .= '<div class="d-flex align-items-center justify-content-between">';
 
         $html .= '<div>';
-        $html .= '<h4 class="mb-1">' . $this->raw($this->get('value')) . '</h4>';
+        $html .= '<h4 class="mb-1">' . $this->e($this->get('value')) . '</h4>';
         $html .= '<p class="text-muted mb-0">' . $this->e($this->get('title')) . '</p>';
         $html .= '</div>';
 

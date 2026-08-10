@@ -45,7 +45,7 @@ class Offcanvas extends Component
         }
 
         $attrs = [
-            'class'    => 'offcanvas offcanvas-' . $this->get('placement'),
+            'class'    => 'offcanvas offcanvas-' . $this->e($this->get('placement')),
             'tabindex' => '-1',
             'id'       => $id,
         ];

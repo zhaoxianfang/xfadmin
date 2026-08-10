@@ -54,7 +54,7 @@ class ListGroup extends Component
 
         foreach ((array) $this->get('items', []) as $item) {
             $item    = is_array($item) ? $item : ['text' => $item];
-            $variant = isset($item['variant']) ? ' list-group-item-' . $item['variant'] : '';
+            $variant = isset($item['variant']) ? ' list-group-item-' . $this->e($item['variant']) : '';
             $cls     = Html::cls('list-group-item' . $variant, [
                 'active'                => ! empty($item['active']),
                 'disabled'              => ! empty($item['disabled']),

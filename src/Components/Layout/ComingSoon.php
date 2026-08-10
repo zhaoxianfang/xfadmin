@@ -37,10 +37,10 @@ class ComingSoon extends AuthPage
 
         $content = '<div class="text-center">';
         if ($this->get('image')) {
-            $content .= '<img src="' . $this->e(XfAdmin::asset('images/' . ltrim((string) $this->get('image'), '/'))) . '" class="img-fluid mb-3" alt="">';
+            $content .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('image'))) . '" class="img-fluid mb-3" alt="">';
         }
         $content .= '<h2 class="fw-bold">' . $this->e($this->get('heading')) . '</h2>';
-        $content .= '<p class="text-muted">' . $this->raw($this->get('message')) . '</p>';
+        $content .= '<p class="text-muted">' . $this->e($this->get('message')) . '</p>';
 
         if ($this->get('deadline')) {
             $ts = strtotime((string) $this->get('deadline')) * 1000;

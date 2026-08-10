@@ -62,16 +62,31 @@ class LeafletMap extends Component
             . ' style="height:' . (int) $this->get('height') . 'px" data-xf="leaflet-map" data-xf-config="'
             . $this->e(json_encode($cfg)) . '"></div>';
 
-        $js = 'XFAdmin.register("leaflet-map",function(el){if(!window.L)return;'
+        $js = 'XFAdmin.register("leaflet-map",function(el){'
+            . 'if(!window.L||!el)return;'
             . 'var cfg=JSON.parse(el.getAttribute("data-xf-config")||"{}");'
-            . 'var map=L.map(el,{scrollWheelZoom:false}).setView(cfg.center,cfg.zoom);'
+            . 'if(!cfg.center)return;'
+            . 'if(el._xfLeaflet)return el._xfLeaflet;'
+            . 'var map=L.map(el,{scrollWheelZoom:false});'           // 先建地图，尺寸确定后再 setView（避免 0 尺寸下投影错位）
             . 'if(cfg.tiles){L.tileLayer(cfg.tiles,{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(map);}'
             . 'else{el.style.background = "#eef0f3";}'
             . '(cfg.markers||[]).forEach(function(m){var mk=L.marker([m.lat,m.lng]).addTo(map);if(m.popup)mk.bindPopup(m.popup);if(m.title)mk.bindTooltip(m.title);});'
             . '(cfg.circles||[]).forEach(function(c){L.circle([c.lat,c.lng],{radius:c.radius,color:c.color}).addTo(map);});'
             . '(cfg.polygons||[]).forEach(function(p){L.polygon(p.points,{color:p.color}).addTo(map);});'
             . '(cfg.lines||[]).forEach(function(l){L.polyline(l.points,{color:l.color}).addTo(map);});'
-            . 'setTimeout(function(){map.invalidateSize();},50);return map;});';
+            . 'el._xfLeaflet=map;'
+            . 'function fit(){'
+            . '  map.invalidateSize();'                             // 刷新尺寸
+            . '  try{'
+            . '    map.setView(cfg.center,cfg.zoom,{animate:false});' // 先建立中心/缩放（触发正确 _resetView）
+            . '    if(typeof map._resetView==="function"){map._resetView(map.getCenter(),map.getZoom());}' // 再强制重排瓦片/标记位置
+            . '  }catch(e){ try{map._resetView(L.latLng(cfg.center[0],cfg.center[1]),cfg.zoom);}catch(_){} }' // 极端情况下回退
+            . '}'
+            . 'fit();'                                              // 立即校正一次
+            . 'if(window.requestAnimationFrame){requestAnimationFrame(fit);}'
+            . 'setTimeout(fit,200);'                                // 布局稳定后再次校正
+            . 'if(window.ResizeObserver){var ro=new ResizeObserver(fit);ro.observe(el);}' // 容器尺寸变化（含由隐藏变可见）持续校正
+            . 'return map;});';
         XfAdmin::assets()->inlineJs($js, 'xf-leaflet');
 
         return $html;

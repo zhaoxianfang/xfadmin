@@ -34,6 +34,7 @@ class Carousel extends Component
             'interval'   => 5000,
             'dark'       => false,
             'ride'       => 'carousel',
+            'height'     => '',          // 轮播图高度，留空则由 .xf-carousel img 兜底（响应式）
         ];
     }
 
@@ -60,7 +61,9 @@ class Carousel extends Component
         foreach ($items as $i => $item) {
             $html .= '<div class="' . Html::cls('carousel-item', ['active' => $i === 0]) . '" data-bs-interval="' . $this->e($item['interval'] ?? $this->get('interval')) . '">';
             if (isset($item['image'])) {
-                $html .= '<img src="' . $this->e($item['image']) . '" class="d-block w-100" alt="' . $this->e($item['alt'] ?? '') . '">';
+                $h = $this->get('height');
+                $style = $h !== '' && $h !== null ? 'height:' . $this->e((string) $h) . ';' : '';
+                $html .= '<img src="' . $this->e($this->img((string) $item['image'])) . '" class="d-block w-100 xf-carousel-img object-fit-cover"' . ($style !== '' ? ' style="' . $style . '"' : '') . ' alt="' . $this->e($item['alt'] ?? '') . '">';
             }
             if (isset($item['caption'])) {
                 $html .= '<div class="carousel-caption d-none d-md-block">' . $this->raw($item['caption']) . '</div>';

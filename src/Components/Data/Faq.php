@@ -44,7 +44,7 @@ class Faq extends Component
 
         foreach (array_values((array) $this->get('items', [])) as $i => $item) {
             $open   = $this->get('open') === $i;
-            $itemId = $id . '-item-' . $i;
+            $itemId = $this->e($id . '-item-' . $i);
             $html .= '<div class="accordion-item">';
             $html .= '<h2 class="accordion-header">';
             $html .= '<button class="accordion-button' . ($open ? '' : ' collapsed') . '" type="button" data-bs-toggle="collapse" data-bs-target="#' . $itemId . '" aria-expanded="' . ($open ? 'true' : 'false') . '">'

@@ -72,7 +72,7 @@ class BlogList extends Component
         $url   = $p['url'] ?? '#';
         $html = '<div class="card h-100 border-0 shadow-sm overflow-hidden">';
         if ($image) {
-            $html .= '<a href="' . $this->e($url) . '"><img src="' . $this->e(XfAdmin::asset('images/' . ltrim($image, '/'))) . '" class="card-img-top" style="height:200px;object-fit:cover;" loading="lazy" alt=""></a>';
+            $html .= '<a href="' . $this->e($url) . '"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img($image)) . '" class="card-img-top" style="height:200px;object-fit:cover;" loading="lazy" alt=""></a>';
         }
         $html .= '<div class="card-body d-flex flex-column">';
         if (! empty($p['category'])) {
@@ -95,7 +95,7 @@ class BlogList extends Component
         $html = '<div class="card border-0 shadow-sm overflow-hidden">';
         $html .= '<div class="row g-0">';
         if ($image) {
-            $html .= '<div class="col-md-4"><a href="' . $this->e($url) . '"><img src="' . $this->e(XfAdmin::asset('images/' . ltrim($image, '/'))) . '" class="img-fluid h-100" style="object-fit:cover;min-height:180px;" loading="lazy" alt=""></a></div>';
+            $html .= '<div class="col-md-4"><a href="' . $this->e($url) . '"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img($image)) . '" class="img-fluid h-100" style="object-fit:cover;min-height:180px;" loading="lazy" alt=""></a></div>';
         }
         $html .= '<div class="col-md-8"><div class="card-body">';
         if (! empty($p['category'])) {
@@ -115,7 +115,8 @@ class BlogList extends Component
     {
         $html = '<div class="d-flex align-items-center gap-2 mt-2 small text-muted">';
         if (! empty($p['author']['avatar'])) {
-            $html .= '<img src="' . $this->e(XfAdmin::asset('images/' . ltrim((string) $p['author']['avatar'], '/'))) . '" class="rounded-circle" width="28" height="28" alt="">';
+            // 作者小头像：INSPINIA 规范 .avatar 包裹（avatar-xs=24px），替代 28px 非标尺寸
+            $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $p['author']['avatar'])) . '" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
         }
         if (! empty($p['author']['name'])) {
             $html .= '<span class="fw-medium text-body">' . $this->e($p['author']['name']) . '</span>';

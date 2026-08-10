@@ -15739,9 +15739,9 @@ html[data-bs-theme=dark] #light-dark-mode .mode-light-moon {
   .app-topbar .dropdown {
     position: static;
   }
-  .app-topbar .dropdown .dropdown-menu {
+  /* .app-topbar .dropdown .dropdown-menu {
     width: 90%;
-  }
+  } */
 }
 @media (max-width: 767.98px) {
   .logo-topbar {

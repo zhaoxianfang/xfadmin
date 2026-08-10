@@ -12,7 +12,7 @@ use zxf\XfAdmin\XfAdmin;
  * 个人资料头部（pages-profile.html / ecommerce-seller-details.html）
  *
  * XfAdmin::profileHeader([
- *     'cover'   => 'small/img-10.jpg',
+ *     'cover'   => 'stock/small-10.jpg',
  *     'avatar'  => 'users/avatar-1.jpg',
  *     'name'    => '张三',
  *     'role'    => '前端工程师',
@@ -48,14 +48,15 @@ class ProfileHeader extends Component
 
         // 封面
         if ($this->get('cover')) {
-            $html .= '<div class="profile-cover" style="height:180px;background:url(' . $this->e(XfAdmin::asset('images/' . ltrim((string) $this->get('cover'), '/'))) . ') center/cover no-repeat;"></div>';
+            $html .= '<div class="profile-cover" style="height:180px;background:url(' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('cover'))) . ') center/cover no-repeat;"></div>';
         } else {
             $html .= '<div class="profile-cover bg-primary" style="height:120px;"></div>';
         }
 
         $html .= '<div class="card-body">';
         $html .= '<div class="d-flex flex-wrap align-items-center gap-3" style="margin-top:-56px;">';
-        $html .= '<img src="' . $this->e(XfAdmin::asset('images/' . ltrim((string) $this->get('avatar'), '/'))) . '" class="rounded-circle border border-3 border-white bg-white" width="96" height="96" alt="avatar">';
+        // 个人主页大头像：INSPINIA 规范 .avatar 包裹（avatar-xxl=80px）+ 白色描边压在封面上
+        $html .= '<span class="avatar avatar-xxl flex-shrink-0"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('avatar'))) . '" class="img-fluid rounded-circle border border-3 border-white bg-white" alt="avatar" style="object-fit:cover;"></span>';
         $html .= '<div class="flex-grow-1" style="margin-top:56px;">';
         $html .= '<h4 class="mb-1">' . $this->e($this->get('name'));
         if ($this->get('verified')) {

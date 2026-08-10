@@ -32,7 +32,7 @@ echo XfAdmin::page([
 | `compact` | 紧凑侧栏（图标+悬浮展开） | layouts-compact.html |
 | `scrollable` | 固定头部、内容滚动 | layouts-scrollable.html |
 
-> `horizontal` 布局自动渲染 `topnav` 而非 `sidenav`；其它布局渲染 `sidenav`。
+> 所有布局均渲染 `sidenav`（侧边栏）；可通过 `topbar` 选项叠加顶部栏。
 
 ### 主题属性
 
@@ -48,7 +48,7 @@ XfAdmin::page([
 
 ## 菜单数据结构
 
-`menu` / `sidenav.menu` / `topnav.menu` 共用同一结构，支持**无限层级**：
+`menu` / `sidenav.menu` 共用同一结构，支持**无限层级**：
 
 ```php
 $menu = [

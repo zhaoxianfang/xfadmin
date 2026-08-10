@@ -12,14 +12,14 @@ use zxf\XfAdmin\XfAdmin;
 /**
  * 整页骨架（完整 HTML 文档）
  *
- * 一行代码渲染完整后台页面，自动组装：主题属性 + 侧边栏 + 顶栏 + 水平导航 +
+ * 一行代码渲染完整后台页面，自动组装：主题属性 + 侧边栏 + 顶栏 +
  * 页面标题 + 内容 + 页脚 + 主题定制面板 + 全部按需资源（去重加载）。
  *
  * echo XfAdmin::page([
  *     'title'   => '仪表盘',
- *     'layout'  => 'vertical',            // vertical | horizontal | dual
+ *     'layout'  => 'vertical',            // vertical | dual
  *     'theme'   => ['mode' => 'light', 'menu_color' => 'dark', 'sidenav_size' => 'default', ...],
- *     'menu'    => [ ...Menu items... ],  // 侧栏与水平导航共用，或分别传 sidenav.menu / topnav.menu
+ *     'menu'    => [ ...Menu items... ],  // 侧栏菜单
  *     'sidenav' => [...] | false,
  *     'topbar'  => [...] | false,
  *     'page_title' => ['title' => '仪表盘', 'breadcrumb' => [...]],
@@ -45,12 +45,13 @@ class Page extends Component
             'current_url' => null,
             'sidenav'     => [],
             'topbar'      => [],
-            'topnav'      => [],
+            'topnav'      => null,   // 水平布局顶部导航（layout=horizontal 时启用）
             'page_title'  => null,
             'content'     => '',
             'container'   => 'container-fluid',
             'footer'      => [],
             'customizer'  => true,
+            'preloader'   => false,  // 页面加载动画（true = 启用）
             'head'        => null,   // <head> 附加内容
             'scripts'     => null,   // </body> 前附加内容
             'body_class'  => null,
@@ -62,64 +63,89 @@ class Page extends Component
     {
         $assets = Assets::instance();
         $layout = $this->get('layout', 'vertical');
-        $theme  = array_replace((array) XfAdmin::setting('theme', []), (array) $this->get('theme', []));
+
+        // 主题默认值与 INSPINIA v4.1.0 模板 assets/js/config.js 的 defaultConfig 对齐。
+        // 注意：模板 config.js 把「属性缺失」视为 skin=modern / menu.color=gradient，
+        // 因此这些属性不能按「等于某值就省略」处理 —— 省略会被模板脚本回落成 modern/gradient，
+        // 与服务端渲染的 CSS 变量不一致，导致首屏观感与配置不符。这里统一显式输出。
+        $themeDefaults = [
+            'skin'            => 'modern',
+            'mode'            => 'light',
+            'layout_position' => 'fixed',
+            'layout_width'    => 'fluid',
+            'topbar_color'    => 'light',
+            'menu_color'      => 'gradient',
+            'sidenav_size'    => 'default',
+        ];
+        $theme = array_replace(
+            $themeDefaults,
+            (array) XfAdmin::setting('theme', []),
+            (array) $this->get('theme', [])
+        );
 
         $htmlAttrs = ['lang' => $this->get('lang')];
-        if (! empty($theme['skin']) && $theme['skin'] !== 'classic') {
+        if (! empty($theme['skin'])) {
             $htmlAttrs['data-skin'] = $theme['skin'];
         }
-        if (! empty($theme['mode']) && $theme['mode'] !== 'light') {
+        if (! empty($theme['mode'])) {
             $htmlAttrs['data-bs-theme'] = $theme['mode'];
         }
-        if (! empty($theme['layout_position']) && $theme['layout_position'] !== 'fixed') {
+        if (! empty($theme['layout_position'])) {
             $htmlAttrs['data-layout-position'] = $theme['layout_position'];
         }
         if (! empty($theme['layout_width']) && $theme['layout_width'] !== 'fluid') {
             $htmlAttrs['data-layout-width'] = $theme['layout_width'];
         }
-        if (! empty($theme['topbar_color']) && $theme['topbar_color'] !== 'light') {
+        if (! empty($theme['topbar_color'])) {
             $htmlAttrs['data-topbar-color'] = $theme['topbar_color'];
         }
-        if (! empty($theme['menu_color']) && $theme['menu_color'] !== 'dark') {
+        if (! empty($theme['menu_color'])) {
             $htmlAttrs['data-menu-color'] = $theme['menu_color'];
         }
-        if (! empty($theme['sidenav_size']) && $theme['sidenav_size'] !== 'default') {
+        if (! empty($theme['sidenav_size'])) {
             $htmlAttrs['data-sidenav-size'] = $theme['sidenav_size'];
         }
         if (! empty($theme['sidenav_user'])) {
             $htmlAttrs['data-sidenav-user'] = 'true';
         }
-        if ($layout === 'horizontal') {
+
+        // 水平布局：对齐模板 layouts-horizontal.html 的 <html data-layout="topnav">
+        $isHorizontal = in_array($layout, ['horizontal', 'topnav'], true)
+            || ($this->get('topnav') !== null && $this->get('topnav') !== false);
+        if ($isHorizontal) {
             $htmlAttrs['data-layout'] = 'topnav';
+            // 水平布局不存在侧栏，移除仅对垂直布局有意义的尺寸属性
+            unset($htmlAttrs['data-sidenav-size'], $htmlAttrs['data-sidenav-user']);
         }
 
         // ---------- body 部件（先渲染，确保其资源注册先于 head 输出） ----------
         $body = '<div class="wrapper">';
 
-        // 侧边栏（horizontal 布局不渲染）
-        if ($layout !== 'horizontal' && $this->get('sidenav') !== false) {
-            $sidenavOpts = (array) $this->get('sidenav', []);
-            if (! isset($sidenavOpts['menu']) || $sidenavOpts['menu'] === []) {
-                $sidenavOpts['menu'] = $this->get('menu', []);
-            }
-            $sidenavOpts['current_url'] ??= $this->get('current_url');
-            $body .= Sidenav::make($sidenavOpts)->render();
-        }
-
-        // 顶栏
-        if ($this->get('topbar') !== false) {
-            $topbarOpts = (array) $this->get('topbar', []);
-            $body .= Topbar::make($topbarOpts)->render();
-        }
-
-        // 水平导航
-        if ($layout === 'horizontal' || $layout === 'dual' || $this->get('topnav') === true || (is_array($this->get('topnav')) && $this->get('topnav') !== [])) {
-            $topnavOpts = is_array($this->get('topnav')) ? $this->get('topnav') : [];
+        if ($isHorizontal) {
+            // TopNav 已合并「顶栏 + 水平菜单」，不再渲染 Sidenav / Topbar
+            $topnavOpts = $this->get('topnav');
+            $topnavOpts = is_array($topnavOpts) ? $topnavOpts : [];
             if (! isset($topnavOpts['menu']) || $topnavOpts['menu'] === []) {
                 $topnavOpts['menu'] = $this->get('menu', []);
             }
             $topnavOpts['current_url'] ??= $this->get('current_url');
             $body .= TopNav::make($topnavOpts)->render();
+        } else {
+            // 侧边栏
+            if ($this->get('sidenav') !== false) {
+                $sidenavOpts = (array) $this->get('sidenav', []);
+                if (! isset($sidenavOpts['menu']) || $sidenavOpts['menu'] === []) {
+                    $sidenavOpts['menu'] = $this->get('menu', []);
+                }
+                $sidenavOpts['current_url'] ??= $this->get('current_url');
+                $body .= Sidenav::make($sidenavOpts)->render();
+            }
+
+            // 顶栏（可选）
+            if ($this->get('topbar') !== false) {
+                $topbarOpts = (array) $this->get('topbar', []);
+                $body .= Topbar::make($topbarOpts)->render();
+            }
         }
 
         // 内容区
@@ -176,10 +202,22 @@ class Page extends Component
         $doc .= $assets->head();
         $doc .= $this->raw($this->get('head'));
         $doc .= "</head>\n<body" . ($this->get('body_class') ? ' class="' . $this->e($this->get('body_class')) . '"' : '') . ">\n";
+
+        // 页面加载动画（preloader）
+        if ($this->get('preloader')) {
+            $doc .= '<div id="preloader"><div id="status"><div class="spinner">'
+                . '<div class="double-bounce1"></div><div class="double-bounce2"></div>'
+                . '</div></div></div>';
+        }
+
         $doc .= $body . "\n";
         $doc .= $assets->scripts();
         $doc .= $this->raw($this->get('scripts'));
         $doc .= "\n</body>\n</html>";
+
+        // 完整文档已生成：清空资源收集状态（保留 baseUrl/version），
+        // 保证同一请求内渲染多个完整页面时互不污染、不重复引用
+        $assets->resetCollected();
 
         return $doc;
     }

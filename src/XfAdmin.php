@@ -9,19 +9,29 @@ use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\Components\Component;
 
 /**
- * XfAdmin 组件工厂 / 全局配置入口
+ * XfAdmin 组件工厂 / 全局配置统一入口（门面）
  *
- * 用法：
- *   XfAdmin::config(require 'config/xfadmin.php');
- *   echo XfAdmin::card(['title' => '标题', 'body' => '内容']);
+ * 本类是扩展包唯一的对外静态门面，职责包括：
+ *   1. 组件工厂 —— 通过魔术静态调用按别名创建组件实例（见下方 @method 注解，
+ *      分为 布局 Layout / 导航 Navigation / 栅格 Grid / UI 基础 / 表单 Form /
+ *      图表 Chart / 数据业务 Data / 杂项 Misc 八大类）；
+ *   2. 全局配置 —— config() 合并主题 / 品牌 / 资源基址等全局配置，setting() 点号读取；
+ *   3. 资源管理 —— head() / scripts() / asset() 输出 CSS、JS 与资源 URL；
+ *   4. 扩展机制 —— extend() 注册或覆盖自定义组件；
+ *   5. 服务端数据 —— dataResponse() 生成 DataTables 服务端分页协议响应。
+ *
+ * 基本用法：
+ *   XfAdmin::config(require 'config/xfadmin.php');           // 引导时合并全局配置
+ *   echo XfAdmin::card(['title' => '标题', 'body' => '内容']); // 渲染任意组件
  *   echo XfAdmin::dataTable(['columns' => [...], 'data' => [...]]);
- *   echo XfAdmin::head();     // <head> 内输出
- *   echo XfAdmin::scripts();  // </body> 前输出
+ *   echo XfAdmin::head();     // <head> 内输出（自定义布局时）
+ *   echo XfAdmin::scripts();  // </body> 前输出（自定义布局时）
+ *   return XfAdmin::page([...]); // 或直接用整页组件（已含 head/scripts）
  *
  * @method static Components\Layout\Page       page(array $options = [])
  * @method static Components\Layout\Sidenav    sidenav(array $options = [])
  * @method static Components\Layout\Topbar     topbar(array $options = [])
- * @method static Components\Layout\TopNav     topnav(array $options = [])
+ * @method static Components\Layout\TopNav     topNav(array $options = [])
  * @method static Components\Layout\PageTitle  pageTitle(array $options = [])
  * @method static Components\Layout\Footer     footer(array $options = [])
  * @method static Components\Layout\Customizer customizer(array $options = [])
@@ -47,8 +57,11 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Form\ColorPicker  colorPicker(array $options = [])
  * @method static Components\Form\PasswordStrength passwordStrength(array $options = [])
  * @method static Components\Chart\ApexChart   apexChart(array $options = [])
+ * @method static Components\Chart\ApexTree    apexTree(array $options = [])
+ * @method static Components\Chart\ApexSankey  apexSankey(array $options = [])
  * @method static Components\Chart\EChart      echart(array $options = [])
  * @method static Components\Chart\VectorMap   vectorMap(array $options = [])
+ * @method static Components\Chart\GoogleMap   googleMap(array $options = [])
  * @method static Components\Chart\LeafletMap   leafletMap(array $options = [])
  * @method static Components\UI\Alert          alert(array $options = [])
  * @method static Components\UI\Badge          badge(array $options = [])
@@ -79,6 +92,7 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Misc\Raw          raw(array $options = [])
  * @method static Components\Misc\Tinycon      tinycon(array $options = [])
  * @method static Components\Misc\IdleTimer    idleTimer(array $options = [])
+ * @method static Components\Misc\Animate      animate(array $options = [])
  * @method static Components\Misc\PdfViewer    pdfViewer(array $options = [])
  * @method static Components\Misc\TextDiff     textDiff(array $options = [])
  * @method static Components\Layout\ComingSoon  comingSoon(array $options = [])
@@ -99,6 +113,11 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\UI\Chip            chip(array $options = [])
  * @method static Components\UI\Stepper         stepper(array $options = [])
  * @method static Components\UI\DescriptionList descriptionList(array $options = [])
+ * @method static Components\UI\Toggle        switch(array $options = [])
+ * @method static Components\UI\CodeBlock     codeBlock(array $options = [])
+ * @method static Components\UI\EmptyState    empty(array $options = [])
+ * @method static Components\UI\Toolbar       toolbar(array $options = [])
+ * @method static Components\UI\SearchBox     searchBox(array $options = [])
  * @method static Components\UI\LoadingButton loadingButton(array $options = [])
  * @method static Components\Data\PricingCard   pricingCard(array $options = [])
  * @method static Components\Data\Faq           faq(array $options = [])
@@ -119,6 +138,43 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Data\ApiKeys       apiKeys(array $options = [])
  * @method static Components\Data\CommentThread commentThread(array $options = [])
  * @method static Components\Data\EmailCompose  emailCompose(array $options = [])
+ * @method static Components\Data\Customers      customers(array $options = [])
+ * @method static Components\Data\Orders         orders(array $options = [])
+ * @method static Components\Data\OrderDetails   orderDetails(array $options = [])
+ * @method static Components\Data\ProductDetails productDetails(array $options = [])
+ * @method static Components\Data\Projects       projects(array $options = [])
+ * @method static Components\Data\ProjectDetails projectDetails(array $options = [])
+ * @method static Components\Data\Outlook        outlook(array $options = [])
+ * @method static Components\Data\ForumThread    forumThread(array $options = [])
+ * @method static Components\Data\BlogArticle    blogArticle(array $options = [])
+ * @method static Components\Data\Roles          roles(array $options = [])
+ * @method static Components\Data\InvoiceCreate  invoiceCreate(array $options = [])
+ * @method static Components\Data\TeamMember     teamMember(array $options = [])
+ * @method static Components\Data\Testimonial    testimonial(array $options = [])
+ * @method static Components\Data\TodoList       todoList(array $options = [])
+ * @method static Components\Data\IssueTracker   issueTracker(array $options = [])
+ * @method static Components\Data\VoteList       voteList(array $options = [])
+ * @method static Components\Data\MetricCard     metricCard(array $options = [])
+ * @method static Components\Data\Terms          terms(array $options = [])
+ * @method static Components\Data\ContactCard    contactCard(array $options = [])
+ * @method static Components\Data\CompanyCard    companyCard(array $options = [])
+ * @method static Components\Data\Clients         clients(array $options = [])
+ * @method static Components\Data\Sellers         sellers(array $options = [])
+ * @method static Components\Data\ReviewList      reviewList(array $options = [])
+ * @method static Components\Data\ProjectTeamBoard projectTeamBoard(array $options = [])
+ * @method static Components\Data\EmailApp       emailApp(array $options = [])
+ * @method static Components\Data\ChatApp        chatApp(array $options = [])
+ * @method static Components\Data\ProfilePage    profilePage(array $options = [])
+ * @method static Components\Data\InvoiceDetail  invoiceDetail(array $options = [])
+ * @method static Components\Data\Companies      companies(array $options = [])
+ * @method static Components\Data\ProductCategories productCategories(array $options = [])
+ * @method static Components\Data\ProductAdd     productAdd(array $options = [])
+ * @method static Components\Data\SellerDetails  sellerDetails(array $options = [])
+ * @method static Components\Data\Article        article(array $options = [])
+ * @method static Components\Data\ProjectActivity projectActivity(array $options = [])
+ * @method static Components\Misc\PinBoard       pinBoard(array $options = [])
+ * @method static Components\Misc\Masonry        masonry(array $options = [])
+ * @method static Components\Layout\Landing      landing(array $options = [])
  */
 final class XfAdmin
 {
@@ -131,6 +187,7 @@ final class XfAdmin
         'page'        => Components\Layout\Page::class,
         'sidenav'     => Components\Layout\Sidenav::class,
         'topbar'      => Components\Layout\Topbar::class,
+        'topNav'      => Components\Layout\TopNav::class,
         'topnav'      => Components\Layout\TopNav::class,
         'pageTitle'   => Components\Layout\PageTitle::class,
         'footer'      => Components\Layout\Footer::class,
@@ -141,6 +198,7 @@ final class XfAdmin
         'maintenance' => Components\Layout\Maintenance::class,
         'emptyState'  => Components\Layout\EmptyState::class,
         'lockScreen'  => Components\Layout\LockScreen::class,
+        'landing'     => Components\Layout\Landing::class,
         // 导航
         'menu'        => Components\Navigation\Menu::class,
         // 栅格
@@ -170,9 +228,12 @@ final class XfAdmin
         'passwordStrength' => Components\Form\PasswordStrength::class,
         // 图表 / 地图
         'apexChart'   => Components\Chart\ApexChart::class,
+        'apexTree'    => Components\Chart\ApexTree::class,
+        'apexSankey'  => Components\Chart\ApexSankey::class,
         'echart'      => Components\Chart\EChart::class,
         'vectorMap'   => Components\Chart\VectorMap::class,
         'leafletMap'  => Components\Chart\LeafletMap::class,
+        'googleMap'   => Components\Chart\GoogleMap::class,
         // UI
         'alert'       => Components\UI\Alert::class,
         'badge'       => Components\UI\Badge::class,
@@ -204,6 +265,20 @@ final class XfAdmin
         'stepper'     => Components\UI\Stepper::class,
         'descriptionList' => Components\UI\DescriptionList::class,
         'loadingButton' => Components\UI\LoadingButton::class,
+        'avatarGroup'  => Components\UI\AvatarGroup::class,
+        'backToTop'    => Components\UI\BackToTop::class,
+        'callout'      => Components\UI\Callout::class,
+        'countdown'    => Components\UI\Countdown::class,
+        'countUp'      => Components\UI\CountUp::class,
+        'divider'      => Components\UI\Divider::class,
+        'kbd'          => Components\UI\Kbd::class,
+        'media'        => Components\UI\Media::class,
+        'skeleton'     => Components\UI\Skeleton::class,
+        'switch'       => Components\UI\Toggle::class,
+        'codeBlock'    => Components\UI\CodeBlock::class,
+        'empty'        => Components\UI\EmptyState::class,
+        'toolbar'      => Components\UI\Toolbar::class,
+        'searchBox'    => Components\UI\SearchBox::class,
         // 数据 / 业务
         'pricingCard'  => Components\Data\PricingCard::class,
         'faq'          => Components\Data\Faq::class,
@@ -224,6 +299,40 @@ final class XfAdmin
         'apiKeys'      => Components\Data\ApiKeys::class,
         'commentThread'=> Components\Data\CommentThread::class,
         'emailCompose' => Components\Data\EmailCompose::class,
+        'customers'     => Components\Data\Customers::class,
+        'orders'        => Components\Data\Orders::class,
+        'orderDetails'  => Components\Data\OrderDetails::class,
+        'productDetails'=> Components\Data\ProductDetails::class,
+        'projects'      => Components\Data\Projects::class,
+        'projectDetails'=> Components\Data\ProjectDetails::class,
+        'outlook'       => Components\Data\Outlook::class,
+        'forumThread'   => Components\Data\ForumThread::class,
+        'blogArticle'   => Components\Data\BlogArticle::class,
+        'roles'         => Components\Data\Roles::class,
+        'invoiceCreate' => Components\Data\InvoiceCreate::class,
+        'teamMember'    => Components\Data\TeamMember::class,
+        'testimonial'   => Components\Data\Testimonial::class,
+        'todoList'      => Components\Data\TodoList::class,
+        'issueTracker'  => Components\Data\IssueTracker::class,
+        'voteList'      => Components\Data\VoteList::class,
+        'metricCard'    => Components\Data\MetricCard::class,
+        'terms'         => Components\Data\Terms::class,
+        'contactCard'   => Components\Data\ContactCard::class,
+        'companyCard'   => Components\Data\CompanyCard::class,
+        'clients'       => Components\Data\Clients::class,
+        'sellers'       => Components\Data\Sellers::class,
+        'reviewList'    => Components\Data\ReviewList::class,
+        'projectTeamBoard' => Components\Data\ProjectTeamBoard::class,
+        'emailApp'      => Components\Data\EmailApp::class,
+        'chatApp'       => Components\Data\ChatApp::class,
+        'profilePage'   => Components\Data\ProfilePage::class,
+        'invoiceDetail' => Components\Data\InvoiceDetail::class,
+        'companies'     => Components\Data\Companies::class,
+        'productCategories' => Components\Data\ProductCategories::class,
+        'productAdd'    => Components\Data\ProductAdd::class,
+        'sellerDetails' => Components\Data\SellerDetails::class,
+        'article'       => Components\Data\Article::class,
+        'projectActivity' => Components\Data\ProjectActivity::class,
         // 杂项
         'calendar'    => Components\Misc\Calendar::class,
         'treeView'    => Components\Misc\TreeView::class,
@@ -236,13 +345,29 @@ final class XfAdmin
         'raw'         => Components\Misc\Raw::class,
         'tinycon'     => Components\Misc\Tinycon::class,
         'idleTimer'   => Components\Misc\IdleTimer::class,
+        'animate'     => Components\Misc\Animate::class,
         'pdfViewer'   => Components\Misc\PdfViewer::class,
         'textDiff'    => Components\Misc\TextDiff::class,
+        'pinBoard'    => Components\Misc\PinBoard::class,
+        'masonry'     => Components\Misc\Masonry::class,
     ];
 
     /** 全局配置（theme/brand/footer 等，Page 等组件的默认值来源） */
     private static array $config = [];
 
+    /**
+     * 读取 / 合并全局配置
+     *
+     * - 传入数组时：与既有配置做「递归合并」（深层键覆盖，不会整体替换），
+     *   并联动更新静态资源基址（assets_url）与资源版本号（version，用于 ?v= 缓存刷新）；
+     * - 不传参时：仅返回当前完整配置数组。
+     *
+     * 典型用法（应用引导阶段调用一次）：
+     *   XfAdmin::config(require config_path('xfadmin.php'));
+     *
+     * @param  array|null  $config  待合并的配置数组；null 表示只读
+     * @return array 合并后的完整全局配置
+     */
     public static function config(?array $config = null): array
     {
         if ($config !== null) {
@@ -258,15 +383,44 @@ final class XfAdmin
         return self::$config;
     }
 
+    /**
+     * 按「点号路径」读取单个全局配置项
+     *
+     * 例如：XfAdmin::setting('brand.logo')、XfAdmin::setting('theme', 'light')。
+     *
+     * @param  string  $key      配置键，支持 a.b.c 深层路径
+     * @param  mixed   $default  键不存在时返回的默认值
+     * @return mixed 配置值或默认值
+     */
     public static function setting(string $key, mixed $default = null): mixed
     {
         return Support\Html::get(self::$config, $key, $default);
     }
 
-    /** 创建组件实例 */
+    /**
+     * 按别名创建组件实例（组件工厂核心入口）
+     *
+     * 所有 XfAdmin::card(...)、XfAdmin::dataTable(...) 等魔术调用最终都会
+     * 落到本方法。组件实例实现了 __toString / Stringable，可直接 echo 输出 HTML。
+     *
+     * @param  string  $alias    组件别名（见 $components 注册表，如 'card'、'dataTable'）
+     * @param  array   $options  组件配置项（各组件的 defaults() 定义了可用键与默认值）
+     * @return Component 组件实例
+     *
+     * @throws InvalidArgumentException 当别名未注册时抛出（错误信息中含全部可用别名）
+     */
     public static function component(string $alias, array $options = []): Component
     {
         $class = self::$components[$alias] ?? null;
+        // 大小写不敏感兜底：XfAdmin::datatable() 等驼峰写法差异不应导致致命错误
+        if ($class === null) {
+            foreach (self::$components as $name => $cls) {
+                if (strcasecmp($name, $alias) === 0) {
+                    $class = $cls;
+                    break;
+                }
+            }
+        }
         if ($class === null) {
             throw new InvalidArgumentException("XfAdmin: 未知组件 [{$alias}]，可用组件: " . implode(', ', array_keys(self::$components)));
         }
@@ -274,7 +428,20 @@ final class XfAdmin
         return $class::make($options);
     }
 
-    /** 开发者注册/覆盖自定义组件 */
+    /**
+     * 注册 / 覆盖自定义组件（开发者扩展点）
+     *
+     * - 传入新别名：注册新组件，之后即可用 XfAdmin::{$alias}([...]) 调用；
+     * - 传入已存在的别名：覆盖内置实现（例如替换默认 Card 的渲染逻辑）。
+     *
+     * 自定义组件类必须继承 zxf\XfAdmin\Components\Component 抽象基类，
+     * 并实现 defaults()（默认配置）与 html()（HTML 渲染）两个方法。
+     *
+     * @param  string  $alias           组件别名（建议小驼峰，如 'myWidget'）
+     * @param  string  $componentClass  组件类完全限定名
+     *
+     * @throws InvalidArgumentException 当类未继承 Component 基类时抛出
+     */
     public static function extend(string $alias, string $componentClass): void
     {
         if (! is_subclass_of($componentClass, Component::class)) {
@@ -283,61 +450,163 @@ final class XfAdmin
         self::$components[$alias] = $componentClass;
     }
 
+    /**
+     * 返回完整组件注册表
+     *
+     * 键为组件别名、值为组件类名（含 extend() 追加的自定义组件），
+     * 可用于生成组件文档 / 演示目录，或做覆盖率校验。
+     *
+     * @return array<string, class-string<Component>> alias => class 映射
+     */
     public static function componentList(): array
     {
         return self::$components;
     }
 
-    /** 判断某组件别名是否已注册（含别名） */
+    /**
+     * 判断某组件别名是否已注册（含 dateRange/clipboard 等同义别名）
+     *
+     * @param  string  $alias  组件别名
+     * @return bool true 表示可通过 XfAdmin::{$alias}() 创建
+     */
     public static function has(string $alias): bool
     {
-        return array_key_exists($alias, self::$components);
+        if (array_key_exists($alias, self::$components)) {
+            return true;
+        }
+        // 与 component() 的大小写不敏感兜底保持一致：XfAdmin::datatable() 等驼峰差异也能命中
+        foreach (self::$components as $name => $_cls) {
+            if (strcasecmp($name, $alias) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    /** 返回扩展包版本号 */
+    /**
+     * 返回扩展包版本号（等同于 XfAdmin::VERSION 常量）
+     *
+     * @return string 语义化版本号，如 '1.0.0'
+     */
     public static function version(): string
     {
         return self::VERSION;
     }
 
+    /**
+     * 获取静态资源管理器单例
+     *
+     * Assets 负责：CSS/JS 依赖收集与去重、资源 URL 拼接（含版本号）、
+     * head()/scripts() 输出组装。组件在渲染时会自动向其注册所需插件资源。
+     *
+     * @return Assets 资源管理器单例
+     */
     public static function assets(): Assets
     {
         return Assets::instance();
     }
 
-    /** <head> 内输出（CSS + 主题配置） */
+    /**
+     * 输出 <head> 内所需的全部标签（CSS 链接 + 主题配置内联脚本）
+     *
+     * 在自定义布局中于 </head> 前 echo 本方法返回值；
+     * 使用 XfAdmin::page() 整页组件时无需手动调用（已内置）。
+     *
+     * @return string HTML 片段
+     */
     public static function head(): string
     {
         return Assets::instance()->head();
     }
 
-    /** </body> 前输出（JS + 内联初始化） */
+    /**
+     * 输出 </body> 前所需的全部脚本（JS 文件 + 组件内联初始化代码）
+     *
+     * 必须在页面所有组件渲染完成后调用，否则后渲染组件的
+     * 依赖脚本与初始化代码会缺失。
+     *
+     * @return string HTML 片段
+     */
     public static function scripts(): string
     {
         return Assets::instance()->scripts();
     }
 
-    /** 资源 URL */
+    /**
+     * 将包内相对路径解析为可访问的资源 URL
+     *
+     * 例如 XfAdmin::asset('images/users/user-1.jpg')
+     * => '/zxf/xfadmin/images/users/user-1.jpg?v=1.0.0'。
+     * 对已含资源基址的路径具备幂等性（不会重复拼接）。
+     *
+     * @param  string  $path  相对 resources/assets/ 的路径
+     * @return string 完整资源 URL（含版本参数）
+     */
     public static function asset(string $path): string
     {
         return Assets::instance()->url($path);
     }
 
     /**
-     * DataTables 服务端响应（搜索/过滤/排序/分页全部由包内完成）
+     * 解析图片地址（与 Component::img 行为一致，供静态上下文使用）。
      *
-     * return response()->json(XfAdmin::dataResponse($rows, request()->all(), [
-     *     'searchable' => ['name', 'email'],
-     *     'filters'    => ['status', 'keyword' => ['name', 'email']],
-     * ]));
+     * - 绝对地址（http(s)://、data:）原样返回，便于组件接收外链 / 内联图；
+     * - 空字符串返回空；
+     * - 其余按资源基址解析为 images/ 下的 URL。
      *
-     * @param  iterable|object  $rows  数组数据 / Laravel 查询构造器
+     * 组件内凡涉及【用户可配置的图片路径】，都应经本方法（或实例 $this->img()）
+     * 解析，避免直接拼接 XfAdmin::asset('images/'.ltrim($path)) 导致外链 / data URI 失效。
+     *
+     * @param  string  $path
+     * @return string
+     */
+    public static function img(string $path): string
+    {
+        if (preg_match('#^(https?:|data:)#i', $path)) {
+            return $path;
+        }
+        if ($path === '') {
+            // 空路径返回透明 1x1 GIF，避免组件输出 src="" 触发破图请求
+            return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        }
+        return self::asset('images/' . ltrim($path, '/'));
+    }
+
+    /**
+     * 生成 DataTables 服务端分页协议响应（搜索 / 过滤 / 排序 / 分页全由包内完成）
+     *
+     * 返回 {draw, recordsTotal, recordsFiltered, data} 结构，
+     * 与 XfAdmin::dataTable(['ajax' => ...]) 前端组件直接对接。
+     * 数据源既支持普通数组，也支持 Laravel 查询构造器（自动下推 where/limit）。
+     *
+     * 典型用法（Laravel 控制器）：
+     *   return response()->json(XfAdmin::dataResponse($rows, request()->all(), [
+     *       'searchable' => ['name', 'email'],                     // 全局搜索命中的列
+     *       'filters'    => ['status', 'keyword' => ['name', 'email']], // 自定义过滤参数
+     *   ]));
+     *
+     * @param  iterable|object  $rows     数组数据 / Laravel 查询构造器
+     * @param  array            $params   请求参数（通常传 request()->all()，含 draw/start/length/order 等）
+     * @param  array            $options  行为配置：searchable（可搜索列）、filters（过滤映射）等
+     * @return array DataTables 协议数组（可直接 json 输出）
      */
     public static function dataResponse(iterable|object $rows, array $params = [], array $options = []): array
     {
         return Support\DataSet::response($rows, $params, $options);
     }
 
+    /**
+     * 魔术静态调用：把 XfAdmin::{alias}($options) 转发为组件工厂调用
+     *
+     * 例如 XfAdmin::card(['title' => 'x']) 等价于 XfAdmin::component('card', ['title' => 'x'])。
+     * 全部可用别名见类顶部 @method 注解与 $components 注册表。
+     *
+     * @param  string  $name       组件别名
+     * @param  array   $arguments  第一个元素为组件配置数组（可省略）
+     * @return Component 组件实例（Stringable，可直接输出）
+     *
+     * @throws InvalidArgumentException 别名未注册时抛出
+     */
     public static function __callStatic(string $name, array $arguments): Component
     {
         return self::component($name, $arguments[0] ?? []);

@@ -35,12 +35,12 @@ class Spinner extends Component
         if ($this->get('spinkit')) {
             $name = $this->e($this->get('spinkit'));
             $dots = ['plane' => 0, 'chase' => 6, 'bounce' => 2, 'wave' => 5, 'pulse' => 0, 'flow' => 3, 'swing' => 2, 'circle' => 12, 'circle-fade' => 12, 'grid' => 9, 'fold' => 4, 'wander' => 3][$this->get('spinkit')] ?? 0;
-            $inner = str_repeat('<div class="sk-' . $name . '-dot"></div>', $dots);
-            if (in_array($this->get('spinkit'), ['bounce', 'wave', 'flow', 'grid', 'wander'], true)) {
-                $inner = str_replace('-dot', ($this->get('spinkit') === 'wave' ? '-rect' : '-dot'), $inner);
-            }
             if ($this->get('spinkit') === 'fold') {
+                // fold 是立方体结构，独立渲染（不走 -dot 模板）
                 $inner = str_repeat('<div class="sk-fold-cube"></div>', 4);
+            } else {
+                $dotClass = $this->get('spinkit') === 'wave' ? 'sk-' . $name . '-rect' : 'sk-' . $name . '-dot';
+                $inner = str_repeat('<div class="' . $dotClass . '"></div>', $dots);
             }
 
             return '<div' . $this->attrs(['class' => 'sk-' . $name]) . '>' . $inner . '</div>';

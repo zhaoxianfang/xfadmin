@@ -33,12 +33,12 @@ class Maintenance extends AuthPage
     {
         $content = '<div class="text-center">';
         if ($this->get('image')) {
-            $content .= '<img src="' . $this->e(XfAdmin::asset('images/' . ltrim((string) $this->get('image'), '/'))) . '" class="img-fluid mb-3" alt="">';
+            $content .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('image'))) . '" class="img-fluid mb-3" alt="">';
         } else {
             $content .= '<i class="ti ti-settings" style="font-size:72px;"></i>';
         }
         $content .= '<h2 class="fw-bold mt-3">' . $this->e($this->get('heading')) . '</h2>';
-        $content .= '<p class="text-muted">' . $this->raw($this->get('message')) . '</p>';
+        $content .= '<p class="text-muted">' . $this->e($this->get('message')) . '</p>';
         if ($this->get('contact')) {
             $content .= '<p class="mb-0">如需帮助请联系 <a href="mailto:' . $this->e($this->get('contact')) . '">' . $this->e($this->get('contact')) . '</a></p>';
         }

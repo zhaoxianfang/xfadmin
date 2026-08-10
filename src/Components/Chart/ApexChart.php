@@ -48,7 +48,7 @@ class ApexChart extends Component
             'chart' => array_filter([
                 'type'      => $type,
                 'height'    => $this->get('height'),
-                'width'     => $this->get('width'),
+                'width'     => $this->get('width') ?? '100%', // 默认 100% 确保响应式
                 'sparkline' => $this->get('sparkline') ? ['enabled' => true] : null,
             ], fn ($v) => $v !== null),
             'series' => $this->get('series'),

@@ -40,11 +40,7 @@ class FileManager extends Component
 
     protected function html(): string
     {
-        $cols = (array) $this->get('cols');
-        $colCls = 'col';
-        foreach ($cols as $bp => $n) {
-            $colCls .= ' col-' . $bp . '-' . (int) $n;
-        }
+        $colCls = $this->resolveColClass($this->get('cols'));
 
         $html = '<div' . $this->attrs(['class' => 'row g-3']) . '>';
         foreach ((array) $this->get('files', []) as $f) {
@@ -66,5 +62,35 @@ class FileManager extends Component
         }
 
         return $html . '</div>';
+    }
+
+    /**
+     * 解析栅格类。
+     * - 数组形式：['md' => 3, 'sm' => 6] → "col col-md-3 col-sm-6"
+     * - 标量整数 N：按 12 栅格换算为响应式列（N 可整除 12 时精确，否则回退 flex 百分比）
+     */
+    private function resolveColClass($cols): string
+    {
+        if (is_array($cols) && ! empty($cols)) {
+            $cls = 'col';
+            foreach ($cols as $bp => $n) {
+                $cls .= ' col-' . $bp . '-' . (int) $n;
+            }
+
+            return $cls;
+        }
+
+        $n = (int) $cols;
+        if ($n <= 1) {
+            return 'col-12';
+        }
+        if (12 % $n === 0) {
+            $per = (int) (12 / $n);
+
+            return 'col-12 col-sm-6 col-md-' . $per;
+        }
+
+        // 不能整除 12（如 5 列）→ 回退到百分比栅格类（样式见 xfadmin.css）
+        return 'col col-xf-' . $n;
     }
 }

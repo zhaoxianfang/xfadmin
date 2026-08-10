@@ -8,8 +8,8 @@
 XfAdmin::form([
     'action' => '/users',
     'method' => 'POST',
-    'layout' => 'vertical',        // vertical | horizontal | inline
-    'label_width' => 3,            // horizontal 布局左侧栅格
+    'layout' => 'vertical',        // vertical 纵向(默认) | horizontal 标签左置 | inline 行内
+    'label_width' => 180,          // horizontal 布局的标签列宽（px，CSS Grid 实现，窄屏自动回退纵向）
     'fields' => [
         XfAdmin::input(['name' => 'name', 'label' => '姓名', 'required' => true]),
         XfAdmin::input(['name' => 'email', 'label' => '邮箱', 'type' => 'email']),

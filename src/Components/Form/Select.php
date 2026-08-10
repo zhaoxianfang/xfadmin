@@ -85,9 +85,15 @@ class Select extends Component
         ];
 
         if ($this->get('enhance')) {
+            $enhanceCfg = (array) $this->get('enhance_options', []);
+            // 多选原生 select 无空白占位项，Choices/Select2 占位需由插件自身提供；
+            // 仅在单选时把 placeholder 注入插件配置，避免「配置有占位却无 DOM 占位项」失效
+            if ($this->get('placeholder') && ! $this->get('multiple')) {
+                $enhanceCfg['placeholder'] = $this->get('placeholder');
+            }
             $attrs['data-xf']        = $this->get('enhance');
             $attrs['data-xf-config'] = json_encode(
-                (array) $this->get('enhance_options', []) + ($this->get('placeholder') ? ['placeholder' => $this->get('placeholder')] : []),
+                $enhanceCfg,
                 JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT
             );
         }

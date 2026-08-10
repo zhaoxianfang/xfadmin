@@ -50,8 +50,14 @@ class ProductCard extends Component
             $b = (array) $this->get('badge');
             $html .= '<span class="badge bg-' . $this->e($b['variant'] ?? 'primary') . ' position-absolute top-0 start-0 m-2">' . $this->e($b['text'] ?? '') . '</span>';
         }
-        $img = $this->get('image') ? XfAdmin::asset('images/' . ltrim((string) $this->get('image'), '/')) : '';
-        $html .= '<a href="' . $this->e($this->get('href')) . '"><img src="' . $this->e($img) . '" class="card-img-top p-3" alt="' . $this->e($this->get('title')) . '"></a>';
+        $img = $this->get('image');
+        if ($img) {
+            $img = \zxf\XfAdmin\XfAdmin::img((string) $img);
+            $html .= '<a href="' . $this->e($this->get('href')) . '"><img src="' . $this->e($img) . '" class="card-img-top xf-product-img object-fit-cover" alt="' . $this->e($this->get('title')) . '"></a>';
+        } else {
+            // 无图时渲染占位块，保持卡片高度与布局一致
+            $html .= '<div class="xf-product-img bg-light d-flex align-items-center justify-content-center text-muted"><i class="ti ti-photo fs-1"></i></div>';
+        }
         $html .= '</div>';
 
         $html .= '<div class="card-body">';

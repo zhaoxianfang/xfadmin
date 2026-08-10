@@ -52,14 +52,19 @@ class Lightbox extends Component
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT),
         ]) . '>';
 
+        // 栅格列类：整除用 col-{n}；非整除回退 col-xf-{cols}（与 FileManager 一致，避免一行挤入过量项）
+        $colClass = (12 % $cols === 0) ? 'col-' . (int) (12 / $cols) : 'col-xf-' . $cols;
+
         foreach ((array) $this->get('images', []) as $image) {
             $image = is_array($image) ? $image : ['src' => $image];
             $thumb = $image['thumb'] ?? $image['src'] ?? '';
-            $html .= '<div class="col-' . (int) (12 / $cols) . '">'
+            // GLightbox 的 data-glightbox 是自有 DSL（key: value; ...），title 中的 ; 会注入额外配置项，需剔除
+            $gTitle = isset($image['title']) ? 'title: ' . str_replace(';', '', (string) $image['title']) : null;
+            $html .= '<div class="' . $colClass . '">'
                 . '<a href="' . $this->e($image['src'] ?? '') . '"' . Html::attrs([
                     'class'        => 'glightbox d-block',
                     'data-gallery' => $this->get('gallery'),
-                    'data-glightbox' => isset($image['title']) ? 'title: ' . $image['title'] : null,
+                    'data-glightbox' => $gTitle,
                 ]) . '>'
                 . '<img src="' . $this->e($thumb) . '" alt="' . $this->e($image['title'] ?? '') . '" class="img-fluid rounded">'
                 . '</a></div>';

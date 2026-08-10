@@ -54,7 +54,7 @@ class Modal extends Component
         $dialogClass = Html::cls('modal-dialog', [
             'modal-dialog-centered'   => $this->get('centered'),
             'modal-dialog-scrollable' => $this->get('scrollable'),
-        ], $this->get('size') ? 'modal-' . $this->get('size') : '');
+        ], $this->get('size') ? 'modal-' . $this->e($this->get('size')) : '');
 
         $attrs = [
             'class'    => Html::cls('modal', ['fade' => $this->get('fade')]),

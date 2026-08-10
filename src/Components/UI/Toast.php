@@ -31,10 +31,10 @@ class Toast extends Component
 
     protected function html(): string
     {
-        $variant = $this->get('variant');
+        $variant = $this->get('variant') !== null ? $this->e($this->get('variant')) : null;
 
         $attrs = [
-            'class' => Html::cls('toast', ['show' => $this->get('show')], $variant ? 'text-bg-' . $variant . ' border-0' : ''),
+            'class' => Html::cls('toast', ['show' => $this->get('show')], $variant ? 'text-bg-' . $this->e($variant) . ' border-0' : ''),
             'role'  => 'alert',
             'aria-live' => 'assertive',
             'aria-atomic' => 'true',

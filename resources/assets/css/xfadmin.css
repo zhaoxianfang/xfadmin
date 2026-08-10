@@ -1,85 +1,2940 @@
-/*!
- * XfAdmin 组件补充样式（不依赖构建，纯 CSS）
- * 仅覆盖模板自带样式之外、由本扩展包新增组件所需的样式。
- */
+/* ============================================================================
+   XfAdmin 设计系统（xfadmin.css）
+   ----------------------------------------------------------------------------
+   自包含组件样式：定义所有组件自定义类，基于 Bootstrap 5 CSS 变量。
+   该文件在 resources/assets/css/xfadmin.css，由 Page 组件最后加载（覆盖框架样式）。
+   设计原则：
+     1) 全部使用 Bootstrap 5 变量（--bs-*），自动适配 [data-bs-theme="dark"]；
+     2) 侧边栏 / 顶栏 / 内容区采用 INSPINIA v4 风格骨架，支持明暗与折叠；
+     3) 统一圆角、阴影、间距，保证全站视觉协调。
+   ========================================================================== */
 
-/* ---------- 步骤条 Stepper ---------- */
-.xf-stepper { display: flex; }
-.xf-stepper-horizontal { flex-direction: row; }
-.xf-stepper-vertical { flex-direction: column; }
-.xf-stepper-item { display: flex; align-items: flex-start; position: relative; flex: 1; }
-.xf-stepper-horizontal .xf-stepper-item { flex-direction: column; align-items: center; text-align: center; }
-.xf-stepper-vertical .xf-stepper-item { padding-bottom: 1.5rem; }
-.xf-stepper-dot {
-    width: 40px; height: 40px; border-radius: 50%;
+/* --------------------------------------------------------------------------
+   0. 设计令牌（Design Tokens）
+   -------------------------------------------------------------------------- */
+:root {
+    /* ------------------------------------------------------------------
+       Bootstrap 5 CSS 变量 -> INSPINIA 变量桥接
+       INSPINIA v4 使用 --ins-* 变量系统，而 XfAdmin 组件使用 --bs-*。
+       在此处建立映射，使所有组件样式在 INSPINIA 主题下保持一致。
+       ------------------------------------------------------------------ */
+    --bs-primary: var(--ins-primary, #1ab394);
+    --bs-secondary: var(--ins-secondary, #1c84c6);
+    --bs-success: var(--ins-success, #0acf97);
+    --bs-info: var(--ins-info, #23c6c8);
+    --bs-warning: var(--ins-warning, #f8ac59);
+    --bs-danger: var(--ins-danger, #ed5565);
+    --bs-light: var(--ins-light, #eef2f7);
+    --bs-dark: var(--ins-dark, #313a46);
+    --bs-primary-rgb: var(--ins-primary-rgb, 26, 179, 148);
+    --bs-secondary-rgb: var(--ins-secondary-rgb, 28, 132, 198);
+    --bs-success-rgb: var(--ins-success-rgb, 10, 207, 151);
+    --bs-info-rgb: var(--ins-info-rgb, 35, 198, 200);
+    --bs-warning-rgb: var(--ins-warning-rgb, 248, 172, 89);
+    --bs-danger-rgb: var(--ins-danger-rgb, 237, 85, 101);
+    --bs-light-rgb: var(--ins-light-rgb, 238, 242, 247);
+    --bs-dark-rgb: var(--ins-dark-rgb, 49, 58, 70);
+    --bs-primary-text-emphasis: var(--ins-primary-text-emphasis, #16987e);
+    --bs-primary-bg-subtle: var(--ins-primary-bg-subtle, #ddf4ef);
+    --bs-primary-border-subtle: var(--ins-primary-border-subtle, #a3e1d4);
+    --bs-secondary-text-emphasis: var(--ins-secondary-text-emphasis, #1870a8);
+    --bs-secondary-bg-subtle: var(--ins-secondary-bg-subtle, #ddedf6);
+    --bs-success-text-emphasis: var(--ins-success-text-emphasis, #09b080);
+    --bs-success-bg-subtle: var(--ins-success-bg-subtle, #daf8ef);
+    --bs-info-text-emphasis: var(--ins-info-text-emphasis, #1ea8aa);
+    --bs-info-bg-subtle: var(--ins-info-bg-subtle, #def6f7);
+    --bs-warning-text-emphasis: var(--ins-warning-text-emphasis, #d3924c);
+    --bs-warning-bg-subtle: var(--ins-warning-bg-subtle, #fef3e6);
+    --bs-danger-text-emphasis: var(--ins-danger-text-emphasis, #c94856);
+    --bs-danger-bg-subtle: var(--ins-danger-bg-subtle, #fce6e8);
+    --bs-body-color: var(--ins-body-color, #4c4c5c);
+    --bs-body-color-rgb: var(--ins-body-color-rgb, 76, 76, 92);
+    --bs-body-bg: var(--ins-body-bg, #f1f2f7);
+    --bs-body-bg-rgb: var(--ins-body-bg-rgb, 241, 242, 247);
+    --bs-emphasis-color: var(--ins-emphasis-color, rgba(76, 76, 92, 0.75));
+    --bs-emphasis-color-rgb: var(--ins-emphasis-color-rgb, 76, 76, 92);
+    --bs-secondary-color: var(--ins-secondary-color, #9ba6b7);
+    --bs-secondary-color-rgb: var(--ins-secondary-color-rgb, 155, 166, 183);
+    --bs-secondary-bg: var(--ins-secondary-bg, #fff);
+    --bs-secondary-bg-rgb: var(--ins-secondary-bg-rgb, 255, 255, 255);
+    --bs-tertiary-color: var(--ins-tertiary-color, rgba(76, 76, 92, 0.5));
+    --bs-tertiary-color-rgb: var(--ins-tertiary-color-rgb, 76, 76, 92);
+    --bs-tertiary-bg: var(--ins-tertiary-bg, #f6f7fb);
+    --bs-tertiary-bg-rgb: var(--ins-tertiary-bg-rgb, 246, 247, 251);
+    --bs-border-color: var(--ins-border-color, #e7e9eb);
+    --bs-border-color-translucent: var(--ins-border-color-translucent, #eef2f7);
+    --bs-font-monospace: var(--ins-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+
+    /* XfAdmin 设计令牌 */
+    --xf-sidebar-width: 260px;
+    --xf-sidebar-width-condensed: 70px;
+    /* 顶栏高度一律以模板变量为准（app.min.css: --ins-topbar-height:40px），
+       此处仅作兜底，切勿写死数值覆盖模板，否则会与依赖该变量的十余处
+       calc() 布局计算（侧边栏偏移 / 吸顶 / 滚动容器高度）产生错位。 */
+    --xf-topbar-height: var(--ins-topbar-height, 40px);
+    --xf-sidebar-bg: #ffffff;
+    --xf-sidebar-bg-dark: #1c2535;
+    --xf-sidebar-fg: #5b6673;
+    --xf-sidebar-fg-dark: #aebfce;
+    --xf-sidebar-active: var(--bs-primary);
+    --xf-sidebar-active-bg: rgba(var(--bs-primary-rgb), .12);
+    --xf-sidebar-border: var(--bs-border-color);
+    --xf-topbar-bg: #ffffff;
+    --xf-radius: .3rem;
+    --xf-radius-sm: .25rem;
+    --xf-shadow-sm: 0 1px 2px rgba(0, 0, 0, .06);
+    --xf-shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 14px rgba(0, 0, 0, .04);
+    --xf-shadow-lg: 0 10px 40px rgba(0, 0, 0, .12);
+}
+
+/* 暗色模式：Bootstrap 5 -> INSPINIA 变量桥接 */
+[data-bs-theme="dark"] {
+    --bs-primary: var(--ins-primary, #1ab394);
+    --bs-secondary: var(--ins-secondary, #1c84c6);
+    --bs-success: var(--ins-success, #0acf97);
+    --bs-info: var(--ins-info, #23c6c8);
+    --bs-warning: var(--ins-warning, #f8ac59);
+    --bs-danger: var(--ins-danger, #ed5565);
+    --bs-light: var(--ins-light, #eef2f7);
+    --bs-dark: var(--ins-dark, #313a46);
+    --bs-primary-rgb: var(--ins-primary-rgb, 26, 179, 148);
+    --bs-secondary-rgb: var(--ins-secondary-rgb, 28, 132, 198);
+    --bs-success-rgb: var(--ins-success-rgb, 10, 207, 151);
+    --bs-info-rgb: var(--ins-info-rgb, 35, 198, 200);
+    --bs-warning-rgb: var(--ins-warning-rgb, 248, 172, 89);
+    --bs-danger-rgb: var(--ins-danger-rgb, 237, 85, 101);
+    --bs-light-rgb: var(--ins-light-rgb, 238, 242, 247);
+    --bs-dark-rgb: var(--ins-dark-rgb, 49, 58, 70);
+    --bs-primary-text-emphasis: var(--ins-primary-text-emphasis, #76d1bf);
+    --bs-primary-bg-subtle: var(--ins-primary-bg-subtle, rgba(26, 179, 148, 0.2));
+    --bs-primary-border-subtle: var(--ins-primary-border-subtle, #106b59);
+    --bs-secondary-text-emphasis: var(--ins-secondary-text-emphasis, #77b5dd);
+    --bs-secondary-bg-subtle: var(--ins-secondary-bg-subtle, rgba(28, 132, 198, 0.2));
+    --bs-success-text-emphasis: var(--ins-success-text-emphasis, #6ce2c1);
+    --bs-success-bg-subtle: var(--ins-success-bg-subtle, rgba(10, 207, 151, 0.2));
+    --bs-info-text-emphasis: var(--ins-info-text-emphasis, #7bddde);
+    --bs-info-bg-subtle: var(--ins-info-bg-subtle, rgba(35, 198, 200, 0.2));
+    --bs-warning-text-emphasis: var(--ins-warning-text-emphasis, #fbcd9b);
+    --bs-warning-bg-subtle: var(--ins-warning-bg-subtle, rgba(248, 172, 89, 0.2));
+    --bs-danger-text-emphasis: var(--ins-danger-text-emphasis, #f499a3);
+    --bs-danger-bg-subtle: var(--ins-danger-bg-subtle, rgba(237, 85, 101, 0.2));
+    --bs-body-color: var(--ins-body-color, #aab8c5);
+    --bs-body-color-rgb: var(--ins-body-color-rgb, 170, 184, 197);
+    --bs-body-bg: var(--ins-body-bg, #17181e);
+    --bs-body-bg-rgb: var(--ins-body-bg-rgb, 23, 24, 30);
+    --bs-emphasis-color: var(--ins-emphasis-color, rgba(170, 184, 197, 0.75));
+    --bs-emphasis-color-rgb: var(--ins-emphasis-color-rgb, 170, 184, 197);
+    --bs-secondary-color: var(--ins-secondary-color, #8391a2);
+    --bs-secondary-color-rgb: var(--ins-secondary-color-rgb, 131, 145, 162);
+    --bs-secondary-bg: var(--ins-secondary-bg, #1e1f27);
+    --bs-secondary-bg-rgb: var(--ins-secondary-bg-rgb, 30, 31, 39);
+    --bs-tertiary-color: var(--ins-tertiary-color, rgba(170, 184, 197, 0.5));
+    --bs-tertiary-color-rgb: var(--ins-tertiary-color-rgb, 170, 184, 197);
+    --bs-tertiary-bg: var(--ins-tertiary-bg, #272832);
+    --bs-tertiary-bg-rgb: var(--ins-tertiary-bg-rgb, 39, 40, 50);
+    --bs-border-color: var(--ins-border-color, rgba(255, 255, 255, 0.1));
+    --bs-border-color-translucent: var(--ins-border-color-translucent, rgba(255, 255, 255, 0.1));
+}
+
+/* --------------------------------------------------------------------------
+   1. 工具类补充（非 Bootstrap 默认）
+   -------------------------------------------------------------------------- */
+.fs-12 { font-size: 12px !important; }
+.fs-13 { font-size: 13px !important; }
+.fs-15 { font-size: 15px !important; }
+.fs-17 { font-size: 17px !important; }
+.fs-20 { font-size: 20px !important; }
+.fs-22 { font-size: 22px !important; }
+.fs-24 { font-size: 24px !important; }
+.fs-xs { font-size: .75rem !important; }
+.fs-sm { font-size: .825rem !important; }
+.fs-md { font-size: .9375rem !important; }
+.fs-lg { font-size: 1.05rem !important; }
+.fs-xl { font-size: 1.25rem !important; }
+.fs-xxl { font-size: 1.5rem !important; }
+.fs-xxs { font-size: .6875rem !important; }
+
+.w-sm { min-width: 90px !important; }
+.w-md { min-width: 120px !important; }
+.w-lg { min-width: 160px !important; }
+
+.border-dashed { border-style: dashed !important; }
+
+/* 软色按钮（低饱和背景 + 彩色文字），用于定制面板等 */
+.btn-soft-primary   { color: var(--bs-primary); background: rgba(var(--bs-primary-rgb), .15); }
+.btn-soft-primary:hover { color: #fff; background: var(--bs-primary); }
+.btn-soft-secondary { color: var(--bs-secondary); background: rgba(var(--bs-secondary-rgb), .15); }
+.btn-soft-secondary:hover { color: #fff; background: var(--bs-secondary); }
+.btn-soft-success   { color: var(--bs-success); background: rgba(var(--bs-success-rgb), .15); }
+.btn-soft-success:hover { color: #fff; background: var(--bs-success); }
+.btn-soft-info      { color: var(--bs-info); background: rgba(var(--bs-info-rgb), .15); }
+.btn-soft-info:hover { color: #fff; background: var(--bs-info); }
+.btn-soft-warning   { color: #997404; background: rgba(var(--bs-warning-rgb), .15); }
+.btn-soft-warning:hover { color: #000; background: var(--bs-warning); }
+.btn-soft-danger    { color: var(--bs-danger); background: rgba(var(--bs-danger-rgb), .15); }
+.btn-soft-danger:hover { color: #fff; background: var(--bs-danger); }
+.btn-soft-light     { color: var(--bs-body-color); background: rgba(var(--bs-emphasis-color-rgb), .08); }
+.btn-soft-light:hover { color: var(--bs-body-color); background: rgba(var(--bs-emphasis-color-rgb), .15); }
+.btn-soft-dark      { color: var(--bs-dark); background: rgba(var(--bs-dark-rgb), .15); }
+.btn-soft-dark:hover { color: #fff; background: var(--bs-dark); }
+
+/* --------------------------------------------------------------------------
+   2. 布局骨架（Wrapper / Sidebar / Topbar / Content / Footer）
+   ----------------------------------------------------------------------------
+   【重要维护约定 · 勿回退】
+   本包直接内置 INSPINIA v4 原版 app.min.css（与后台模板逐字节一致），
+   其中已完整定义 .wrapper / .sidenav-menu / .app-topbar / .content-page /
+   .side-nav-* / .sub-menu / .sidenav-user / .button-on-hover /
+   .button-close-offcanvas / .sidenav-toggle-button / .logo* / .page-title-head
+   等全部布局类，并依赖 --ins-* 变量族与 html[data-sidenav-size] /
+   [data-menu-color] / [data-topbar-color] 等属性选择器协同工作。
+
+   xfadmin.css 在其后加载，若在此重写上述类（如自定义 position/width/
+   margin/left/background/padding），会覆盖模板真实实现，导致：
+     · 侧边栏宽度与配色偏离模板（260px/#1c2535 vs 模板 235px/#23303c）；
+     · 顶栏由 sticky 变 fixed、margin-left 被清零而错位；
+     · condensed / on-hover / offcanvas 三种 sidenav-size 状态失效；
+     · 菜单折叠、高亮、滚动定位等模板行为与样式不一致。
+
+   因此本节【不再重写任何布局类】，一律交由 app.min.css 负责；
+   此处只保留模板未提供的补充项。新增样式前请先确认 app.min.css 是否已定义。
+   -------------------------------------------------------------------------- */
+
+/* landing/演示页等非后台布局的容器兜底（模板 .wrapper 仅用于后台骨架） */
+.wrapper.xf-plain {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 侧边栏 / 顶栏 / 内容区 / 折叠态 / 窄屏抽屉 / topnav 布局：
+   全部由 app.min.css（模板原版）提供，此处不再重写。
+   仅保留模板未定义的自定义滚动容器兜底（当未启用 simplebar 时）。 */
+.sidenav-menu .sidenav-scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+/* sidenav 滚动区背景继承父级暗色背景，防止内容溢出屏幕高度时出现白底穿透 */
+.sidenav-menu [data-simplebar],
+.sidenav-menu .sidenav-scroll,
+.sidenav-menu [data-simplebar] .simplebar-content-wrapper,
+.sidenav-menu [data-simplebar] .simplebar-content {
+    background-color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   3. 品牌 / Logo
+   -------------------------------------------------------------------------- */
+/* .logo / .logo-lg / .logo-sm / .logo-dark / .logo-light 的显示与切换逻辑
+   由 app.min.css 按 [data-menu-color] / [data-bs-theme] / [data-sidenav-size]
+   统一控制，此处不再重写 display，仅约束图片尺寸比例。 */
+.logo-lg img, .logo-lg svg, .logo-sm img, .logo-sm svg,
+.logo-dark img, .logo-light img, .auth-brand img, .logo-topbar img { height: 26px; width: auto; object-fit: contain; }
+/* 任何 logo 图片默认保持比例（防止宽 logo 被 object-fit:fill 横向挤压变形） */
+.logo img { object-fit: contain; }
+
+/* 文章阅读页封面：固定高度裁切（覆盖 img{height:auto}，避免被拉变形） */
+.xf-article-cover { height: 360px; object-fit: cover; }
+/* 文章详情根容器排版（正文行高 / 段距 / 图片自适应） */
+.xf-article { line-height: 1.75; }
+.xf-article h1, .xf-article .h3 { line-height: 1.35; }
+.xf-article p { margin-bottom: .9rem; }
+.xf-article img { max-width: 100%; height: auto; border-radius: var(--xf-radius); }
+
+/* --------------------------------------------------------------------------
+   4. 侧边导航（Menu）
+   ----------------------------------------------------------------------------
+   .side-nav / .side-nav-item / .side-nav-link / .side-nav-title / .sub-menu /
+   .menu-icon / .menu-arrow / .sidenav-user / .button-on-hover /
+   .button-close-offcanvas 及其 [data-menu-color] 明暗变体、
+   condensed 悬浮展开等，均由 app.min.css（模板原版）完整提供。
+
+   注意：模板的二级菜单是 Bootstrap Collapse（.sub-menu.collapse + .show），
+   由 bootstrap.bundle 驱动；此前本文件用 `.sub-menu{display:none}` +
+   `.side-nav-item.show > .sub-menu{display:block}` 自造展开逻辑，
+   会与 Collapse 的高度动画互相打架（展开闪烁/无动画/点击无反应）。
+   故此节整体移除，不再重写。
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   5. 顶栏（Topbar）
+   -------------------------------------------------------------------------- */
+/* .topbar-menu / .topbar-item / .topbar-link / .topbar-badge / .app-search /
+   .topbar-search / .app-search-icon / .nav-user / .notification-item
+   均由 app.min.css（模板原版）定义，此处不再重写，避免顶栏图标尺寸、
+   搜索框圆角与内边距、用户区排版偏离模板。 */
+
+/* 三段式布局：左侧 | 中间(水平导航) | 右侧 */
+.app-topbar .topbar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+}
+/* 中间水平导航在可用空间居中 */
+/* 明暗切换图标（模板用内联 SVG 切换，本包用双图标，属补充） */
+.mode-icon.icon-sun { display: none; }
+[data-bs-theme="dark"] .mode-icon.icon-moon { display: none; }
+[data-bs-theme="dark"] .mode-icon.icon-sun { display: inline-flex; }
+
+/* 以下为模板未定义的补充类 */
+.noti-title { padding: .75rem 1rem; font-weight: 600; border-bottom: 1px solid var(--bs-border-color); }
+.notify-item {
+    display: flex; gap: .65rem; padding: .65rem 1rem; text-decoration: none; color: var(--bs-body-color);
+    border-bottom: 1px solid var(--bs-border-color); transition: background .15s;
+}
+.notify-item:hover { background: var(--bs-tertiary-bg); }
+.notify-item .avatar { width: 36px; height: 36px; flex-shrink: 0; }
+.notify-item .title { font-weight: 600; font-size: .85rem; }
+.notify-item .text { font-size: .8rem; color: var(--bs-secondary-color); }
+.notify-item .time { font-size: .72rem; color: var(--bs-tertiary-color); }
+
+.sidenav-toggle-button, .topnav-toggle-button { cursor: pointer; }
+
+/* --------------------------------------------------------------------------
+   6. 认证页 / 模板页（Auth / Coming Soon / Maintenance / Lock / Error）
+   -------------------------------------------------------------------------- */
+.auth-page-wrapper {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 1.5rem;
+}
+.auth-one-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
+}
+.auth-one-bg-position {
+    position: relative; z-index: 1; width: 100%;
+}
+.bg-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0, 0, 0, .35);
+}
+/* .auth-box / .auth-brand 由 app.min.css 定义：
+ *   .auth-box   仅 position:relative（100% 宽的居中 flex 容器），
+ *               视觉「卡片」由内部 .card.p-4.rounded-4 承担；
+ *   .auth-brand margin-bottom:2rem，并按 [data-bs-theme] 切换
+ *               .logo-dark / .logo-light 的显示。
+ * 此前本文件把 .auth-box 自身重写成 max-width:420px 的描边卡片、
+ * 并给 .auth-brand 加了灰底与分隔线，导致登录页出现「卡中卡」、
+ * 宽度不随 col-xxl-4/col-md-6 栅格变化、明暗 logo 切换失效。
+ * 故移除这些重写，仅保留模板未提供的补充项。 */
+.auth-box .card-body { padding: 1.75rem; }
+.auth-pass-inputgroup .btn { border-color: var(--bs-border-color); }
+.auth-footer-text { text-align: center; margin-top: 1rem; font-size: .875rem; color: var(--bs-secondary-color); }
+
+/* 错误页 / 即将上线 / 维护：这些组件自带完整文档结构，这里做基础美化 */
+.error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+.error-page .error-code { font-size: 6rem; font-weight: 800; line-height: 1; color: var(--bs-primary); }
+.coming-soon-page, .maintenance-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+.lock-screen-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.lock-screen-box { width: 100%; max-width: 420px; text-align: center; }
+
+/* --------------------------------------------------------------------------
+   7. 头像系统（Avatar）
+   -------------------------------------------------------------------------- */
+.avatar {
+    position: relative; display: inline-block; flex-shrink: 0;
+}
+.avatar > img, .avatar > .avatar-title {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+/* ============================================================
+   图片尺寸规范化（统一后台模板观感，避免元素尺寸错乱）
+   ============================================================ */
+/* 卡片顶图默认裁切为封面，防止非方图被拉伸/过高 */
+.card-img-top { object-fit: cover; }
+
+/* 轮播图：统一高度 + 封面裁切，竖图不再被无限拉高（响应式） */
+.xf-carousel-img { width: 100%; height: 420px; object-fit: cover; display: block; }
+@media (max-width: 991.98px) { .xf-carousel-img { height: 300px; } }
+@media (max-width: 575.98px) { .xf-carousel-img { height: 200px; } }
+
+/* 商品卡片封面：固定高度 + 封面裁切，移除多余内边距，与模板一致 */
+.xf-product-img { height: 200px; object-fit: cover; display: block; }
+
+/* 通用防御：所有图片不超出容器宽度（Bootstrap 已含，这里兜底）。
+ * ⚠️ 重要陷阱：下面的 height:auto 会「覆盖」<img> 的 height="N" 表现属性
+ * （HTML 表现属性优先级低于任何 CSS 规则）。因此组件里「固定尺寸的缩略图/头像」
+ * 必须由组件显式输出 内联 style="width:..px;height:..px;object-fit:cover"，
+ * 或挂上 .avatar 尺寸类（由 CSS 设死宽高，优先级高于本规则）；
+ * 否则非方图源会被拉成原始比例，导致与后台模板尺寸不一致。
+ * 下一条规则为「同时带 width/height 属性」的图片兜底 object-fit，避免变形。 */
+img { max-width: 100%; height: auto; }
+img[width][height] { object-fit: cover; }
+.avatar-title {
     display: flex; align-items: center; justify-content: center;
-    font-weight: 600; flex-shrink: 0; z-index: 2;
+    width: 100%; height: 100%; font-weight: 600; text-transform: uppercase;
 }
-.xf-stepper-vertical .xf-stepper-body { margin-left: .75rem; }
-.xf-stepper-horizontal .xf-stepper-body { margin-top: .5rem; }
-/* 连接线 */
-.xf-stepper-horizontal .xf-stepper-item:not(:last-child)::after {
-    content: ""; position: absolute; top: 20px; left: 50%; width: 100%; height: 2px;
-    background: var(--bs-border-color, #e5e7eb); z-index: 1;
+/* 头像尺寸严格对齐 INSPINIA（_avatar.scss: xxs 1rem / xs 1.5rem / sm 2rem / md 2.25rem / lg 2.75rem / xl 3rem / xxl 5rem） */
+.avatar-xxs { width: 1rem; height: 1rem; font-size: .5rem; }
+.avatar-xs { width: 1.5rem; height: 1.5rem; font-size: .65rem; }
+.avatar-sm { width: 2rem; height: 2rem; font-size: .7rem; }
+.avatar-md { width: 2.25rem; height: 2.25rem; font-size: .8rem; }
+.avatar-lg { width: 2.75rem; height: 2.75rem; font-size: .9rem; }
+.avatar-xl { width: 3rem; height: 3rem; font-size: 1rem; }
+.avatar-xxl { width: 5rem; height: 5rem; font-size: 1.6rem; }
+
+/* 头像图片裁切（含直接以 img.avatar-* 渲染的情况，避免非方图拉伸） */
+[class*="avatar-"] > img, img[class*="avatar-"] { object-fit: cover; }
+
+/* 头像分组：对齐 INSPINIA（对 .avatar 直接子元素与 .avatar-group-item 都生效，支持 xs/sm 紧凑变体） */
+.avatar-group { display: inline-flex; align-items: center; flex-wrap: wrap; line-height: 1; padding-left: .75rem; }
+.avatar-group > .avatar,
+.avatar-group > .avatar-group-item {
+    margin-left: -.75rem; border: 2px solid var(--bs-body-bg); border-radius: 50%;
+    transition: transform .15s; line-height: 1;
 }
-.xf-stepper-horizontal .xf-stepper-item.done:not(:last-child)::after { background: var(--bs-primary, #3e60d5); }
-.xf-stepper-vertical .xf-stepper-item:not(:last-child)::before {
-    content: ""; position: absolute; top: 40px; left: 19px; width: 2px; height: calc(100% - 40px);
-    background: var(--bs-border-color, #e5e7eb);
-}
-.xf-stepper-vertical .xf-stepper-item.done:not(:last-child)::before { background: var(--bs-primary, #3e60d5); }
+.avatar-group > .avatar:first-child,
+.avatar-group > .avatar-group-item:first-child { margin-left: 0; }
+.avatar-group > .avatar:hover,
+.avatar-group > .avatar-group-item:hover { transform: translateY(-2px); position: relative; z-index: 1; }
+.avatar-group.avatar-group-sm { padding-left: .5rem; }
+.avatar-group.avatar-group-sm > .avatar,
+.avatar-group.avatar-group-sm > .avatar-group-item { margin-left: -.5rem; }
+.avatar-group.avatar-group-xs { padding-left: .35rem; }
+.avatar-group.avatar-group-xs > .avatar,
+.avatar-group.avatar-group-xs > .avatar-group-item { margin-left: -.35rem; }
 
-/* ---------- 缎带 Ribbon ---------- */
-.ribbon {
-    position: absolute; top: 12px; z-index: 2; padding: .25rem .75rem;
-    font-size: .75rem; font-weight: 600; line-height: 1.4;
-}
-.ribbon-start { left: -6px; border-radius: 0 3px 3px 0; }
-.ribbon-end { right: -6px; border-radius: 3px 0 0 3px; }
-.ribbon-start::before, .ribbon-end::before {
-    content: ""; position: absolute; bottom: -6px; border: 3px solid transparent;
-}
-.ribbon-start::before { left: 0; border-right-color: rgba(0,0,0,.35); border-bottom-color: rgba(0,0,0,.35); }
-.ribbon-end::before { right: 0; border-left-color: rgba(0,0,0,.35); border-bottom-color: rgba(0,0,0,.35); }
-.ribbon-round { border-radius: 999px; }
-
-/* ---------- 看板 Kanban ---------- */
-.kanban-board { min-height: 200px; }
-.kanban-item { cursor: grab; transition: box-shadow .15s ease; }
-.kanban-item:active { cursor: grabbing; }
-.kanban-item:hover { box-shadow: 0 .25rem .75rem rgba(0,0,0,.08); }
-.kanban-content .bg-primary-subtle { opacity: .5; box-shadow: 0 .25rem .75rem rgba(62,96,213,.25); }
-.kanban-item.dragging { opacity: .9; }
-
-/* ---------- 向导 Wizard ---------- */
-.xf-wizard-nav .nav-link { cursor: pointer; }
-.xf-wizard-nav .nav-link.done { opacity: .85; }
-
-/* ---------- 个人资料封面 ---------- */
-.profile-cover { background-position: center; background-size: cover; }
-
-/* ---------- 头像组重叠 ---------- */
-.avatar-group { display: inline-flex; }
-.avatar-group .avatar:not(:first-child), .avatar-group > *:not(:first-child) { margin-left: -10px; }
-.avatar-group img { border: 2px solid var(--bs-card-bg, #fff); }
-
-/* ---------- 通用工具 ---------- */
+/* flex-centered 小工具 */
 .flex-centered { display: flex; align-items: center; justify-content: center; }
-.cursor-pointer { cursor: pointer; }
 
-/* ---------- DataTable 富单元格 / 行操作 ---------- */
-.xf-pointer { cursor: pointer; }
-.xf-filter-row td { padding: .35rem .5rem; }
-.xf-row-actions .btn { white-space: nowrap; }
-.xf-cell-copy input { min-width: 0; }
-table.dataTable td .form-check.form-switch { min-height: auto; }
-table.dataTable.fullscreen-table, .card:fullscreen { background: var(--bs-body-bg, #fff); overflow: auto; padding: 1rem; }
+/* --------------------------------------------------------------------------
+   8. 卡片增强（card-action / card-tabs / ribbon）
+   --------------------------------------------------------------------------
+   【维护约定】不重写 .card / .card-header / .card-body / .card-footer 等模板已定义类，
+   仅补充模板未定义的辅助类（.card-action / .card-tabs / .ribbon 等）。
+   -------------------------------------------------------------------------- */
+/* 卡片操作区（模板未定义，包内组件使用） */
+.card-action {
+    position: absolute; top: .9rem; right: 1rem; display: flex; gap: .35rem; z-index: 2;
+}
+.card-action-item {
+    width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px; color: var(--bs-secondary-color); text-decoration: none; font-size: 1rem;
+    transition: background .15s, color .15s;
+}
+.card-action-item:hover { background: var(--bs-tertiary-bg); color: var(--bs-primary); }
 
-/* ---------- DataTables 处理中遮罩微调 ---------- */
-div.dt-processing { z-index: 10; }
+/* 卡片内选项卡 */
+.card-tabs .nav-tabs { border-bottom: 1px solid var(--bs-border-color); padding: 0 .75rem; }
+.card-tabs .nav-tabs .nav-link { border: 0; border-bottom: 2px solid transparent; color: var(--bs-secondary-color); }
+.card-tabs .nav-tabs .nav-link.active { color: var(--bs-primary); border-bottom-color: var(--bs-primary); background: transparent; }
+.card-tabs .tab-content { padding: .25rem; }
 
-/* ---------- 响应式：小屏表格工具栏折行 ---------- */
+/* 缎带（Ribbon） */
+.ribbon {
+    position: absolute; top: .75rem; right: -1px; padding: .3rem .85rem;
+    font-size: .72rem; font-weight: 700; color: #fff; letter-spacing: .03em;
+    background: var(--bs-primary); border-radius: 3px 0 0 3px; box-shadow: var(--xf-shadow-sm);
+}
+.ribbon::before {
+    content: ""; position: absolute; right: 0; bottom: -8px; border: 4px solid transparent;
+    border-top-color: var(--bs-primary); border-right-color: var(--bs-primary);
+    filter: brightness(.8);
+}
+.ribbon-start { left: -1px; right: auto; border-radius: 0 3px 3px 0; }
+.ribbon-start::before { left: 0; right: auto; border-left-color: var(--bs-primary); border-right-color: transparent; filter: brightness(.8); }
+.ribbon-box { position: relative; overflow: hidden; }
+.ribbon-primary { background: var(--bs-primary); } .ribbon-primary::before { border-top-color: var(--bs-primary); border-right-color: var(--bs-primary); }
+.ribbon-success { background: var(--bs-success); } .ribbon-success::before { border-top-color: var(--bs-success); border-right-color: var(--bs-success); }
+.ribbon-info { background: var(--bs-info); } .ribbon-info::before { border-top-color: var(--bs-info); border-right-color: var(--bs-info); }
+.ribbon-warning { background: var(--bs-warning); color: #000; } .ribbon-warning::before { border-top-color: var(--bs-warning); border-right-color: var(--bs-warning); }
+.ribbon-danger { background: var(--bs-danger); } .ribbon-danger::before { border-top-color: var(--bs-danger); border-right-color: var(--bs-danger); }
+.ribbon-dark { background: var(--bs-dark); } .ribbon-dark::before { border-top-color: var(--bs-dark); border-right-color: var(--bs-dark); }
+.ribbon-content { position: relative; z-index: 1; }
+
+/* 19.8 定制面板（Customizer）辅助类 */
+.radio { display: inline-flex; }
+
+/* --------------------------------------------------------------------------
+   9. 按钮 / 徽标增强
+   -------------------------------------------------------------------------- */
+.btn-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.25rem; height: 2.25rem; padding: 0; border-radius: .375rem;
+}
+.btn-icon.btn-sm { width: 1.75rem; height: 1.75rem; }
+.btn-icon.btn-lg { width: 2.75rem; height: 2.75rem; }
+.btn-close-sm { width: .75rem; height: .75rem; font-size: .75rem; opacity: .6; }
+.pagination-rounded .page-link { border-radius: 50% !important; margin: 0 2px; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; }
+
+/* 加载按钮（Ladda 风格） */
+.xf-lbtn { position: relative; }
+.xf-lbtn.is-loading { pointer-events: none; color: transparent !important; }
+.xf-lbtn.is-loading .xf-lbtn-label { visibility: hidden; }
+.xf-lbtn-spinner {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+}
+.xf-lbtn.is-loading .xf-lbtn-spinner { display: flex; }
+.xf-lbtn-spinner .spinner-border { width: 1rem; height: 1rem; }
+
+/* 下拉箭头隐藏 */
+.drop-arrow-none::after { display: none !important; }
+
+/* --------------------------------------------------------------------------
+   10. 统计卡 / 时间线
+   -------------------------------------------------------------------------- */
+/* StatCard 复用 avatar + card，这里仅补充通用卡片内统计排版 */
+.stat-card .stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+.stat-trend { font-size: .8rem; font-weight: 600; }
+
+/* 时间线 */
+/* 纵向时间线（对齐 INSPINIA .timeline 结构：flex 行，圆点 + 内容） */
+.timeline { position: relative; list-style: none; margin: 0; padding: 0; }
+.timeline-item { position: relative; padding-bottom: 1.5rem; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-dot {
+    display: flex; align-items: center; justify-content: center;
+    width: 2.25rem; flex-shrink: 0;
+}
+.timeline-dot .avatar-title { width: 2.25rem; height: 2.25rem; }
+.timeline-time {
+    font-size: .75rem; color: var(--bs-secondary-color);
+    min-width: 4.5rem; text-align: right; flex-shrink: 0;
+}
+.timeline-content { padding-top: .15rem; min-width: 0; }
+.timeline-content .title, .timeline-content h5 { font-weight: 600; font-size: .95rem; margin-bottom: .25rem; }
+.timeline-content p { font-size: .875rem; line-height: 1.5; }
+
+/* 横向时间线（保留原有 timeline-x 体系） */
+.timeline-x { position: relative; }
+.timeline-x::before {
+    content: ""; position: absolute; left: 1.1rem; top: .25rem; bottom: 0; width: 2px;
+    background: var(--bs-border-color);
+}
+
+/* 活动流 */
+.activity-feed { list-style: none; padding: 0; margin: 0; }
+.activity-feed li { display: flex; gap: .75rem; padding: .65rem 0; border-bottom: 1px solid var(--bs-border-color); }
+.activity-feed li:last-child { border-bottom: 0; }
+.activity-feed .avatar { width: 36px; height: 36px; flex-shrink: 0; }
+.activity-feed .af-text { font-size: .875rem; }
+.activity-feed .af-time { font-size: .75rem; color: var(--bs-secondary-color); }
+
+/* --------------------------------------------------------------------------
+   11. 步骤条（Stepper）
+   -------------------------------------------------------------------------- */
+.xf-stepper { display: flex; list-style: none; padding: 0; margin: 0 0 1.5rem; }
+.xf-stepper-item { flex: 1 1 0; text-align: center; position: relative; }
+.xf-stepper-item::before {
+    content: ""; position: absolute; top: 18px; left: -50%; width: 100%; height: 2px; background: var(--bs-border-color);
+}
+.xf-stepper-item:first-child::before { display: none; }
+.xf-stepper-dot {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--bs-tertiary-bg); color: var(--bs-secondary-color);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 600; position: relative; z-index: 1;
+    border: 2px solid var(--bs-border-color); margin-bottom: .4rem; transition: all .2s;
+}
+.xf-stepper-item.active .xf-stepper-dot { background: var(--bs-primary); color: #fff; border-color: var(--bs-primary); }
+.xf-stepper-item.active::before, .xf-stepper-item.done::before { background: var(--bs-primary); }
+.xf-stepper-item.done .xf-stepper-dot { background: var(--bs-success); color: #fff; border-color: var(--bs-success); }
+.xf-stepper-item.active .title { color: var(--bs-primary); font-weight: 600; }
+.xf-stepper-body { padding: .5rem 0; }
+.xf-stepper .title { font-size: .85rem; }
+.xf-stepper-item.pending .xf-stepper-dot { background: var(--bs-tertiary-bg); color: var(--bs-secondary); border-color: var(--bs-border-color); }
+.xf-stepper-item.pending .title { color: var(--bs-secondary); }
+.xf-stepper-item.pending::before { background: var(--bs-border-color); }
+
+/* --------------------------------------------------------------------------
+   12. 向导（Wizard）
+   -------------------------------------------------------------------------- */
+.xf-wizard { position: relative; }
+.xf-wizard-nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.xf-wizard-nav .step {
+    display: flex; align-items: center; gap: .5rem; color: var(--bs-secondary-color); cursor: pointer;
+}
+.xf-wizard-nav .step .num {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--bs-tertiary-bg); display: inline-flex;
+    align-items: center; justify-content: center; font-weight: 600; border: 2px solid var(--bs-border-color);
+}
+.xf-wizard-nav .step.active { color: var(--bs-primary); font-weight: 600; }
+.xf-wizard-nav .step.active .num { background: var(--bs-primary); color: #fff; border-color: var(--bs-primary); }
+.xf-wizard-nav .step.done .num { background: var(--bs-success); color: #fff; border-color: var(--bs-success); }
+.xf-wizard-pane { display: none; }
+.xf-wizard-pane.active { display: block; }
+.xf-wizard-progress { height: 4px; background: var(--bs-tertiary-bg); border-radius: 4px; overflow: hidden; margin-bottom: 1.25rem; }
+.xf-wizard-progress .bar { height: 100%; background: var(--bs-primary); transition: width .3s; }
+.xf-wizard-prev { margin-right: .5rem; }
+
+/* --------------------------------------------------------------------------
+   13. 看板（Kanban）
+   -------------------------------------------------------------------------- */
+/* 看板（kanban）—— 列宽/排列/卡片组高度由 INSPINIA 的 .kanban-app 上下文（app.min.css）提供，
+ * 这里仅补齐交互态（抓取光标 + 卡片悬停微浮起），不覆盖框架的 flex 排列与列宽。 */
+.kanban-item { cursor: grab; }
+.kanban-item:active { cursor: grabbing; }
+.kanban-item .card { transition: box-shadow .15s, transform .15s; }
+.kanban-item .card:hover { box-shadow: var(--xf-shadow); transform: translateY(-1px); }
+
+/* 邮件中心（email）—— 对齐 INSPINIA email.html 的 table 式邮件行 */
+.email-table tbody tr { position: relative; }                 /* 支撑 stretched-link 整行可点 */
+.email-table tbody tr.unread td { background: #f6f7fb; }
+.email-table tbody tr.unread .email-action-btn,
+.email-table .email-action-btn.active { color: var(--bs-warning); }
+.email-table tbody tr .form-check-input { cursor: pointer; }
+.email-table .email-action-btn { color: var(--bs-secondary-color); }
+.email-sidebar .list-custom .list-group-item.active { background: var(--bs-primary-subtle); color: var(--bs-primary); }
+
+/* 嵌套拖拽列表（nestable）—— 对齐 INSPINIA misc-nestable.html */
+.list-group.nested-sortable, .list-group.nested-sortable-handle {
+    min-height: 1.5rem; padding: .25rem; background: var(--bs-tertiary-bg); border-radius: var(--xf-radius); border: 1px dashed var(--bs-border-color);
+}
+.list-group.nested-sortable > .list-group-item, .list-group.nested-sortable-handle > .list-group-item {
+    background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius-sm); padding: .55rem .75rem;
+}
+.nested-sortable .sort-handle, .nested-sortable-handle .sort-handle { color: var(--bs-secondary-color); }
+.sortable-item-ghost { opacity: .55; background: var(--bs-primary-subtle) !important; }
+.sortable-drag { box-shadow: var(--xf-shadow); }
+
+/* 瀑布流（masonry）—— 对齐 INSPINIA misc-masonry.html（JS 接管，CSS 仅补垂直间距） */
+.masonry-cell { margin-bottom: 1.5rem; width: 100%; }
+
+/* 日历外部事件（calendar）—— 对齐 INSPINIA calendar.html #external-events */
+#external-events .external-event { cursor: grab; }
+/* --------------------------------------------------------------------------
+   14. 数据表格增强 + 过滤栏
+   -------------------------------------------------------------------------- */
+.table-centered > :not(caption) > * > * { text-align: center; vertical-align: middle; }
+.table-nowrap td, .table-nowrap th { white-space: nowrap; }
+
+.xf-filter-bar {
+    display: flex; flex-wrap: wrap; gap: .65rem; align-items: flex-end; margin-bottom: 1rem;
+    padding: .85rem 1rem; background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius);
+}
+.xf-filter { display: flex; flex-direction: column; gap: .25rem; }
+.xf-filter > label { font-size: .75rem; color: var(--bs-secondary-color); margin: 0; font-weight: 600; }
+.xf-filter .form-control, .xf-filter .form-select { min-width: 140px; }
+.xf-filter-radio { display: inline-flex; gap: .35rem; flex-wrap: wrap; }
+.xf-filter-radio .btn { --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .6rem; font-size: .8rem; }
+.xf-filter-reset { margin-left: auto; align-self: flex-end; }
+
+/* --------------------------------------------------------------------------
+   15. 定制面板（Customizer）
+   --------------------------------------------------------------------------
+   【维护约定】.card-radio 模板已定义 padding:0，此处不覆盖 padding，
+   仅补充 border/radius/cursor/transition 等模板未定义的属性。
+   -------------------------------------------------------------------------- */
+.card-radio {
+    display: block; position: relative; cursor: pointer;
+    border: 2px solid var(--bs-border-color);
+    border-radius: var(--xf-radius-sm); transition: border-color .15s;
+}
+.card-radio input { position: absolute; opacity: 0; }
+.card-radio .card-radio-label { display: block; }
+.card-radio .card-radio-label .preview,
+.card-radio .preview { display: block; height: 34px; border-radius: 4px; background: var(--bs-tertiary-bg); }
+.card-radio:has(input:checked) { border-color: var(--bs-primary); }
+.card-radio .checked-badge { display: none; position: absolute; top: 4px; right: 4px; color: var(--bs-primary); }
+.card-radio:has(input:checked) .checked-badge { display: block; }
+.offcanvas-footer { padding: 1rem; border-top: 1px solid var(--bs-border-color); }
+
+/* --------------------------------------------------------------------------
+   16. 业务数据组件
+   -------------------------------------------------------------------------- */
+
+/* 个人资料头（ProfileHeader） */
+.profile-cover { position: relative; border-radius: var(--xf-radius) var(--xf-radius) 0 0; overflow: hidden; }
+.profile-cover .cover-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.profile-cover .avatar { position: absolute; left: 1.5rem; bottom: -36px; border: 4px solid var(--bs-body-bg); border-radius: 50%; }
+.profile-cover .profile-actions { position: absolute; right: 1rem; bottom: 1rem; }
+
+/* 博客（BlogList） */
+.xf-blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.xf-blog-grid-item { border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius); overflow: hidden; background: var(--bs-body-bg); transition: box-shadow .15s, transform .15s; }
+.xf-blog-grid-item:hover { box-shadow: var(--xf-shadow); transform: translateY(-2px); }
+.xf-blog-thumb { width: 100%; height: 160px; object-fit: cover; display: block; }
+.xf-blog-body { padding: 1rem; }
+.xf-blog-title { font-weight: 600; font-size: 1rem; margin-bottom: .35rem; }
+.xf-blog-meta { font-size: .78rem; color: var(--bs-secondary-color); display: flex; gap: .75rem; margin-bottom: .5rem; }
+.xf-blog-excerpt { font-size: .875rem; color: var(--bs-secondary-color); }
+.xf-blog-link { font-size: .85rem; font-weight: 600; }
+.xf-blog-list { display: flex; flex-direction: column; gap: .75rem; }
+.xf-blog-list-item { display: flex; gap: .85rem; padding: .75rem; border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius); }
+.xf-blog-list-item .xf-blog-thumb { width: 110px; height: 80px; border-radius: var(--xf-radius-sm); flex-shrink: 0; }
+
+/* 聊天（ChatBox） */
+.chat-box { display: flex; flex-direction: column; }
+.chat-box .card-body { padding: 1rem; }
+.chat-box .card-body > .d-flex { align-items: flex-end; }
+.chat-box .card-body .rounded { border-radius: 14px !important; font-size: .875rem; line-height: 1.45; box-shadow: var(--xf-shadow-sm); }
+.chat-box .card-footer form input { border-radius: 30px; }
+.chat-box .card-footer form .btn-icon { flex-shrink: 0; }
+
+/* 评论（CommentThread） */
+.xf-comments { list-style: none; padding: 0; margin: 0; }
+.xf-comment { display: flex; gap: .75rem; padding: .85rem 0; border-bottom: 1px solid var(--bs-border-color); }
+.xf-comment-avatar { flex-shrink: 0; }
+.xf-comment-avatar .avatar { width: 40px; height: 40px; }
+.xf-comment-body { flex: 1 1 auto; }
+.xf-comment-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .25rem; }
+.xf-comment-name { font-weight: 600; }
+.xf-comment-meta { font-size: .75rem; color: var(--bs-secondary-color); }
+.xf-comment-text { font-size: .9rem; }
+.xf-comment-actions { margin-top: .35rem; font-size: .8rem; }
+.xf-comment-children { list-style: none; padding-left: 2rem; margin: .5rem 0 0; }
+.xf-reply-box { display: flex; gap: .5rem; margin-top: .65rem; }
+
+/* 邮件撰写（EmailCompose） */
+.xf-mail-compose { border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius); overflow: hidden; }
+.xf-mail-compose .mc-row { display: flex; align-items: center; gap: .5rem; padding: .5rem .85rem; border-bottom: 1px solid var(--bs-border-color); }
+.xf-mail-compose .mc-row label { width: 48px; font-weight: 600; color: var(--bs-secondary-color); }
+.xf-mail-compose .mc-row input { border: 0; flex: 1 1 auto; outline: none; background: transparent; color: var(--bs-body-color); }
+.xf-mail-compose .mc-body { padding: .85rem; }
+.xf-quill { min-height: 160px; border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius-sm); padding: .5rem; }
+
+/* 发票（InvoiceList） */
+.xf-invoice-list { list-style: none; padding: 0; margin: 0; }
+.xf-invoice-list .table thead th { background: var(--bs-tertiary-bg); font-weight: 600; }
+.xf-invoice-list .table tbody tr { transition: background .15s; }
+.xf-invoice-list .table tbody tr:hover { background: var(--bs-tertiary-bg); }
+
+/* 权限矩阵（PermissionMatrix） */
+.xf-perms { width: 100%; border-collapse: separate; border-spacing: 0; }
+.xf-perms th, .xf-perms td { padding: .6rem .85rem; border-bottom: 1px solid var(--bs-border-color); text-align: center; }
+.xf-perms th:first-child, .xf-perms td:first-child { text-align: left; }
+.xf-perms .xf-perm-role { font-weight: 600; }
+
+/* 搜索结果（SearchResults） */
+.xf-search-results { list-style: none; padding: 0; margin: 0; }
+.xf-search-results .list-group-item { transition: background .15s; }
+.xf-search-results .list-group-item:hover { background: var(--bs-tertiary-bg); }
+.xf-search-results .list-group-item img.avatar-xs { width: 44px; height: 44px; }
+
+/* 图库（Gallery）—— 对齐 INSPINIA misc-gallery.html：
+ * 结构为 card 容器 + row-cols 栅格 + 单项 card(border-0) + a.image-popup > img.card-img.rounded-2。
+ * grid 模式：按 --xf-ratio（如 4/3）等比裁切缩略图，保证栅格整齐；
+ * masonry 模式：保留图片原始比例，由 Masonry JS 负责瀑布流定位。 */
+.xf-gallery { position: relative; }
+.xf-gallery-item { cursor: pointer; }
+.xf-gallery-item .card { border-radius: var(--xf-radius, .5rem); }
+.xf-gallery-item img.card-img { width: 100%; display: block; transition: transform .3s; }
+/* grid 模式等比裁切（--xf-ratio 由组件按 ratio 参数注入，默认 4/3） */
+.xf-gallery-grid .xf-gallery-item img.card-img { aspect-ratio: var(--xf-ratio, 4/3); object-fit: cover; }
+.xf-gallery-item:hover img.card-img { transform: scale(1.04); }
+/* 悬停信息浮层：底部渐变 + 标题/说明（模板画廊无文字层，此为不破坏观感的增强） */
+.xf-gallery-overlay {
+    position: absolute; inset: 0; display: flex; align-items: flex-end; padding: .6rem;
+    background: linear-gradient(transparent 55%, rgba(0, 0, 0, .55)); color: #fff;
+    opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.xf-gallery-item:hover .xf-gallery-overlay { opacity: 1; }
+/* 分类筛选按钮组（filter-buttons 为模板同名类，间距 g-1 观感） */
+.xf-gallery-filter { display: flex; flex-wrap: wrap; gap: .25rem; }
+/* 卡片内搜索框（画廊/订单/客户等组件共用）：框架 .app-search-icon 默认强制半透明白
+ * （顶栏深色语境），在白底卡片内会不可见，此处覆盖为 muted 色并做左侧内嵌定位 */
+.xf-gallery .app-search, .xf-card-search { position: relative; }
+.xf-gallery .app-search .form-control, .xf-card-search .form-control { padding-left: 2.2rem; }
+.xf-gallery .app-search-icon, .xf-card-search .app-search-icon {
+    position: absolute; left: .65rem; top: 50%; transform: translateY(-50%);
+    width: auto; color: var(--bs-secondary-color) !important; pointer-events: none; font-size: 1rem;
+}
+.xf-card-search { min-width: 220px; }
+
+/* API 密钥（ApiKeys） */
+.xf-apikeys { list-style: none; padding: 0; margin: 0; }
+.xf-apikey { display: flex; align-items: center; gap: .85rem; padding: .85rem 1rem; border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius); margin-bottom: .5rem; }
+.xf-apikey .xf-key { font-family: var(--bs-font-monospace); background: var(--bs-tertiary-bg); padding: .2rem .5rem; border-radius: 4px; font-size: .85rem; }
+.xf-key-copy { cursor: pointer; color: var(--bs-secondary-color); }
+.xf-key-copy:hover { color: var(--bs-primary); }
+
+/* 定价卡 / 产品卡 / 文件管理器：组件使用 Bootstrap 卡片，样式随主题自适应 */
+
+/* 邮件列表（MailList） */
+.mail-list .list-group-item { cursor: pointer; transition: background .15s; }
+.mail-list .list-group-item:hover { background: var(--bs-tertiary-bg); }
+.mail-list .list-group-item.unread .m-subject { font-weight: 700; }
+.mail-list .m-time { font-size: .75rem; color: var(--bs-secondary-color); white-space: nowrap; }
+
+/* FAQ */
+.xf-faq .accordion-item { border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius-sm); margin-bottom: .5rem; overflow: hidden; }
+.xf-faq .accordion-button { font-weight: 600; }
+.accordion-bordered .accordion-item { border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius-sm); margin-bottom: .5rem; overflow: hidden; }
+
+/* --------------------------------------------------------------------------
+   17. 杂项：PDF / Diff / Drag / Map / Toast
+   -------------------------------------------------------------------------- */
+.xf-pdf { width: 100%; border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius); min-height: 420px; background: var(--bs-tertiary-bg); }
+.xf-diff { font-family: var(--bs-font-monospace); font-size: .85rem; border: 1px solid var(--bs-border-color); border-radius: var(--xf-radius); overflow: hidden; }
+.xf-diff .diff-line { padding: .15rem .75rem; white-space: pre-wrap; }
+.xf-diff .diff-add { background: rgba(var(--bs-success-rgb), .15); color: var(--bs-success); }
+.xf-diff .diff-del { background: rgba(var(--bs-danger-rgb), .15); color: var(--bs-danger); }
+.xf-diff .diff-head { background: var(--bs-tertiary-bg); font-weight: 600; padding: .35rem .75rem; }
+.xf-drag-handle { cursor: grab; color: var(--bs-secondary-color); }
+.xf-drag-handle:active { cursor: grabbing; }
+.xf-leaflet { width: 100%; height: 380px; border-radius: var(--xf-radius); overflow: hidden; }
+
+/* Toast 容器（Bootstrap 5.3 自带 .toast-container，这里强化层级） */
+.toast-container { z-index: 1090; }
+.toast { border-radius: var(--xf-radius-sm); }
+
+/* SpinKit（若插件未加载，提供最小回退） */
+.sk-rotating-plane, .sk-plane { width: 40px; height: 40px; background: var(--bs-primary); margin: 0 auto; animation: sk-rotate 1.2s infinite ease-in-out; }
+@keyframes sk-rotate { 0% { transform: perspective(120px) rotateX(0) rotateY(0); } 50% { transform: perspective(120px) rotateX(-180deg) rotateY(0); } 100% { transform: perspective(120px) rotateX(-180deg) rotateY(-180deg); } }
+.k-fold-cube { width: 40px; height: 40px; position: relative; margin: 0 auto; }
+.k-fold-cube .sk-cube { float: left; width: 50%; height: 50%; position: relative; transform: scale(1.1); }
+.k-fold-cube .sk-cube::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bs-primary); animation: k-fold 2.4s infinite linear both; transform-origin: 100% 100%; }
+@keyframes k-fold { 0%, 10% { transform: perspective(140px) rotateX(-180deg); opacity: 0; } 25%, 75% { transform: perspective(140px) rotateX(0); opacity: 1; } 90%, 100% { transform: perspective(140px) rotateY(180deg); opacity: 0; } }
+
+/* 自定义滚动条（scrollbar 类） */
+.scrollbar, .sidenav-scroll, .chat-list, .kanban-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-border-color) transparent;
+}
+.scrollbar::-webkit-scrollbar, .sidenav-scroll::-webkit-scrollbar, .chat-list::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar::-webkit-scrollbar-thumb, .sidenav-scroll::-webkit-scrollbar-thumb, .chat-list::-webkit-scrollbar-thumb { background: var(--bs-border-color); border-radius: 3px; }
+
+/* 侧边栏子菜单展开时箭头旋转：跟随 INSPINIA 模板的 -180deg（上下翻转），
+ * 与后台模板观感一致（模板 .side-nav-item.active>.menu-arrow 亦为 -180deg）。 */
+.side-nav-item.open > .side-nav-link .menu-arrow,
+.side-nav-item.show > .side-nav-link .menu-arrow { transform: rotate(-180deg); }
+
+/* 顶栏深色变体（[data-topbar-color="dark"]） */
+[data-topbar-color="dark"] .app-topbar {
+    background: var(--xf-sidebar-bg-dark);
+    border-bottom-color: rgba(255, 255, 255, .06);
+}
+[data-topbar-color="dark"] .app-topbar .topbar-link { color: var(--xf-sidebar-fg-dark); }
+[data-topbar-color="dark"] .app-topbar .topbar-link:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+[data-topbar-color="dark"] .app-topbar .topbar-search { background: rgba(255, 255, 255, .08); color: #fff; }
+[data-topbar-color="dark"] .app-topbar .topbar-search::placeholder { color: rgba(255, 255, 255, .5); }
+[data-topbar-color="dark"] .app-topbar .form-control { color: #fff; }
+[data-topbar-color="dark"] .topbar-badge { border-color: var(--xf-sidebar-bg-dark); }
+
+/* 盒式布局（[data-layout-width="boxed"]） */
+body.layout-boxed .wrapper { max-width: 1320px; margin: 0 auto; box-shadow: var(--xf-shadow-lg); }
+@media (min-width: 1200px) {
+    body.layout-boxed .sidenav-menu { left: 50%; transform: translateX(-660px); }
+}
+
+/* --------------------------------------------------------------------------
+   18. 暗色模式微调
+   -------------------------------------------------------------------------- */
+[data-bs-theme="dark"] {
+    --xf-sidebar-bg: #161e2d;
+    --xf-topbar-bg: #1c2535;
+    --xf-shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+    --xf-shadow: 0 1px 3px rgba(0, 0, 0, .35), 0 4px 14px rgba(0, 0, 0, .25);
+}
+[data-bs-theme="dark"] .sidenav-menu { border-right-color: rgba(255, 255, 255, .06); }
+/* 暗色 hover 仅跟随模板 .side-nav-link:hover（变色，不加深色背景），不在此强加背景 */
+[data-bs-theme="dark"] .avatar-group .avatar-group-item { border-color: var(--bs-body-bg); }
+[data-bs-theme="dark"] .toast { background: var(--bs-body-bg); }
+
+/* --------------------------------------------------------------------------
+   19. 业务 / 协作 / 页面模板组件样式
+   -------------------------------------------------------------------------- */
+
+/* 19.1 紫色语义色（退款 / 次要强调） */
+.bg-purple-subtle { background-color: rgba(168, 85, 247, .12) !important; }
+.text-purple { color: #a855f7 !important; }
+
+/* 19.2 垂直时间线（订单物流 / 项目动态） */
+.timeline-x { position: relative; }
+.timeline-x::before {
+    content: ''; position: absolute; left: 11px; top: 4px; bottom: 4px;
+    width: 2px; background: var(--bs-border-color);
+}
+.timeline-item { position: relative; padding: 0 0 1.25rem 2.25rem; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-marker {
+    position: absolute; left: 4px; top: 2px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--bs-border-color);
+    border: 3px solid var(--bs-body-bg); box-shadow: 0 0 0 1px var(--bs-border-color);
+}
+.timeline-item.is-done .timeline-marker { background: var(--bs-success); box-shadow: 0 0 0 1px var(--bs-success); }
+.timeline-content { font-size: .875rem; }
+
+/* 19.3 瀑布流（masonry） */
+.masonry-x { width: 100%; }
+.masonry-item { break-inside: avoid; display: inline-block; width: 100%; }
+
+/* 19.3 便利贴看板（pin-board） */
+.pin-board { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; }
+.pin-note {
+    width: 240px; min-height: 140px; border-radius: .75rem; padding: 1rem;
+    box-shadow: var(--xf-shadow); border: 1px solid var(--bs-border-color); position: relative;
+}
+.pin-note.pin-warning { background: #fff8e6; }
+.pin-note.pin-info { background: #e7f3ff; }
+.pin-note.pin-success { background: #e9f9ef; }
+.pin-note.pin-danger { background: #fdecec; }
+.pin-note.pin-primary { background: #eef2ff; }
+.pin-note-head { display: flex; align-items: center; gap: .5rem; color: var(--bs-secondary-color); margin-bottom: .5rem; }
+.pin-note-body { font-size: .9rem; white-space: pre-wrap; }
+.pin-note-foot { margin-top: .75rem; border-top: 1px dashed var(--bs-border-color); padding-top: .5rem; }
+.pin-add { display: flex; align-items: center; justify-content: center; border-style: dashed !important; min-height: 140px; }
+
+/* 19.4 三栏邮件（outlook） */
+.outlook-app { background: var(--bs-body-bg); border-radius: var(--xf-radius); overflow: hidden; }
+.outlook-folders, .outlook-list, .outlook-read { background: var(--bs-body-bg); }
+.outlook-messages { max-height: 520px; overflow: auto; }
+.outlook-msg { border-bottom: 1px solid var(--bs-border-color); text-decoration: none; color: var(--bs-body-color); }
+.outlook-msg:hover { background: var(--bs-tertiary-bg); }
+.outlook-msg.unread { background: rgba(var(--bs-primary-rgb), .05); }
+.outlook-msg.unread .fw-semibold { color: var(--bs-emphasis-color); }
+.outlook-read { overflow: auto; max-height: 560px; }
+.email-body { line-height: 1.8; }
+
+/* 19.6 通用工具类补充 */
+.min-w-0 { min-width: 0; }
+
+/* 自定义百分比栅格（FileManager 等无法整除 12 的列数，如 5 列） */
+.col-xf-5 { flex: 0 0 20%; max-width: 20%; }
+@media (max-width: 991.98px) { .col-xf-5 { flex: 0 0 33.3333%; max-width: 33.3333%; } }
+@media (max-width: 575.98px) { .col-xf-5 { flex: 0 0 50%; max-width: 50%; } }
+
+/* 19.7 商品详情画廊（ProductDetails） */
+[data-pd-gallery] .pd-main { width: 100%; height: 340px; object-fit: cover; }
+[data-pd-gallery] .pd-thumb { width: 64px; height: 64px; object-fit: cover; transition: border-color .15s; }
+[data-pd-gallery] .pd-thumb.border-primary { border-color: var(--bs-primary) !important; }
+
+/* 19.5 落地页（landing） */
+.landing-page .wrapper, .landing-page .content-page { margin: 0 !important; padding: 0 !important; overflow-x: clip; }
+.landing-page .content-page > .container,
+.landing-page .content-page > .container-fluid { padding-left: 0; padding-right: 0; }
+/* 窄屏防水平溢出：.row 的 -15px gutter 在 .container padding:0 时无抵消会外溢 5px。
+ * 用 overflow-x:clip（非 hidden，避免破坏 sticky 顶栏）裁剪，不影响垂直滚动与 sticky。 */
+.landing-page { overflow-x: clip; }
+.landing-header {
+    position: sticky; top: 0; z-index: 1030;
+    background: rgba(var(--bs-body-bg-rgb), .92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+.landing-header .nav-link { color: var(--bs-body-color); }
+.landing-hero {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), .08), rgba(var(--bs-primary-rgb), .02));
+}
+.landing-footer { background: var(--bs-dark); color: #fff; }
+.landing-footer a { text-decoration: none; }
+
+[data-bs-theme="dark"] .pin-note { border-color: rgba(255, 255, 255, .1); }
+[data-bs-theme="dark"] .pin-note.pin-warning { background: rgba(255, 193, 7, .1); }
+[data-bs-theme="dark"] .pin-note.pin-info { background: rgba(13, 202, 240, .1); }
+[data-bs-theme="dark"] .pin-note.pin-success { background: rgba(25, 135, 84, .12); }
+[data-bs-theme="dark"] .pin-note.pin-danger { background: rgba(220, 53, 69, .12); }
+[data-bs-theme="dark"] .pin-note.pin-primary { background: rgba(13, 110, 253, .12); }
+
+/* ==========================================================================
+ * 20. 设计系统抛光（对齐 INSPINIA v4.1.0 视觉语言）
+ * 全部为增强式规则：不删除/覆盖既有布局，只提升质感与一致性。
+ * ========================================================================== */
+:root {
+  --xf-bg-app: #f1f2f7;                              /* INSPINIA $body-bg */
+  --xf-bg-app-rgb: 241, 242, 247;
+  --xf-shadow-soft: 0 1px 4px rgba(130, 143, 163, .15);   /* INSPINIA $box-shadow */
+  --xf-shadow-card: 0 1px 4px rgba(130, 143, 163, .15);
+  --xf-shadow-hover: 0 6px 18px rgba(130, 143, 163, .22);
+  --xf-spacer: 1.25rem;
+}
+
+/* 20.1 应用背景（灰底 + 白卡“悬浮”感） */
+body { background-color: var(--xf-bg-app); color: var(--bs-body-color); }
+.content-page { background-color: var(--xf-bg-app); }
+
+/* 20.1b 后台主布局内边距
+ * 说明：模板中 .content-page 的左右内边距由页面内的 .container-fluid 提供，
+ * 而本包的 page() 允许不套 container，故在此补内边距。
+ * 但【不得】覆盖框架的 margin-left / position / z-index：
+ *   · .app-topbar 模板为 position:sticky; z-index:1001; margin-left:var(--ins-sidenav-width)
+ *     —— 曾被这里改成 z-index:1002 且早期版本改为 fixed+margin:0，导致顶栏脱离文档流、
+ *        与侧栏折叠动画不同步、并盖住 offcanvas 遮罩。
+ *   · .page-title-head 模板为 margin-bottom:0 且无横向负外边距（无出血），
+ *     早期注释所述「margin:0 -1.25rem 出血」在 v4.1.0 中并不存在，故不再重置 margin。
+ * 修复：padding 底部加 1.25rem，确保标题区域与下方内容有合理间距。
+ */
+.page-title-head { padding: 1.25rem 1.5rem 1.25rem; box-sizing: border-box; }
+@media (max-width: 991.98px) {
+    /* 移动端：避免模板默认负 margin 导致横向溢出 */
+    .page-title-head { margin: 0; overflow: hidden; }
+}
+/* 顶栏用 fixed 定位（见 chrome IIFE / 布局），必须清掉模板
+ * 顶栏跟随侧边栏宽度：用模板语义变量 var(--ins-sidenav-width) 作为 margin-left，
+ * 使顶栏在侧边栏 default(235px)/condensed(70px)/offcanvas(0) 等状态切换时与内容区
+ * 同步收缩，避免「调整窗口宽度时顶栏不跟随、覆盖侧栏或与内容错位」的问题。
+ * 不强制 position:fixed（模板默认 sticky 由 app.js 接管 inline marginLeft 也可正常）；
+ * 关键是用 --ins-sidenav-width 而非固定 0，让 CSS 在 JS 未接管时也能正确跟随。
+ * 注意：模板 .app-topbar 原始 margin-left 即为此变量，此处显式声明以覆盖可能的
+ * 历史 fixed 定位残留，并加 box-sizing 防止 padding 撑破宽度。 */
+.app-topbar {
+    box-sizing: border-box;
+    margin-left: var(--ins-sidenav-width, 235px);
+}
+/* 窄屏（≤991.98px）侧边栏变抽屉/隐藏时，顶栏左外边距收为 0，避免右侧溢出 */
+@media (max-width: 991.98px) {
+    .app-topbar { margin-left: 0; }
+}
+/* 内容区左右内边距跟随模板 INSPINIA（.625rem），保持与后台模板一致的
+ * 侧边栏留白比例；仅补充底部 padding 避免内容贴底。margin-left 由模板
+ * （响应式 media query 内 var(--ins-sidenav-width-sm)）提供，不覆盖。 */
+.content-page { padding: 0 .625rem 1.5rem; box-sizing: border-box; }
+
+
+/* 20.2 卡片：仅补充模板未定义的过渡/悬浮动效，
+ * 【不得】重写模板 .card 的 border/border-radius/box-shadow —— 这些由
+ *   --ins-card-border-* / --ins-theme-card-box-shadow 主题变量驱动（暗色与
+ *   定制面板会改这些值）。早期此处硬编码 var(--xf-shadow-soft) 会抵消主题切换。
+ */
+.card {
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+/* 交互卡悬浮抬升：复用模板 --ins-theme-card-box-shadow 派生令牌 --xf-shadow，
+ * 与主题一致（不硬编码 rgba）。 */
+.card-hover:hover { box-shadow: var(--xf-shadow-hover); transform: translateY(-2px); }
+/* 模板已用 --ins-box-shadow 变量为 modal/dropdown/popover 提供阴影，不覆盖。
+ * 仅 .xf-toast-container .toast 是包内自定义组件、模板无定义，可补阴影。 */
+.xf-toast-container .toast {
+  box-shadow: var(--xf-shadow-soft);
+}
+
+/* 20.3 按钮：中等字重 + 平滑过渡 + 聚焦/悬浮质感 */
+.btn { font-weight: 500; transition: background-color .15s ease, box-shadow .15s ease, transform .12s ease; }
+.btn:active { transform: translateY(1px); }
+.btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-warning:hover, .btn-danger:hover, .btn-dark:hover {
+  box-shadow: 0 4px 14px rgba(var(--bs-primary-rgb), .25);
+}
+.btn-check:checked + .btn { box-shadow: var(--xf-shadow); }
+
+/* 20.4 表格：精致表头（小号大写、次级底色）+ 悬浮行 */
+.table { --bs-table-bg: transparent; margin-bottom: 0; }
+.table > :not(caption) > * > * { padding: .72rem 1rem; vertical-align: middle; }
+.table thead th {
+  font-weight: 600; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--bs-secondary-color); background: rgba(var(--bs-secondary-rgb), .05);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.table tbody tr { border-color: var(--bs-border-color); }
+.table-hover > tbody > tr:hover { background-color: var(--bs-primary-bg-subtle); transition: background-color .15s ease; }
+.table > :not(caption) > * > * { border-bottom-width: 1px; }
+
+/* 20.5 表单控件：聚焦环与悬浮质感 */
+.form-control, .form-select { transition: border-color .15s ease, box-shadow .15s ease; }
+/* 表单控件聚焦态：交由 INSPINIA 模板 .form-control:focus（box-shadow:none + 中性边框），
+ * 【不覆盖】以免与模板设计冲突（记忆 96515649 原则：勿重写模板已定义类）。
+ * 仅补充 Bootstrap 默认的校验态阴影（模板未定义）。 */
+.form-control.is-invalid, .form-select.is-invalid { box-shadow: 0 0 0 .2rem rgba(var(--bs-danger-rgb), .12); }
+.form-control.is-valid, .form-select.is-valid { box-shadow: 0 0 0 .2rem rgba(var(--bs-success-rgb), .12); }
+/* 输入组前缀：背景/文字跟随模板语义变量，暗色自动适配
+ * （模板用 --ins-tertiary-bg / --ins-body-color，避免固定 rgba 在暗色下偏亮）。 */
+.input-group-text { background-color: var(--bs-tertiary-bg); border-color: var(--bs-border-color); color: var(--bs-body-color); }
+/* 表单标签字重跟随模板 INSPINIA（--ins-font-weight-semibold），
+ * 仅补充更紧凑的 margin（模板默认 .5rem，此处 .35rem 让表单更紧凑）。 */
+.form-label { font-weight: var(--ins-font-weight-semibold, 600); margin-bottom: .35rem; }
+
+/* 20.6 徽标：更舒适的字重与圆角 */
+.badge { font-weight: 500; letter-spacing: .01em; }
+.badge.bg-primary-subtle, .badge.bg-success-subtle, .badge.bg-info-subtle,
+.badge.bg-warning-subtle, .badge.bg-danger-subtle, .badge.bg-secondary-subtle {
+  border: 1px solid transparent;
+}
+
+/* 20.7 细滚动条（webkit + firefox） */
+html, body, .content-page, .sidenav-menu, [data-simplebar], .chat-box, .xf-mail-list, .table-responsive {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--bs-secondary-rgb), .3) transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(var(--bs-secondary-rgb), .28); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--bs-secondary-rgb), .45); }
+
+/* 20.8 焦点可见性（键盘可达性） */
+:focus-visible { outline: 2px solid rgba(var(--bs-primary-rgb), .45); outline-offset: 2px; }
+a:focus-visible, .btn:focus-visible, .nav-link:focus-visible { outline-offset: 3px; }
+
+/* 20.9 段落标题（xf-section-title）精致化 */
+.xf-section-title {
+  position: relative; padding-bottom: .5rem; margin-bottom: 1rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.xf-section-title h1, .xf-section-title h2, .xf-section-title h3, .xf-section-title h4, .xf-section-title h5 {
+  font-weight: 600; margin: 0;
+}
+
+/* 20.10 进度条圆角 */
+.progress { border-radius: 50rem; background-color: rgba(var(--bs-secondary-rgb), .12); }
+
+/* 20.11 暗色模式提升：应用深色底 + 卡片表面抬升 */
+[data-bs-theme="dark"] {
+  --xf-bg-app: #0f1318;
+  --xf-bg-app-rgb: 15, 19, 24;
+  --xf-shadow-soft: 0 1px 4px rgba(0, 0, 0, .45);
+  --xf-shadow-hover: 0 8px 22px rgba(0, 0, 0, .55);
+}
+[data-bs-theme="dark"] .content-page { background-color: var(--xf-bg-app); }
+[data-bs-theme="dark"] .card { background-color: #161c24; border-color: rgba(255, 255, 255, .08); }
+[data-bs-theme="dark"] .card.hoverable:hover, [data-bs-theme="dark"] a.card:hover {
+    box-shadow: var(--xf-shadow-hover);
+    transform: translateY(-2px);
+}
+[data-bs-theme="dark"] .table thead th { background: rgba(255, 255, 255, .04); }
+/* 暗色表格行 hover：与明亮段一致用 --bs-primary-bg-subtle（暗色自动转深色主色），
+ * 同时覆盖 .table-hover 与普通 .table，避免与文件末尾旧的硬编码规则重复冲突。 */
+[data-bs-theme="dark"] .table tbody tr:hover,
+[data-bs-theme="dark"] .table-hover > tbody > tr:hover { background-color: var(--bs-primary-bg-subtle); }
+[data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * { --bs-table-accent-bg: rgba(255, 255, 255, .025); }
+[data-bs-theme="dark"] .xf-datatable thead th { background: rgba(255, 255, 255, .04); }
+[data-bs-theme="dark"] .xf-datatable tbody tr:hover { background: rgba(var(--bs-primary-rgb), .08); }
+[data-bs-theme="dark"] .xf-datatable .xf-filter-row td { background: rgba(255, 255, 255, .03); }
+/* 暗色下排序图标默认态需更亮一些才可辨识 */
+[data-bs-theme="dark"] .xf-datatable.dataTable thead th .dt-column-order::before,
+[data-bs-theme="dark"] table.dataTable thead th .dt-column-order::before { opacity: .6; }
+[data-bs-theme="dark"] .xf-datatable.dataTable tbody td.sorting_1 { background: rgba(var(--bs-primary-rgb), .07); }
+[data-bs-theme="dark"] .form-control, [data-bs-theme="dark"] .form-select {
+  background-color: #11161c; border-color: rgba(255, 255, 255, .12);
+}
+
+/* 20.13a 投票列表 / 问题跟踪 */
+.xf-vote-box .btn-link { color: var(--bs-secondary-color); line-height: 1; }
+.xf-vote-box .btn-link:hover { color: var(--bs-primary); }
+.xf-vote-box .xf-vote-up.text-success, .xf-vote-box .xf-vote-down.text-danger { opacity: 1; }
+.xf-vote-list .border-bottom.border-dashed:last-child { border-bottom: 0 !important; }
+.xf-issue-tracker .xf-issue-title { max-width: 320px; }
+.xf-contacts .card-h-100, .xf-companies .card { transition: box-shadow .2s ease; }
+.xf-contacts .card-h-100:hover, .xf-companies .card:hover { box-shadow: var(--xf-shadow-hover); }
+
+/* 20.13b 搜索框 / 表格微调 */
+.search-box { position: relative; }
+.search-box .form-control { padding-left: 2.25rem; }
+.search-box::before {
+    content: ""; position: absolute; left: .8rem; top: 50%; transform: translateY(-50%);
+    width: 1rem; height: 1rem; opacity: .6; pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat center / 1rem;
+}
+.xf-reviews .progress { background-color: rgba(var(--bs-primary-rgb), .12); }
+
+/* 20.13 待办清单（TodoList） */
+.xf-todo-list > li { border-radius: var(--xf-radius); transition: background-color .15s ease; }
+.xf-todo-list > li:hover { background-color: rgba(var(--bs-secondary-rgb), .05); }
+.xf-todo-done .flex-grow-1 { text-decoration: line-through; color: var(--bs-secondary-color); }
+.xf-todo-done .form-check-input { background-color: var(--bs-success); border-color: var(--bs-success); }
+.xf-todo-count { font-weight: 500; }
+
+/* 20.12 通用过渡与文本选区 */
+a, .nav-link, .dropdown-item, .list-group-item, .btn { transition-timing-function: ease; }
+::selection { background: rgba(var(--bs-primary-rgb), .2); }
+
+/* 20.15 面包屑（breadcrumb）美化：当前项用主色，分隔符箭头风格 */
+.breadcrumb-item a { color: var(--bs-secondary-color); text-decoration: none; transition: color .15s ease; }
+.breadcrumb-item a:hover { color: var(--bs-primary); }
+.breadcrumb-item.active { color: var(--bs-primary); font-weight: 500; }
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›"; font-weight: 700; color: var(--bs-secondary-color); opacity: .7;
+}
+
+/* 20.14 应用级组件（EmailApp / ChatApp / ProfilePage / InvoiceDetail） */
+.xf-scroll-y { overflow-y: auto; scrollbar-width: thin; }
+.xf-scroll-y::-webkit-scrollbar { width: 6px; }
+.xf-scroll-y::-webkit-scrollbar-thumb { background: rgba(var(--bs-secondary-rgb), .3); border-radius: 3px; }
+.xf-email-app .list-group-item-action:not(.active):hover,
+.xf-chat-app .list-group-item-action:not(.active):hover { background-color: rgba(var(--bs-primary-rgb), .05); }
+.xf-email-app .list-group-item.active,
+.xf-chat-app .list-group-item.active {
+    background-color: rgba(var(--bs-primary-rgb), .1);
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color);
+}
+.xf-chat-app .bg-light { background-color: rgba(var(--bs-secondary-rgb), .12) !important; }
+.xf-profile-page .profile-cover { border-radius: var(--xf-radius) var(--xf-radius) 0 0; }
+.xf-invoice-detail table thead th { text-transform: uppercase; font-size: .75rem; letter-spacing: .5px; }
+@media (max-width: 991.98px) {
+    .xf-email-app .border-end, .xf-chat-app .border-end { border-right: 0 !important; border-bottom: 1px solid var(--bs-border-color); }
+}
+@media print {
+    .xf-invoice-detail { box-shadow: none !important; border: 0 !important; }
+}
+
+/* --------------------------------------------------------------------------
+   X. DataTable 进阶（密度切换 / 列筛选 / 过滤栏）
+   -------------------------------------------------------------------------- */
+/* 紧凑密度：收紧单元格内边距、缩小字号 */
+.xf-dt-compact thead th,
+.xf-dt-compact tbody td {
+    padding-top: .3rem;
+    padding-bottom: .3rem;
+    font-size: .8125rem;
+    line-height: 1.35;
+}
+.xf-dt-compact tbody tr:hover { --bs-table-accent-bg: var(--bs-secondary-bg); }
+
+/* 列筛选行（每列底部输入框） */
+.xf-filter-row td {
+    padding: .25rem .5rem;
+    background: var(--bs-tertiary-bg);
+    border-top: 0;
+}
+.xf-filter-row .form-control-sm { min-width: 4.5rem; }
+
+/* 过滤工具栏（filter_bar）外观微调 */
+form[data-xf-filter-for] .form-label { font-weight: 500; }
+form[data-xf-filter-for] .xf-filter-reset { white-space: nowrap; }
+
+/* ============================================================
+   本轮全面加固新增（2026-07）
+   ============================================================ */
+
+/* ---- 侧边栏多级菜单（支持 6 级及以上，按层级递增缩进） ---- */
+.sub-menu .sub-menu .side-nav-link { padding-left: 1.75rem; font-size: .84rem; }
+.sub-menu .sub-menu .sub-menu .side-nav-link { padding-left: 2.5rem; font-size: .83rem; }
+.sub-menu .sub-menu .sub-menu .sub-menu .side-nav-link { padding-left: 3.25rem; font-size: .82rem; }
+.sub-menu .sub-menu .sub-menu .sub-menu .sub-menu .side-nav-link { padding-left: 4rem; font-size: .81rem; }
+.sub-menu .sub-menu .sub-menu .sub-menu .sub-menu .sub-menu .side-nav-link { padding-left: 4.75rem; font-size: .8rem; }
+.sub-menu .side-nav-item .side-nav-link .menu-arrow { margin-left: auto; }
+
+/* ---- 顶部导航嵌套子菜单（悬停展开，层级不限） ---- */
+.dropdown-submenu {
+    position: relative;
+}
+.dropdown-submenu > .dropdown-submenu-menu {
+    top: 0; left: 100%; margin-top: -.35rem; margin-left: .1rem;
+    display: none; position: absolute;
+}
+.dropdown-submenu:hover > .dropdown-submenu-menu,
+.dropdown-submenu.show > .dropdown-submenu-menu {
+    display: block;
+}
+@media (max-width: 991.98px) {
+    .dropdown-submenu > .dropdown-submenu-menu {
+        position: static;
+        margin-left: 1rem;
+        box-shadow: none;
+        border: 0;
+        float: none;
+        width: auto;
+        background: transparent;
+        padding: 0;
+    }
+}
+
+/* ---- 选项卡 Tabs 美化 ---- */
+.nav-tabs { border-bottom: 2px solid var(--bs-border-color); gap: .25rem; }
+.nav-tabs .nav-link {
+    border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    color: var(--bs-secondary-color); font-weight: 500; border-radius: .375rem .375rem 0 0;
+    padding: .55rem 1rem; transition: color .15s, background .15s, border-color .15s;
+    display: inline-flex; align-items: center; gap: .35rem;
+}
+.nav-tabs .nav-link:hover { color: var(--bs-primary); background: var(--bs-primary-bg-subtle); }
+.nav-tabs .nav-link.active {
+    color: var(--bs-primary); background: transparent; border-bottom-color: var(--bs-primary);
+}
+.nav-pills { gap: .25rem; }
+.nav-pills .nav-link {
+    color: var(--bs-secondary-color); font-weight: 500; padding: .5rem 1rem;
+    display: inline-flex; align-items: center; gap: .35rem; transition: all .15s;
+}
+.nav-pills .nav-link:hover:not(.active) { background: var(--bs-tertiary-bg); color: var(--bs-emphasis-color); }
+.nav-pills .nav-link.active { box-shadow: 0 2px 6px rgba(var(--bs-primary-rgb), .35); }
+.tab-content { padding-top: 1rem; }
+.card .tab-content { padding: 1rem 0 0; }
+/* 垂直选项卡 */
+.xf-tabs-vertical { display: flex; gap: 1rem; }
+.xf-tabs-vertical .nav-tabs { flex-direction: column; border-bottom: 0; border-right: 2px solid var(--bs-border-color); }
+.xf-tabs-vertical .nav-tabs .nav-link { border-bottom: 0; border-right: 2px solid transparent; margin: 0 -2px 0 0; border-radius: .375rem 0 0 .375rem; }
+.xf-tabs-vertical .nav-tabs .nav-link.active { border-right-color: var(--bs-primary); }
+
+/* ---- DataTable 固定列（CSS sticky） ---- */
+/*
+ * 穿透修复说明：
+ * position:sticky 的 td 滚动时，同行的非 sticky td 因无 position 上下文，
+ * 浏览器按 DOM 顺序渲染时会画在 sticky 元素之上（穿透）。
+ *
+ * 修复策略：
+ * 1) 非固定列 td/th → position:relative + z-index:0，强制进入层叠上下文且低于 sticky
+ * 2) 固定列 → 显式 background-color（非 background 简写，防继承意外）
+ * 3) .dt-scroll-body 容器 → isolation:isolate 创建独立层叠上下文，阻断外部 z-index 泄漏
+ * 4) 表头/条纹/悬停行、暗色模式均显式设置对应背景色
+ */
+/* ① 滚动体内非固定列：强制纳入层叠上下文，层级低于固定列 */
+div.dt-scroll-body td:not(.xf-dt-sticky),
+div.dt-scroll-body th:not(.xf-dt-sticky) {
+    position: relative;
+    z-index: 0;
+}
+/* ② 滚动体容器：独立层叠上下文，隔离内外 z-index */
+div.dt-scroll-body {
+    isolation: isolate;
+}
+/* ③ 固定列核心样式 */
+.xf-dt-sticky {
+    position: sticky !important;
+    z-index: 3;
+    background-color: var(--bs-body-bg);
+    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, .12);
+}
+.xf-dt-sticky.xf-dt-sticky-end {
+    box-shadow: -6px 0 8px -6px rgba(0, 0, 0, .12);
+}
+/* ④ 表头固定列：更高层级 + 表头背景色 */
+thead .xf-dt-sticky {
+    z-index: 4;
+    background-color: var(--bs-tertiary-bg);
+}
+/* ⑤ 条纹行固定列背景 */
+table.table-striped > tbody > tr:nth-of-type(odd) > .xf-dt-sticky {
+    background-color: var(--bs-tertiary-bg);
+}
+/* ⑤b 偶数行固定列背景：覆盖 INSPINIA 的 --ins-table-bg 或 table-striped td 背景规则，
+   避免偶数行 sticky 单元格被高优先级规则置为透明导致内容穿透 */
+table.table-striped > tbody > tr:nth-of-type(even) > .xf-dt-sticky {
+    background-color: var(--bs-body-bg);
+}
+/* ⑥ 悬停行固定列背景 */
+tr:hover > .xf-dt-sticky {
+    background-color: var(--bs-secondary-bg);
+}
+
+/* ---- 过滤工具栏：搜索按钮与 select2 尺寸对齐 ---- */
+form[data-xf-filter-for] .xf-filter-search { white-space: nowrap; }
+form[data-xf-filter-for] .select2-container .select2-selection--single,
+form[data-xf-filter-for] .select2-container .select2-selection--multiple {
+    min-height: calc(1.5em + .5rem + 2px); font-size: .875rem;
+    border-color: var(--bs-border-color); background: var(--bs-body-bg);
+}
+form[data-xf-filter-for] .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: var(--bs-primary-bg-subtle); color: var(--bs-primary);
+    border: 1px solid rgba(var(--bs-primary-rgb), .25); border-radius: .25rem;
+    padding: 0 .4rem 0 1.2rem; font-size: .8rem; margin-top: .25rem;
+}
+form[data-xf-filter-for] .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 1.9rem; }
+form[data-xf-filter-for] .select2-container--default .select2-selection--single .select2-selection__arrow { height: 1.9rem; }
+.select2-dropdown { border-color: var(--bs-border-color); background: var(--bs-body-bg); color: var(--bs-body-color); z-index: 1060; }
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable { background: var(--bs-primary); }
+.select2-search--dropdown .select2-search__field { border-color: var(--bs-border-color) !important; background: var(--bs-body-bg); color: var(--bs-body-color); }
+
+/* ---- 多图缩略单元格 ---- */
+.xf-cell-images img { margin-right: -8px; box-shadow: 0 0 0 2px var(--bs-body-bg); }
+.xf-cell-images img:last-of-type { margin-right: 0; }
+
+/* ---- 暗色模式下 sticky 列背景适配 ---- */
+[data-bs-theme="dark"] .xf-dt-sticky { background-color: var(--bs-body-bg); }
+[data-bs-theme="dark"] thead .xf-dt-sticky { background-color: var(--bs-tertiary-bg); }
+[data-bs-theme="dark"] table.table-striped > tbody > tr:nth-of-type(odd) > .xf-dt-sticky { background-color: var(--bs-tertiary-bg); }
+[data-bs-theme="dark"] table.table-striped > tbody > tr:nth-of-type(even) > .xf-dt-sticky { background-color: var(--bs-body-bg); }
+[data-bs-theme="dark"] tr:hover > .xf-dt-sticky { background-color: var(--bs-secondary-bg); }
+/* 暗色模式：非固定列也设背景色（避免透明穿透） */
+[data-bs-theme="dark"] div.dt-scroll-body td:not(.xf-dt-sticky),
+[data-bs-theme="dark"] div.dt-scroll-body th:not(.xf-dt-sticky) {
+    background-color: var(--bs-body-bg);
+}
+[data-bs-theme="dark"] div.dt-scroll-body thead td,
+[data-bs-theme="dark"] div.dt-scroll-body thead th {
+    background-color: transparent;
+}
+
+
+/* ==================================================================
+ * DataTable 富单元格渲染器（tooltip / 状态点 / 单元格时间线 / 迷你趋势图）
+ * ================================================================== */
+.xf-tip-underline { border-bottom: 1px dashed var(--bs-secondary-color, #98a6ad); cursor: help; }
+.xf-status-dot { width: .55rem; height: .55rem; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.xf-spark { vertical-align: middle; display: inline-block; }
+.xf-cell-tl { line-height: 1.6; font-size: .8125rem; }
+.xf-cell-tl-item { display: flex; align-items: center; gap: .4rem; white-space: nowrap; }
+.xf-cell-tl-dot { width: .45rem; height: .45rem; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.xf-cell-toggle { white-space: nowrap; }
+
+/* ==================================================================
+ * 行详情弹窗（viewRow 多布局：kv / profile / sections / tabs / stats / timeline）
+ * ================================================================== */
+.xf-view-kv-item { display: flex; padding: .5rem .25rem; border-bottom: 1px dashed var(--bs-border-color, #e5e7eb); }
+.xf-view-kv-label { flex: 0 0 34%; max-width: 34%; color: var(--bs-secondary-color, #6c757d); font-size: .8125rem; padding-right: .75rem; word-break: break-all; }
+.xf-view-kv-value { flex: 1; min-width: 0; word-break: break-word; font-size: .875rem; }
+.xf-view-section { margin-bottom: 1.25rem; }
+.xf-view-section:last-child { margin-bottom: 0; }
+.xf-view-section-title {
+    font-size: .8125rem; font-weight: 600; text-transform: none;
+    color: var(--bs-secondary-color, #6c757d);
+    padding-bottom: .4rem; margin-bottom: .75rem;
+    border-bottom: 1px solid var(--bs-border-color, #e5e7eb);
+}
+.xf-view-stat { border-radius: .5rem; padding: .85rem .5rem; }
+.xf-view-tl { position: relative; padding-left: .35rem; }
+.xf-view-tl-item { position: relative; padding: 0 0 1rem 1.1rem; border-left: 2px solid var(--bs-border-color, #e5e7eb); margin-left: .3rem; }
+.xf-view-tl-item:last-child { border-left-color: transparent; padding-bottom: .25rem; }
+.xf-view-tl-dot {
+    position: absolute; left: -6px; top: .2rem; width: 10px; height: 10px; border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--bs-body-bg, #fff);
+}
+.xf-view-tl-body { min-width: 0; }
+
+/* 编辑页面弹窗（DataTable 编辑按钮 -> 弹窗展示编辑页面内容） */
+.xf-page-loading { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: 2.5rem 1rem; color: var(--bs-secondary-color, #6c757d); }
+.xf-edit-frame { width: 100%; height: 72vh; border: 0; display: block; }
+.xf-remote-form .invalid-feedback.xf-field-error { display: block; }
+/* 远程编辑页内容片段的内边距与栅格间距 */
+[data-xf-page-content] { padding: .25rem .25rem 0; }
+[data-xf-page-content] .row { --bs-gutter-x: 1rem; }
+.xf-remote-form .form-label { font-weight: 500; margin-bottom: .3rem; }
+
+/* =====================================================================
+ * DataTable 增强样式（XfAdmin 扩展：选择列 / 明细列 / 分组行 / 批量栏）
+ * ===================================================================== */
+
+/* 水平滚动容器：与 INSPINIA 模板一致，紧贴卡片 body 无额外间距 */
+.xf-datatable > .table-responsive { margin: 0; padding: 0; border: 0; }
+.xf-datatable > .table-responsive > .table {
+    margin-bottom: 0;
+    min-width: max-content;       /* 内容/列过多时撑开容器，触发水平滚动条 */
+    width: 100%;
+}
+
+/* =====================================================================
+ * DataTables 2.x scrollX 容器样式（参照 yoc_cn 项目 app.css）
+ *
+ * 【关键架构】DataTables 2.x 初始化后，<table class="xf-datatable"> 被包裹在
+ * <div class="dt-container"> 中。.dt-scroll-head / .dt-scroll-body / .dt-scroll
+ * 是 .dt-container 的直接子元素，与 xf-datatable table 处于同一层级或互为
+ * 表头/表体的宿主，而非 table 的后代节点。
+ *
+ * 因此 dt-container 级别规则 **不能** 用 .xf-datatable .dt-scroll-*（死代码），
+ * 必须用 div.dt-scroll-* 直接选择器（与 yoc_cn 一致）。
+ *
+ * 列宽同步的最佳实践（详见下方「yoc 项目 DataTable 核心修复」区段）：
+ * - display:table-row!important 覆盖 INSPINIA 的 display:none（根因修复）
+ * - table-layout:fixed!important 让两表统一列宽计算模型
+ * - .dt-scroll-body overflow-x: auto（水平滚动由此驱动）
+ * - .dt-scroll-head overflow: hidden（表头不单独滚动）
+ * - JS 端 requestAnimationFrame + ResizeObserver + Tab/Win resize 4 层同步
+ * - DataTables 2.x 内部自动同步 scrollLeft，无需 JS 监听滚动事件
+ * ===================================================================== */
+
+/* 表体容器：提供水平滚动 */
+div.dt-scroll-body {
+    overflow-x: auto !important;
+}
+
+/* 滚动包裹（不含 .table-responsive，避免双滚动条） */
+div.dt-scroll {
+    width: 100%;
+}
+
+/* 选择列与明细列：固定窄宽、内容居中 */
+.xf-datatable .xf-dt-select-col,
+.xf-datatable .xf-dt-detail-col { width: 40px; min-width: 40px; max-width: 40px; text-align: center; padding-left: .25rem; padding-right: .25rem; }
+.xf-datatable thead .xf-dt-select-col,
+.xf-datatable thead .xf-dt-detail-col { vertical-align: middle; }
+
+/* 表格样式增强（对齐 INSPINIA 模板）
+ * 表头背景：使用模板变量 --ins-table-thead-bg（默认浅灰），确保表头有明显的视觉层级
+ * 表格边框：使用 --ins-border-width 和 --ins-border-color，与模板一致
+ */
+.xf-datatable.dataTable thead th {
+    background-color: var(--ins-table-thead-bg, #f8f9fa);
+    border-bottom: 2px solid var(--ins-border-color, #dee2e6);
+    font-weight: var(--ins-font-weight-semibold, 600);
+    color: var(--ins-table-thead-color, #495057);
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: .82rem;
+}
+.xf-datatable.dataTable thead th:first-child { border-top-left-radius: .5rem; }
+.xf-datatable.dataTable thead th:last-child { border-top-right-radius: .5rem; }
+.xf-datatable.dataTable tbody td {
+    border-bottom: 1px solid var(--ins-border-color, #dee2e6);
+    vertical-align: middle;
+}
+/* 表格底部边框 */
+.xf-datatable.dataTable tfoot td {
+    border-top: 2px solid var(--ins-border-color, #dee2e6);
+    font-weight: var(--ins-font-weight-semibold, 600);
+    background-color: var(--ins-table-thead-bg, #f8f9fa);
+}
+
+/* 行复选框 / 全选框：与 Bootstrap 视觉一致，去除多余外边距 */
+.xf-dt-select-cell .form-check-input,
+.xf-datatable thead .xf-dt-select-col .form-check-input { cursor: pointer; margin: 0; }
+.xf-dt-select-cell { cursor: pointer; }
+
+/* 明细展开按钮：幽灵按钮 + 箭头旋转过渡 */
+.xf-dt-detail-toggle { line-height: 1; padding: .15rem .35rem; transition: transform .15s ease; }
+.xf-dt-detail-toggle i { transition: transform .15s ease; }
+.xf-dt-detail-open > .xf-dt-detail-cell { background-color: var(--bs-light, #f8f9fa); }
+
+/* 行详情面板 */
+.xf-dt-detail-wrap { border-radius: .5rem; }
+.xf-dt-detail-list dt { font-weight: 500; }
+.xf-dt-detail-list dd { word-break: break-word; }
+
+/* 分组标题行：紧凑分隔带，与数据行明显区分（避免和 table-striped 混淆） */
+.xf-datatable .xf-dt-group-row td {
+    padding: 0;
+    background: transparent;
+    border-top: 1px solid var(--bs-border-color);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+.xf-dt-group-label {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .15rem .55rem; margin: .15rem .5rem;
+    border-radius: .35rem;
+    background: var(--bs-primary-bg-subtle, #eef4ff);
+    color: var(--bs-primary-text-emphasis, #0b5ed7);
+    font-weight: 600; font-size: .72rem; letter-spacing: .02em;
+    text-transform: uppercase;
+}
+.xf-dt-group-label::before { content: ""; width: .3rem; height: .3rem; border-radius: 50%; background: currentColor; }
+/* 第 1570 行的冲突覆盖：只给 label 内部渲染，不要整行铺色 */
+.xf-dt-group-row td { background: transparent; font-weight: 600; }
+
+/* 批量操作栏：卡片化、操作按钮组 + 已选计数 */
+.xf-dt-bulk {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e5e7eb);
+    border-radius: .5rem;
+    animation: xf-bulk-in .15s ease;
+}
+@keyframes xf-bulk-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.xf-dt-bulk-count b { font-variant-numeric: tabular-nums; }
+
+/* 「新增」按钮容器 */
+.xf-dt-create { justify-content: flex-end; }
+
+/* 空数据与加载状态美化（2.x 用 .dt-empty，1.x 用 .dataTables_empty 兜底） */
+.xf-datatable .dt-empty,
+.xf-datatable .dataTables_empty {
+    padding: 2.5rem 1rem; color: var(--bs-secondary-color, #6c757d); text-align: center;
+}
+.xf-datatable.dataTable { border-collapse: separate; border-spacing: 0; }
+
+/* ------------------------------------------------------------------
+ * 列排序（DataTables 2.x）
+ *
+ * 背景与根因（经 CDP 实测确认）：
+ *   1) 模板 app.min.css 的 `table.dataTable thead th::after{content:"\eaa5"}`
+ *      在压缩过程中转义序列被破坏，计算值为空字符串 —— 图标在任何状态下都不显示。
+ *   2) 模板规则默认 `display:none`，仅 :hover / .dt-ordering-* 时显示，
+ *      未排序列没有“可排序”的视觉提示。
+ *   3) 模板 CSS 面向 DataTables 1.x 编写，未适配 2.x 新增的
+ *      .dt-column-header / .dt-column-title / .dt-column-order 结构，
+ *      .dt-column-order 实测为 0×17px 空元素；且 .thead-sm 的
+ *      `padding:.5rem!important` 未给绝对定位图标预留空间，图标与文字重叠。
+ *
+ * 修复策略：弃用不可靠的 th::after，改为在 2.x 原生的 .dt-column-order
+ * 上用 Tabler 图标字体绘制，通过 flex 布局占位（不再绝对定位，从根本上
+ * 避免与表头文字重叠），并保留三态（可排序 / 升序 / 降序）视觉反馈。
+ * ------------------------------------------------------------------ */
+
+/* 关闭模板中失效且会与新方案重叠的 ::after 图标 */
+.xf-datatable.dataTable thead th::after,
+table.dataTable thead th::after { content: none !important; display: none !important; }
+
+/* 表头内容容器：标题与排序图标并排，图标不再绝对定位 */
+.xf-datatable.dataTable thead th .dt-column-header,
+table.dataTable thead th .dt-column-header {
+    display: flex; align-items: center; gap: .35rem;
+    justify-content: space-between; width: 100%;
+}
+.xf-datatable.dataTable thead th .dt-column-title,
+table.dataTable thead th .dt-column-title { flex: 1 1 auto; min-width: 0; }
+
+/* 排序图标本体：Tabler 图标字体，默认淡显（提示“可排序”） */
+.xf-datatable.dataTable thead th .dt-column-order,
+table.dataTable thead th .dt-column-order {
+    position: static; flex: 0 0 auto;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.25em; height: 1.25em; line-height: 1;
+    margin-left: .25rem; border-radius: .3rem;
+    /* hover/可点击态：淡背景圆角，提示可交互 */
+    transition: opacity .15s ease, color .15s ease, background-color .15s ease;
+}
+/* 可排序列：图标容器 hover 时给淡背景，强调可点击 */
+.xf-datatable.dataTable thead th.dt-orderable-asc .dt-column-order:hover,
+.xf-datatable.dataTable thead th.dt-orderable-desc .dt-column-order:hover,
+table.dataTable thead th.dt-orderable-asc .dt-column-order:hover,
+table.dataTable thead th.dt-orderable-desc .dt-column-order:hover {
+    background-color: var(--bs-primary-bg-subtle, rgba(62,96,213,.12));
+}
+.xf-datatable.dataTable thead th .dt-column-order::before,
+table.dataTable thead th .dt-column-order::before {
+    font-family: tabler-icons !important;
+    font-size: 16px; font-weight: 400; font-style: normal;
+    content: "\eaa5";                 /* ti-selector：可排序（双向箭头） */
+    color: var(--bs-secondary-color, #6c757d);
+    opacity: .55;
+    transition: opacity .15s ease, color .15s ease;
+}
+/* 不可排序列：不显示图标、恢复默认光标 */
+.xf-datatable.dataTable thead th.dt-orderable-none,
+table.dataTable thead th.dt-orderable-none { cursor: default; }
+.xf-datatable.dataTable thead th.dt-orderable-none .dt-column-order,
+table.dataTable thead th.dt-orderable-none .dt-column-order { display: none; }
+
+/* 可排序列 hover：图标加深，给出可点击反馈 */
+.xf-datatable.dataTable thead th.dt-orderable-asc:hover .dt-column-order::before,
+.xf-datatable.dataTable thead th.dt-orderable-desc:hover .dt-column-order::before,
+table.dataTable thead th.dt-orderable-asc:hover .dt-column-order::before,
+table.dataTable thead th.dt-orderable-desc:hover .dt-column-order::before {
+    opacity: 1; color: var(--bs-primary);
+}
+
+/* 已排序列：升序 / 降序图标 + 主色高亮 */
+.xf-datatable.dataTable thead th.dt-ordering-asc .dt-column-order::before,
+table.dataTable thead th.dt-ordering-asc .dt-column-order::before {
+    content: "\eb26";                 /* ti-sort-ascending */
+    opacity: 1; color: var(--bs-primary);
+}
+.xf-datatable.dataTable thead th.dt-ordering-desc .dt-column-order::before,
+table.dataTable thead th.dt-ordering-desc .dt-column-order::before {
+    content: "\eb27";                 /* ti-sort-descending */
+    opacity: 1; color: var(--bs-primary);
+}
+/* 已排序列表头：主色浅底 + 标题主色，便于快速识别当前排序列 */
+.xf-datatable.dataTable thead th.dt-ordering-asc,
+.xf-datatable.dataTable thead th.dt-ordering-desc,
+table.dataTable thead th.dt-ordering-asc,
+table.dataTable thead th.dt-ordering-desc {
+    background: var(--bs-primary-bg-subtle, rgba(62,96,213,.1));
+}
+/* 已排序列标题同步高亮，便于快速识别当前排序列 */
+.xf-datatable.dataTable thead th.dt-ordering-asc .dt-column-title,
+.xf-datatable.dataTable thead th.dt-ordering-desc .dt-column-title,
+table.dataTable thead th.dt-ordering-asc .dt-column-title,
+table.dataTable thead th.dt-ordering-desc .dt-column-title { color: var(--bs-primary); font-weight: 600; }
+
+/* 键盘可达性：Tab 聚焦排序按钮时给出清晰焦点环 */
+.xf-datatable.dataTable thead th .dt-column-order:focus-visible,
+table.dataTable thead th .dt-column-order:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px; border-radius: .2rem;
+}
+
+/* 排序中的列：整列轻微底色，强化当前排序的视觉焦点 */
+.xf-datatable.dataTable tbody td.sorting_1 { background: rgba(var(--bs-primary-rgb), .035); }
+
+/* 表头文字不被选中，避免连续点击排序时误选文本 */
+.xf-datatable.dataTable thead th,
+table.dataTable thead th { -webkit-user-select: none; user-select: none; }
+
+/* 行 hover 高亮 */
+.xf-datatable tbody tr:hover,
+table.dataTable tbody tr:hover { background: var(--bs-primary-bg-subtle, #f5f8ff); }
+
+/* =====================================================================
+ * DataTables 2.x dt-container 级别规则（参照 yoc_cn app.css）
+ *
+ * 【关键】dt-layout-row / dt-search / dt-length / dt-info / dt-paging 等元素
+ * 是 .dt-container 的直接子元素（与 xf-datatable table 同级或包裹关系），
+ * **不能**用 .xf-datatable .dt-*（table 的后代选择器），必须用 div.dt-container *
+ * 或 裸选择器（与 yoc_cn 保持一致）。
+ * ===================================================================== */
+
+/* 容器顶部微调（对齐卡片内边距） */
+div.dt-container { margin-top: -0.625rem; }
+
+/* 每页条数下拉框 */
+div.dt-container div.dt-length select {
+    width: auto;
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+/* 搜索框右浮 */
+div.dt-container div.dt-search { text-align: right; }
+div.dt-container div.dt-search input {
+    margin-left: 0.5em;
+    display: inline-block;
+    width: auto;
+    min-width: 16rem;
+}
+
+/* 布局表格行：block 化确保与模板兼容 */
+div.dt-container div.dt-layout-table > div { display: block !important; }
+div.dt-container div.dt-layout-full { width: 100%; }
+
+/* 分页器 */
+.dt-paging .pagination {
+    margin-bottom: 0;
+    padding-top: calc(var(--ins-card-spacer-y) - 0.625rem);
+}
+/* 信息栏 */
+.dt-info {
+    padding-top: calc(var(--ins-card-spacer-y) - 0.625rem);
+    color: var(--bs-secondary-color, #6c757d);
+    font-size: .82rem;
+}
+
+/* 长度/信息栏左浮（与 INSPINIA 一致） */
+.dt-layout-cell > .dt-length,
+.dt-layout-cell > .dt-info {
+    float: left !important;
+}
+/* 非表格行的 dt-layout-cell 不居中 */
+div.dt-container div.dt-layout-row:not(.dt-layout-table) div.dt-layout-cell {
+    text-align: unset !important;
+}
+/* 信息栏额外上边距 */
+.dt-layout-cell > .dt-info { margin-top: 0.75rem !important; }
+
+/* 固定表头（fixedHeader）扩展的背景色 */
+table.dataTable.fixedHeader-floating,
+table.dataTable.fixedHeader-locked {
+    background-color: var(--ins-body-bg);
+}
+
+/* Responsive 子行标题加粗 */
+table.dataTable > tbody > tr .child span.dtr-title {
+    font-weight: var(--ins-font-weight-semibold);
+}
+
+/* -------------------- 手机端响应式数据表布局 -------------------- */
+@media screen and (max-width: 767px) {
+    div.dt-container div.dt-layout-row {
+        text-align: center;
+    }
+    div.dt-container div.dt-layout-table > div {
+        clear: both !important;
+    }
+    div.dt-container div.dt-length,
+    div.dt-container div.dt-search,
+    div.dt-container div.dt-info,
+    div.dt-container div.dt-processing,
+    div.dt-container div.dt-paging {
+        text-align: center;
+    }
+    div.dt-container .dt-paging .pagination {
+        justify-content: center;
+    }
+}
+
+/* 序号/操作等窄列对齐 */
+.xf-datatable td.text-nowrap { white-space: nowrap; }
+
+/* 列筛选行（column_filters）美化 */
+.xf-datatable .xf-filter-row td { padding: .35rem .5rem; background: var(--bs-tertiary-bg, #f8f9fa); }
+.xf-datatable .xf-filter-row .form-control,
+.xf-datatable .xf-filter-row .form-select { min-width: 6rem; }
+
+/* dt-container 分页器 justify-content（INSPINIA 变量对齐） */
+.dt-container .dt-paging .pagination {
+    justify-content: var(--ins-pagination-justify-content);
+}
+
+/* =====================================================================
+ * yoc 项目 DataTable 核心修复（zxf-20260318 已验证 + 补充）
+ *
+ * 【根因1】INSPINIA app.min.css 对 .dt-scroll-body thead tr / tfoot tr
+ *         写了 display:none!important，将隐藏表头行完全移出布局流——
+ *         表体表的列宽无法参考表头单元格，与 .dt-scroll-head 表头表
+ *         各列独立计算宽度，导致表头/表体严重错位。
+ * 【根因2】DataTables 2.x scrollX 下 .dt-scroll-head 与 .dt-scroll-body
+ *         各为独立的 <table> 元素，若 table-layout 模式不同或容器
+ *         宽度未精确同步，两表列宽偏差无法自行纠正。
+ *
+ * 修复策略：
+ *   - display:table-row!important 覆盖 INSPINIA 的 display:none（保布局流）
+ *   - height:0 保持视觉不可见
+ *   - table-layout:fixed 让两表统一列宽计算模型（均按首行列宽）
+ *   - .dt-scroll-head overflow:hidden 防双滚动条
+ *   - .dt-scroll-body table width:100% 确保宽度满容器
+ * ===================================================================== */
+
+/* 1) 滚动表格列对齐核心修复：覆盖 INSPINIA display:none!important
+ *    让隐藏表头行仍在布局流中维持列宽（yoc 最关键的修复）。
+ *    注意：overflow:hidden 对 table-row 无效，必须逐 cell 折叠消除双表头。 */
+div.dt-scroll-body thead tr,
+div.dt-scroll-body tfoot tr {
+    height: 0 !important;
+    display: table-row !important;   /* 覆盖 INSPINIA 的 display:none!important */
+    line-height: 0 !important;
+}
+div.dt-scroll-body thead th,
+div.dt-scroll-body thead td,
+div.dt-scroll-body tfoot th,
+div.dt-scroll-body tfoot td {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    min-height: 0 !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
+}
+
+/* 2) 表头表与表体表统一使用 fixed 表布局，确保列宽同步。
+ *    fixed 模式下列宽按首行（thead）确定，两表首行结构一致故列宽一致。
+ *    注意：此规则显式覆盖以避免 app.min.css 或其他框架的 table-layout:auto 干扰。 */
+div.dt-scroll-head table,
+div.dt-scroll-body table {
+    margin-bottom: 0;
+    table-layout: fixed !important;
+}
+
+/* 3) 表头容器禁止横向溢出（表头不需要滚动条，仅表体需滚动） */
+div.dt-scroll-head {
+    overflow: hidden !important;
+}
+
+/* 4) 表体表格满宽（确保与表头表格同宽） */
+div.dt-scroll-body > table {
+    width: 100% !important;
+}
+
+/* 5) 列标题内边距归零（DataTables 2.x .dt-column-header / .dt-column-title
+ *    默认有 30px padding-right 用于排序图标，
+ *    但我们的图标已用 flex 布局，不需要额外内边距；
+ *    对标 yoc_cn app.css zxf:20260318 注释操作，同步移除该内边距） */
+.dt-column-header {
+    padding: 0;
+}
+.dt-column-title {
+    /*20260318 zxf 修改，直接注释下面这行*/
+    /*padding-right: 30px*/
+    padding-right: 0;
+}
+
+/* 6) 关闭 DataTables 原生排序 ::after 伪元素图标（与 Tabler 图标冲突，
+ *    已在前面单独修复为 .dt-column-order Tabler 图标方案） */
+table.dataTable thead th.dt-ordering-asc::after,
+table.dataTable thead th.dt-ordering-desc::after,
+table.dataTable thead th:hover::after {
+    display: none !important;
+}
+
+/* 7) 数值/日期列对齐重置：DataTables 2.x 强制 text-align:right，
+ *    与主题设计冲突，重置为继承父级对齐 */
+table.dataTable th.dt-type-numeric,
+table.dataTable th.dt-type-date,
+table.dataTable td.dt-type-numeric,
+table.dataTable td.dt-type-date {
+    text-align: unset !important;
+}
+/* 日期列底部 footer 横向排列（避免竖排溢出） */
+table.dataTable td.dt-type-date div.dt-column-footer {
+    flex-direction: row !important;
+}
+/* 表格内按钮组 z-index（避免被固定列覆盖） */
+table.dataTable > tbody .input-group-btn {
+    z-index: 1 !important;
+}
+
+/* 8) 表格内输入框紧凑内边距（筛选框等不臃肿） */
+table.dataTable > tbody input {
+    padding: .2rem .4rem !important;
+}
+
+/* 9) 固定列右侧偏移修正：消除 1px 间隙 */
+table.dataTable tr > .dtfc-fixed-end {
+    right: -1px !important;
+}
+
+/* 10) 选中行背景：用 box-shadow inset 代替 background-color，
+ *    保留原有条纹样式，与其他行视觉更统一 */
+table.dataTable > tbody > tr.selected > * {
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), 0.9) !important;
+}
+table.dataTable > tbody > tr.selected *:not(.form-control) {
+    color: rgb(var(--dt-row-selected-text)) !important;
+}
+
+/* 11) 暗色模式：固定列背景色 */
+[data-bs-theme=dark] {
+    --ins-light-rgb: 37, 38, 48 !important;
+}
+[data-bs-theme=dark] table.dataTable tr > .dtfc-fixed-start,
+[data-bs-theme=dark] table.dataTable tr > .dtfc-fixed-end {
+    background-color: #252630 !important;
+}
+
+/* 12) 亮色模式 light-rgb 变量 */
+:root,
+[data-bs-theme=light] {
+    --ins-light-rgb: 208, 208, 208 !important;
+}
+
+/* 13) DataTables Select 扩展选中行样式（参照 yoc_cn app.css）
+   使用 DataTables 原生 --dt-row-selected 变量，确保与 Select 扩展一致 */
+table.dataTable > tbody > tr.selected > * {
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), 0.9) !important;
+}
+table.dataTable > tbody > tr.selected *:not(.form-control) {
+    color: rgb(var(--dt-row-selected-text)) !important;
+}
+/* 固定列在选中行时保持覆盖 */
+table.dataTable > tbody > tr.selected > .xf-dt-sticky {
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), 0.9),
+                6px 0 8px -6px rgba(0, 0, 0, .12) !important;
+}
+table.dataTable > tbody > tr.selected > .xf-dt-sticky.xf-dt-sticky-end {
+    box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), 0.9),
+                -6px 0 8px -6px rgba(0, 0, 0, .12) !important;
+}
+table.dataTable tbody > tr.selected a:not(.btn),
+table.dataTable tbody > tr.selected a:not(.btn):hover {
+    color: var(--bs-body-color);
+}
+.select-info .select-item {
+    color: var(--ins-primary);
+    font-weight: var(--ins-font-weight-semibold);
+}
+
+/* 14) DataTables Buttons 扩展导出按钮信息层（参照 yoc_cn） */
+div.dt-button-info {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    margin-top: -100px;
+    margin-left: -200px;
+    background-color: var(--bs-body-bg);
+    border-radius: .75rem;
+    box-shadow: 3px 4px 10px 1px rgba(0, 0, 0, .3);
+    text-align: center;
+    z-index: 2003;
+}
+div.dt-button-info h2 {
+    padding: 1rem 1rem;
+    margin: 0;
+    border-radius: .75rem .75rem 0 0;
+    background-color: var(--bs-tertiary-bg);
+    font-size: 1.1rem;
+    font-weight: var(--ins-font-weight-semibold);
+}
+div.dt-button-info > div {
+    padding: 1.5rem;
+}
+
+/* 15) Responsive 子行展开/收起样式（参照 yoc_cn） */
+table.dataTable.dtr-column td.dt-hasChild,
+table.dataTable.dtr-column > tbody > tr > td.dt-hasChild {
+    cursor: pointer;
+}
+
+/* 16) 列搜索输入栏（参照 yoc_cn） */
+.column-search-input-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+/* 17) 复选框选择的 DataTable 列样式（参照 yoc_cn） */
+.checkbox-select-datatable {
+    width: 1px;
+    white-space: nowrap;
+}
+
+/* ==================== 指标卡（MetricCard / metrics.html） ==================== */
+.xf-metric-card { transition: box-shadow .15s ease, transform .15s ease; }
+a.xf-metric-card:hover { box-shadow: 0 .25rem 1rem rgba(30, 40, 80, .12); transform: translateY(-2px); text-decoration: none; }
+.xf-metric-card .xf-metric-chart { flex: 0 0 auto; }
+.xf-metric-card h3 { letter-spacing: -.5px; }
+
+/* ==================== 条款/协议页（Terms / pages-terms-conditions.html） ==================== */
+.xf-terms-toc .nav-link { color: var(--bs-secondary-color, #6c757d); font-size: .85rem; border-left: 2px solid transparent; border-radius: 0; }
+.xf-terms-toc .nav-link:hover { color: var(--bs-primary, #3e60d5); }
+.xf-terms-toc .nav-link.active { color: var(--bs-primary, #3e60d5); background: transparent; border-left-color: var(--bs-primary, #3e60d5); font-weight: 600; }
+.xf-terms-section { scroll-margin-top: 90px; }
+.xf-terms-body h5 { color: var(--bs-heading-color, #323a46); }
+
+/* ==================== 谷歌地图容器（GoogleMap / maps-google.html） ==================== */
+.xf-gmap { background: #eef0f3; }
+.xf-gmap iframe { display: block; }
+
+/* ==================== 组织架构树（ApexTree / charts-apextree.html） ==================== */
+.xf-apextree { min-height: 300px; }
+.xf-apextree svg { max-width: 100%; }
+
+/* ==================== 桑基图（ApexSankey / charts-apexsankey.html） ==================== */
+.xf-apexsankey { min-height: 260px; overflow-x: auto; }
+.xf-apexsankey svg { max-width: 100%; }
+
+/* ==================== 弹窗页单元格（DataTable page 渲染器） ==================== */
+.xf-cell-page { cursor: pointer; }
+.xf-cell-page:hover { text-decoration: underline; }
+
+/* ==================== 横向表单布局（Form layout=horizontal / form-layouts.html） ====================
+ * CSS Grid 两栏：标签列宽由 --xf-label-width 控制（默认 180px），窄屏自动回退纵向 */
+.xf-form-horizontal > .mb-3,
+.xf-form-horizontal > .mb-2,
+.xf-form-horizontal > .form-group {
+    display: grid;
+    grid-template-columns: var(--xf-label-width, 180px) 1fr;
+    gap: .25rem 1rem;
+    align-items: start;
+}
+.xf-form-horizontal > .mb-3 > .form-label,
+.xf-form-horizontal > .mb-2 > .form-label,
+.xf-form-horizontal > .form-group > .form-label { margin-bottom: 0; padding-top: .45rem; text-align: right; }
+.xf-form-horizontal > .mb-3 > *:not(.form-label),
+.xf-form-horizontal > .mb-2 > *:not(.form-label) { grid-column: 2; }
+.xf-form-horizontal > .mb-3 > .form-label + *,
+.xf-form-horizontal > .mb-2 > .form-label + * { grid-column: 2; grid-row: 1; }
 @media (max-width: 575.98px) {
-    div.dt-layout-row { flex-direction: column; gap: .5rem; }
-    .xf-row-actions .btn span { display: none; }
+    .xf-form-horizontal > .mb-3, .xf-form-horizontal > .mb-2, .xf-form-horizontal > .form-group { display: block; }
+    .xf-form-horizontal .form-label { text-align: left; padding-top: 0; }
+}
+
+/* ==================== 动画包装器（Animate / misc-animation.html） ==================== */
+.xf-animate[data-xf-trigger="hover"], .xf-animate[data-xf-trigger="click"] { cursor: pointer; }
+
+/* ==================== 二维码单元格（DataTable qr 渲染器） ==================== */
+.xf-cell-qr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 6px;
+    padding: 3px;
+    line-height: 0;
+    cursor: zoom-in;
+    transition: box-shadow .15s ease, transform .15s ease;
+}
+.xf-cell-qr:hover {
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), .18);
+    transform: translateY(-1px);
+}
+.xf-cell-qr svg { display: block; width: 100%; height: 100%; }
+a.xf-qr-open { align-self: center; }
+
+/* ==================================================================
+ * 新增组件样式：divider / skeleton / callout / kbd / media /
+ * avatar-group / countdown / back-to-top / countup
+ * ================================================================== */
+
+/* 分割线 */
+.xf-divider {
+    display: flex; align-items: center; text-align: center;
+    color: var(--bs-secondary-color); margin: 1rem 0;
+}
+.xf-divider::before, .xf-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--bs-border-color);
+}
+.xf-divider-inner { padding: 0 .75rem; font-size: .8125rem; white-space: nowrap; }
+.xf-divider-primary::before, .xf-divider-primary::after { background: var(--bs-primary); }
+.xf-divider-success::before, .xf-divider-success::after { background: var(--bs-success); }
+.xf-divider-danger::before, .xf-divider-danger::after { background: var(--bs-danger); }
+.xf-divider-warning::before, .xf-divider-warning::after { background: var(--bs-warning); }
+
+/* 骨架屏 */
+.xf-skeleton-wrap { display: flex; flex-direction: column; gap: .5rem; }
+.xf-skeleton, .xf-skeleton-line, .xf-skeleton-rect, .xf-skeleton-circle {
+    display: block; background: var(--bs-tertiary-bg, #e9ecef);
+    border-radius: .375rem;
+}
+.xf-skeleton-line { height: .75rem; }
+.xf-skeleton-rect { width: 100%; }
+.xf-skeleton-circle { border-radius: 50%; flex: 0 0 auto; }
+.xf-skeleton-animated { position: relative; overflow: hidden; }
+.xf-skeleton-animated::after {
+    content: ''; position: absolute; inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .6), transparent);
+    animation: xf-skeleton-shimmer 1.3s infinite;
+}
+@keyframes xf-skeleton-shimmer { 100% { transform: translateX(100%); } }
+
+/* Callout 强调提示框 */
+.xf-callout {
+    display: flex; gap: .625rem; padding: .75rem 1rem;
+    border-left: 4px solid var(--bs-primary);
+    background: var(--bs-primary-bg-subtle, rgba(var(--bs-primary-rgb), .08));
+    border-radius: .375rem;
+}
+.xf-callout-icon { font-size: 1.125rem; margin-top: .1rem; color: var(--bs-primary); }
+.xf-callout-title { font-weight: 600; margin-bottom: .15rem; }
+.xf-callout-text { font-size: .875rem; color: var(--bs-secondary-color); }
+.xf-callout-info { border-left-color: var(--bs-info); background: var(--bs-info-bg-subtle, rgba(var(--bs-info-rgb), .08)); }
+.xf-callout-info .xf-callout-icon { color: var(--bs-info); }
+.xf-callout-success { border-left-color: var(--bs-success); background: var(--bs-success-bg-subtle, rgba(var(--bs-success-rgb), .08)); }
+.xf-callout-success .xf-callout-icon { color: var(--bs-success); }
+.xf-callout-warning { border-left-color: var(--bs-warning); background: var(--bs-warning-bg-subtle, rgba(var(--bs-warning-rgb), .08)); }
+.xf-callout-warning .xf-callout-icon { color: var(--bs-warning); }
+.xf-callout-danger { border-left-color: var(--bs-danger); background: var(--bs-danger-bg-subtle, rgba(var(--bs-danger-rgb), .08)); }
+.xf-callout-danger .xf-callout-icon { color: var(--bs-danger); }
+
+/* 键盘按键 */
+.xf-kbd { display: inline-flex; align-items: center; gap: .25rem; }
+.xf-kbd kbd {
+    font-family: var(--bs-font-monospace); font-size: .75em;
+    background: var(--bs-secondary-bg); border: 1px solid var(--bs-border-color);
+    border-bottom-width: 2px; border-radius: .3rem; padding: .15rem .4rem; line-height: 1;
+}
+.xf-kbd-plus { color: var(--bs-secondary-color); }
+
+/* 媒体对象 */
+.xf-media-img { width: 64px; height: 64px; object-fit: cover; }
+.xf-media-title { line-height: 1.3; }
+
+/* 头像组 */
+.xf-avatar-group .avatar { margin-left: -.65rem; box-shadow: 0 0 0 2px var(--bs-body-bg); }
+.xf-avatar-group .avatar:first-child { margin-left: 0; }
+.xf-avatar-more { display: inline-flex; align-items: center; justify-content: center; font-size: .75rem; }
+
+/* 倒计时 */
+.xf-countdown-blocks { font-variant-numeric: tabular-nums; }
+.xf-countdown-unit { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
+.xf-countdown-unit .xf-cd-num {
+    min-width: 2.25rem; text-align: center; font-size: 1.25rem; font-weight: 700;
+    background: var(--bs-body-bg); border: 1px solid var(--bs-border-color);
+    border-radius: .375rem; padding: .35rem .25rem;
+}
+.xf-countdown-unit .xf-cd-label { margin-top: .25rem; font-size: .7rem; color: var(--bs-secondary-color); }
+
+/* 返回顶部 */
+.xf-back-to-top {
+    position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 1040;
+    width: 2.75rem; height: 2.75rem; display: none; align-items: center; justify-content: center;
+    opacity: .92; transition: opacity .2s, transform .2s;
+}
+.xf-back-to-top:hover { opacity: 1; transform: translateY(-2px); }
+
+/* 数字滚动 */
+.xf-countup { font-variant-numeric: tabular-nums; }
+
+/* 开关变体着色 */
+.xf-switch-input[data-variant="primary"] { accent-color: var(--bs-primary, #3e60d5); }
+.xf-switch-input[data-variant="success"] { accent-color: var(--bs-success, #2e9e4b); }
+.xf-switch-input[data-variant="danger"]  { accent-color: var(--bs-danger, #e23a45); }
+.xf-switch-input[data-variant="warning"] { accent-color: var(--bs-warning, #f0ad4e); }
+.xf-switch-input[data-variant="info"]    { accent-color: var(--bs-info, #36c3d6); }
+
+/* 代码块 */
+.xf-code-block { border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .5rem; overflow: hidden; background: #1e1e2f; }
+.xf-code-block.xf-code-light { background: #f6f8fa; border-color: #e5e7eb; }
+.xf-code-header { padding: .4rem .75rem; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08); font-size: .8rem; color: #c9d1d9; }
+.xf-code-light .xf-code-header { background: #eef1f5; color: #444; border-bottom-color: #e5e7eb; }
+.xf-code-lang { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; }
+.xf-code-pre { margin: 0; padding: 0; }
+.xf-code-pre code { display: block; padding: .9rem 1rem; color: #e6e6e6; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85rem; line-height: 1.5; white-space: pre; overflow-x: auto; background: transparent; }
+.xf-code-light .xf-code-pre code { color: #24292f; }
+.xf-code-copy { font-size: .75rem; }
+
+/* 空状态 */
+.xf-empty { color: var(--bs-secondary-color, #6b7280); }
+.xf-empty-icon { font-size: 2.75rem; line-height: 1; color: var(--bs-primary, #3e60d5); opacity: .85; }
+.xf-empty-icon-sm { font-size: 1.75rem; }
+.xf-empty-icon-lg { font-size: 4rem; }
+.xf-empty-title { font-weight: 600; color: var(--bs-body-color, #1f2937); }
+
+/* 工具栏 */
+.xf-toolbar { padding: .35rem 0; }
+.xf-toolbar-left, .xf-toolbar-right { min-height: 2.25rem; }
+.xf-search .input-group-text { background: transparent; }
+
+/* --------------------------------------------------------------------------
+   页面/编辑弹窗：最大化、头部工具
+   -------------------------------------------------------------------------- */
+.xf-modal-header-tools { display: flex; align-items: center; gap: .25rem; margin-left: auto; flex-shrink: 0; }
+.xf-modal-header-tools .btn-close-wrap {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; padding: 0; border: 0; border-radius: .5rem;
+    background: transparent; color: var(--bs-secondary-color, #6b7280); font-size: 1rem;
+}
+.xf-modal-header-tools .btn-close-wrap:hover { background: var(--bs-tertiary-bg, #f1f3f7); color: var(--bs-body-color, #1f2937); }
+
+/* 最大化：覆盖整屏 */
+.xf-modal-maximized { position: fixed; inset: 0; width: 100vw !important; height: 100vh !important; max-width: 100vw !important; margin: 0 !important; }
+.xf-modal-maximized .modal-dialog { width: 100%; max-width: 100%; height: 100vh; margin: 0; }
+.xf-modal-maximized .modal-content { height: 100vh; border: 0; border-radius: 0; }
+.xf-modal-maximized .modal-body { overflow: auto; }
+.xf-edit-frame { width: 100%; height: 70vh; border: 0; }
+.xf-modal-maximized .xf-edit-frame { height: calc(100vh - 3.5rem); }
+.xf-page-loading { display: flex; align-items: center; padding: 2rem; color: var(--bs-secondary-color, #6b7280); }
+
+/* --------------------------------------------------------------------------
+   差异化视图形态：画廊 / 卡片 / 看板 / 会话
+   -------------------------------------------------------------------------- */
+.xf-module-subnav { gap: .25rem; flex-wrap: wrap; }
+.xf-module-subnav .nav-link { border-radius: .5rem; color: var(--bs-secondary-color, #6b7280); }
+.xf-module-subnav .nav-link.active { background: var(--bs-primary, #3b82f6); color: #fff; }
+
+/* 画廊 */
+.xf-gallery-item { display: block; text-decoration: none; color: inherit; border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .75rem; overflow: hidden; background: var(--bs-body-bg, #fff); transition: transform .15s, box-shadow .15s; }
+.xf-gallery-item:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+.xf-gallery-thumb { height: 160px; background: var(--bs-tertiary-bg, #f1f3f7); }
+.xf-gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.xf-gallery-meta { padding: .5rem .6rem; }
+
+/* 卡片 */
+.xf-product-card { transition: transform .15s, box-shadow .15s; }
+.xf-product-card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+.xf-product-img { height: 160px; object-fit: cover; }
+
+/* 看板 */
+.xf-kanban { overflow-x: auto; }
+.xf-kanban-col { min-width: 240px; background: var(--bs-tertiary-bg, #f4f6f9); border-radius: .75rem; padding: .5rem; }
+.xf-kanban-head { display: flex; align-items: center; padding: .25rem .35rem .6rem; }
+.xf-kanban-body { display: flex; flex-direction: column; gap: .5rem; max-height: 60vh; overflow: auto; }
+.xf-kanban-card { display: block; text-decoration: none; color: inherit; background: var(--bs-body-bg, #fff); border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .5rem; padding: .5rem .6rem; transition: box-shadow .15s; }
+.xf-kanban-card:hover { box-shadow: 0 .25rem .6rem rgba(0,0,0,.08); }
+
+/* 会话 */
+.xf-chat { min-height: 520px; }
+.xf-chat-list { max-height: 560px; overflow: auto; }
+.xf-chat-session { display: flex; gap: .6rem; padding: .6rem .75rem; cursor: pointer; border-bottom: 1px solid var(--bs-border-color, #eef0f3); }
+.xf-chat-session:hover, .xf-chat-session.active { background: var(--bs-tertiary-bg, #f4f6f9); }
+.xf-chat-avatar { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--bs-primary, #3b82f6); color: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto; font-weight: 600; }
+.xf-chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.xf-chat-session-main { min-width: 0; }
+.xf-chat-window { display: flex; flex-direction: column; height: 560px; }
+.xf-chat-messages { flex: 1; overflow: auto; padding: 1rem; background: var(--bs-tertiary-bg, #f7f8fa); }
+.xf-chat-day { text-align: center; margin: .5rem 0; }
+.xf-chat-day span { font-size: .75rem; color: var(--bs-secondary-color, #9ca3af); background: rgba(0,0,0,.04); padding: .15rem .6rem; border-radius: 1rem; }
+.xf-chat-msg { display: flex; margin-bottom: .75rem; }
+.xf-chat-in { justify-content: flex-start; }
+.xf-chat-out { justify-content: flex-end; }
+.xf-chat-bubble { max-width: 75%; padding: .5rem .75rem; border-radius: .75rem; }
+.xf-chat-in .xf-chat-bubble { background: var(--bs-body-bg, #fff); border: 1px solid var(--bs-border-color, #e5e7eb); border-top-left-radius: 0; }
+.xf-chat-out .xf-chat-bubble { background: var(--bs-primary, #3b82f6); color: #fff; border-top-right-radius: 0; }
+.xf-chat-name { font-size: .7rem; opacity: .7; margin-bottom: .15rem; }
+.xf-chat-input { display: flex; gap: .5rem; padding: .6rem; border-top: 1px solid var(--bs-border-color, #eef0f3); }
+.xf-gallery-item, .xf-kanban-card { cursor: pointer; }
+
+/* ==========================================================================
+   DataTable 单元格渲染器 / 行操作 / 工具栏控件 / 选择列 / 批量栏 / 行明细
+   （这些 class 由 xfadmin.js 的 cellRenderers 与 DataTable 交互逻辑输出，
+    此前在 xfadmin.css 缺失定义，导致单元格控件无样式、操作按钮错位）
+   ========================================================================== */
+
+/* 单元格通用 */
+.xf-cell-switch { display: inline-flex; align-items: center; }
+.xf-pointer { cursor: pointer; }
+.xf-pointer:hover { text-decoration: underline; }
+
+/* 单元格复制（input-group + 复制按钮） */
+.xf-cell-copy { display: flex; align-items: center; gap: .35rem; max-width: 100%; }
+.xf-cell-copy .input-group { flex: 1 1 auto; min-width: 0; }
+.xf-cell-copy input.form-control { font-family: var(--bs-font-monospace, SFMono-Regular, Menlo, monospace); font-size: .8rem; }
+.xf-cell-copy .btn { flex: 0 0 auto; }
+
+/* 单元格内输入框 / 下拉：紧凑对齐 */
+.xf-cell-input { max-width: 220px; }
+td .xf-cell-input { height: calc(1.5em + .5rem + 2px); padding: .15rem .5rem; font-size: .85rem; }
+
+/* 文件下载链接 */
+a.xf-file-dl { display: inline-flex; align-items: center; gap: .35rem; text-decoration: none; }
+a.xf-file-dl:hover { text-decoration: underline; }
+
+/* 单元格“更多”按钮 */
+button.xf-cell-tl-more { border: 0; background: transparent; color: var(--bs-secondary-color, #6b7280); padding: .1rem .35rem; border-radius: .35rem; }
+button.xf-cell-tl-more:hover { background: var(--bs-tertiary-bg, #f1f3f7); color: var(--bs-body-color, #1f2937); }
+
+/* 行操作按钮组 */
+.xf-row-actions { display: inline-flex; gap: .25rem; white-space: nowrap; }
+.xf-row-actions .btn { --bs-btn-padding-y: .15rem; --bs-btn-padding-x: .4rem; --bs-btn-font-size: .8rem; line-height: 1.2; }
+
+/* DataTable 工具栏按钮（刷新 / 全屏 / 密度） */
+.xf-btn-refresh, .xf-btn-fullscreen, .xf-btn-density {
+    display: inline-flex; align-items: center; gap: .25rem;
+    border: 1px solid var(--bs-border-color, #e5e7eb); background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #1f2937); border-radius: .5rem;
+    padding: .35rem .6rem; font-size: .85rem; cursor: pointer; transition: background .15s, border-color .15s;
+}
+.xf-btn-refresh:hover, .xf-btn-fullscreen:hover, .xf-btn-density:hover { background: var(--bs-tertiary-bg, #f1f3f7); }
+.xf-btn-density.active { background: var(--bs-primary, #3b82f6); border-color: var(--bs-primary, #3b82f6); color: #fff; }
+.xf-btn-fullscreen.active { background: var(--bs-primary, #3b82f6); border-color: var(--bs-primary, #3b82f6); color: #fff; }
+
+/* 选择列 / 全选 / 行复选框 */
+.xf-dt-select-col, .xf-dt-detail-col { width: 40px; text-align: center; }
+.xf-dt-select-col .form-check, .xf-dt-row-check { display: inline-flex; justify-content: center; margin: 0; }
+.xf-dt-select-all { cursor: pointer; }
+
+/* 批量操作栏 */
+.xf-dt-bulk { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .6rem .75rem; margin-bottom: .75rem;
+    background: var(--bs-tertiary-bg, #f4f6f9); border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .6rem; }
+.xf-dt-bulk .xf-dt-bulk-info { color: var(--bs-secondary-color, #6b7280); font-size: .85rem; }
+.xf-dt-bulk .btn { --bs-btn-padding-y: .25rem; }
+
+/* 行明细展开 */
+.xf-dt-detail-wrap { padding: .75rem 1rem; background: var(--bs-tertiary-bg, #f7f8fa); }
+.xf-dt-detail-wrap table { margin: 0; }
+/* 分组行统一透明底、细线分隔（优先级低于上面的 .xf-datatable .xf-dt-group-row td） */
+.xf-dt-group-row td { background: transparent; font-weight: 600; }
+
+/* 操作列不换行，避免被挤压成两行 */
+table.dataTable td:last-child .xf-row-actions { flex-wrap: nowrap; }
+
+/* 弹窗最大化态：覆盖 Bootstrap 默认居中，充满视口 */
+.modal.xf-modal-maximized { max-width: 100% !important; margin: 0 !important; }
+.modal.xf-modal-maximized .modal-dialog { max-width: 100vw; width: 100vw; height: 100vh; margin: 0; }
+.modal.xf-modal-maximized .modal-content { height: 100vh; border: 0; border-radius: 0; }
+.modal.xf-modal-maximized .modal-body { overflow: auto; }
+
+/* 服务端页面注入容器 */
+.xf-edit-frame { padding: 1rem; }
+[data-xf-page-content] { min-height: 1rem; }
+
+/* ------------------------------------------------------------------
+ * 业务组件容器与交互补全（demo/widgets/apps 等页面）
+ * 组件主体依赖 Bootstrap 卡片/表格/网格，此处补充定位、间距、完成态、
+ * 步骤条布局、投票按钮、问题列表过滤等必要增强，防止样式框架变更时塌陷。
+ * ---------------------------------------------------------------- */
+
+/* 通用业务组件根容器：确保内部图片与表格不会溢出 */
+.xf-clients, .xf-sellers, .xf-project-board, .xf-team, .xf-testimonial,
+.xf-vote-list, .xf-issue-tracker, .xf-todo, .xf-terms, .xf-animate, .xf-count {
+    min-width: 0;
+}
+.xf-clients img, .xf-sellers img, .xf-project-board img, .xf-team img,
+.xf-testimonial img, .xf-vote-list img, .xf-issue-tracker img {
+    max-width: 100%; height: auto;
+}
+
+/* 团队成员 / 客户 / 卖家卡片网格 */
+.xf-team .card, .xf-testimonial .card, .xf-clients .card, .xf-sellers .card, .xf-project-board .card {
+    height: 100%;
+}
+
+/* 项目团队看板 */
+.xf-project-board .avatar-group { justify-content: flex-start; }
+
+/* 待办列表 */
+.xf-todo-list .list-group-item { gap: .5rem; }
+.xf-todo-check { cursor: pointer; flex-shrink: 0; }
+.xf-todo-del {
+    padding: .15rem .35rem; line-height: 1;
+    color: var(--bs-secondary-color, #6b7280); text-decoration: none;
+}
+.xf-todo-del:hover { color: var(--bs-danger, #f06548); }
+.xf-todo-add { background: var(--bs-tertiary-bg, #f8f9fa); border-radius: var(--bs-border-radius, .375rem); }
+.xf-todo-done .form-check-label {
+    text-decoration: line-through;
+    color: var(--bs-secondary-color, #6b7280);
+    opacity: .75;
+}
+.xf-todo-done { background: var(--bs-tertiary-bg, #f8f9fa); }
+.xf-todo-count { min-width: 1.2rem; text-align: center; }
+
+/* 投票组件 */
+.xf-vote-box { min-width: 2.5rem; }
+.xf-vote-count { min-width: 2rem; }
+.xf-vote-up, .xf-vote-down { line-height: 1; padding: .125rem; }
+.xf-vote-up:active, .xf-vote-down:active { opacity: .6; }
+
+/* 问题跟踪 */
+.xf-issue-search { max-width: 280px; }
+.xf-issue-row { transition: background-color .15s; }
+.xf-issue-row:hover { background-color: var(--bs-tertiary-bg, #f8f9fa); }
+.xf-issue-title { max-width: 320px; }
+
+/* 步骤条：水平布局 */
+.xf-stepper-horizontal { display: flex; justify-content: space-between; gap: 1rem; }
+.xf-stepper-horizontal .xf-stepper-item {
+    display: flex; flex: 1; align-items: flex-start; gap: .75rem; position: relative;
+}
+.xf-stepper-horizontal .xf-stepper-item:not(:last-child)::after {
+    content: ''; position: absolute; top: 1rem; left: 2.25rem; right: .5rem;
+    height: 2px; background: var(--bs-border-color, #e5e7eb);
+}
+/* xf-stepper-dot 已在 section 11 定义，此处补充横向步进器专用尺寸覆写 */
+.xf-stepper-horizontal .xf-stepper-dot {
+    width: 2rem; height: 2rem;
+}
+.xf-stepper-body h5 { font-size: .95rem; }
+
+/* 条款页 */
+.xf-terms { position: relative; }
+.xf-terms-toc .nav-link.active, .xf-terms-toc .nav-link:hover {
+    background: var(--bs-primary-bg-subtle, #e9f2ff);
+    color: var(--bs-primary, #405189);
+    border-radius: .375rem;
+}
+.xf-terms-section h5 { color: var(--bs-heading-color, #2a3042); }
+.xf-terms-intro p:last-child, .xf-terms-section .text-muted p:last-child { margin-bottom: 0; }
+
+/* 数字动画 / 入场动画容器兜底 */
+.xf-count { display: inline-block; }
+.xf-animate { display: block; }
+
+/* ------------------------------------------------------------------
+ * DataTable 删除确认气泡卡片（Popover）
+ * ----------------------------------------------------------------- */
+.xf-popover-confirm-wrap.popover { max-width: none; border: 0; box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.15); z-index: 1080; }
+.xf-popover-confirm .xf-popover-msg { line-height: 1.5; color: var(--bs-body-color, #495057); }
+.xf-popover-confirm .ti-alert-triangle { color: #f7b84b; }
+
+/* ==========================================================================
+ * INSPINIA v4 视觉对齐增强（2026-08）
+ * --------------------------------------------------------------------------
+ * 【维护约定】本节只补充模板 app.min.css 未定义的类，不重写已定义的类。
+ * 模板已通过 --ins-* 变量族完整定义 .card / .dropdown-menu / .modal-content 等，
+ * 此处仅补充模板缺失的辅助类与增强交互（hover 效果、暗色模式适配等）。
+ *
+ * 如需调整模板已有类的样式，请修改 INSPINIA 模板源文件，而非在此覆盖。
+ * ========================================================================== */
+
+/* ---- 1. 设计令牌（补充 --xf-* 供包内组件使用，不覆盖 --ins-*） ---- */
+:root {
+    --xf-radius: var(--ins-border-radius, .375rem);
+    --xf-shadow: var(--ins-theme-card-box-shadow, 0 .5rem 1.5rem rgba(18, 38, 36, .05));
+}
+
+/* ---- 2. 卡片 hover 增强（补充模板未定义的 hover 动效） ---- */
+a.card:hover, .card.hoverable:hover {
+    box-shadow: var(--xf-shadow), 0 .75rem 1.75rem rgba(18, 38, 36, .09);
+    transform: translateY(-2px);
+    transition: box-shadow .18s ease, transform .18s ease;
+}
+
+/* ---- 3. 等高卡片（INSPINIA 已定义 .card-h-100，此处补充 height:100% 简写） ---- */
+.card-h-100 { height: 100%; }
+
+/* ---- 4. 卡片操作区（INSPINIA 未定义，包内组件使用） ---- */
+/* 注意：前面 section 10 也有 .card-action 基础规则，此处为增强版（追加 z-index） */
+.card-action {
+    position: absolute;
+    top: .75rem;
+    right: .75rem;
+    display: flex;
+    gap: .35rem;
+    z-index: 2;
+    z-index: 2;
+}
+.card-action-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem; height: 1.9rem;
+    border-radius: 50%;
+    color: var(--bs-secondary-color);
+    background: var(--bs-tertiary-bg);
+    transition: color .15s, background .15s;
+}
+.card-action-item:hover { color: var(--bs-primary); background: var(--bs-primary-bg-subtle); }
+.card.position-static .card-action,
+.card[style*="position"] .card-action { position: absolute; }
+
+/* ---- 5. 头像状态点（INSPINIA 未定义，包内 Avatar 组件使用） ---- */
+.avatar.online::after, .avatar-online::after,
+.avatar.offline::after, .avatar-offline::after,
+.avatar.away::after, .avatar-away::after,
+.avatar.busy::after, .avatar-busy::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 28%; height: 28%;
+    min-width: .5rem; min-height: .5rem;
+    border-radius: 50%;
+    border: 2px solid var(--bs-body-bg);
+    box-sizing: border-box;
+}
+.avatar.online::after, .avatar-online::after { background: var(--bs-success); }
+.avatar.offline::after, .avatar-offline::after { background: var(--bs-secondary); }
+.avatar.away::after, .avatar-away::after { background: var(--bs-warning); }
+.avatar.busy::after, .avatar-busy::after { background: var(--bs-danger); }
+.avatar { position: relative; display: inline-flex; }
+.avatar.status-top-start::after { top: 0; bottom: auto; }
+
+/* ---- 6. 统计卡图标容器（INSPINIA 未定义 .widget-icon，包内 StatCard 等使用） ---- */
+.widget-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem; height: 3rem;
+    border-radius: .5rem;
+    font-size: 1.35rem;
+    flex: 0 0 auto;
+}
+.widget-icon .avatar-title { border-radius: .5rem; }
+
+/* ---- 8. 全局 gutter / 行间距（补充 Bootstrap 5 默认 --bs-gutter-y） ---- */
+.row { --bs-gutter-y: .75rem; }
+.gy-4, .gy-3 { --bs-gutter-y: 1rem; }
+
+/* ---- 9. 统计卡图标容器对齐 ---- */
+.xf-stat-icon, .widget-icon, .stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem; height: 3rem;
+    border-radius: .5rem;
+}
+.xf-stat-icon.avatar-title, .widget-icon .avatar-title {
+    width: 100%; height: 100%;
+    border-radius: inherit;
+}
+
+/* ---- 10. 侧边栏菜单 hover / active 高亮：跟随 INSPINIA 模板语义变量 ----
+ * 早期此处用固定 var(--bs-primary) 强加「主色左边框 + 主色 subtle 背景 + 主色文字 + 600 字重」，
+ * 与后台模板侧边栏观感不一致（模板 active 由 --ins-sidenav-item-active-bg/color 驱动，
+ * 无左边框、无强制字重）。现移除硬编码覆盖，交还模板规则，仅补充 transition。 */
+.side-nav-link {
+    transition: color .18s ease, background-color .18s ease;
+}
+/* hover / active 全部由模板 .side-nav-link:hover / .side-nav-item.active>a 提供
+ * （--ins-sidenav-item-hover-color / --ins-sidenav-item-active-bg / --ins-sidenav-item-active-color），
+ * 暗色与主题切换自动适配，不在此重复定义。 */
+
+/* ---- 11. 暗色模式补充适配（表格类已在 7.x/10.x 节统一处理，此处不重复） ---- */
+
+/* ---- 12. 顶栏通知铃铛徽标（补充模板未定义的属性，不覆盖模板的 top/right） ---- */
+.topbar-badge {
+    width: .6rem; height: .6rem;
+    font-size: .65rem; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 1.75px solid var(--bs-body-bg);
+}
+.topbar-badge.bg-danger-subtle { background: var(--bs-danger) !important; }
+
+/* ---- 13. 页面加载动画 preloader（INSPINIA 原版样式，改用 Bootstrap 变量适配明暗） ----
+   结构由 Page 组件在 <body> 顶部输出：
+   <div id="preloader"><div id="status"><div class="spinner">
+     <div class="double-bounce1"></div><div class="double-bounce2"></div>
+   </div></div></div>
+   隐藏逻辑见 xfadmin.js（window load + 兜底超时）。 */
+#preloader {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bs-body-bg);
+    z-index: 99999;
+}
+#preloader #status {
+    width: 200px; height: 200px;
+    position: absolute;
+    left: 50%; top: 50%;
+    margin: -100px 0 0 -100px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+#preloader .spinner {
+    width: 40px; height: 40px;
+    position: relative;
+    margin: 100px auto;
+}
+#preloader .double-bounce1,
+#preloader .double-bounce2 {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    opacity: .6;
+    position: absolute; top: 0; left: 0;
+    -webkit-animation: xf-sk-bounce 2s infinite ease-in-out;
+    animation: xf-sk-bounce 2s infinite ease-in-out;
+}
+#preloader .double-bounce2 { -webkit-animation-delay: -1s; animation-delay: -1s; }
+@-webkit-keyframes xf-sk-bounce {
+    0%, 100% { -webkit-transform: scale(0); }
+    50% { -webkit-transform: scale(1); }
+}
+@keyframes xf-sk-bounce {
+    0%, 100% { transform: scale(0); -webkit-transform: scale(0); }
+    50% { transform: scale(1); -webkit-transform: scale(1); }
+}
+
+/* ---- 14. 图表容器约束（ApexCharts / ECharts / VectorMap 等）----
+ * 确保图表在响应式布局中不会超出容器，避免调整浏览器宽度时出现横向溢出。
+ * 根因：Bootstrap 响应式网格在特定宽度下重新排列，图表若未及时 resize 会超出容器。
+ * 修复：容器强制 max-width:100%，SVG 限制最大宽度，防止瞬态溢出。
+ */
+.card-body > [data-xf="apexchart"],
+.card-body > [data-xf="echart"],
+.card-body > [data-xf="vectormap"],
+.card-body > .xf-apextree,
+.card-body > .xf-apexsankey {
+    max-width: 100%;
+    overflow: hidden;
+}
+/* 图表 SVG 限制最大宽度，防止超出容器 */
+[data-xf="apexchart"] svg,
+[data-xf="echart"] svg,
+[data-xf="vectormap"] svg,
+.xf-apextree svg,
+.xf-apexsankey svg {
+    max-width: 100%;
+    height: auto;
+}
+/* ApexCharts 容器额外约束（防止内部元素溢出） */
+.apexcharts-canvas {
+    max-width: 100%;
+}
+
+/* ===================================================================
+ * DataTable 工具区 & 搜索表单 & 行详情（参照 yoc_cn 对标样式）
+ * =================================================================== */
+
+/* ---- 表格顶部按钮栏 ---- */
+.table-top-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.table-top-buttons .btn {
+    margin: 0;
+}
+
+/* 表头工具按钮（刷新/添加/搜索切换等） */
+.btn.date-table-tools-create-btn,
+.btn.date-table-tools-refresh-btn,
+.btn.date-table-tools-search-btn,
+.btn.date-table-tools-detail-btn,
+.btn.date-table-tools-del-btn {
+    border-radius: 4px;
+    font-size: 13px;
+    padding: .35rem .75rem;
+}
+.btn.date-table-tools-create-btn .ti,
+.btn.date-table-tools-refresh-btn .ti,
+.btn.date-table-tools-search-btn .ti,
+.btn.date-table-tools-detail-btn .ti,
+.btn.date-table-tools-del-btn .ti {
+    margin-right: 4px;
+}
+
+/* 刷新按钮旋转动画 */
+.date-table-tools-refresh-btn.refreshing {
+    pointer-events: none;
+    opacity: .65;
+}
+.date-table-tools-refresh-btn.refreshing .ti {
+    animation: dt-spin .6s linear infinite;
+}
+@keyframes dt-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- 自定义搜索表单 ---- */
+.custom-datatable-search {
+    display: none;
+    background: var(--bs-tertiary-bg, #f6f7f9);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+.custom-datatable-search.show {
+    display: block;
+}
+.custom-datatable-search .row {
+    margin-bottom: 10px;
+}
+.custom-datatable-search .row:last-child {
+    margin-bottom: 0;
+}
+.custom-datatable-search .form-label {
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: var(--bs-secondary-color, #6c757d);
+}
+.custom-datatable-search .btn-search-submit {
+    margin-top: 24px;
+}
+
+/* ---- 行详情展开区域 ---- */
+.table-row-detail,
+.table_row_detail {
+    background: var(--bs-tertiary-bg, #f8f9fb);
+    border-top: 1px solid var(--bs-border-color, #e9ecef);
+    padding: 16px 20px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+.table-row-detail dl,
+.table_row_detail dl {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 6px 12px;
+    margin: 0;
+}
+.table-row-detail dt,
+.table_row_detail dt {
+    font-weight: 600;
+    color: var(--bs-secondary-color, #6c757d);
+    text-align: right;
+}
+.table-row-detail dd,
+.table_row_detail dd {
+    margin: 0;
+    word-break: break-all;
+}
+
+/* dt-control 展开/折叠箭头优化 */
+table.dataTable td.dt-control {
+    cursor: pointer;
+    text-align: center;
+}
+table.dataTable td.dt-control::before {
+    display: inline-block;
+    color: var(--bs-primary, #0d6efd);
+    font-family: "tabler-icons", sans-serif;
+    content: "\ea61"; /* ti-chevron-right */
+    font-size: 16px;
+    transition: transform .2s ease;
+    line-height: 1;
+    vertical-align: middle;
+}
+table.dataTable tr.dt-hasChild td.dt-control::before {
+    content: "\ea5f"; /* ti-chevron-up */
+}
+
+/* ---- 处理状态遮罩 ---- */
+.dt-processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 60px;
+    margin-left: -40px;
+    margin-top: -30px;
+    padding-top: 16px;
+    text-align: center;
+    font-size: 0.875em;
+    background: rgba(255, 255, 255, .9);
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+    z-index: 10;
+}
+[data-bs-theme=dark] .dt-processing {
+    background: rgba(33, 37, 41, .9);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+}
+.dt-processing > div {
+    display: none;
+}
+/* INSPINIA 可能隐藏 processing 文字，显式展示 */
+div.dt-container .dt-processing {
+    display: block;
+}
+
+/* ---- DataTables 空状态 ---- */
+.dt-empty {
+    text-align: center;
+    padding: 32px 16px !important;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+/* ---- 分页/信息栏布局增强 ---- */
+div.dt-container .dt-layout-row:last-child {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 8px;
+}
+div.dt-container .dt-paging {
+    margin-left: auto;
+}
+
+/* ---- 表格内输入框（列筛选）全局收紧 ---- */
+table.dataTable thead input,
+table.dataTable thead select,
+table.dataTable tfoot input,
+table.dataTable tfoot select {
+    padding: .25rem .5rem;
+    font-size: .8rem;
+    height: auto;
+    line-height: 1.4;
+}
+
+/* ---- 表格内下拉菜单防裁剪 ---- */
+table.dataTable .dropdown-menu {
+    z-index: 1055;
+    min-width: 120px;
+}
+
+/* ---- 固定列表格选中/悬停背景增强 ---- */
+table.dataTable tbody tr.selected > * {
+    box-shadow: inset 0 0 0 9999px rgba(var(--bs-primary-rgb, 13, 110, 253), .08);
+}
+table.dataTable tbody tr:hover > * {
+    box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, .03);
+}
+[data-bs-theme=dark] table.dataTable tbody tr:hover > * {
+    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, .04);
+}
+
+/* ---- DataTables Buttons 扩展按钮对齐 ---- */
+.dt-buttons .btn {
+    margin-right: 4px;
+}
+.dt-buttons .btn:last-child {
+    margin-right: 0;
+}
+
+/* ---- DataTables 长度选择器下拉样式 ---- */
+div.dt-container .dt-length label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+div.dt-container .dt-length select {
+    width: auto;
+    display: inline-block;
+    padding: .25rem 1.5rem .25rem .5rem;
+}
+
+/* ---- 列排序图标（Tabler 风格）已在前方 yoc 区段覆盖，
+ *    此处补一个最低优先级的兜底 ---- */
+table.dataTable thead th {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* =====================================================================
+ * ZXF 全局工具类与修复（对齐 yoc_cn app.css 中所有 zxf 标记段落）
+ * 原路径: /Users/aha/www/yoc_cn/public/static/inspinia/v4.0/assets/css/app.css
+ * xfadmin.css 最后加载，覆盖 INSPINIA/Bootstrap 默认样式
+ * ===================================================================== */
+
+
+/* =====================================================================
+ * TopNav 顶部水平导航（合并 header.app-topbar + header.topnav）
+ * 来源: INSPINIA v4.0 layouts-horizontal.html
+ * 说明: 框架 app.min.css 已实现 html[data-layout=topnav] .topnav 的全部
+ *       菜单样式（hover 级联、排版、移动端手风琴）。原模板中 .topnav 是
+ *       位于 topbar 之下的【独立 sticky 横条】；本组件把它内联进 topbar，
+ *       故此处仅覆盖「定位/背景/阴影」等容器级属性，菜单项样式完全复用框架。
+ * ===================================================================== */
+
+/* 内联化：去掉独立横条的 sticky 定位与背景，融入 app-topbar */
+html[data-layout="topnav"] .app-topbar .topnav.topnav-inline {
+  position: static;
+  top: auto;
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background: transparent;
+  box-shadow: none;
+  z-index: auto;
+}
+
+/* 三段式：左品牌、中菜单、右工具 */
+html[data-layout="topnav"] .app-topbar .topbar-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+/* 菜单条颜色跟随顶栏（内联后不再使用侧栏背景色） */
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-item > a,
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-item .nav-link {
+  color: var(--ins-menu-item-color, var(--ins-secondary-color));
+  white-space: nowrap;
+}
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-item > a:hover,
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-item .nav-link:hover,
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-item.active > a,
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-item.active > .nav-link {
+  color: var(--ins-primary);
+}
+
+/* 下拉面板恢复常规配色（脱离侧栏深色语境） */
+html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu .dropdown-item {
+  color: var(--ins-body-color);
+}
+html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu .dropdown-item:hover,
+html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu .dropdown-item:focus {
+  color: var(--ins-primary);
+  background-color: var(--ins-tertiary-bg);
+}
+
+@media (min-width: 992px) {
+  /* 菜单过长时横向滚动，避免挤压右侧工具区 */
+  html[data-layout="topnav"] .app-topbar .topnav-inline > .navbar {
+    max-width: 100%;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline .navbar-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  /* 第三级及更深子菜单：逐级向右浮出 */
+  .topnav .dropdown .dropdown-menu .dropdown .dropdown-menu .dropdown .dropdown-menu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    display: none;
+  }
+  .topnav .dropdown:hover > .dropdown-menu > .dropdown:hover > .dropdown-menu > .dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+  /* 右侧空间不足时向左翻转（由 JS 添加 .xf-flip-start） */
+  .topnav .dropdown .dropdown-menu.xf-flip-start {
+    left: auto !important;
+    right: 100%;
+  }
+  .topnav .navbar-nav > .nav-item > .dropdown-menu.xf-flip-end {
+    left: auto !important;
+    right: 0;
+  }
+}
+
+/* 移动端：菜单折叠为下拉面板浮出于顶栏之下 */
+@media (max-width: 991.98px) {
+  /* 折叠面板需相对 header 定位并铺满整宽，故 header 建立定位上下文 */
+  html[data-layout="topnav"] .app-topbar {
+    position: sticky;
+  }
+  html[data-layout="topnav"] .app-topbar .topbar-menu {
+    position: relative;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline {
+    position: static;
+    flex: 0 0 auto;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline > .navbar {
+    position: static;
+    padding: 0;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline .navbar-collapse {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    width: auto;
+    max-height: calc(100vh - var(--ins-topbar-height, 40px));
+    overflow-y: auto;
+    background: var(--ins-secondary-bg);
+    box-shadow: var(--ins-box-shadow);
+    padding: .5rem 0;
+    z-index: 1006;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline .navbar-nav {
+    flex-direction: column;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding-left: 1.5rem;
+  }
+  /* 折叠态下由 JS 切换 .show 实现手风琴 */
+  html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu:not(.show) {
+    display: none;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu.show {
+    display: block;
+    position: static !important;
+    transform: none !important;
+  }
+  html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu.dropdown-menu-xxl {
+    width: auto;
+    min-width: 0;
+  }
+}
+
+/* 桌面端隐藏折叠按钮（框架仅在 <768px 显示，这里对齐 lg 断点） */
+@media (min-width: 992px) {
+  html[data-layout="topnav"] .topnav-toggle-button { display: none; }
+}
+@media (max-width: 991.98px) {
+  html[data-layout="topnav"] .topnav-toggle-button { display: block; }
+}
+
+/* Mega 大面板：框架未定义 megamenu-list */
+.megamenu-list { margin: 0; padding: 0; }
+.megamenu-list li { list-style: none; }
+.megamenu-list li > .dropdown-item {
+  padding: .35rem .5rem;
+  border-radius: var(--ins-border-radius);
+}
+.dropdown-menu-xxl {
+  min-width: 640px;
+  max-width: calc(100vw - 2rem);
+}
+@media (max-width: 991.98px) {
+  .dropdown-menu-xxl { min-width: 0; }
 }

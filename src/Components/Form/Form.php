@@ -15,6 +15,8 @@ use zxf\XfAdmin\Support\Html;
  *     'method'  => 'POST',
  *     'validation' => true,      // Bootstrap 客户端校验（needs-validation）
  *     'ajax'    => true,         // xfadmin.js 接管提交，触发 xf.form.success/error 事件
+ *     'layout'  => 'vertical',   // 布局：vertical 纵向（默认）| horizontal 标签左置 | inline 行内
+ *     'label_width' => 180,      // horizontal 布局的标签列宽（px）
  *     'fields'  => [ Input、Select、Check ... 组件或 HTML 的数组 ],
  *     'buttons' => '<button class="btn btn-primary" type="submit">提交</button>',
  *     'csrf'    => ['_token' => 'xxx'],   // 附加隐藏域
@@ -25,16 +27,18 @@ class Form extends Component
     protected function defaults(): array
     {
         return [
-            'action'     => '',
-            'method'     => 'POST',
-            'enctype'    => null,
-            'validation' => false,
-            'ajax'       => false,
-            'inline'     => false,
-            'fields'     => [],
-            'content'    => null,
-            'buttons'    => null,
-            'csrf'       => [],
+            'action'      => '',
+            'method'      => 'POST',
+            'enctype'     => null,
+            'validation'  => false,
+            'ajax'        => false,
+            'inline'      => false,     // 兼容旧写法（等价 layout=inline）
+            'layout'      => null,      // vertical | horizontal | inline（form-layouts.html）
+            'label_width' => 180,       // horizontal 布局标签列宽（px）
+            'fields'      => [],
+            'content'     => null,
+            'buttons'     => null,
+            'csrf'        => [],
         ];
     }
 
@@ -43,16 +47,24 @@ class Form extends Component
         $method     = strtoupper((string) $this->get('method', 'POST'));
         $formMethod = in_array($method, ['GET', 'POST'], true) ? $method : 'POST';
 
+        // 布局解析：layout 优先，兼容旧的 inline=true 写法
+        $layout = (string) ($this->get('layout') ?? ($this->get('inline') ? 'inline' : 'vertical'));
+
         $attrs = [
             'action'  => $this->get('action'),
             'method'  => $formMethod,
             'class'   => Html::cls([
                 'needs-validation'   => $this->get('validation'),
-                'row row-cols-lg-auto g-3 align-items-center' => $this->get('inline'),
+                'row row-cols-lg-auto g-3 align-items-center' => $layout === 'inline',
+                // horizontal：标签左置两栏排版（CSS Grid 实现，见 xfadmin.css .xf-form-horizontal）
+                'xf-form-horizontal' => $layout === 'horizontal',
             ]),
             'novalidate' => (bool) $this->get('validation'),
             'enctype' => $this->get('enctype'),
         ];
+        if ($layout === 'horizontal') {
+            $attrs['style'] = '--xf-label-width:' . (int) $this->get('label_width', 180) . 'px';
+        }
         if ($this->get('ajax')) {
             $attrs['data-xf'] = 'form';
         }

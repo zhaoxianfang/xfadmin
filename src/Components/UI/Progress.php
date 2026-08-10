@@ -31,7 +31,7 @@ class Progress extends Component
     protected function bar(array $bar): string
     {
         $value = (float) ($bar['value'] ?? 0);
-        $class = Html::cls('progress-bar', 'bg-' . ($bar['variant'] ?? 'primary'), [
+        $class = Html::cls('progress-bar', 'bg-' . $this->e($bar['variant'] ?? 'primary'), [
             'progress-bar-striped'  => $bar['striped'] ?? $this->get('striped'),
             'progress-bar-animated' => $bar['animated'] ?? $this->get('animated'),
         ]);

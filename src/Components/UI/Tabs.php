@@ -41,12 +41,22 @@ class Tabs extends Component
 
     protected function html(): string
     {
+        // 键名容错：items / tabs 等价；每项 title / label / text 等价
         $items = array_values((array) $this->get('items', []));
+        if ($items === []) {
+            $items = array_values((array) $this->get('tabs', []));
+        }
+        foreach ($items as &$it) {
+            if (is_array($it) && ! isset($it['title'])) {
+                $it['title'] = $it['label'] ?? $it['text'] ?? '';
+            }
+        }
+        unset($it);
         if ($items !== [] && ! array_filter($items, fn ($i) => ! empty($i['active']))) {
             $items[0]['active'] = true;
         }
 
-        $navClass = Html::cls('nav', 'nav-' . $this->get('style'), [
+        $navClass = Html::cls('nav', 'nav-' . $this->e($this->get('style')), [
             'nav-justified' => $this->get('justified'),
             'flex-column'   => $this->get('vertical'),
         ]);

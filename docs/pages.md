@@ -11,8 +11,8 @@
 | 模板页（示例） | 覆盖组件 | 说明 |
 |---|---|---|
 | `index` `dashboard-2` `dashboard-3` | `page` `statCard` `widget` `apexChart` `eChart` `table` `activityFeed` | 仪表盘由小部件+图表自由组合 |
-| `layouts-*`、`vertical` `horizontal` `twocolumn`、`detached` | `page`(`layout`) `sidenav` `topbar` `topnav` `customizer` | 布局/皮肤变体 |
-| `sidebar-*` `topnav-*` | `page`(`layout`) `menu` | 侧栏/顶栏变体 |
+| `layouts-*`、`vertical` `horizontal` `twocolumn`、`detached` | `page`(`layout`) `sidenav` `topbar` `customizer` | 布局/皮肤变体 |
+| `sidebar-*` | `page`(`layout`) `menu` | 侧栏变体 |
 
 ## 认证 / 错误 / 状态页
 
@@ -41,7 +41,7 @@
 | `invoice` `invoice-details` `invoice-create` | `invoiceList` `invoiceTable` `form` |
 | `roles` `permissions` | `permissionMatrix` `dataTable` |
 | `api-keys` | `apiKeys` |
-| `metrics` | `statCard` `widget` |
+| `metrics` | `metricCard` `statCard` `widget` |
 | `pin-board` | `gallery`(`masonry`) |
 | `pages-profile` | `profileHeader` `timeline` `activityFeed` |
 | `pages-pricing` | `pricingCard` |
@@ -49,7 +49,13 @@
 | `pages-timeline` | `timeline` |
 | `pages-search-results` | `searchResults` |
 | `blog` `blog-details` `article` `forum` `forum-post` | `blogList` `commentThread` `card` |
-| `pages-terms-conditions` | `card` |
+| `pages-terms-conditions` | `terms` |
+| `misc-animation` | `animate` |
+| `misc-i18` | `XFAdmin.i18n`（JS 模块 + Topbar 语言菜单联动，见 docs/i18n.md） |
+| `maps-google` | `googleMap` |
+| `charts-apextree` | `apexTree` |
+| `charts-apexsankey` | `apexSankey` |
+| `form-layouts` | `form`（`layout`: vertical / horizontal / inline） |
 
 ## UI / 组件演示页
 
@@ -111,6 +117,7 @@
 - **完全离线**：所有 CSS/JS 资源已内置（见 `assets.md`），模板依赖的 CDN 资源全部本地化；`leafletMap` 底图瓦片需在线瓦片源，设 `tiles=null` 可离线渲染标记/图形。
 - **嵌套无干扰**：每个组件自动生成唯一 `id`，`row`/`col`/`card`/`tabs`/`accordion`/`wizard` 等可任意嵌套（见 `components.md` 通用参数与 smoke 测试）。
 - **事件/交互**：所有交互通过 `data-xf` 运行时自动初始化（`xfadmin.js`），全局事件委托（chip 关闭、菜单、复制、评论回复）幂等注册，多次渲染不重复绑定。
+- **第三方库全局冲突隔离**：`apexcharts` 内置旧版 svg.js 同样占用全局 `window.SVG`，与 `apexSankey` 依赖的 `@svgdotjs/svg.js` v3 同页共存会互相破坏（apexcharts 抛 `selectionRect.draggable is not a function` / `parser Error`）。已由 `svg-guard-pre.js`/`svg-guard-post.js` 护栏在加载 svg.js v3 前后暂存并恢复 `window.SVG`，v3 另存为 `window.svgdotjs`，彻底解耦二者（见 `src/Assets/Assets.php` 的 `apexsankey` 资源定义）。
 
 ## 有意未单独拆分为组件（归属说明）
 

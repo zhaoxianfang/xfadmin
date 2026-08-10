@@ -34,6 +34,21 @@ class Ratio extends Component
 
     protected function html(): string
     {
+        // 键名容错：embed / content / html 视作自定义内容（type=content）
+        if ($this->get('body') === null) {
+            $alias = $this->get('embed') ?? $this->get('content') ?? $this->get('html');
+            if ($alias !== null) {
+                $this->options['body'] = $alias;
+                $this->options['type'] = 'content';
+            }
+        }
+        // src 为空且无内容时给出占位，避免渲染空 iframe（离线环境外链被拦时也有兜底展示）
+        if (! $this->get('src') && $this->get('type') !== 'content') {
+            $this->options['type'] = 'content';
+            $this->options['body'] = $this->options['body']
+                ?? '<div class="d-flex align-items-center justify-content-center w-100 h-100 bg-body-tertiary text-muted"><i class="ti ti-photo fs-1 me-2"></i>媒体占位</div>';
+        }
+
         $ratio = (string) $this->get('ratio');
         $isPreset = in_array($ratio, ['1x1', '4x3', '16x9', '21x9'], true);
 

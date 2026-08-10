@@ -37,7 +37,7 @@ class Ribbon extends Component
         $round   = $this->get('shape') === 'round' ? ' ribbon-round' : '';
 
         $html  = '<div' . $this->attrs(['class' => 'position-relative']) . '>';
-        $html .= '<div class="ribbon ribbon-' . $pos . ' bg-' . $variant . ' text-white' . $round . '">' . $this->raw($this->get('text')) . '</div>';
+        $html .= '<div class="ribbon ribbon-' . $pos . ' bg-' . $variant . ' text-white' . $round . '">' . $this->e($this->get('text')) . '</div>';
         $html .= '<div class="ribbon-content">' . $this->raw($this->get('body')) . '</div>';
         $html .= '</div>';
 

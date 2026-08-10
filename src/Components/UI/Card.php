@@ -59,9 +59,10 @@ class Card extends Component
                 if (is_array($tools)) {
                     foreach ($tools as $tool) {
                         $html .= match ($tool) {
-                            'collapse' => '<span class="card-action-item" data-toggle="collapse"><i class="ti ti-chevron-up"></i></span>',
-                            'refresh'  => '<span class="card-action-item" data-toggle="reload"><i class="ti ti-refresh"></i></span>',
-                            'close'    => '<span class="card-action-item" data-toggle="remove"><i class="ti ti-x"></i></span>',
+                            // 与 INSPINIA 模板 app.js initPortletCard() 对齐：使用 data-action 属性
+                            'collapse' => '<span class="card-action-item" data-action="card-toggle"><i class="ti ti-chevron-up"></i></span>',
+                            'refresh'  => '<span class="card-action-item" data-action="card-refresh"><i class="ti ti-refresh"></i></span>',
+                            'close'    => '<span class="card-action-item" data-action="card-close"><i class="ti ti-x"></i></span>',
                             default    => $this->raw($tool),
                         };
                     }

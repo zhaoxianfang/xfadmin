@@ -25,7 +25,9 @@ class Breadcrumb extends Component
     {
         $navAttrs = ['aria-label' => 'breadcrumb'];
         if ($this->get('divider') !== null) {
-            $navAttrs['style'] = "--bs-breadcrumb-divider: '" . addslashes((string) $this->get('divider')) . "';";
+            // CSS 字符串值：单引号应转义为 \27（非 SQL 的 addslashes），并剔除 ; 防止注入其他声明
+            $divider = str_replace([';', "'"], ['', '\\27'], (string) $this->get('divider'));
+            $navAttrs['style'] = "--bs-breadcrumb-divider: '" . $divider . "';";
         }
 
         $items = (array) $this->get('items', []);

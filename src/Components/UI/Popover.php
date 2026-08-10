@@ -45,12 +45,12 @@ class Popover extends Component
         $attrs = [
             'class'             => Html::cls($this->get('class')),
             'data-bs-toggle'    => 'popover',
-            'data-bs-placement' => $this->get('placement'),
-            'data-bs-trigger'   => $this->get('dismiss') ? 'focus' : $this->get('trigger'),
-            'data-bs-content'   => $this->get('content'),
+            'data-bs-placement' => $this->e($this->get('placement')),
+            'data-bs-trigger'   => $this->get('dismiss') ? 'focus' : $this->e($this->get('trigger')),
+            'data-bs-content'   => $this->e($this->get('content')),
         ];
         if ($this->get('title') !== null) {
-            $attrs['title'] = $this->get('title');
+            $attrs['title'] = $this->e($this->get('title'));
         }
         if ($this->get('html')) {
             $attrs['data-bs-html'] = 'true';

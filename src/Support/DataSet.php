@@ -22,6 +22,14 @@ use Traversable;
  *           'level'   => 'level',                          // 参数名 => 字段名 精确匹配
  *           'keyword' => ['name', 'email'],                // 参数名 => 多字段模糊匹配
  *           'date_from' => fn ($row, $v) => $row['created_at'] >= $v,   // 闭包自定义
+ *           // 运算符规则（op）：=  !=  >  >=  <  <=  like  in  not_in  between  date_from  date_to
+ *           'score_min'  => ['field' => 'score',      'op' => '>='],
+ *           'score_max'  => ['field' => 'score',      'op' => '<='],
+ *           'vip'        => ['field' => 'vip_level',  'op' => 'in'],        // 参数值逗号分隔
+ *           'reg_from'   => ['field' => 'created_at', 'op' => 'date_from'],
+ *           'reg_to'     => ['field' => 'created_at', 'op' => 'date_to'],   // 纯日期自动补 23:59:59
+ *           'range'      => ['field' => 'balance',    'op' => 'between'],   // 参数值 "min,max"
+ *           'kw'         => ['fields' => ['name', 'email'], 'op' => 'like'],
  *       ],
  *       'transform'  => fn ($row) => $row + ['extra' => '...'],          // 行输出转换
  *   ]);
@@ -35,7 +43,7 @@ use Traversable;
 class DataSet
 {
     /** DataTables 协议保留参数，不参与自定义过滤 */
-    protected const RESERVED = ['draw', 'start', 'length', 'search', 'order', 'columns', '_', '_token'];
+    protected const RESERVED = ['draw', 'start', 'length', 'search', 'order', 'columns', '_', '_token', 'xfc', 'xfo', 'xfs'];
 
     /** 单页最大条数（防御 length=-1 / 超大值拖垮服务） */
     public static int $maxLength = 1000;
@@ -89,6 +97,8 @@ class DataSet
     /** 解析 DataTables 请求参数为规范结构 */
     public static function parseRequest(array $params): array
     {
+        $params = self::expandCompact($params);
+
         $length = self::int($params['length'] ?? null, 10);
         if ($length < 0 || $length > self::$maxLength) {
             $length = self::$maxLength;
@@ -136,6 +146,49 @@ class DataSet
             'columns' => $columns,
             'order'   => $order,
         ];
+    }
+
+    /**
+     * 还原前端压缩协议（xfadmin.js 在 serverSide 模式默认压缩，避免多列表格
+     * 的原生 columns/order/search 数组参数超长触发 WAF / URL 长度 403、414）：
+     *   xfc = data:searchable:orderable[:search] 以 | 连接（值经 encodeURIComponent）
+     *   xfo = 列序号:d|列序号:a
+     *   xfs = 全局搜索关键词
+     */
+    protected static function expandCompact(array $params): array
+    {
+        if (isset($params['xfc']) && empty($params['columns'])) {
+            $columns = [];
+            foreach (explode('|', self::str($params['xfc'])) as $i => $spec) {
+                if ($spec === '') {
+                    continue;
+                }
+                $p = explode(':', $spec);
+                $columns[$i] = [
+                    'data'       => rawurldecode($p[0] ?? ''),
+                    'searchable' => ($p[1] ?? '1') === '1' ? 'true' : 'false',
+                    'orderable'  => ($p[2] ?? '1') === '1' ? 'true' : 'false',
+                    'search'     => ['value' => rawurldecode($p[3] ?? '')],
+                ];
+            }
+            $params['columns'] = $columns;
+        }
+        if (isset($params['xfo']) && empty($params['order'])) {
+            $order = [];
+            foreach (explode('|', self::str($params['xfo'])) as $spec) {
+                if ($spec === '') {
+                    continue;
+                }
+                [$idx, $dir] = array_pad(explode(':', $spec, 2), 2, 'a');
+                $order[] = ['column' => $idx, 'dir' => $dir === 'd' ? 'desc' : 'asc'];
+            }
+            $params['order'] = $order;
+        }
+        if (isset($params['xfs']) && empty($params['search'])) {
+            $params['search'] = ['value' => self::str($params['xfs'])];
+        }
+
+        return $params;
     }
 
     // ------------------------------------------------------------------
@@ -223,6 +276,12 @@ class DataSet
 
             if ($def instanceof Closure) {
                 $data = array_values(array_filter($data, fn ($row) => (bool) $def($row, $value)));
+            } elseif (($opDef = self::normalizeOpDef($key, $def)) !== null) {
+                // 运算符规则过滤
+                $data = array_values(array_filter(
+                    $data,
+                    fn ($row) => self::opMatchRow($row, $opDef['fields'], $opDef['op'], $value)
+                ));
             } elseif (is_array($def)) {
                 // 多字段模糊匹配
                 $kw   = mb_strtolower($value);
@@ -309,6 +368,8 @@ class DataSet
             }
             if ($def instanceof Closure) {
                 $def($query, $value);
+            } elseif (($opDef = self::normalizeOpDef($key, $def)) !== null) {
+                self::applyOpToBuilder($query, $opDef['fields'], $opDef['op'], $value);
             } elseif (is_array($def)) {
                 $fields = $def;
                 $query->where(function ($q) use ($fields, $value) {
@@ -365,6 +426,147 @@ class DataSet
             'recordsFiltered' => $filtered,
             'data'            => self::transformRows($rows, $options),
         ];
+    }
+
+    // ------------------------------------------------------------------
+    // 运算符过滤（op）
+    // ------------------------------------------------------------------
+
+    /** 识别 op 规则定义：数组且含 op / field / fields 任一键 */
+    protected static function normalizeOpDef(string $key, mixed $def): ?array
+    {
+        if (! is_array($def) || (! isset($def['op']) && ! isset($def['field']) && ! isset($def['fields']))) {
+            return null;
+        }
+        $fields = isset($def['fields'])
+            ? array_values(array_map('strval', (array) $def['fields']))
+            : [(string) ($def['field'] ?? $key)];
+
+        return ['op' => strtolower(self::str($def['op'] ?? '=', '=')), 'fields' => $fields];
+    }
+
+    /** 数值感知比较：双方均为数字按数值比较，否则按字符串比较 */
+    protected static function compare(mixed $rowValue, string $value): int
+    {
+        $rv = self::scalar($rowValue);
+        if (is_numeric($rv) && is_numeric($value)) {
+            return (float) $rv <=> (float) $value;
+        }
+
+        return strcmp((string) $rv, $value);
+    }
+
+    /** 纯日期(Y-m-d)的 date_to 上界自动补齐当天末尾，保证包含当天数据 */
+    protected static function dateToUpper(string $value): string
+    {
+        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value . ' 23:59:59' : $value;
+    }
+
+    /** 数组管线：行是否满足 op 规则（like 为多字段 OR，其余作用于首字段） */
+    protected static function opMatchRow(mixed $row, array $fields, string $op, string $value): bool
+    {
+        if ($op === 'like') {
+            $kw = mb_strtolower($value);
+            foreach ($fields as $field) {
+                if (self::contains(self::field($row, $field), $kw)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        $rv = self::field($row, $fields[0] ?? '');
+
+        return match ($op) {
+            '=', 'eq'        => (string) self::scalar($rv) === $value,
+            '!=', 'neq'      => (string) self::scalar($rv) !== $value,
+            '>', 'gt'        => self::compare($rv, $value) > 0,
+            '>=', 'gte'      => self::compare($rv, $value) >= 0,
+            '<', 'lt'        => self::compare($rv, $value) < 0,
+            '<=', 'lte'      => self::compare($rv, $value) <= 0,
+            'in'             => in_array((string) self::scalar($rv), array_map('trim', explode(',', $value)), true),
+            'not_in'         => ! in_array((string) self::scalar($rv), array_map('trim', explode(',', $value)), true),
+            'between'        => self::betweenMatch($rv, $value),
+            'date_from'      => self::compare($rv, $value) >= 0,
+            'date_to'        => self::compare($rv, self::dateToUpper($value)) <= 0,
+            default          => (string) self::scalar($rv) === $value,
+        };
+    }
+
+    /** between："min,max"，缺省一端时退化为单边比较 */
+    protected static function betweenMatch(mixed $rowValue, string $value): bool
+    {
+        [$min, $max] = array_pad(array_map('trim', explode(',', $value, 2)), 2, '');
+        if ($min !== '' && self::compare($rowValue, $min) < 0) {
+            return false;
+        }
+        if ($max !== '' && self::compare($rowValue, $max) > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /** 查询构造器管线：应用 op 规则 */
+    protected static function applyOpToBuilder(object $query, array $fields, string $op, string $value): void
+    {
+        $field = $fields[0] ?? '';
+        if ($field === '' && $op !== 'like') {
+            return;
+        }
+        switch ($op) {
+            case 'like':
+                $kw = '%' . addcslashes($value, '%_\\') . '%';
+                $query->where(function ($q) use ($fields, $kw) {
+                    foreach ($fields as $f) {
+                        $q->orWhere($f, 'like', $kw);
+                    }
+                });
+                break;
+            case 'in':
+                $query->whereIn($field, array_map('trim', explode(',', $value)));
+                break;
+            case 'not_in':
+                $query->whereNotIn($field, array_map('trim', explode(',', $value)));
+                break;
+            case 'between':
+                [$min, $max] = array_pad(array_map('trim', explode(',', $value, 2)), 2, '');
+                if ($min !== '') {
+                    $query->where($field, '>=', $min);
+                }
+                if ($max !== '') {
+                    $query->where($field, '<=', $max);
+                }
+                break;
+            case 'date_from':
+                $query->where($field, '>=', $value);
+                break;
+            case 'date_to':
+                $query->where($field, '<=', self::dateToUpper($value));
+                break;
+            case 'gt':
+                $query->where($field, '>', $value);
+                break;
+            case 'gte':
+                $query->where($field, '>=', $value);
+                break;
+            case 'lt':
+                $query->where($field, '<', $value);
+                break;
+            case 'lte':
+                $query->where($field, '<=', $value);
+                break;
+            case 'neq':
+                $query->where($field, '!=', $value);
+                break;
+            case 'eq':
+                $query->where($field, '=', $value);
+                break;
+            default:
+                // 原生 SQL 运算符（= != > >= < <=）
+                $query->where($field, in_array($op, ['=', '!=', '>', '>=', '<', '<='], true) ? $op : '=', $value);
+        }
     }
 
     // ------------------------------------------------------------------

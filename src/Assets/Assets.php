@@ -47,6 +47,7 @@ final class Assets
     public const PLUGINS = [
         'jquery' => ['js' => ['plugins/jquery/jquery.min.js']],
         'moment' => ['js' => ['plugins/moment/moment.min.js']],
+        'lucide' => ['js' => ['plugins/lucide/lucide.min.js']],
 
         // 表格
         'datatables' => [
@@ -80,7 +81,17 @@ final class Assets
         // 图表
         'apexcharts' => ['js' => ['plugins/apexcharts/apexcharts.min.js']],
         'apextree'   => ['js' => ['plugins/apextree/apextree.min.js']],
-        'apexsankey' => ['js' => ['js/plugins/apexsankey/apexsankey.min.js'], 'deps' => ['svgdotjs']],
+        // 注意：apexsankey 依赖 @svgdotjs/svg.js v3，但 apexcharts 内置旧版 svg.js 同样占用
+        // window.SVG，二者同页共存会互相破坏（draggable 缺失 / parser Error）。因此这里不走 deps，
+        // 而是按「前置护栏 → svg.js v3 → apexsankey（UMD 加载时闭包捕获 v3）→ 后置护栏恢复」顺序加载。
+        'apexsankey' => ['js' => [
+            'js/plugins/apexsankey/svg-guard-pre.js',
+            'plugins/svgdotjs/svg.min.js',
+            'js/plugins/apexsankey/apexsankey.min.js',
+            'js/plugins/apexsankey/svg-guard-post.js',
+        ]],
+        // 二维码（qrcode-generator，DataTable qr 单元格渲染器按需依赖）
+        'qrcode' => ['js' => ['js/plugins/qrcode/qrcode.min.js']],
         'echarts'    => ['js' => ['plugins/echarts/echarts.min.js']],
         'svgdotjs'   => ['js' => ['plugins/svgdotjs/svg.min.js']],
 
@@ -108,7 +119,7 @@ final class Assets
         'inputmask' => ['js' => ['plugins/inputmask/inputmask.min.js']],
         'typeahead' => ['js' => ['plugins/typeahead/typeahead.bundle.min.js'], 'deps' => ['jquery', 'handlebars']],
         'handlebars' => ['js' => ['plugins/handlebars/handlebars.min.js']],
-        'tagify'    => ['js' => ['js/plugins/tagify/tagify.js']],
+        'tagify'    => ['css' => ['plugins/tagify/tagify.css'], 'js' => ['js/plugins/tagify/tagify.js']],
 
         // 编辑器
         'quill' => [
@@ -137,6 +148,8 @@ final class Assets
         // 交互 / 杂项
         'sweetalert2'  => ['css' => ['plugins/sweetalert2/sweetalert2.min.css'], 'js' => ['plugins/sweetalert2/sweetalert2.min.js']],
         'sortablejs'   => ['js' => ['plugins/sortablejs/Sortable.min.js']],
+        'simplebar'    => ['css' => ['plugins/simplebar/simplebar.min.css'], 'js' => ['plugins/simplebar/simplebar.min.js']],
+        'masonry'      => ['js' => ['plugins/masonry/masonry.pkgd.min.js']],
         'dragsort'     => ['js' => ['js/plugins/dragsort/dragsort.js']],
         'jstree'       => ['css' => ['plugins/jstree/style.min.css'], 'js' => ['plugins/jstree/jstree.min.js'], 'deps' => ['jquery']],
         'masonry'      => ['js' => ['plugins/masonry/masonry.pkgd.min.js']],
@@ -162,10 +175,38 @@ final class Assets
         return self::$instance ??= new self();
     }
 
-    /** 重置（多次完整页面渲染 / 测试场景） */
+    /** 重置（多次完整页面渲染 / 测试场景）；保留 baseUrl / version 配置 */
     public static function reset(): self
     {
-        return self::$instance = new self();
+        $old = self::$instance;
+        $new = new self();
+        if ($old !== null) {
+            $new->baseUrl = $old->baseUrl;
+            $new->version = $old->version;
+        }
+
+        return self::$instance = $new;
+    }
+
+    /**
+     * 清空已收集的资源状态（插件/CSS/JS/内联代码/输出标记），保留 baseUrl 与 version。
+     *
+     * 完整文档组件（Page / AuthPage 等）输出文档后自动调用，保证同一请求中
+     * 渲染多个完整页面（邮件、PDF、测试等场景）时互不污染、不重复引用。
+     */
+    public function resetCollected(): self
+    {
+        $this->plugins = [];
+        $this->css = [];
+        $this->js = [];
+        $this->inlineJs = [];
+        $this->inlineCss = [];
+        $this->headRendered = false;
+        $this->scriptsRendered = false;
+        $this->headCssEmitted = [];
+        $this->headInlineCssEmitted = [];
+
+        return $this;
     }
 
     public function setBaseUrl(string $url): self
@@ -193,7 +234,22 @@ final class Assets
         if (preg_match('#^(https?:)?//#', $path)) {
             return $path;
         }
-        $url = $this->baseUrl . '/' . ltrim($path, '/');
+        $rel = ltrim($path, '/');
+        // 归一化：当传入的 path 已包含资源基址（如组件对「已被 asset() 过」的 URL 再次 asset，
+        // 或 Demo 传入了完整 URL）时，截取基址之后的真实相对路径，避免 /zxf/xfadmin 被拼接两遍。
+        $base = ltrim($this->baseUrl, '/');
+        if ($base !== '') {
+            $marker = $base . '/';
+            $pos = strrpos($rel, $marker);
+            if ($pos !== false) {
+                $rel = substr($rel, $pos + strlen($marker));
+            }
+            // 去掉随二次 asset 误带入的版本号，统一在末尾追加
+            if (str_contains($rel, '?')) {
+                $rel = preg_replace('/\?.*$/', '', $rel);
+            }
+        }
+        $url = $this->baseUrl . '/' . $rel;
 
         return $this->version ? $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . rawurlencode($this->version) : $url;
     }
@@ -245,18 +301,18 @@ final class Assets
         return $this;
     }
 
-    /** 追加内联 JS；指定 $key 可实现"同 key 只输出一次" */
+    /** 追加内联 JS；指定 $key 可实现"同 key 只输出一次"；未指定 key 时按代码内容去重（同一段代码只输出一次） */
     public function inlineJs(string $code, ?string $key = null): self
     {
-        $this->inlineJs[$key ?? ('__' . count($this->inlineJs) . '_' . md5($code))] = $code;
+        $this->inlineJs[$key ?? ('__' . md5($code))] = $code;
 
         return $this;
     }
 
-    /** 追加内联 CSS；指定 $key 可实现"同 key 只输出一次" */
+    /** 追加内联 CSS；指定 $key 可实现"同 key 只输出一次"；未指定 key 时按代码内容去重 */
     public function inlineCss(string $code, ?string $key = null): self
     {
-        $this->inlineCss[$key ?? ('__' . count($this->inlineCss) . '_' . md5($code))] = $code;
+        $this->inlineCss[$key ?? ('__' . md5($code))] = $code;
 
         return $this;
     }

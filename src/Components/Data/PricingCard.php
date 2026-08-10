@@ -59,7 +59,7 @@ class PricingCard extends Component
         if ($this->get('desc')) {
             $html .= '<p class="text-muted">' . $this->e($this->get('desc')) . '</p>';
         }
-        $html .= '<h2 class="my-3 fw-bold">' . $this->raw($this->get('price'))
+        $html .= '<h2 class="my-3 fw-bold">' . $this->e($this->get('price'))
             . '<span class="fs-6 text-muted fw-normal">' . $this->e($this->get('period')) . '</span></h2>';
 
         $html .= '<ul class="list-unstyled text-start my-4">';

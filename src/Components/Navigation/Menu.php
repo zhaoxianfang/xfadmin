@@ -8,11 +8,7 @@ use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Support\Html;
 
 /**
- * 无限极菜单导航
- *
- * 支持两种渲染模式：
- *  - side：侧边栏菜单（collapse 折叠，层级不限）
- *  - top ：水平导航菜单（dropdown 下拉，层级不限）
+ * 无限极菜单导航（侧边栏模式）
  *
  * XfAdmin::menu([
  *     'mode'  => 'side',
@@ -32,7 +28,7 @@ class Menu extends Component
     protected function defaults(): array
     {
         return [
-            'mode'        => 'side',   // side | top
+            'mode'        => 'side',   // side
             'items'       => [],
             'current_url' => null,
         ];
@@ -40,13 +36,40 @@ class Menu extends Component
 
     protected function html(): string
     {
-        $items = (array) $this->get('items', []);
-
-        if ($this->get('mode') === 'top') {
-            return '<ul class="navbar-nav"' . $this->attrs() . '>' . $this->renderTopItems($items, 0) . '</ul>';
-        }
+        $items = $this->normalizeItems((array) $this->get('items', []));
 
         return '<ul' . $this->attrs(['class' => 'side-nav']) . '>' . $this->renderSideItems($items, 0) . '</ul>';
+    }
+
+    /**
+     * 键名容错归一化：
+     *  - text / label 等价；带 url/children/icon 的 'title' 也视作 text（否则 title 是分组标题）
+     *  - url / href 等价
+     */
+    protected function normalizeItems(array $items): array
+    {
+        foreach ($items as &$item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            if (! isset($item['text'])) {
+                if (isset($item['label'])) {
+                    $item['text'] = $item['label'];
+                } elseif (isset($item['title']) && (isset($item['url']) || isset($item['href']) || isset($item['children']) || isset($item['icon']))) {
+                    $item['text'] = $item['title'];
+                    unset($item['title']);
+                }
+            }
+            if (! isset($item['url']) && isset($item['href'])) {
+                $item['url'] = $item['href'];
+            }
+            if (! empty($item['children']) && is_array($item['children'])) {
+                $item['children'] = $this->normalizeItems($item['children']);
+            }
+        }
+        unset($item);
+
+        return $items;
     }
 
     /** 判断项本身或其后代是否处于激活状态 */
@@ -111,7 +134,8 @@ class Menu extends Component
                     . '" aria-controls="' . $this->e($cid) . '" class="' . Html::cls('side-nav-link', ['disabled' => $disabled]) . '">'
                     . $icon . $text . $this->badge($item) . '<span class="menu-arrow"></span></a>';
                 $html .= '<div class="' . Html::cls('collapse', ['show' => $active]) . '" id="' . $this->e($cid) . '">';
-                $html .= '<ul class="sub-menu">' . $this->renderSideItems($children, $level + 1) . '</ul>';
+                // data-level 供 CSS 按层级递增缩进（支持 6 级及以上子菜单）
+                $html .= '<ul class="sub-menu" data-level="' . ($level + 1) . '">' . $this->renderSideItems($children, $level + 1) . '</ul>';
                 $html .= '</div></li>';
                 continue;
             }
@@ -127,60 +151,4 @@ class Menu extends Component
         return $html;
     }
 
-    // ------------------------------------------------------------------
-    // top（horizontal）模式
-    // ------------------------------------------------------------------
-
-    protected function renderTopItems(array $items, int $level): string
-    {
-        $html = '';
-        foreach ($items as $item) {
-            if (isset($item['title']) && ! isset($item['text'])) {
-                if ($level > 0) {
-                    $html .= '<h6 class="dropdown-header">' . $this->e($item['title']) . '</h6>';
-                }
-                continue;
-            }
-
-            $active   = $this->isActive($item);
-            $children = $item['children'] ?? [];
-            $icon     = isset($item['icon']) ? '<i class="' . $this->e($item['icon']) . ' me-1"></i>' : '';
-            $label    = $icon . '<span>' . $this->e($item['text'] ?? '') . '</span>';
-            $badge    = $this->badge($item);
-
-            if ($children !== []) {
-                $cid = $item['id'] ?? $this->uid('xf-topnav');
-                if ($level === 0) {
-                    $html .= '<li class="' . Html::cls('nav-item dropdown', ['active' => $active]) . '">'
-                        . '<a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="' . $this->e($cid)
-                        . '" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'
-                        . $label . $badge . ' <i class="ti ti-chevron-down ms-1"></i></a>'
-                        . '<div class="dropdown-menu" aria-labelledby="' . $this->e($cid) . '">'
-                        . $this->renderTopItems($children, $level + 1)
-                        . '</div></li>';
-                } else {
-                    $html .= '<div class="dropdown">'
-                        . '<a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="' . $this->e($cid)
-                        . '" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
-                        . $label . $badge . '</a>'
-                        . '<div class="dropdown-menu" aria-labelledby="' . $this->e($cid) . '">'
-                        . $this->renderTopItems($children, $level + 1)
-                        . '</div></div>';
-                }
-                continue;
-            }
-
-            $url    = $item['url'] ?? '#!';
-            $target = isset($item['target']) ? ' target="' . $this->e($item['target']) . '"' : '';
-            if ($level === 0) {
-                $html .= '<li class="nav-item"><a class="' . Html::cls('nav-link', ['active' => $active])
-                    . '" href="' . $this->e($url) . '"' . $target . '>' . $label . $badge . '</a></li>';
-            } else {
-                $html .= '<a class="' . Html::cls('dropdown-item', ['active' => $active])
-                    . '" href="' . $this->e($url) . '"' . $target . '>' . $label . $badge . '</a>';
-            }
-        }
-
-        return $html;
-    }
 }

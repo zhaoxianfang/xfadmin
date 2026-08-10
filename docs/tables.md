@@ -223,9 +223,48 @@ XfAdmin::dataTable([
 | `code` | `render => 'code'` | 等宽代码块 |
 | `icon` | `render => 'icon'` | 值 → 图标，`xfIcon => ['map' => [...]]` |
 | `view` | `render => 'view'` | 整行 JSON 弹窗（只读） |
+| `tooltip` | `render => ['type' => 'tooltip', 'text' => '注册于 {created_at}', 'length' => 12]` | 悬浮提示（Bootstrap Tooltip），`text` 支持 `{field}` 占位，`length` 截断展示 |
+| `popover` | `render => ['type' => 'popover', 'title' => '备注', 'content' => '{remark}']` | 气泡提示，点击/聚焦弹出，`trigger`/`placement`/`html` 可配 |
+| `toggle` | `render => ['type' => 'toggle', 'url' => '/api/x/{id}/toggle', 'on_label' => '已启用', 'off_label' => '已停用']` | 按钮式状态切换：点击 POST 提交后翻转按钮文案/配色，失败保持原状态，派发 `xf:toggle` |
+| `status` | `render => ['type' => 'status', 'map' => ['active' => ['label' => '在线', 'color' => 'success']]]` | 彩色状态点 + 文案 |
+| `trend` | `render => ['type' => 'trend', 'suffix' => '%']` | 涨跌趋势：正值绿升/负值红降 + 箭头图标，`invert` 反转语义 |
+| `sparkline` | `render => ['type' => 'sparkline', 'type' => 'line'\|'bar']` | 迷你趋势图（内联 SVG，零依赖），值为数字数组或逗号串 |
+| `filesize` | `render => 'filesize'` | 字节数 → 人类可读大小（B/KB/MB/GB/TB） |
+| `file` | `render => ['type' => 'file']` | 文件单元格：图标（按扩展名）+ 文件名（截断悬浮）+ 人类可读大小 + 下载按钮；数据可为字符串 url 或 `{url, name, size, icon, download}`，`download:false` 关闭下载按钮，`{field}` 占位 |
+| `avatarGroup` | `render => ['type' => 'avatarGroup', 'max' => 3]` | 多人头像组：元素为字符串 url 或 `{url, name}`，最多显示 `max`（默认 3）个，超出折叠为 `+N`；无图时显示姓名首字母 |
+| `qr` | `render => ['type' => 'qr']` | 二维码单元格（依赖 qrcode-generator）：内容可为 URL / 纯文本 / 含中文的非 ASCII 内容（自动 UTF-8 编码）；`text` 支持 `{字段}` 占位，可选 `size`(像素) / `ec`(纠错 L·M·Q·H) / `color` / `bg`；点击放大查看，链接内容额外「打开链接」按钮 |
+
+```php
+XfAdmin::datatable([
+    'id' => 'dt-files',
+    'data' => [
+        ['id' => 1, 'name' => '需求文档', 'file' => ['url' => '/files/prd.pdf', 'name' => 'PRD.pdf', 'size' => 245760],
+         'team' => [['url' => 'users/1.jpg', 'name' => '王伟'], ['url' => '', 'name' => '李娜'], ['url' => 'users/3.jpg', 'name' => '张强']]],
+    ],
+    'columns' => [
+        ['data' => 'name', 'title' => '文档', 'render' => 'truncate'],
+        ['data' => 'file', 'title' => '附件', 'render' => ['type' => 'file'], 'width' => '280px'],
+        ['data' => 'team', 'title' => '协作成员', 'render' => ['type' => 'avatarGroup', 'max' => 3], 'width' => '160px'],
+        ['key' => '', 'title' => '操作', 'actions' => [
+            ['label' => '下载', 'icon' => 'ti ti-download', 'action' => 'download', 'ajax' => '{file.url}'],
+            ['label' => '打印', 'icon' => 'ti ti-printer', 'action' => 'print', 'ajax' => '{file.url}', 'title' => '打印预览'],
+            ['label' => '分享', 'icon' => 'ti ti-share', 'action' => 'share', 'ajax' => '/share/{id}'],
+        ]],
+    ],
+]);
+```
+
+- `file` 的 `size` 可用 `render` 配置里的 `download:false` 关闭下载按钮；`icon` 可手动指定图标类覆盖扩展名自动匹配。
+- `avatarGroup` 的 `url` 走组件 `img()` 解析（外链/ data URI 原样返回），`name` 用于悬浮 `title` 与无图首字母。
+- `qr` 渲染器由 DataTable 自动按需加载 `qrcode` 库（无需手动声明）；`text` 省略时默认使用单元格数据（如 `'data' => 'url'` 整列即二维码）。完整示例见 `demo/pages/tables.php`「二维码单元格」卡片。
+
+| `timeline` | `render => ['type' => 'timeline', 'max' => 2]` | 单元格时间线，值为 `[{time,title,text,color}]`；超过 `max` 条出现「查看全部」弹窗 |
+| `dropdown` | `render => ['type' => 'dropdown', 'label' => '操作', 'items' => [...]]` | 单按钮点击展开下拉操作组（子项同 actions） |
+| `buttons` | 同 `actions` | 按钮组别名 |
 | `actions` | `actions => [...]` | 行操作栏（见下节） |
 
 > 前端渲染器全部挂在 `XFAdmin.cellRenderers` 上，可通过 `XFAdmin.cellRenderers.myType = (cell, row, col) => '...'` 自定义扩展（见[扩展组件](extending.md)）。
+> `tooltip` / `popover` 渲染器在每次 `draw.dt` 后自动初始化 Bootstrap 实例，无需手工处理。
 
 ### 操作栏（actions 列）
 
@@ -249,12 +288,52 @@ XfAdmin::dataTable([
 
 | act | 行为 |
 |-----|------|
-| `view` | 弹窗展示整行数据（只读） |
+| `view` | 详情弹窗；无配置时自动键值对展示（复用列头中文名与列渲染器），配 `view` 后支持个性化布局（见下节） |
+| `edit` | 模态表单编辑闭环：`fields` 定义控件 → 保存经 `ajax`（默认 PUT）提交 → toast + 自动刷新表格 |
+| `delete` | 删除闭环：确认框 → `ajax`（默认 DELETE）→ toast + 刷新；本地数据源省略 `ajax` 时直接移除行 |
 | `link` | 跳转 `url`（支持 `{id}` 占位替换为当前行 id） |
 | `copy-row` | 复制整行 JSON 到剪贴板（可选 `confirm`） |
 | `ajax` | 发送 `fetch` 到 `url`，可选 `confirm`，成功后 toast 并自动重载表格 |
 | `custom` | 仅派发 `xf:action` 事件，交由你的代码处理（见[扩展组件](extending.md)） |
 | `dialog` / `form` | 弹窗（可内嵌表单），配合自定义事件完成复杂操作 |
+| `download` | 下载 `ajax`（即 url，支持 `{字段}` 占位）；同源强制触发下载，外链新标签页打开 |
+| `print` | 打印：配 `ajax`（url）则弹窗 iframe 加载该页面并触发打印对话框；否则以弹窗展示当前行键值对预览后调用浏览器打印 |
+| `share` | 复制分享链接（`ajax` 即链接，支持 `{字段}` 占位）并 toast 提示；若浏览器支持 `navigator.share` 则唤起原生分享面板（可用 `noshare` 禁用） |
+
+### 个性化详情弹窗（`action: view` + `view` 配置）
+
+不同业务功能的详情应有不同的排版。`view` 配置驱动多布局详情引擎：
+
+```php
+['label' => '详情', 'action' => 'view', 'view' => [
+    'title'   => '成员档案 - {name}',          // {field} 占位
+    'size'    => 'xl',                         // sm | lg | xl
+    'layout'  => 'tabs',                       // kv | profile | tabs | sections | template
+    'ajax'    => '/api/staff/{id}',            // 打开时拉取详情接口并合并展示（列表轻、详情全）
+    'header'  => [                             // 档案头（profile 布局默认展示，其他布局可显式开启）
+        'avatar' => 'avatar', 'title' => '{name}', 'sub' => '{email}',
+        'badge'  => ['field' => 'status', 'map' => ['active' => ['label' => '在线', 'color' => 'success']]],
+    ],
+    'sections' => [                            // 分区（tabs 布局下每区一个标签页）
+        ['title' => '基础信息', 'type' => 'kv',       'cols' => 2, 'fields' => ['id', 'name', 'email']],
+        ['title' => '参与项目', 'type' => 'table',    'field' => 'projects', 'columns' => ['name' => '项目', 'role' => '角色']],
+        ['title' => '安全日志', 'type' => 'timeline', 'field' => 'security_log'],
+        ['title' => '关键指标', 'type' => 'stats',    'fields' => [['field' => 'quota', 'label' => '完成度', 'suffix' => '%']]],
+        ['title' => '能力画像', 'type' => 'progress', 'fields' => [['field' => 'perf', 'label' => '绩效']]],
+        ['title' => '技能标签', 'type' => 'tags',     'field' => 'tags'],
+        ['title' => '作品集',   'type' => 'images',   'field' => 'photos'],
+        ['title' => '自由排版', 'type' => 'html',     'template' => '<div>{bio}</div>'],
+    ],
+    'labels'  => ['id' => 'ID'],               // 补充/覆盖列头中文名
+    'exclude' => ['password'],                 // 排除字段
+    // layout=template 时：'template' => '<div class="text-center">{name} ...</div>'
+]],
+```
+
+- 布局：`kv` 键值对（默认）、`profile` 档案头 + 双列 kv、`tabs` 分区标签页、`sections` 分区堆叠、`template` 任意 HTML 模板（占位值自动转义）。
+- 分区类型：`kv` / `table`（子表格）/ `timeline` / `stats`（统计卡）/ `tags` / `progress` / `images` / `html`。
+- 零配置时自动复用表格列头中文名与列渲染器，详情观感与表格一致。
+- 完整可运行示例见 `demo/pages/tables.php`「全渲染器矩阵」与「个性化详情布局」两张卡片（配套 Mock API `/api/demo/*` 演示编辑/删除/切换全闭环）。
 
 ---
 
@@ -281,7 +360,132 @@ XfAdmin::dataTable([
 
 - 前端把各控件值合并进 `ajax.url` 的查询串后 `table.ajax.url(url).load()`，后端 `DataSet` 通过 `filters` 选项消费这些参数。
 - 渲染一个「重置」按钮，点击清空全部筛选。
-- 控件 `type` 支持：`select`（默认，需 `options`）、`text`、`date`、`radio`（按钮组单选）。
+- 控件 `type` 支持：`select`（默认，需 `options`）、`select2`（可搜索）、`text`/`search`、`number`、`range`（数值区间）、
+  `date`/`datetime`/`time`/`month`/`week`/`year`、`daterange`/`datetimerange`/`timerange`（区间，自动拆 `_from`/`_to`）、
+  `radio`（按钮组单选）、`checkbox`（单勾选）、`checkboxes`（复选组）、`color`。
+
+### 自定义过滤控件（开发者完全自定义）
+
+filter_bar 项传 `html` 键即可注入任意 HTML 控件，控件内部凡带 `class="xf-filter"` 与 `data-filter="参数名"` 的
+表单元素都会被自动采集进查询参数，与内置控件混用无缝：
+
+```php
+'filter_bar' => [
+    ['type' => 'search', 'name' => 'name', 'label' => '姓名'],
+    // 完全自定义：Bootstrap 按钮组单选
+    ['html' => '<label class="form-label">职级</label>'
+        . '<div class="btn-group w-100">'
+        . '<input type="radio" class="btn-check xf-filter" data-filter="grade" name="g" id="g-all" value="" checked>'
+        . '<label class="btn btn-outline-secondary btn-sm" for="g-all">全部</label>'
+        . '<input type="radio" class="btn-check xf-filter" data-filter="grade" name="g" id="g-p7" value="P7">'
+        . '<label class="btn btn-outline-secondary btn-sm" for="g-p7">P7</label>'
+        . '</div>', 'width' => 'col-md-4'],
+],
+```
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `html` | string | 原样注入的控件 HTML（自行保证转义安全） |
+| `width` | string | 栅格宽度类，默认 `col-6 col-md-3 col-xl-2` |
+
+也可以把整个过滤表单放在表格之外：任意 `<form data-xf-filter-for="表格id">` 中带 `name` 或
+`data-filter` 的控件都会参与过滤（提交即查询）。
+
+---
+
+## 弹窗页单元格 `page` 渲染器
+
+单元格文本渲染为可点击链接，点击后弹窗加载**服务端渲染的页面**（如编辑页/详情页），
+关闭弹窗时可选择是否自动刷新表格：
+
+```php
+'columns' => [
+    ['data' => 'name', 'title' => '成员', 'render' => [
+        'type'   => 'page',
+        'url'    => '/admin/users/{id}/edit',   // {字段} 占位取当前行数据
+        'title'  => '编辑成员 #{id}',            // 弹窗标题，同样支持占位
+        'size'   => 'lg',                       // sm | lg | xl | fullscreen
+        'frame'  => false,                      // true=iframe 整页嵌入；false=提取 [data-xf-page-content] 片段
+        'reload' => true,                       // 关闭弹窗后是否刷新表格（默认 true）
+        'text'   => null,                       // 覆盖显示文本（默认单元格值），支持占位
+        'icon'   => null,                       // 前置图标类
+    ]],
+],
+```
+
+| 参数 | 类型 | 默认 | 说明 |
+|------|------|------|------|
+| `url` | string | — | 弹窗加载的后端页面地址，`{字段}` 占位自动替换（URL 编码） |
+| `title` | string | 单元格值 | 弹窗标题，支持 `{字段}` 占位 |
+| `size` | string | `lg` | 弹窗尺寸 |
+| `frame` | bool | `false` | `true` 用 iframe 嵌入整页（子页可用 `XFAdmin.dialogBridge` 与父页交互） |
+| `reload` | bool | `true` | 关闭弹窗后是否 `ajax.reload` 刷新本表 |
+| `text` / `icon` | string | — | 自定义链接文本 / 前置图标 |
+
+---
+
+## 开发者自定义单元格渲染 `js:` 前缀
+
+两种方式任选：
+
+**方式一：`js:` 前缀调用全局函数**（免注册，支持点号路径）：
+
+```php
+['data' => 'quota', 'title' => '完成度', 'render' => 'js:demoQuotaCell'],
+// 或 'render' => 'js:App.render.quota'
+```
+
+```js
+// 签名与内置渲染器一致：fn(data, row, cfg, meta) => HTML 字符串
+function demoQuotaCell(d, row) {
+    var color = d >= 80 ? 'success' : 'danger';
+    return '<span class="badge bg-' + color + '-subtle text-' + color + '">' + d + '%</span>';
+}
+```
+
+**方式二：注册可复用渲染器**（多表共享，PHP 端 `'render' => ['type' => 'myType', ...任意配置]`）：
+
+```js
+XFAdmin.cellRenderers.myType = function (data, row, cfg, meta) {
+    return '<b>' + XFAdmin.escapeHtml(String(data)) + '</b>';
+};
+```
+
+自定义函数抛异常时自动回退为纯文本渲染，不会破坏表格。
+
+---
+
+## 弹窗与父页面交互 `XFAdmin.dialogBridge`
+
+弹窗（`page` 单元格 / 行操作 `edit` / `create` 新建按钮）加载的子页面可通过桥接 API 与父页面交互；
+`frame`（iframe）与片段模式下代码完全一致，非弹窗环境自动降级为本地行为：
+
+```js
+XFAdmin.dialogBridge.inDialog;          // 是否运行于弹窗 iframe 内
+XFAdmin.dialogBridge.close();           // 关闭弹窗
+XFAdmin.dialogBridge.closeAndReload();  // 关闭弹窗并刷新父页表格
+XFAdmin.dialogBridge.markReload();      // 仅标记「关闭时刷新」（不立即关闭）
+XFAdmin.dialogBridge.toast('已保存', 'success'); // 在父页面弹出提示
+```
+
+父页面侧的挂点：
+
+```js
+// 弹窗关闭事件（detail.reloaded 表示是否已触发表格刷新）
+document.addEventListener('xf:dialog-closed', function (e) {
+    console.log(e.detail.url, e.detail.reloaded);
+});
+
+// 编程式打开弹窗页
+XFAdmin.pageDialog({
+    url: '/admin/users/5/edit',
+    title: '编辑成员',
+    size: 'lg',
+    frame: false,                        // true=iframe
+    tableEl: document.getElementById('dt-users'),  // 关闭后刷新该表
+    onClose: function (reloaded) {},     // 关闭回调
+});
+```
 
 ---
 

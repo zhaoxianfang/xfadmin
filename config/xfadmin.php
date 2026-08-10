@@ -14,16 +14,20 @@ return [
     'version' => '1.0.0',
 
     // 主题默认外观（渲染到 <html> 的 data-* 属性，运行时可被浏览器端 config.js 持久化覆盖）
+    //
+    // 注意：以下默认值与 INSPINIA v4.1.0 模板 assets/js/config.js 中的 defaultConfig
+    // 保持一致（skin=modern、menu.color=gradient），确保开箱即用的观感与模板完全相同。
+    // 修改前请同步核对模板 config.js，避免出现“与模板不一致”的外观偏差。
     'theme' => [
-        'skin'            => 'classic',   // classic | material | modern | saas | flat
+        'skin'            => 'modern',    // classic | material | modern | saas | flat
         'mode'            => 'light',     // light | dark | system
         'layout'          => 'vertical',  // vertical | horizontal | dual
         'layout_position' => 'fixed',     // fixed | scrollable
         'layout_width'    => 'fluid',     // fluid | boxed
         'topbar_color'    => 'light',     // light | dark | gray | gradient
-        'menu_color'      => 'dark',      // light | dark | gray | gradient | image
+        'menu_color'      => 'gradient',  // light | dark | gray | gradient | image
         'sidenav_size'    => 'default',   // default | compact | condensed | on-hover | on-hover-active | offcanvas | full | fullscreen
-        'sidenav_user'    => false,       // 侧边栏是否显示用户卡片
+        'sidenav_user'    => true,        // 侧边栏是否显示用户卡片
     ],
 
     // 品牌信息

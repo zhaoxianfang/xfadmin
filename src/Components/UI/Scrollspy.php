@@ -41,8 +41,9 @@ class Scrollspy extends Component
 
         // 左侧导航
         $nav = '<nav id="' . $navId . '" class="nav nav-pills flex-column">';
-        foreach ($items as $item) {
-            $nav .= '<a class="nav-link" href="#' . $this->e($item['id']) . '">' . $this->e($item['label'] ?? $item['id']) . '</a>';
+        foreach ($items as $i => $item) {
+            $itemId = $item['id'] ?? $this->uid('ss-sec-' . $i);
+            $nav .= '<a class="nav-link" href="#' . $this->e($itemId) . '">' . $this->e($item['label'] ?? $itemId) . '</a>';
         }
         $nav .= '</nav>';
 
@@ -57,8 +58,9 @@ class Scrollspy extends Component
             'style'            => 'height:' . $this->e($this->get('height')) . ';',
         ];
         $body = '<div id="' . $bodyId . '"' . Html::attrs($spyAttrs) . '>';
-        foreach ($items as $item) {
-            $body .= '<h5 id="' . $this->e($item['id']) . '">' . $this->e($item['label'] ?? $item['id']) . '</h5>';
+        foreach ($items as $i => $item) {
+            $itemId = $item['id'] ?? $this->uid('ss-sec-' . $i);
+            $body .= '<h5 id="' . $this->e($itemId) . '">' . $this->e($item['label'] ?? $itemId) . '</h5>';
             $body .= '<div class="mb-3">' . $this->raw($item['content'] ?? '') . '</div>';
         }
         $body .= '</div>';

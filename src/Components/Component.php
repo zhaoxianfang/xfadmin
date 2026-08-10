@@ -128,17 +128,38 @@ abstract class Component implements Stringable
         return Html::e($value);
     }
 
-    /** 允许 HTML 的槽位：Component/Stringable 会被渲染，字符串原样输出 */
+    /** 允许 HTML 的槽位：Component/Stringable 会被渲染，闭包会被调用（惰性内容），字符串原样输出 */
     protected function raw(mixed $value): string
     {
         if ($value === null) {
             return '';
+        }
+        if ($value instanceof \Closure) {
+            return $this->raw($value());
         }
         if (is_array($value)) {
             return implode('', array_map(fn ($v) => $this->raw($v), $value));
         }
 
         return (string) $value;
+    }
+
+    /**
+     * 解析图片地址：http(s)://、// 与 data: 开头的原样返回，
+     * 其余按包内 images/ 相对路径经 XfAdmin::asset() 解析
+     */
+    protected function img(mixed $path): string
+    {
+        $p = trim((string) $path);
+        if ($p === '') {
+            // 空路径返回透明 1x1 GIF，避免组件输出 src="" 触发破图请求
+            return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        }
+        if (preg_match('#^(?:https?:)?//|^data:#i', $p)) {
+            return $p;
+        }
+
+        return \zxf\XfAdmin\XfAdmin::asset('images/' . ltrim($p, '/'));
     }
 
     /** 生成组件级唯一 id */
@@ -168,9 +189,12 @@ abstract class Component implements Stringable
     {
         $attrs = ['data-xf' => $widget];
         if ($config !== []) {
+            // JSON_HEX_TAG 将 < > & 转义，纵深防御 data-xf-config 中的 </script> 等断标签注入；
+            // HEX_APOS/HEX_QUOT 防止属性引号逃逸，HEX_AMP 防止 & 误解析
             $attrs['data-xf-config'] = json_encode(
                 $config,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             );
         }
 
@@ -183,12 +207,16 @@ abstract class Component implements Stringable
 
     public function render(): string
     {
-        // 注册资源依赖（重复注册自动去重）
+        // 注册资源依赖（注册幂等、自动去重：同一插件被多个组件依赖或同一组件
+        // 多次渲染都只会输出一次资源引用）
         $plugins = $this->assets();
         if ($plugins !== []) {
             Assets::instance()->plugin(...$plugins);
         }
 
+        // 说明：render 不做结果缓存——内联初始化 JS 按 key/内容去重已保证不重复输出；
+        // 同一实例被多次渲染时各自生成独立 uid，互不干扰；且跨多个完整页面复用实例时
+        // 能在资源状态重置后重新注册初始化脚本。
         return $this->html();
     }
 

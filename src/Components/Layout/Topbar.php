@@ -11,7 +11,7 @@ use zxf\XfAdmin\XfAdmin;
  * 顶部导航栏
  *
  * XfAdmin::topbar([
- *     'brand'         => true,            // 顶栏品牌 logo（horizontal 布局用）
+ *     'brand'         => true,            // 顶栏品牌 logo
  *     'search'        => true,            // 搜索框
  *     'left'          => '自定义HTML',     // 左侧附加插槽
  *     'theme_toggle'  => true,            // 明暗切换按钮
@@ -51,11 +51,10 @@ class Topbar extends Component
         $html .= '<div class="d-flex align-items-center gap-2">';
         $html .= $this->renderBrand();
         $html .= '<button class="sidenav-toggle-button btn btn-primary btn-icon"><i class="ti ti-menu-4 fs-22"></i></button>';
-        $html .= '<button class="topnav-toggle-button px-2" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content"><i class="ti ti-menu-4 fs-22"></i></button>';
         if ($this->get('search')) {
             $html .= '<div class="app-search d-none d-xl-flex">'
                 . '<input type="search" class="form-control topbar-search" name="search" placeholder="' . $this->e($this->get('search_placeholder')) . '">'
-                . '<i data-lucide="search" class="app-search-icon text-muted"></i></div>';
+                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
         }
         $html .= $this->raw($this->get('left'));
         $html .= '</div>';
@@ -66,13 +65,13 @@ class Topbar extends Component
         $html .= $this->renderLanguages();
         $html .= $this->renderNotifications();
         if ($this->get('customizer')) {
-            $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" type="button"><i data-lucide="settings" class="fs-xxl"></i></button></div>';
+            $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" type="button"><i class="ti ti-settings fs-xxl"></i></button></div>';
         }
         if ($this->get('fullscreen')) {
-            $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link" data-toggle="fullscreen" type="button"><i data-lucide="fullscreen" class="fs-xxl"></i></button></div>';
+            $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link" data-toggle="fullscreen" type="button"><i class="ti ti-maximize fs-xxl"></i></button></div>';
         }
         if ($this->get('theme_toggle')) {
-            $html .= '<div class="topbar-item"><button class="topbar-link" id="light-dark-mode" type="button"><i data-lucide="moon" class="fs-xxl mode-icon icon-moon"></i><i data-lucide="sun" class="fs-xxl mode-icon icon-sun"></i></button></div>';
+            $html .= '<div class="topbar-item"><button class="topbar-link" id="light-dark-mode" type="button"><i class="ti ti-moon fs-xxl mode-icon icon-moon"></i><i class="ti ti-sun fs-xxl mode-icon icon-sun"></i></button></div>';
         }
         $html .= $this->renderUser();
         $html .= '</div>';
@@ -123,11 +122,11 @@ class Topbar extends Component
         $html = '<div class="topbar-item"><div class="dropdown">'
             . '<button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" data-bs-offset="0,25" type="button" aria-haspopup="false" aria-expanded="false">';
         $html .= isset($current['flag'])
-            ? '<img src="' . $this->e($current['flag']) . '" alt="language" class="w-100 rounded" height="18">'
+            ? '<img src="' . $this->e($current['flag']) . '" alt="language" class="w-100 rounded" height="18" style="height:18px;">'
             : '<span class="fw-semibold">' . $this->e($current['name'] ?? '') . '</span>';
         $html .= '</button><div class="dropdown-menu dropdown-menu-end">';
         foreach ($languages as $lang) {
-            $flag  = isset($lang['flag']) ? '<img src="' . $this->e($lang['flag']) . '" alt="lang" class="me-1 rounded" height="18"> ' : '';
+            $flag  = isset($lang['flag']) ? '<img src="' . $this->e($lang['flag']) . '" alt="lang" class="me-1 rounded" height="18" style="height:18px;"> ' : '';
             $html .= '<a href="' . $this->e($lang['url'] ?? 'javascript:void(0);') . '" class="dropdown-item"'
                 . (isset($lang['code']) ? ' data-lang-code="' . $this->e($lang['code']) . '"' : '') . '>'
                 . $flag . '<span class="align-middle">' . $this->e($lang['name'] ?? '') . '</span></a>';
@@ -149,7 +148,7 @@ class Topbar extends Component
 
         $html = '<div class="topbar-item"><div class="dropdown">'
             . '<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,25" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
-            . '<i data-lucide="bell" class="fs-xxl"></i>';
+            . '<i class="ti ti-bell fs-xxl"></i>';
         if ($count > 0) {
             $html .= '<span class="position-absolute topbar-badge fs-xxs translate-middle badge bg-danger rounded-pill">' . $this->e($count) . '</span>';
         }
@@ -194,7 +193,7 @@ class Topbar extends Component
 
         $html = '<div class="topbar-item nav-user"><div class="dropdown">'
             . '<a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown" data-bs-offset="0,16" href="#!" aria-haspopup="false" aria-expanded="false">'
-            . '<img src="' . $this->e($avatar) . '" width="32" class="rounded-circle me-lg-2 d-flex" alt="user-image">'
+            . '<img src="' . $this->e($avatar) . '" class="rounded-circle avatar-md me-lg-2" alt="user-image">'
             . '<div class="d-lg-flex align-items-center gap-1 d-none">'
             . '<h5 class="my-0">' . $this->e($user['name'] ?? '') . '</h5>'
             . '<i class="ti ti-chevron-down align-middle"></i></div></a>'

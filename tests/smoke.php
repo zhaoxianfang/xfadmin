@@ -50,7 +50,6 @@ $check('menu(side)', fn () => XfAdmin::menu(['items' => $menu, 'current_url' => 
 $check('menu(top)', fn () => XfAdmin::menu(['mode' => 'top', 'items' => $menu]));
 $check('sidenav', fn () => XfAdmin::sidenav(['menu' => $menu, 'user' => ['name' => '张三', 'role' => '管理员']]));
 $check('topbar', fn () => XfAdmin::topbar(['user' => ['name' => '张三', 'items' => [['text' => '退出', 'url' => '/logout']]], 'notifications' => ['items' => [['title' => '系统', 'text' => '有新订单', 'icon' => 'ti ti-bell']]]]));
-$check('topnav', fn () => XfAdmin::topnav(['menu' => $menu]));
 $check('pageTitle', fn () => XfAdmin::pageTitle(['title' => '用户', 'breadcrumb' => [['text' => '首页', 'url' => '/'], ['text' => '用户']]]));
 $check('footer', fn () => XfAdmin::footer());
 $check('customizer', fn () => XfAdmin::customizer());
@@ -168,6 +167,72 @@ $check('wizard', fn () => XfAdmin::wizard(['steps' => [['title' => '账户', 'ic
 $check('comingSoon', fn () => XfAdmin::comingSoon(['heading' => '即将上线', 'deadline' => '2026-12-31 00:00:00']));
 $check('maintenance', fn () => XfAdmin::maintenance(['heading' => '维护中', 'contact' => 'a@b.com']));
 $check('emptyState', fn () => XfAdmin::emptyState(['title' => '暂无数据', 'text' => '还没有记录', 'action' => '<a class="btn btn-primary">新建</a>']));
+$check('emailApp', fn () => XfAdmin::emailApp([
+    'folders'  => [['icon' => 'ti ti-inbox', 'text' => '收件箱', 'badge' => '3', 'active' => true]],
+    'labels'   => [['text' => '工作', 'color' => 'primary']],
+    'messages' => [['from' => '张伟', 'avatar' => 'users/user-1.jpg', 'subject' => '季度报表', 'preview' => '附件…', 'time' => '09:24', 'unread' => true]],
+    'message'  => ['subject' => '季度报表', 'from' => ['name' => '张伟', 'email' => 'a@b.com', 'avatar' => 'users/user-1.jpg', 'time' => '09:24'], 'body' => '<p>正文</p>', 'attachments' => [['name' => '报表.xlsx', 'size' => '1.2 MB']]],
+]));
+$check('chatApp', fn () => XfAdmin::chatApp([
+    'conversations' => [['name' => '李娜', 'avatar' => 'users/user-2.jpg', 'last' => '好的', 'time' => '10:02', 'unread' => 2, 'active' => true, 'online' => true]],
+    'peer'          => ['name' => '李娜', 'avatar' => 'users/user-2.jpg', 'online' => true, 'status' => '在线'],
+    'messages'      => [['from' => 'other', 'text' => '你好', 'time' => '09:58'], ['from' => 'me', 'text' => '在的', 'time' => '09:59', 'avatar' => 'users/user-1.jpg']],
+]));
+$check('profilePage', fn () => XfAdmin::profilePage([
+    'avatar' => 'users/user-1.jpg', 'name' => '张伟', 'verified' => true, 'role' => '产品经理',
+    'meta'   => [['icon' => 'ti ti-map-pin', 'text' => '深圳']],
+    'stats'  => [['value' => '128', 'label' => '项目']],
+    'actions' => [['text' => '关注', 'class' => 'btn-primary', 'icon' => 'ti ti-user-plus']],
+    'tabs'   => [['title' => '动态', 'content' => '<p>a</p>', 'active' => true], ['title' => '设置', 'content' => '<p>b</p>']],
+]));
+$check('companies', fn () => XfAdmin::companies([
+    'companies' => [[
+        'name' => '亚马逊', 'logo' => 'sellers/1.png', 'website' => 'www.amazon.com',
+        'badges' => [['icon' => 'ti ti-map-pin', 'text' => '西雅图', 'color' => 'primary']],
+        'desc' => '全球领先的电商与云计算公司。', 'employees' => '150 万+', 'revenue' => '$514B', 'rating' => 4,
+    ]],
+]));
+$check('productCategories', fn () => XfAdmin::productCategories([
+    'categories' => [[
+        'name' => '家具家居', 'image' => 'products/1.png', 'slug' => 'furniture',
+        'products' => 5248, 'orders' => '95.6k', 'earnings' => '¥4,050 万',
+        'modified' => '2026-04-18 12:24', 'status' => ['text' => '启用', 'variant' => 'success'],
+    ]],
+]));
+$check('productAdd', fn () => XfAdmin::productAdd([
+    'brands' => ['Apple', 'Samsung'], 'categories' => ['手机数码'],
+    'tags' => ['新品'], 'values' => ['name' => 'iPhone 17', 'sku' => 'IP17-001', 'stock' => 100],
+]));
+$check('sellerDetails', fn () => XfAdmin::sellerDetails([
+    'seller' => ['name' => '极物优选旗舰店', 'logo' => 'sellers/1.png', 'verified' => true, 'rating' => 4.8,
+        'desc' => '专注数码周边十年。', 'meta' => [['icon' => 'ti ti-map-pin', 'text' => '深圳']]],
+    'stats' => [['label' => '总销售额', 'value' => '¥128 万', 'icon' => 'ti ti-currency-yen', 'color' => 'primary']],
+    'products' => [['name' => '蓝牙耳机', 'image' => 'products/2.png', 'price' => '¥299', 'stock' => 320, 'sales' => '1.2k', 'status' => ['text' => '在售', 'variant' => 'success']]],
+]));
+$check('article', fn () => XfAdmin::article([
+    'article' => [
+        'title' => '如何构建高可用的后台管理系统', 'category' => '架构', 'date' => '2026-07-20', 'read_time' => '8 分钟',
+        'author' => ['name' => '张三', 'avatar' => 'users/user-1.jpg', 'bio' => '资深后端工程师'],
+        'cover' => 'blog/blog-post.jpg', 'body' => ['第一段正文。', '第二段正文。'], 'quote' => '架构的优雅在于取舍。',
+        'tags' => ['PHP', 'Laravel'],
+        'related' => [['title' => '缓存设计', 'excerpt' => '摘要', 'image' => 'blog/blog-1.jpg', 'date' => '2026-07-10']],
+    ],
+]));
+$check('projectActivity', fn () => XfAdmin::projectActivity([
+    'title' => '本周动态',
+    'items' => [
+        ['user' => '张三', 'avatar' => 'users/user-1.jpg', 'title' => '创建了任务', 'desc' => '说明', 'time' => '10 分钟前', 'color' => 'primary'],
+        ['user' => '李四', 'avatar' => 'users/user-2.jpg', 'title' => '提交了代码', 'time' => '1 小时前', 'color' => 'success'],
+    ],
+]));
+$check('invoiceDetail', fn () => XfAdmin::invoiceDetail([
+    'title' => 'XF Admin', 'number' => 'INV-2026-0728', 'status' => ['text' => '待付款', 'color' => 'warning'],
+    'meta'  => [['label' => '开票日期', 'value' => '2026-07-28']],
+    'from'  => ['name' => '甲公司', 'lines' => ['地址1']], 'to' => ['name' => '乙公司', 'lines' => ['地址2']],
+    'items' => [['name' => '企业版授权', 'desc' => '1 年', 'qty' => 2, 'price' => 4999]],
+    'summary' => [['label' => '小计', 'value' => '¥9,998.00'], ['label' => '合计', 'value' => '¥11,097.78', 'strong' => true]],
+    'notes' => '15 日内付款', 'actions' => [['text' => '打印', 'icon' => 'ti ti-printer', 'onclick' => 'window.print()']],
+]));
 
 echo "\n== 嵌套互不干扰 ==\n";
 $nested = (string) XfAdmin::card([
@@ -237,10 +302,9 @@ $check('page(vertical)', fn () => XfAdmin::page([
         XfAdmin::card(['title' => '图表', 'body' => XfAdmin::apexChart(['series' => [['data' => [1, 2]]]])]),
     ],
 ]));
-$pageHtml = (string) XfAdmin::page(['title' => 't', 'menu' => $menu, 'layout' => 'horizontal', 'content' => XfAdmin::dataTable(['columns' => ['a' => 'A']])]);
-$assert(str_contains($pageHtml, 'data-layout="topnav"'), 'horizontal 布局属性');
+$pageHtml = (string) XfAdmin::page(['title' => 't', 'menu' => $menu, 'layout' => 'vertical', 'content' => XfAdmin::dataTable(['columns' => ['a' => 'A']])]);
 $assert(str_contains($pageHtml, 'dataTables.min.js'), '页面自动包含组件依赖 JS');
-$assert(! str_contains($pageHtml, 'sidenav-menu'), 'horizontal 不渲染 sidenav');
+$assert(str_contains($pageHtml, 'sidenav-menu'), 'vertical 布局渲染 sidenav');
 $check('page(boxed+dark)', fn () => XfAdmin::page(['title' => 't', 'theme' => ['mode' => 'dark', 'layout_width' => 'boxed', 'sidenav_size' => 'compact'], 'menu' => $menu, 'content' => 'x']));
 $check('authPage', fn () => XfAdmin::authPage(['title' => '登录', 'heading' => '欢迎', 'content' => XfAdmin::form(['fields' => [XfAdmin::input(['name' => 'u', 'label' => '账号'])]])]));
 $check('errorPage', fn () => XfAdmin::errorPage(['code' => 404, 'message' => '页面不存在']));
@@ -289,7 +353,7 @@ for ($i = 1; $i <= 53; $i++) {
         'name'       => '用户' . $i,
         'email'      => 'u' . $i . '@x.com',
         'status'     => $i % 2 ? 'on' : 'off',
-        'created_at' => '2026-07-' . str_pad((string) (($i % 28) + 1), 2, '0'),
+        'created_at' => '2026-07-' . str_pad((string) (($i % 28) + 1), 2, '0', STR_PAD_LEFT),
     ];
 }
 $searchCols = [
@@ -380,6 +444,77 @@ $dtHtml = (string) $dt;
 $assert(str_contains($dtHtml, 'xf-filter-bar'), 'DataTable filter_bar 渲染');
 $assert(str_contains($dtHtml, 'xfRender'), 'DataTable 富单元格渲染器配置输出');
 $assert(str_contains($dtHtml, 'data-xf="datatable"'), 'DataTable 标记 data-xf=datatable');
+
+// 11.5) DataSet：紧凑协议（xfc/xfo/xfs）+ op 运算符过滤
+echo "\n== DataSet 紧凑协议 + op 过滤 ==\n";
+$dsc = \zxf\XfAdmin\Support\DataSet::response($rows, [
+    'draw' => 3, 'start' => 0, 'length' => 10,
+    'xfc'  => 'id:0:1|name:1:1|email:1:1|status:0:1',
+    'xfo'  => '1:d',
+    'xfs'  => '用户1',
+], ['searchable' => ['name', 'email']]);
+$assert($dsc['recordsFiltered'] === 11, 'DataSet xfc/xfs 紧凑协议还原（搜索 11 条）');
+$assert($dsc['data'][0]['name'] === '用户19', 'DataSet xfo 紧凑排序还原（name 降序）');
+
+$dsOp = \zxf\XfAdmin\Support\DataSet::response($rows, [
+    'length' => 100, 'score_min' => '50',
+], ['filters' => ['score_min' => ['field' => 'id', 'op' => '>=']]]);
+$assert($dsOp['recordsFiltered'] === 4, 'DataSet op >= 过滤（id>=50 => 4 条）');
+
+$dsIn = \zxf\XfAdmin\Support\DataSet::response($rows, [
+    'length' => 100, 'st' => 'on,off',
+], ['filters' => ['st' => ['field' => 'status', 'op' => 'in']]]);
+$assert($dsIn['recordsFiltered'] === 53, 'DataSet op in 过滤（多值逗号分隔）');
+
+$dsBt = \zxf\XfAdmin\Support\DataSet::response($rows, [
+    'length' => 100, 'idr' => '10,20',
+], ['filters' => ['idr' => ['field' => 'id', 'op' => 'between']]]);
+$assert($dsBt['recordsFiltered'] === 11, 'DataSet op between 过滤（10~20 => 11 条）');
+
+$dsDt = \zxf\XfAdmin\Support\DataSet::response($rows, [
+    'length' => 100, 'to' => '2026-07-05',
+], ['filters' => ['to' => ['field' => 'created_at', 'op' => 'date_to']]]);
+$assert($dsDt['recordsFiltered'] > 0 && $dsDt['recordsFiltered'] < 53, 'DataSet op date_to 过滤（纯日期自动补 23:59:59）');
+
+// 11.6) filter_bar 扩展控件 + 行编辑 action=edit + method=POST
+echo "\n== filter_bar 扩展控件 / 行编辑 / POST ==\n";
+$dtExt = (string) XfAdmin::dataTable([
+    'columns' => [
+        'id' => 'ID',
+        'op' => ['label' => '操作', 'actions' => [
+            ['label' => '编辑', 'action' => 'edit', 'ajax' => '/api/u/{id}', 'method' => 'PUT', 'fields' => [
+                ['name' => 'nickname', 'label' => '昵称', 'required' => true],
+                ['name' => 'vip', 'label' => 'VIP', 'type' => 'switch'],
+            ]],
+        ]],
+    ],
+    'ajax'        => '/api/data/u',
+    'server_side' => true,
+    'method'      => 'POST',
+    'filter_bar'  => [
+        ['name' => 'score', 'label' => '积分', 'type' => 'range', 'min' => 0],
+        ['name' => 'reg', 'label' => '注册', 'type' => 'daterange'],
+        ['name' => 'vips', 'label' => 'VIP', 'options' => ['1' => 'V1'], 'multiple' => true],
+        ['name' => 'only_vip', 'label' => '', 'type' => 'checkbox', 'text' => '仅VIP'],
+        ['name' => 'bal', 'label' => '余额', 'type' => 'number', 'min' => 0, 'step' => 100],
+    ],
+]);
+$assert(str_contains($dtExt, 'data-filter="score_min"') && str_contains($dtExt, 'data-filter="score_max"'), 'filter_bar range => _min/_max 双输入');
+$assert(str_contains($dtExt, 'data-filter="reg_from"') && str_contains($dtExt, 'data-filter="reg_to"'), 'filter_bar daterange => _from/_to 双输入');
+$assert(str_contains($dtExt, 'multiple'), 'filter_bar select 多选');
+$assert(str_contains($dtExt, 'form-check-input xf-filter'), 'filter_bar checkbox 控件');
+$dtExtRaw = html_entity_decode($dtExt, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+$assert(str_contains($dtExtRaw, '"type":"POST"'), 'method=POST => ajax 转对象带 type');
+$assert(str_contains($dtExtRaw, '"action":"edit"') && str_contains($dtExtRaw, 'nickname'), '行编辑 action=edit 配置带 fields 输出');
+
+// 11.7) JS 回归：confirm 唯一定义 / 紧凑参数 / formDialog / editRow
+$xfJs = (string) file_get_contents(__DIR__ . '/../resources/assets/js/xfadmin.js');
+$assert(substr_count($xfJs, 'XFAdmin.confirm = function') === 1, 'xfadmin.js confirm 仅一处定义（修复覆盖导致确认回调失效）');
+$assert(str_contains($xfJs, 'd.xfc') && str_contains($xfJs, 'd.xfo'), 'xfadmin.js serverSide 参数压缩（规避超长 URL 403）');
+$assert(str_contains($xfJs, 'XFAdmin.formDialog') && str_contains($xfJs, 'XFAdmin.editRow'), 'xfadmin.js 表单弹窗 + 行编辑 API');
+$appJs = (string) file_get_contents(__DIR__ . '/../resources/assets/js/app.js');
+$assert(str_contains($appJs, 'if(!document.querySelector(this.translationKeySelector))return;'), 'app.js i18n 无 data-lang 时跳过（根治 en.json 404）');
+$assert(str_contains($appJs, 'sessionStorage.setItem("__INSPINIA_LANG__"'), 'app.js 语言切换持久化与读取存储一致');
 
 // 12) StatCard 响应式列宽
 echo "\n== StatCard 响应式列宽 ==\n";

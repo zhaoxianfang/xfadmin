@@ -36,10 +36,15 @@ class EChart extends Component
 
     protected function html(): string
     {
-        $id     = $this->resolveId('xf-echart');
+        $id = $this->resolveId('xf-echart');
+        // 键名容错：options / option 等价（ECharts 官方叫 option，历史配置两种写法都有）
+        $options = (array) $this->get('options', []);
+        if ($options === []) {
+            $options = (array) $this->get('option', []);
+        }
         $config = [
             'theme'   => $this->get('theme'),
-            'options' => (object) $this->get('options', []),
+            'options' => (object) $options,
         ];
 
         return '<div' . $this->attrs([

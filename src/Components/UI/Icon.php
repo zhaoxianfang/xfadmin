@@ -26,6 +26,12 @@ class Icon extends Component
         ];
     }
 
+    protected function assets(): array
+    {
+        // Lucide SVG 图标需要 lucide.min.js（xfadmin.js 会调用 lucide.createIcons() 增量渲染）
+        return $this->get('lib') === 'lucide' ? ['lucide'] : [];
+    }
+
     protected function html(): string
     {
         $class = Html::cls($this->get('size'), $this->get('color'));

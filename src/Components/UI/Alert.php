@@ -28,6 +28,20 @@ class Alert extends Component
 
     protected function html(): string
     {
+        // 键名容错：text / message / content 等价；heading / title 等价；variant / type 等价
+        if ($this->get('text') === '' || $this->get('text') === null) {
+            $alias = $this->get('message') ?? $this->get('content');
+            if ($alias !== null) {
+                $this->options['text'] = $alias;
+            }
+        }
+        if ($this->get('heading') === null && $this->get('title') !== null) {
+            $this->options['heading'] = $this->get('title');
+        }
+        if ($this->get('type') !== null && $this->get('variant') === 'primary') {
+            $this->options['variant'] = $this->get('type');
+        }
+
         $variant = $this->e($this->get('variant'));
         $class   = Html::cls('alert', [
             'alert-dismissible fade show' => $this->get('dismissible'),
@@ -42,7 +56,7 @@ class Alert extends Component
         if ($this->get('heading')) {
             $html .= '<h5 class="alert-heading">' . $this->e($this->get('heading')) . '</h5>';
         }
-        $html .= $this->raw($this->get('text')) . '</div>';
+        $html .= $this->e($this->get('text')) . '</div>';
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
         }

@@ -70,7 +70,7 @@ class SearchResults extends Component
             $icon = $it['icon'] ?? 'ti ti-file-text';
             $html .= '<a href="' . $this->e($it['url'] ?? '#') . '" class="list-group-item list-group-item-action d-flex gap-3 py-3">';
             if ($thumb) {
-                $html .= '<img src="' . $this->e(XfAdmin::asset('images/' . ltrim($thumb, '/'))) . '" class="avatar-xs rounded-circle" alt="">';
+                $html .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img($thumb)) . '" class="avatar-xs rounded-circle" alt="">';
             } else {
                 $html .= '<span class="avatar-title bg-primary-subtle text-primary rounded fs-22 d-flex align-items-center justify-content-center" style="width:44px;height:44px"><i class="' . $this->e($icon) . '"></i></span>';
             }

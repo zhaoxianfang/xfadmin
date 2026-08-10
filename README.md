@@ -1,7 +1,7 @@
 # XfAdmin
 
 > 基于 **INSPINIA v4.1.0** 后台模板拆分的 PHP 组件化后台 UI 扩展包 ·
-> **99 个组件** · 纯原生 JS（不依赖 Node 构建）· 离线可用 ·
+> **156 个组件** · 纯原生 JS（不依赖 Node 构建）· 离线可用 ·
 > 支持 **Laravel 11/12** 与 **ThinkPHP 8+** · 要求 **PHP ≥ 8.2**
 
 `XfAdmin` 把 INSPINIA 后台模板的布局、导航、表格、表单、图表、UI 与业务组件全部拆分为
@@ -20,7 +20,7 @@ echo XfAdmin::page([
 ## ✨ 特性
 
 - **纯 PHP 组件化**：每个 UI 元素都是一个 PHP 类，返回 `(string)` 即 HTML，无模板引擎强绑定。
-- **99 个组件全覆盖**：布局、导航、栅格、卡片、表格、表单、图表、UI、业务/数据组件、杂项，
+- **156 个组件全覆盖**：布局(14) / 导航(1) / 栅格(2) / UI 基础(46) / 表单(14) / 图表地图(7) / 表格(2) / 数据业务(53) / 杂项(15)，
   并完整覆盖 INSPINIA 后台约 220 个页面（见 [页面映射](docs/pages.md)）。
 - **按需加载 + 自动去重**：组件声明自身依赖的 CSS/JS，同一资源在一个页面内**最多加载一次**（见 [资源与去重](docs/assets.md)）。
 - **离线可用**：所有第三方插件（jQuery、Bootstrap 5、DataTables、ApexCharts、Tagify、FullCalendar…）均随包内置，不请求外网。
@@ -33,22 +33,21 @@ echo XfAdmin::page([
 
 ---
 
-## 📦 组件一览（共 99 个）
+## 📦 组件一览（共 156 个）
 
 完整参数与示例见 [组件总览](docs/components.md)。
 
 | 分类 | 数量 | 组件 |
 |------|------|------|
-| 布局与页面 | 13 | `page` `authPage` `errorPage` `comingSoon` `maintenance` `emptyState` `lockScreen` `sidenav` `topbar` `topnav` `pageTitle` `footer` `customizer` |
+| 布局与页面 | 13 | `page` `authPage` `errorPage` `comingSoon` `maintenance` `emptyState` `lockScreen` `landing` `sidenav` `topbar` `pageTitle` `footer` `customizer` |
 | 导航 | 1 | `menu` |
 | 栅格 | 2 | `row` `col` |
-| 卡片与统计 | 3 | `card` `statCard` `widget` |
-| 表格 | 2 | `table` `dataTable` |
+| UI 基础 | 46 | `card` `statCard` `alert` `badge` `button` `dropdown` `modal` `offcanvas` `tabs` `accordion` `progress` `spinner` `pagination` `listGroup` `avatar` `avatarGroup` `icon` `toast` `timeline` `carousel` `breadcrumb` `tooltip` `popover` `placeholder` `collapse` `scrollspy` `ratio` `rating` `ribbon` `chip` `stepper` `descriptionList` `loadingButton` `divider` `kbd` `media` `callout` `skeleton` `countdown` `countUp` `backToTop` `codeBlock` `toggle` `empty` `toolbar` `searchBox` |
 | 表单 | 14 | `form` `input` `textarea` `select` `check` `slider` `dateRangePicker` `editor` `upload` `colorPicker` `tags` `maskedInput` `wizard` `passwordStrength` |
-| 图表与地图 | 4 | `apexChart` `eChart` `vectorMap` `leafletMap` |
-| UI 组件 | 30 | `alert` `badge` `button` `dropdown` `modal` `offcanvas` `tabs` `accordion` `progress` `spinner` `pagination` `listGroup` `avatar` `icon` `toast` `timeline` `carousel` `breadcrumb` `tooltip` `popover` `placeholder` `collapse` `scrollspy` `ratio` `rating` `ribbon` `chip` `stepper` `descriptionList` `loadingButton` |
-| 业务 / 数据 | 19 | `pricingCard` `faq` `profileHeader` `productCard` `kanban` `chatBox` `invoiceTable` `mailList` `fileManager` `activityFeed` `gallery` `blogList` `invoiceList` `searchResults` `permissionMatrix` `apiKeys` `commentThread` `emailCompose` |
-| 杂项 | 12 | `calendar` `treeView` `nestable` `lightbox` `tour` `clipboardButton` `sweetAlert` `raw` `tinycon` `idleTimer` `pdfViewer` `textDiff` |
+| 图表与地图 | 7 | `apexChart` `apexTree` `apexSankey` `eChart` `vectorMap` `leafletMap` `googleMap` |
+| 表格 | 2 | `table` `dataTable` |
+| 数据 / 业务 | 53 | `widget` `metricCard` `terms` `pricingCard` `faq` `profileHeader` `profilePage` `productCard` `kanban` `chatBox` `invoiceTable` `invoiceList` `mailList` `fileManager` `activityFeed` `gallery` `blogList` `searchResults` `permissionMatrix` `apiKeys` `commentThread` `emailCompose` `companies` `productCategories` `productAdd` `sellerDetails` `article` `projectActivity` `contactCard` `companyCard` `clients` `sellers` `users` `products` 等 |
+| 杂项 | 15 | `calendar` `treeView` `nestable` `lightbox` `tour` `clipboardButton` `sweetAlert` `raw` `tinycon` `idleTimer` `pdfViewer` `textDiff` `toggle` `masonry` `animate` |
 
 > **组件别名**：`dateRange` / `dateRangePicker`、`clipboard` / `clipboardButton` 互为别名，调用任一均可。
 
@@ -204,12 +203,13 @@ Laravel 用户可注册 Blade 指令与服务提供者。详见 [自定义与扩
 
 | 文档 | 说明 |
 |------|------|
-| [组件总览](docs/components.md) | 全部 99 个组件的参数、事件与门面全局方法 |
+| [组件总览](docs/components.md) | 全部 136 个组件的参数、事件与门面全局方法 |
 | [组件详细参考](docs/components-reference.md) | 每个组件的数据输入/输出、前端控件（data-xf）与可复制用法示例 |
 | [布局与页面](docs/layout.md) | `page` / `authPage` / `errorPage` 等整页骨架与布局变体 |
 | [表格](docs/tables.md) | 静态 `table` 与全功能 `dataTable` |
 | [表单](docs/forms.md) | 字段、富文本、上传、向导、密码强度等 |
-| [图表](docs/charts.md) | ApexCharts / ECharts / 矢量地图 / Leaflet |
+| [图表](docs/charts.md) | ApexCharts / ECharts / 矢量地图 / Leaflet / 组织树 / 谷歌地图 |
+| [多语言 i18n](docs/i18n.md) | data-lang 翻译、语言切换与 Topbar 联动 |
 | [资源与去重机制](docs/assets.md) | 资源加载、去重、版本号与 CDN |
 | [安全与转义规范](docs/security.md) | XSS 防护与转义助手 |
 | [自定义与扩展](docs/extending.md) | 编写并注册自定义组件、Laravel 集成 |

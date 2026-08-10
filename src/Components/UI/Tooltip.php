@@ -44,17 +44,17 @@ class Tooltip extends Component
         $attrs = [
             'class'            => Html::cls($this->get('class')),
             'data-bs-toggle'   => 'tooltip',
-            'data-bs-placement'=> $this->get('placement'),
-            'title'            => $this->get('title'),
+            'data-bs-placement'=> $this->e($this->get('placement')),
+            'title'            => $this->e($this->get('title')),
         ];
         if ($this->get('html')) {
             $attrs['data-bs-html'] = 'true';
         }
         if ($this->get('trigger')) {
-            $attrs['data-bs-trigger'] = $this->get('trigger');
+            $attrs['data-bs-trigger'] = $this->e($this->get('trigger'));
         }
         if ($this->get('custom_class')) {
-            $attrs['data-bs-custom-class'] = $this->get('custom_class');
+            $attrs['data-bs-custom-class'] = $this->e($this->get('custom_class'));
         }
         if ($tag === 'button') {
             $attrs['type'] = 'button';
