@@ -47,7 +47,12 @@ class Tabs extends Component
             $items = array_values((array) $this->get('tabs', []));
         }
         foreach ($items as &$it) {
-            if (is_array($it) && ! isset($it['title'])) {
+            // 标量（字符串）容错：非数组项按 title 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($it)) {
+                $it = ['title' => (string) $it];
+                continue;
+            }
+            if (! isset($it['title'])) {
                 $it['title'] = $it['label'] ?? $it['text'] ?? '';
             }
         }

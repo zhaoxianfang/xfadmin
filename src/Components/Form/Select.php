@@ -76,7 +76,7 @@ class Select extends Component
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-select');
 
         $attrs = [
-            'class'    => Html::cls('form-select', $this->get('size') ? 'form-select-' . $this->get('size') : ''),
+            'class'    => Html::cls('form-select', $this->get('size') ? 'form-select-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : ''),
             'id'       => $id,
             'name'     => $this->get('name') . ($this->get('multiple') && $this->get('name') && ! str_ends_with((string) $this->get('name'), '[]') ? '[]' : ''),
             'multiple' => (bool) $this->get('multiple'),

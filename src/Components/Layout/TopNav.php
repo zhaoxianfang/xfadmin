@@ -454,7 +454,7 @@ class TopNav extends Component
             . ' data-bs-offset="0,25" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
             . '<i class="ti ti-bell fs-xxl"></i>';
         if ($count > 0) {
-            $html .= '<span class="position-absolute topbar-badge fs-xxs translate-middle badge bg-danger rounded-pill">'
+            $html .= '<span class="position-absolute topbar-badge fs-xxs badge bg-danger rounded-pill">'
                 . $this->e($count) . '</span>';
         }
         $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg" style="min-height: 300px;">'

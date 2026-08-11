@@ -60,7 +60,7 @@ class LeafletMap extends Component
 
         $html = '<div' . $this->attrs(['class' => 'xf-leaflet rounded overflow-hidden', 'id' => $id])
             . ' style="height:' . (int) $this->get('height') . 'px" data-xf="leaflet-map" data-xf-config="'
-            . $this->e(json_encode($cfg)) . '"></div>';
+            . $this->e(json_encode($cfg, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?: '{}') . '"></div>';
 
         $js = 'XFAdmin.register("leaflet-map",function(el){'
             . 'if(!window.L||!el)return;'

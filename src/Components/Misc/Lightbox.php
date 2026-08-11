@@ -49,7 +49,7 @@ class Lightbox extends Component
         $html = '<div' . $this->attrs([
             'class'          => 'row g-2',
             'data-xf'        => 'lightbox',
-            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT),
+            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
         ]) . '>';
 
         // 栅格列类：整除用 col-{n}；非整除回退 col-xf-{cols}（与 FileManager 一致，避免一行挤入过量项）

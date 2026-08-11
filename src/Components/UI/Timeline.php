@@ -30,7 +30,14 @@ class Timeline extends Component
         $html = '<div' . $this->attrs(['class' => 'timeline']) . '>';
 
         foreach ((array) $this->get('items', []) as $item) {
-            $variant = $item['variant'] ?? 'primary';
+            // 标量（字符串）容错：非数组项按 text 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($item)) {
+                $item = ['text' => (string) $item];
+            }
+            // variant 白名单，防止任意类注入
+            $variant = in_array($item['variant'] ?? 'primary', ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'], true)
+                ? $item['variant'] ?? 'primary'
+                : 'primary';
             $icon    = $item['icon'] ?? 'ti ti-point-filled';
 
             $html .= '<div class="timeline-item d-flex align-items-stretch">';
@@ -41,7 +48,7 @@ class Timeline extends Component
                 $html .= '<h5 class="mb-1">' . $this->e($item['title']) . '</h5>';
             }
             if (isset($item['text'])) {
-                $html .= '<p class="text-muted mb-0">' . $this->raw($item['text']) . '</p>';
+                $html .= '<p class="text-muted mb-0">' . $this->e($item['text']) . '</p>';
             }
             if (isset($item['content'])) {
                 $html .= $this->raw($item['content']);

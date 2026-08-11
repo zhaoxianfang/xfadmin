@@ -44,10 +44,10 @@ class Card extends Component
             $html .= '<div class="card-header justify-content-between align-items-center d-flex">';
             $html .= '<div>';
             if ($this->get('title') !== null) {
-                $html .= '<h4 class="card-title mb-0">' . $this->raw($this->get('title')) . '</h4>';
+                $html .= '<h4 class="card-title mb-0">' . $this->e($this->get('title')) . '</h4>';
             }
             if ($this->get('subtitle') !== null) {
-                $html .= '<p class="card-subtitle text-muted mt-1 mb-0">' . $this->raw($this->get('subtitle')) . '</p>';
+                $html .= '<p class="card-subtitle text-muted mt-1 mb-0">' . $this->e($this->get('subtitle')) . '</p>';
             }
             $html .= '</div>';
 

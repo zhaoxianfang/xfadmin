@@ -49,13 +49,16 @@ class Dropdown extends Component
         }
         $items = (array) $this->get('items', []);
         foreach ($items as &$it) {
-            if (is_array($it)) {
-                if (! isset($it['text']) && isset($it['label'])) {
-                    $it['text'] = $it['label'];
-                }
-                if (! isset($it['url']) && isset($it['href'])) {
-                    $it['url'] = $it['href'];
-                }
+            // 标量（字符串）容错：非数组项按 text 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($it)) {
+                $it = ['text' => (string) $it];
+                continue;
+            }
+            if (! isset($it['text']) && isset($it['label'])) {
+                $it['text'] = $it['label'];
+            }
+            if (! isset($it['url']) && isset($it['href'])) {
+                $it['url'] = $it['href'];
             }
         }
         unset($it);
@@ -68,12 +71,17 @@ class Dropdown extends Component
             default => $this->get('split') ? 'btn-group' : 'dropdown',
         };
 
+        // variant 白名单，防止任意类注入
+        $variant = in_array($this->get('variant'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link', 'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'], true)
+            ? $this->get('variant')
+            : 'light';
+
         $html = '<div' . $this->attrs(['class' => $dirClass]) . '>';
 
         if ($this->get('toggle') !== null) {
             $html .= $this->raw($this->get('toggle'));
         } else {
-            $btnClass = Html::cls('btn', 'btn-' . $this->e($this->get('variant')), $this->get('size') ? 'btn-' . $this->e($this->get('size')) : '');
+            $btnClass = Html::cls('btn', 'btn-' . $variant, $this->get('size') ? 'btn-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '');
             if ($this->get('split')) {
                 $html .= '<button type="button" class="' . $btnClass . '">' . $this->e($this->get('text')) . '</button>';
                 $html .= '<button type="button" class="' . $btnClass . ' dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">Toggle</span></button>';

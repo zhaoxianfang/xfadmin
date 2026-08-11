@@ -34,8 +34,8 @@ class PinBoard extends Component
         $html = '<div class="pin-board">';
         foreach ($notes as $n) {
             $n     = (array) $n;
-            $color = $n['color'] ?? 'warning';
-            $html .= '<div class="pin-note pin-' . $this->e($color) . '">';
+            $color = $this->enum($n['color'] ?? 'warning', self::ENUM_VARIANT, 'warning');
+            $html .= '<div class="pin-note pin-' . $color . '">';
             $html .= '<div class="pin-note-head"><i class="ti ti-pin"></i>';
             if (! empty($n['title'])) {
                 $html .= '<span class="fw-semibold">' . $this->e($n['title']) . '</span>';

@@ -57,7 +57,7 @@ class Button extends Component
         }
 
         $class = Html::cls('btn', $style, [
-            'btn-' . $this->get('size') => (bool) $this->get('size'),
+            'btn-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') => (bool) $this->get('size'),
             'rounded-pill'              => $this->get('rounded'),
             'btn-icon'                  => $this->get('icon_only'),
             'ladda-button'              => $this->get('ladda'),

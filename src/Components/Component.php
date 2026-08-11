@@ -128,6 +128,18 @@ abstract class Component implements Stringable
         return Html::e($value);
     }
 
+    /** 枚举白名单：非法值回退默认，防止任意 CSS 类/属性注入（variant/size/type/placement 等） */
+    protected function enum(mixed $value, array $allowed, string $default): string
+    {
+        return in_array($value, $allowed, true) ? (string) $value : $default;
+    }
+
+    /** 常见枚举值白名单集合 */
+    protected const ENUM_VARIANT = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
+    protected const ENUM_VARIANT_OUTLINE = ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'];
+    protected const ENUM_SIZE = ['sm', 'lg'];
+    protected const ENUM_PLACEMENT = ['top', 'bottom', 'left', 'right', 'start', 'end'];
+
     /** 允许 HTML 的槽位：Component/Stringable 会被渲染，闭包会被调用（惰性内容），字符串原样输出 */
     protected function raw(mixed $value): string
     {

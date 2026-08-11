@@ -64,6 +64,10 @@ class PricingCard extends Component
 
         $html .= '<ul class="list-unstyled text-start my-4">';
         foreach ((array) $this->get('features', []) as $f) {
+            // 标量（字符串）容错：非数组项按 text 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($f)) {
+                $f = ['text' => (string) $f];
+            }
             $enabled = $f['enabled'] ?? true;
             $icon = $enabled ? 'ti ti-circle-check text-success' : 'ti ti-circle-x text-muted';
             $muted = $enabled ? '' : ' text-muted text-decoration-line-through';
@@ -72,8 +76,8 @@ class PricingCard extends Component
         $html .= '</ul>';
 
         $btn = (array) $this->get('button');
-        $variant = $btn['variant'] ?? ($this->get('featured') ? 'primary' : 'outline-primary');
-        $html .= '<a href="' . $this->e($btn['href'] ?? '#') . '" class="btn btn-' . $this->e($variant) . ' w-100">' . $this->e($btn['label'] ?? '选择方案') . '</a>';
+        $variant = $this->enum($btn['variant'] ?? ($this->get('featured') ? 'primary' : 'outline-primary'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary');
+        $html .= '<a href="' . $this->e($btn['href'] ?? '#') . '" class="btn btn-' . $variant . ' w-100">' . $this->e($btn['label'] ?? '选择方案') . '</a>';
 
         $html .= '</div></div>';
 

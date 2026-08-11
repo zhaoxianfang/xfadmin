@@ -32,15 +32,19 @@ class ActivityFeed extends Component
     {
         $html = '<div' . $this->attrs(['class' => 'activity-feed']) . '>';
         foreach ((array) $this->get('items', []) as $it) {
+            // 标量（字符串）容错：非数组项按 text 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($it)) {
+                $it = ['text' => (string) $it];
+            }
             $html .= '<div class="d-flex gap-3 pb-3 mb-3 border-bottom">';
             if (! empty($it['avatar'])) {
                 // 动态头像：INSPINIA 规范 .avatar 包裹（avatar-md=36px，与 .activity-feed .avatar 的 36px 约束一致）
                 $html .= '<span class="avatar avatar-md flex-shrink-0"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $it['avatar'])) . '" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
             } else {
-                $variant = $it['variant'] ?? 'primary';
+                $variant = $this->enum($it['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
                 $icon = $it['icon'] ?? 'ti ti-point';
                 // 图标占位：与图片头像同尺寸（avatar-md），保证时间线左侧对齐
-                $html .= '<span class="avatar avatar-md flex-shrink-0"><span class="avatar-title bg-' . $this->e($variant) . '-subtle text-' . $this->e($variant) . ' rounded-circle"><i class="' . $this->e($icon) . '"></i></span></span>';
+                $html .= '<span class="avatar avatar-md flex-shrink-0"><span class="avatar-title bg-' . $variant . '-subtle text-' . $variant . ' rounded-circle"><i class="' . $this->e($icon) . '"></i></span></span>';
             }
             $html .= '<div class="flex-grow-1">';
             $html .= '<p class="mb-0"><strong>' . $this->e($it['user'] ?? '') . '</strong> ' . $this->e($it['action'] ?? '');

@@ -41,7 +41,7 @@ class Wizard extends Component
     {
         $id     = $this->resolveId('wizard');
         $steps  = array_values((array) $this->get('steps', []));
-        $variant = $this->e($this->get('variant'));
+        $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
         $labels = (array) $this->get('labels');
         $vertical = (bool) $this->get('vertical');
         $action = $this->get('action');
@@ -67,6 +67,10 @@ class Wizard extends Component
         $navCls = $vertical ? 'nav flex-column nav-pills col-md-3' : 'nav nav-pills nav-justified mb-3';
         $html .= '<ul class="' . $navCls . ' xf-wizard-nav">';
         foreach ($steps as $i => $s) {
+            // 标量（字符串）容错：非数组项按 title 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($s)) {
+                $s = ['title' => (string) $s];
+            }
             $active = $i === 0 ? ' active' : '';
             $html .= '<li class="nav-item"><span class="nav-link' . $active . '" data-step="' . $i . '">';
             if (! empty($s['icon'])) {
@@ -86,6 +90,9 @@ class Wizard extends Component
         $paneWrap = $vertical ? '<div class="col-md-9">' : '<div>';
         $html .= $paneWrap;
         foreach ($steps as $i => $s) {
+            if (! is_array($s)) {
+                $s = ['content' => (string) $s];
+            }
             $show = $i === 0 ? '' : ' d-none';
             $html .= '<div class="xf-wizard-pane' . $show . '" data-pane="' . $i . '">' . $this->raw($s['content'] ?? '') . '</div>';
         }

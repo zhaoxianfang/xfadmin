@@ -40,12 +40,12 @@ class Offcanvas extends Component
         $html = '';
 
         if ($this->get('trigger') !== null) {
-            $html .= '<button class="btn btn-' . $this->e($this->get('trigger_variant')) . '" type="button" data-bs-toggle="offcanvas" data-bs-target="#' . $this->e($id) . '">'
+            $html .= '<button class="btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary') . '" type="button" data-bs-toggle="offcanvas" data-bs-target="#' . $this->e($id) . '">'
                 . $this->e($this->get('trigger')) . '</button>';
         }
 
         $attrs = [
-            'class'    => 'offcanvas offcanvas-' . $this->e($this->get('placement')),
+            'class'    => 'offcanvas offcanvas-' . $this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'start'),
             'tabindex' => '-1',
             'id'       => $id,
         ];

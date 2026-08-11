@@ -34,7 +34,7 @@ class ClipboardButton extends Component
     {
         $attrs = [
             'type'     => 'button',
-            'class'    => 'btn btn-sm btn-' . $this->get('variant'),
+            'class'    => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
             'data-xf'  => 'clipboard',
             'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT),
         ];

@@ -39,15 +39,19 @@ class StatCard extends Component
 
     protected function html(): string
     {
-        $variant = $this->e($this->get('variant'));
+        // variant 白名单，防止任意类注入
+        $variant = in_array($this->get('variant'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'], true)
+            ? $this->get('variant')
+            : 'primary';
         $width   = $this->get('width');
 
+        $counterCfg = json_encode([
+            'target' => $this->get('counter'),
+            'prefix' => $this->get('prefix'),
+            'suffix' => $this->get('suffix'),
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $value = $this->get('counter') !== null
-            ? '<span data-xf="counter" data-xf-config="' . $this->e(json_encode([
-                'target' => $this->get('counter'),
-                'prefix' => $this->get('prefix'),
-                'suffix' => $this->get('suffix'),
-            ])) . '">0</span>'
+            ? '<span data-xf="counter" data-xf-config="' . $this->e($counterCfg ?: '{}') . '">0</span>'
             : $this->e($this->get('prefix')) . $this->e($this->get('value')) . $this->e($this->get('suffix'));
 
         $html  = '<div' . $this->attrs(['class' => 'card' . ($width ? ' h-100' : '')]) . '><div class="card-body">';

@@ -33,12 +33,16 @@ class Stepper extends Component
 
     protected function html(): string
     {
-        $variant  = $this->e($this->get('variant'));
+        $variant  = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
         $vertical = (bool) $this->get('vertical');
         $cls = Html::cls('xf-stepper', ['xf-stepper-vertical' => $vertical, 'xf-stepper-horizontal' => ! $vertical]);
 
         $html = '<div' . $this->attrs(['class' => $cls]) . '>';
         foreach (array_values((array) $this->get('steps', [])) as $i => $s) {
+            // 标量（字符串）容错：非数组项按 title 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($s)) {
+                $s = ['title' => (string) $s];
+            }
             $status = $s['status'] ?? 'pending';
             [$dotCls, $icon] = match ($status) {
                 'done'   => ['bg-' . $variant . ' text-white', '<i class="ti ti-check"></i>'],

@@ -464,7 +464,7 @@ class DataTable extends Table
         // 表头 class：模板风格（thead-sm text-uppercase fs-xxs）+ 可选 table-light/table-dark
         $theadCls = Html::cls(
             (string) $this->get('head_class', ''),
-            $this->get('head_variant') ? 'table-' . $this->get('head_variant') : ''
+            $this->get('head_variant') ? 'table-' . $this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : ''
         );
         $html .= '<thead' . ($theadCls !== '' ? ' class="' . $this->e($theadCls) . '"' : '') . '><tr>';
         foreach ($columns as $col) {

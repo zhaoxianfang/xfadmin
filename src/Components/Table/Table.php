@@ -111,7 +111,7 @@ class Table extends Component
             'align-middle'          => $this->get('align_middle'),
             'table-centered'        => $this->get('centered'),
             'table-nowrap'          => $this->get('nowrap'),
-        ], $this->get('variant') ? 'table-' . $this->get('variant') : '');
+        ], $this->get('variant') ? 'table-' . $this->enum($this->get('variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : '');
     }
 
     protected function html(): string
@@ -124,7 +124,7 @@ class Table extends Component
             $html .= '<caption>' . $this->e($this->get('caption')) . '</caption>';
         }
 
-        $html .= '<thead' . ($this->get('head_variant') ? ' class="table-' . $this->e($this->get('head_variant')) . '"' : '') . '><tr>';
+        $html .= '<thead' . ($this->get('head_variant') ? ' class="table-' . $this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') . '"' : '') . '><tr>';
         foreach ($columns as $col) {
             $attrs = ['class' => $col['class'] ?? null];
             if (isset($col['width'])) {

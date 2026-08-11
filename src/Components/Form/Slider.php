@@ -51,7 +51,7 @@ class Slider extends Component
         $control = '<div' . $this->attrs([
             'id'             => $id,
             'data-xf'        => 'slider',
-            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT),
+            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
         ]) . '></div>';
 
         if ($this->get('name')) {

@@ -44,6 +44,10 @@ class FileManager extends Component
 
         $html = '<div' . $this->attrs(['class' => 'row g-3']) . '>';
         foreach ((array) $this->get('files', []) as $f) {
+            // 标量（字符串）容错：非数组项按 name 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($f)) {
+                $f = ['name' => (string) $f];
+            }
             [$icon, $variant] = self::ICONS[$f['type'] ?? 'file'] ?? self::ICONS['file'];
             $html .= '<div class="' . $colCls . '">';
             $html .= '<div class="card mb-0 h-100"><div class="card-body">';

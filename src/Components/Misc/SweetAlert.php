@@ -73,7 +73,7 @@ class SweetAlert extends Component
 
         if ($this->get('trigger') !== null) {
             return '<button type="button"' . $this->attrs([
-                'class'          => 'btn btn-' . $this->get('trigger_variant'),
+                'class'          => 'btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
                 'data-xf'        => 'sweetalert',
                 'data-xf-config' => $json,
             ]) . '>' . $this->e($this->get('trigger')) . '</button>';

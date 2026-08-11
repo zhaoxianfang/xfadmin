@@ -38,7 +38,7 @@ class TextDiff extends Component
                 'old'  => $this->get('old'),
                 'new'  => $this->get('new'),
                 'mode' => $mode,
-            ])) . '"></div>';
+            ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?: '{}') . '"></div>';
 
         $js = 'XFAdmin.register("diff",function(el){if(!window.Diff)return;'
             . 'var c=JSON.parse(el.getAttribute("data-xf-config")||"{}");'

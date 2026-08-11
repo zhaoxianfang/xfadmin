@@ -203,8 +203,8 @@ $kan = (string) XfAdmin::kanban(['columns' => [
     ]],
     ['id' => 'done', 'title' => '完成', 'cards' => []],
 ]]);
-check('Kanban：.kanban-app 外壳 + .kanban-content 列容器 + .kanban-board 列', str_contains($kan, 'kanban-app') && str_contains($kan, 'data-xf="kanban"') && str_contains($kan, 'kanban-content') && str_contains($kan, 'kanban-board'));
-check('Kanban：卡片 badge-soft + ti-point-filled 标签 + link-reset 标题 + avatar-group-xs 成员', str_contains($kan, 'badge-soft-info') && str_contains($kan, 'ti-point-filled') && str_contains($kan, 'link-reset') && str_contains($kan, 'avatar-group avatar-group-xs'));
+check('Kanban：.xf-kanban 外壳 + data-xf=kanban + .kanban-content 列容器 + .xf-kanban-col 列', str_contains($kan, 'xf-kanban') && str_contains($kan, 'data-xf="kanban"') && str_contains($kan, 'kanban-content') && str_contains($kan, 'xf-kanban-col'));
+check('Kanban：卡片 badge-soft + ti-point-filled 标签 + xf-kanban-card-title 标题 + avatar-group-xs 成员', str_contains($kan, 'badge-soft-info') && str_contains($kan, 'ti-point-filled') && str_contains($kan, 'xf-kanban-card-title') && str_contains($kan, 'avatar-group avatar-group-xs'));
 check('Kanban：拖拽容器 data-plugins=sortable + 截止日期 + 进度条 + 搜索框', str_contains($kan, 'data-plugins="sortable"') && str_contains($kan, 'ti-calendar-time') && str_contains($kan, 'progress-bar') && str_contains($kan, 'data-kanban-search'));
 
 /* 18. EmailApp / MailList：对齐 INSPINIA email.html 表格式邮件行 */

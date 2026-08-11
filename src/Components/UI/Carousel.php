@@ -59,6 +59,10 @@ class Carousel extends Component
 
         $html .= '<div class="carousel-inner">';
         foreach ($items as $i => $item) {
+            // 标量（字符串）容错：非数组项按 image 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($item)) {
+                $item = ['image' => (string) $item];
+            }
             $html .= '<div class="' . Html::cls('carousel-item', ['active' => $i === 0]) . '" data-bs-interval="' . $this->e($item['interval'] ?? $this->get('interval')) . '">';
             if (isset($item['image'])) {
                 $h = $this->get('height');

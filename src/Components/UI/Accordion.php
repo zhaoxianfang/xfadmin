@@ -36,13 +36,17 @@ class Accordion extends Component
         $html = '<div' . $this->attrs(['class' => Html::cls('accordion', ['accordion-flush' => $this->get('flush')])]) . '>';
 
         foreach ((array) $this->get('items', []) as $item) {
+            // 标量（字符串）容错：非数组项按 title 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($item)) {
+                $item = ['title' => (string) $item];
+            }
             $itemId = $item['id'] ?? $this->uid('xf-acc-item');
             $open   = ! empty($item['open']);
 
             $html .= '<div class="accordion-item">';
             $html .= '<h2 class="accordion-header"><button class="' . Html::cls('accordion-button', ['collapsed' => ! $open])
                 . '" type="button" data-bs-toggle="collapse" data-bs-target="#' . $this->e($itemId) . '" aria-expanded="' . ($open ? 'true' : 'false') . '">'
-                . $this->raw($item['title'] ?? '') . '</button></h2>';
+                . $this->e($item['title'] ?? '') . '</button></h2>';
             $html .= '<div id="' . $this->e($itemId) . '" class="' . Html::cls('accordion-collapse collapse', ['show' => $open]) . '"'
                 . ($this->get('always_open') ? '' : ' data-bs-parent="#' . $this->e($id) . '"') . '>'
                 . '<div class="accordion-body">' . $this->raw($item['content'] ?? '') . '</div></div>';

@@ -44,8 +44,8 @@ class Placeholder extends Component
         if ($this->get('body') !== null) {
             $html .= $this->raw($this->get('body'));
         } else {
-            $sizeCls    = $this->get('size') ? ' placeholder-' . $this->e($this->get('size')) : '';
-            $variantCls = $this->get('variant') ? ' bg-' . $this->e($this->get('variant')) : '';
+            $sizeCls    = $this->get('size') ? ' placeholder-' . $this->enum($this->get('size'), ['xs', 'sm', 'lg'], 'lg') : '';
+            $variantCls = $this->get('variant') ? ' bg-' . $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary') : '';
             foreach ((array) $this->get('lines', []) as $col) {
                 $col = max(1, min(12, (int) $col));
                 $html .= '<p class="mb-2"><span class="placeholder col-' . $col . $sizeCls . $variantCls . '"></span></p>';

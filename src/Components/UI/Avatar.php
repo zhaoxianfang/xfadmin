@@ -58,10 +58,9 @@ class Avatar extends Component
     protected function one(array $opts): string
     {
         // 尺寸类恒挂包裹元素 .avatar（INSPINIA 规范：.avatar-xxs…xxl 设 width/height，内部 img/title 占满 100%）
-        $size    = 'avatar-' . $this->e($opts['size'] ?? 'md');
-        $rounded = ($opts['rounded'] ?? 'circle') === 'circle'
-            ? 'rounded-circle'
-            : 'rounded-' . $this->e($opts['rounded'] ?? '2');
+        $size    = 'avatar-' . $this->enum($opts['size'] ?? 'md', ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'], 'md');
+        $rounded = $this->enum($opts['rounded'] ?? 'circle', ['circle', '0', '1', '2', '3', '4', '5', 'pill'], 'circle');
+        $rounded = $rounded === 'circle' ? 'rounded-circle' : 'rounded-' . $rounded;
 
         // —— 图片头像 ——
         if (! empty($opts['src'])) {
@@ -73,7 +72,7 @@ class Avatar extends Component
         }
 
         // —— 文字缩写 / 图标头像 ——
-        $variant = $this->e($opts['variant'] ?? 'primary');
+        $variant = $this->enum($opts['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
         // soft：浅底深字（与后台模板 card 上的状态徽标观感一致）；否则实底白字
         $bg      = ($opts['soft'] ?? true)
             ? "bg-{$variant}-subtle text-{$variant}"

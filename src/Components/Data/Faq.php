@@ -43,6 +43,10 @@ class Faq extends Component
         $html = '<div' . $this->attrs(['class' => $cls, 'id' => $id]) . '>';
 
         foreach (array_values((array) $this->get('items', [])) as $i => $item) {
+            // 标量（字符串）容错：非数组项按 q 处理，避免 PHP 8 下标访问致命错误
+            if (! is_array($item)) {
+                $item = ['q' => (string) $item];
+            }
             $open   = $this->get('open') === $i;
             $itemId = $this->e($id . '-item-' . $i);
             $html .= '<div class="accordion-item">';

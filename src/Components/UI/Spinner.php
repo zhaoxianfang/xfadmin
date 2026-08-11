@@ -47,9 +47,9 @@ class Spinner extends Component
         }
 
         $class = Html::cls(
-            'spinner-' . $this->get('type'),
-            'text-' . $this->get('variant'),
-            $this->get('size') ? 'spinner-' . $this->get('type') . '-' . $this->get('size') : ''
+            'spinner-' . $this->enum($this->get('type'), ['border', 'grow'], 'border'),
+            'text-' . $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary'),
+            $this->get('size') ? 'spinner-' . $this->enum($this->get('type'), ['border', 'grow'], 'border') . '-' . $this->enum($this->get('size'), ['sm'], 'sm') : ''
         );
 
         return '<div' . $this->attrs(['class' => $class, 'role' => 'status']) . '><span class="visually-hidden">Loading...</span></div>';

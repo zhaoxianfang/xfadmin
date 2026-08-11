@@ -55,7 +55,7 @@ class Input extends Component
         $id    = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-input');
         $attrs = [
             'type'        => $this->get('type'),
-            'class'       => Html::cls('form-control', $this->get('size') ? 'form-control-' . $this->get('size') : ''),
+            'class'       => Html::cls('form-control', $this->get('size') ? 'form-control-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : ''),
             'id'          => $id,
             'name'        => $this->get('name'),
             'value'       => $this->get('value'),
@@ -72,7 +72,7 @@ class Input extends Component
 
         if ($this->get('mask')) {
             $attrs['data-xf']        = 'inputmask';
-            $attrs['data-xf-config'] = json_encode(['mask' => $this->get('mask')], JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT);
+            $attrs['data-xf-config'] = json_encode(['mask' => $this->get('mask')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         } elseif ($this->get('tags')) {
             $attrs['data-xf'] = 'tagify';
         }

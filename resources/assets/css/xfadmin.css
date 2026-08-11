@@ -245,13 +245,62 @@
 /* --------------------------------------------------------------------------
    3. 品牌 / Logo
    -------------------------------------------------------------------------- */
-/* .logo / .logo-lg / .logo-sm / .logo-dark / .logo-light 的显示与切换逻辑
+/* .logo / .logo-lg / .logo-sm / .logo-dark / .logo-light 的 display 切换逻辑
    由 app.min.css 按 [data-menu-color] / [data-bs-theme] / [data-sidenav-size]
-   统一控制，此处不再重写 display，仅约束图片尺寸比例。 */
+   统一控制，此处不再重写 display，仅补充「响应式尺寸 / 比例约束 / 不溢出」。
+
+   设计目标：Logo 在不同浏览器宽度与侧边栏尺寸（default/condensed/compact/
+   offcanvas）下都保持清晰、比例正确、不溢出容器：
+   - 以 --xf-logo-h 变量集中控制高度，随断点平滑缩放；
+   - width:auto + object-fit:contain 保证任意宽高比 logo 不被拉伸变形；
+   - max-width 约束防止「超宽 logo」在窄视口下撑破侧边栏 / 顶栏。 */
+:root { --xf-logo-h: 26px; }
+
 .logo-lg img, .logo-lg svg, .logo-sm img, .logo-sm svg,
-.logo-dark img, .logo-light img, .auth-brand img, .logo-topbar img { height: 26px; width: auto; object-fit: contain; }
+.logo-dark img, .logo-light img, .auth-brand img, .logo-topbar img {
+    height: var(--xf-logo-h);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
 /* 任何 logo 图片默认保持比例（防止宽 logo 被 object-fit:fill 横向挤压变形） */
-.logo img { object-fit: contain; }
+.logo img { object-fit: contain; max-width: 100%; }
+
+/* 侧边栏收起（condensed / compact）时：.logo-sm 居中显示，尺寸略收紧 */
+html[data-sidenav-size="condensed"] .sidenav-menu .logo .logo-sm,
+html[data-sidenav-size="compact"] .sidenav-menu .logo .logo-sm {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+}
+html[data-sidenav-size="condensed"] .sidenav-menu .logo img,
+html[data-sidenav-size="compact"] .sidenav-menu .logo img {
+    height: 22px;
+}
+
+/* 窄屏（侧边栏变抽屉 offcanvas 或移动端）：适当缩小 Logo，避免拥挤 */
+@media (max-width: 991.98px) {
+    :root { --xf-logo-h: 24px; }
+    html[data-sidenav-size="offcanvas"] .sidenav-menu .logo img,
+    html[data-sidenav-size="condensed"] .sidenav-menu .logo img { height: 24px; }
+}
+@media (max-width: 575.98px) {
+    :root { --xf-logo-h: 22px; }
+    /* 移动端侧边栏容器更窄，限制 Logo 最大宽度防止溢出 */
+    .sidenav-menu .logo { max-width: 70vw; }
+    .logo-topbar { max-width: 56vw; }
+}
+
+/* 大屏（≥1400px）：Logo 略放大，提升品牌辨识度（仍保持比例） */
+@media (min-width: 1400px) {
+    :root { --xf-logo-h: 28px; }
+}
+
+/* TopNav 顶栏：Logo 随 .logo-text 整体截断，图片本身不溢出 .logo-topbar */
+html[data-layout="topnav"] .app-topbar .logo-topbar img {
+    max-width: 100%;
+    height: var(--xf-logo-h);
+}
 
 /* 文章阅读页封面：固定高度裁切（覆盖 img{height:auto}，避免被拉变形） */
 .xf-article-cover { height: 360px; object-fit: cover; }
@@ -3025,14 +3074,22 @@ html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu .dropdown-i
  * TopNav 增强（badge 下移 / 箭头右对齐 / 滚动条 / 品牌名截断 / simplebar 去虚线 / 响应式）
  * ========================================================================= */
 
-/* 1) 消息 / 通知徽标定位（固定在图标右上角，top 统一为 2px，覆盖模板 -10px）。
+/* 1) 消息 / 通知徽标定位（固定在图标右上角，覆盖模板 -10px）。
    必须使用与模板 app.css 同级特异性选择器（.app-topbar .topbar-menu .topbar-item .topbar-badge），
    否则单类 .topbar-badge 特异性更低，会被模板的 -10px 覆盖而失效。 */
+.app-topbar .topbar-menu .topbar-item {
+    position: relative;
+}
 .app-topbar .topbar-menu .topbar-item .topbar-badge {
-    top: 2px;
+    top: -6px;
     right: 2px;
-    transform: translate(35%, 0);
+    padding: 6px;
+    transform: none;
     pointer-events: none;
+}
+/* 取消 .topbar-link 内 span 的 translate-middle 居中（改由 top/right 定位徽标） */
+.app-topbar .topbar-menu .topbar-item .topbar-link span.translate-middle {
+    transform: none !important;
 }
 .topbar-badge.badge-circle {
     width: 1.05rem; height: 1.05rem;
@@ -3088,13 +3145,20 @@ html[data-layout="topnav"] .app-topbar .logo-topbar .logo-text {
 }
 
 /* 11) 响应式微调：小屏工具区换行保护、搜索框宽度 */
-@media (max-width: 575.98px) {
+/* 移动端 / 小屏幕下搜索框满宽：桌面版（.app-topbar 内）+ 移动版（折叠面板 .topnav-inline 内 .d-lg-none） */
+@media (max-width: 991.98px) {
     html[data-layout="topnav"] .app-topbar .topbar-menu { flex-wrap: wrap; gap: .25rem; }
-    html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search { flex: 1 1 100%; }
+    html[data-layout="topnav"] .app-topbar .topbar-search { width: 100%; max-width: 100%; flex: 1 1 100%; }
+    html[data-layout="topnav"] .app-search.topnav-search .topbar-search { width: 100%; max-width: 100%; flex: 1 1 100%; }
+    html[data-layout="topnav"] .topnav-search.topnav-search { flex: 1 1 100%; }
     html[data-layout="topnav"] .app-topbar .topnav-inline { flex: 1 1 100%; }
 }
+@media (max-width: 575.98px) {
+    html[data-layout="topnav"] .app-topbar .topbar-search { width: 100%; max-width: 100%; flex: 1 1 100%; }
+    html[data-layout="topnav"] .app-search.topnav-search .topbar-search { width: 100%; max-width: 100%; flex: 1 1 100%; }
+}
 @media (min-width: 576px) and (max-width: 991.98px) {
-    html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search.d-none { display: none !important; }
+    html[data-layout="topnav"] .topnav-search.topnav-search.d-none { display: none !important; }
 }
 
 /* 右侧搜索框（问题6）：桌面端（d-lg-flex）需显式宽度。
@@ -3118,4 +3182,100 @@ html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search.d-lg-none {
 .input-group-sm > .form-select,
 .input-group-sm > .input-group-text {
     padding: 0.4125rem 0.7rem;
+}
+
+/* =====================================================================
+ * 通用美化 / 排版加强（xfadmin 自有补充，不覆盖框架已定义类）
+ * ===================================================================== */
+
+/* 自定义滚动条（webkit/blink 与旧版 edge）：框架未定义，补齐以提升长内容体验 */
+.xf-scroll,
+.xf-datatable .dt-scroll-body,
+.content-page,
+.side-navbar,
+.sidenav-menu .sidemenu,
+.card-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(140, 149, 163, .45) transparent;
+}
+.xf-scroll::-webkit-scrollbar,
+.content-page::-webkit-scrollbar,
+.side-navbar::-webkit-scrollbar,
+.sidenav-menu .sidemenu::-webkit-scrollbar,
+.card-body::-webkit-scrollbar { width: 8px; height: 8px; }
+.xf-scroll::-webkit-scrollbar-thumb,
+.content-page::-webkit-scrollbar-thumb,
+.side-navbar::-webkit-scrollbar-thumb,
+.sidenav-menu .sidemenu::-webkit-scrollbar-thumb,
+.card-body::-webkit-scrollbar-thumb {
+    background: rgba(140, 149, 163, .45);
+    border-radius: 8px;
+}
+.xf-scroll::-webkit-scrollbar-thumb:hover,
+.content-page::-webkit-scrollbar-thumb:hover,
+.side-navbar::-webkit-scrollbar-thumb:hover,
+.sidenav-menu .sidemenu::-webkit-scrollbar-thumb:hover,
+.card-body::-webkit-scrollbar-thumb:hover { background: rgba(110, 119, 133, .65); }
+
+/* 长文本截断工具类（表格/卡片通用） */
+.xf-text-truncate-1,
+.xf-text-truncate-2,
+.xf-text-truncate-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.xf-text-truncate-1 { -webkit-line-clamp: 1; }
+.xf-text-truncate-2 { -webkit-line-clamp: 2; }
+.xf-text-truncate-3 { -webkit-line-clamp: 3; }
+
+/* 卡片悬浮微交互（仅自家 .xf-card，不覆盖框架 .card 的 box-shadow） */
+.xf-card {
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+.xf-card.xf-card-hover:hover {
+    box-shadow: 0 10px 30px -12px rgba(31, 45, 61, .25);
+    transform: translateY(-2px);
+}
+
+/* 键盘焦点可见性增强（无障碍）：仅补充 :focus-visible 轮廓，框架未统一 */
+.xf-focusable:focus-visible,
+button:focus-visible,
+a:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid var(--bs-primary, #3b76e1);
+    outline-offset: 2px;
+}
+
+/* 选中文本配色（框架未定义 ::selection） */
+::selection {
+    background: rgba(59, 118, 225, .2);
+    color: inherit;
+}
+
+/* 空状态留白与居中（datatable / 列表为空时更友好） */
+.xf-empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+/* 按钮组分隔间距微调（避免紧凑按钮贴边） */
+.btn-group > .btn + .btn { margin-left: 0; }
+.btn-group-vertical > .btn + .btn { margin-top: 0; }
+
+/* 页面级主内容最小高度，避免超短页面 footer 贴顶 */
+.content-page { min-height: calc(100vh - 140px); }
+
+/* 表格内图标按钮等宽对齐 */
+table.dataTable td .btn-icon,
+.xf-datatable td .btn-icon {
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }

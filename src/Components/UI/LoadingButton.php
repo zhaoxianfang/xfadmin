@@ -43,13 +43,13 @@ class LoadingButton extends Component
     {
         $id = $this->resolveId('lbtn');
         $driver = $this->get('driver') === 'ladda' ? 'ladda' : 'spinner';
-        $size = $this->get('size') ? ' btn-' . $this->get('size') : '';
+        $size = $this->get('size') ? ' btn-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '';
         $icon = $this->get('icon') ? '<i class="' . $this->e($this->get('icon')) . ' me-1"></i>' : '';
 
         $attrs = [
             'type'    => $this->get('type'),
             'id'      => $id,
-            'class'   => Html::cls('btn btn-' . $this->get('variant') . $size . ' xf-lbtn', $this->get('class')),
+            'class'   => Html::cls('btn btn-' . $this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary') . $size . ' xf-lbtn', $this->get('class')),
             'data-xf' => 'loading-btn',
             'data-driver' => $driver,
         ];

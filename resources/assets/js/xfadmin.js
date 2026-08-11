@@ -2684,6 +2684,8 @@
      */
     XFAdmin.handleRemoteForm = function (form, cfg) {
         cfg = cfg || {};
+        if (form.__xfRemoteBound) return; // 幂等守卫：避免重复叠加 submit 监听导致重复提交
+        form.__xfRemoteBound = true;
         form.classList.add('xf-remote-form');
         form.addEventListener('submit', function (e) {
             e.preventDefault();

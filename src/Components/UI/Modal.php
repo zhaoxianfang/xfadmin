@@ -47,14 +47,14 @@ class Modal extends Component
         $html = '';
 
         if ($this->get('trigger') !== null) {
-            $html .= '<button type="button" class="btn btn-' . $this->e($this->get('trigger_variant')) . '" data-bs-toggle="modal" data-bs-target="#' . $this->e($id) . '">'
+            $html .= '<button type="button" class="btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary') . '" data-bs-toggle="modal" data-bs-target="#' . $this->e($id) . '">'
                 . $this->e($this->get('trigger')) . '</button>';
         }
 
         $dialogClass = Html::cls('modal-dialog', [
             'modal-dialog-centered'   => $this->get('centered'),
             'modal-dialog-scrollable' => $this->get('scrollable'),
-        ], $this->get('size') ? 'modal-' . $this->e($this->get('size')) : '');
+        ], $this->get('size') ? 'modal-' . $this->enum($this->get('size'), ['sm', 'lg', 'xl', 'fullscreen', 'fullscreen-sm-down', 'fullscreen-md-down', 'fullscreen-lg-down', 'fullscreen-xl-down', 'fullscreen-xxl-down'], 'lg') : '');
 
         $attrs = [
             'class'    => Html::cls('modal', ['fade' => $this->get('fade')]),
@@ -71,7 +71,7 @@ class Modal extends Component
         if ($this->get('title') !== null || $this->get('close')) {
             $html .= '<div class="modal-header">';
             if ($this->get('title') !== null) {
-                $html .= '<h5 class="modal-title">' . $this->raw($this->get('title')) . '</h5>';
+                $html .= '<h5 class="modal-title">' . $this->e($this->get('title')) . '</h5>';
             }
             if ($this->get('close')) {
                 $html .= '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
