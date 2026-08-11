@@ -152,7 +152,6 @@ final class Assets
         'masonry'      => ['js' => ['plugins/masonry/masonry.pkgd.min.js']],
         'dragsort'     => ['js' => ['js/plugins/dragsort/dragsort.js']],
         'jstree'       => ['css' => ['plugins/jstree/style.min.css'], 'js' => ['plugins/jstree/jstree.min.js'], 'deps' => ['jquery']],
-        'masonry'      => ['js' => ['plugins/masonry/masonry.pkgd.min.js']],
         'muuri'        => ['js' => ['plugins/web-animations/web-animations.min.js', 'plugins/muuri/muuri.min.js']],
         'glightbox'    => ['css' => ['plugins/glightbox/glightbox.min.css'], 'js' => ['plugins/glightbox/glightbox.min.js']],
         'clipboard'    => ['js' => ['plugins/clipboard/clipboard.min.js']],

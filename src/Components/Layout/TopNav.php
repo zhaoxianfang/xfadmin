@@ -77,12 +77,6 @@ class TopNav extends Component
             . ' data-bs-target="#topnav-menu-content" aria-controls="topnav-menu-content"'
             . ' aria-expanded="false" aria-label="Toggle navigation">'
             . '<i class="ti ti-menu-4 fs-22"></i></button>';
-        if ($this->get('search')) {
-            $html .= '<div class="app-search d-none d-xl-flex">'
-                . '<input type="search" class="form-control topbar-search" name="search" placeholder="'
-                . $this->e($this->get('search_placeholder')) . '">'
-                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
-        }
         $html .= $this->renderMega();
         $html .= $this->raw($this->get('left'));
         $html .= '</div>';
@@ -90,9 +84,15 @@ class TopNav extends Component
         // ---------- 中：水平菜单（合并自 header.topnav） ----------
         $html .= $this->renderMenu();
 
-        // ---------- 右：语言 / 消息 / 通知 / 定制 / 全屏 / 明暗 / 用户 ----------
+        // ---------- 右：搜索 / 语言 / 消息 / 通知 / 定制 / 全屏 / 明暗 / 用户 ----------
         $html .= '<div class="d-flex align-items-center gap-2">';
         $html .= $this->raw($this->get('right'));
+        if ($this->get('search')) {
+            $html .= '<div class="app-search topnav-search d-none d-lg-flex">'
+                . '<input type="search" class="form-control topbar-search" name="search" placeholder="'
+                . $this->e($this->get('search_placeholder')) . '">'
+                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
+        }
         $html .= $this->renderLanguages();
         $html .= $this->renderMessages();
         $html .= $this->renderNotifications();
@@ -134,14 +134,21 @@ class TopNav extends Component
         $logo   = $brand['logo'] ?? $assets->url('images/logo.png');
         $logoDk = $brand['logo_dark'] ?? $assets->url('images/logo-black.png');
         $logoSm = $brand['logo_sm'] ?? $assets->url('images/logo-sm.png');
+        $name   = $brand['name'] ?? $brand['title'] ?? '';
 
-        return '<div class="logo-topbar">'
+        $nameHtml = $name !== ''
+            ? '<span class="logo-text d-none d-sm-inline-block text-truncate ms-2">'
+              . $this->e($name) . '</span>'
+            : '';
+
+        return '<div class="logo-topbar d-flex align-items-center">'
             . '<a href="' . $this->e($url) . '" class="logo-light">'
             . '<span class="logo-lg"><img src="' . $this->e($logo) . '" alt="logo"></span>'
             . '<span class="logo-sm"><img src="' . $this->e($logoSm) . '" alt="small logo"></span></a>'
             . '<a href="' . $this->e($url) . '" class="logo-dark">'
             . '<span class="logo-lg"><img src="' . $this->e($logoDk) . '" alt="dark logo"></span>'
             . '<span class="logo-sm"><img src="' . $this->e($logoSm) . '" alt="small logo"></span></a>'
+            . $nameHtml
             . '</div>';
     }
 
@@ -167,8 +174,15 @@ class TopNav extends Component
         // 合并进 app-topbar 后仍需该 class 才能命中框架样式。
         $html = '<div class="topnav topnav-inline">'
             . '<nav class="navbar navbar-expand-lg">'
-            . '<div class="collapse navbar-collapse" id="topnav-menu-content">'
-            . '<ul class="navbar-nav">';
+            . '<div class="collapse navbar-collapse" id="topnav-menu-content">';
+        // 移动端折叠面板顶部显示搜索框（小屏优先）
+        if ($this->get('search')) {
+            $html .= '<div class="app-search topnav-search d-lg-none p-2 border-bottom">'
+                . '<input type="search" class="form-control topbar-search" name="search" placeholder="'
+                . $this->e($this->get('search_placeholder')) . '">'
+                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
+        }
+        $html .= '<ul class="navbar-nav">';
         foreach ($items as $item) {
             $html .= $this->renderTopItem((array) $item);
         }
@@ -399,11 +413,12 @@ class TopNav extends Component
         $count = $conf['count'] ?? count($items);
 
         $html = '<div class="topbar-item d-none d-sm-flex"><div class="dropdown">'
-            . '<button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"'
+            . '<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown"'
             . ' data-bs-offset="0,22" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
             . '<i class="ti ti-mail fs-xxl"></i>';
         if ($count > 0) {
-            $html .= '<span class="badge text-bg-success badge-circle topbar-badge">' . $this->e($count) . '</span>';
+            $html .= '<span class="badge text-bg-success badge-circle topbar-badge position-absolute">'
+                . $this->e($count) . '</span>';
         }
         $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">'
             . '<div class="px-3 py-2 border-bottom"><div class="row align-items-center"><div class="col">'
@@ -507,6 +522,20 @@ class TopNav extends Component
             . '<h5 class="my-0">' . $this->e($user['name'] ?? '') . '</h5>'
             . '<i class="ti ti-chevron-down align-middle"></i></div></a>'
             . '<div class="dropdown-menu dropdown-menu-end">';
+        // 用户信息卡：头像 / 昵称 / 角色 / 签名
+        $html .= '<div class="dropdown-header noti-title bg-primary-subtle rounded-top">'
+            . '<div class="d-flex align-items-center">'
+            . '<img src="' . $this->e($avatar) . '" class="rounded-circle avatar-md me-2" alt="user-image">'
+            . '<div class="flex-grow-1 overflow-hidden">'
+            . '<h6 class="mb-0 text-truncate">' . $this->e($user['name'] ?? '') . '</h6>'
+            . '<span class="fs-xs text-muted text-truncate d-block">'
+            . $this->e($user['role'] ?? ($user['subtitle'] ?? '')) . '</span>'
+            . '</div></div>';
+        if (! empty($user['signature'])) {
+            $html .= '<p class="mt-2 mb-0 fs-xs text-muted text-truncate-2">'
+                . $this->e($user['signature']) . '</p>';
+        }
+        $html .= '</div>';
         if (! empty($user['header'])) {
             $html .= '<div class="dropdown-header noti-title">'
                 . '<h6 class="text-overflow m-0">' . $this->e($user['header']) . '</h6></div>';

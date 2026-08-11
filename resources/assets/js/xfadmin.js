@@ -791,6 +791,8 @@
             }
         });
         // 图标统一使用 Tabler(ti) 字体图标，无需 lucide 增量渲染
+        // 增量内容中的远程表单也一并托管（页面内静态 form[data-xf-remote] 由 initBootstrapExtras 处理）
+        if (XFAdmin.bindRemoteForms) XFAdmin.bindRemoteForms(root);
     };
 
     /** 获取元素上的插件实例 */
@@ -3516,43 +3518,72 @@
         return { goTo: show, next: function () { show(current + 1); }, prev: function () { show(current - 1); } };
     });
 
-    // ---------- 倒计时 ----------
-    XFAdmin.register('countdown', function (el, config) {
-        var deadline = parseInt(el.getAttribute('data-deadline'), 10) || (config && config.deadline);
-        if (!deadline) return;
-        var units = el.querySelectorAll('[data-unit]');
-        function pad(n) { return (n < 10 ? '0' : '') + n; }
-        function tick() {
-            var diff = Math.max(0, deadline - Date.now());
-            var s = Math.floor(diff / 1000);
-            var map = { days: Math.floor(s / 86400), hours: Math.floor((s % 86400) / 3600), minutes: Math.floor((s % 3600) / 60), seconds: s % 60 };
-            units.forEach(function (u) { u.textContent = pad(map[u.getAttribute('data-unit')] || 0); });
-            if (diff <= 0) { clearInterval(timer); el.dispatchEvent(new CustomEvent('xf.countdown.end')); }
-        }
-        tick();
-        var timer = setInterval(tick, 1000);
-        return { stop: function () { clearInterval(timer); } };
-    });
+    // 注：countdown 的统一定义见稍后「倒计时 / 数字滚动 / 返回顶部」段（基于 data-xf-config 契约），
+    // 此处不再重复注册，避免同一组件被两个不兼容实现挂载、互相覆盖。
 
     // ---------- 看板拖拽 + 搜索过滤 ----------
+    // 统一基于 xfadmin 自有 .xf-kanban 体系：
+    //   .xf-kanban > .xf-kanban-col[data-column] > (.xf-kanban-head + .xf-kanban-body[data-kanban-list] > a.xf-kanban-card)
+    // 优先使用 Sortable.js（若页面已注册该资源），否则降级为原生 HTML5 拖拽，保证跨列拖动始终可用。
     XFAdmin.register('kanban', function (el, config) {
-        if (!global.Sortable) return;
-        var lists = el.querySelectorAll('[data-kanban-list]');
+        var lists = el.querySelectorAll('.xf-kanban-body[data-kanban-list]');
+        var cols = el.querySelectorAll('.xf-kanban-col[data-column]');
         var instances = [];
-        lists.forEach(function (list) {
-            instances.push(global.Sortable.create(list, {
-                group: 'xf-kanban', animation: 150, ghostClass: 'bg-primary-subtle',
-                onEnd: function (evt) {
-                    el.dispatchEvent(new CustomEvent('xf.kanban.move', {
-                        detail: {
-                            from: evt.from.parentElement.getAttribute('data-column'),
-                            to: evt.to.parentElement.getAttribute('data-column'),
-                            oldIndex: evt.oldIndex, newIndex: evt.newIndex, item: evt.item
-                        }, bubbles: true
-                    }));
-                }
+
+        function emitMove(card, fromCol, toCol, fromIndex, toIndex) {
+            // 卡片上的数据对象（data-item 为 JSON），供宿主打印 / 持久化
+            var item = null;
+            try { item = card.getAttribute('data-item') ? JSON.parse(card.getAttribute('data-item')) : { text: (card.querySelector('.xf-kanban-card-title') || card).textContent.trim() }; } catch (e) { item = null; }
+            console.log('[xf.kanban.move]', { item: item, from: fromCol, to: toCol, fromIndex: fromIndex, toIndex: toIndex });
+            el.dispatchEvent(new CustomEvent('xf.kanban.move', {
+                detail: { item: item, from: fromCol, to: toCol, fromIndex: fromIndex, toIndex: toIndex, card: card },
+                bubbles: true
             }));
-        });
+        }
+
+        // 1) Sortable.js 路径
+        if (global.Sortable) {
+            lists.forEach(function (list) {
+                var col = list.closest('.xf-kanban-col');
+                instances.push(global.Sortable.create(list, {
+                    group: 'xf-kanban', animation: 150, ghostClass: 'bg-primary-subtle',
+                    onEnd: function (evt) {
+                        var from = (evt.from.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
+                        var to = (evt.to.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
+                        emitMove(evt.item, from, to, evt.oldIndex, evt.newIndex);
+                    }
+                }));
+            });
+        } else {
+            // 2) 原生 HTML5 拖拽降级：卡片 draggable，列体接收 drop
+            lists.forEach(function (list) {
+                list.querySelectorAll('.xf-kanban-card').forEach(function (card) {
+                    card.setAttribute('draggable', 'true');
+                    card.addEventListener('dragstart', function (e) {
+                        card.classList.add('xf-kanban-dragging');
+                        try { e.dataTransfer.setData('text/plain', card.getAttribute('data-item') || ''); } catch (err) {}
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+                    card.addEventListener('dragend', function () {
+                        card.classList.remove('xf-kanban-dragging');
+                    });
+                });
+                list.addEventListener('dragover', function (e) { e.preventDefault(); list.classList.add('xf-kanban-dropzone'); });
+                list.addEventListener('dragleave', function () { list.classList.remove('xf-kanban-dropzone'); });
+                list.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    list.classList.remove('xf-kanban-dropzone');
+                    var card = document.querySelector('.xf-kanban-card.xf-kanban-dragging');
+                    if (!card) return;
+                    var fromCol = (card.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
+                    var toCol = (list.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
+                    list.appendChild(card);
+                    var idx = Array.prototype.indexOf.call(list.children, card);
+                    emitMove(card, fromCol, toCol, -1, idx);
+                });
+            });
+        }
+
         // 顶栏搜索：按卡片文本过滤（标题/标签/说明/成员），无匹配列头计数实时更新
         var search = el.querySelector('[data-kanban-search]');
         if (search) {
@@ -3561,25 +3592,27 @@
                 clearTimeout(t);
                 t = setTimeout(function () {
                     var q = search.value.trim().toLowerCase();
-                    el.querySelectorAll('.kanban-board').forEach(function (board) {
+                    cols.forEach(function (col) {
                         var hits = 0;
-                        board.querySelectorAll('ul[data-kanban-list] > li.kanban-item').forEach(function (li) {
-                            var ok = !q || (li.textContent || '').toLowerCase().indexOf(q) !== -1;
-                            li.style.display = ok ? '' : 'none';
+                        col.querySelectorAll('.xf-kanban-body > .xf-kanban-card').forEach(function (card) {
+                            var ok = !q || (card.textContent || '').toLowerCase().indexOf(q) !== -1;
+                            card.style.display = ok ? '' : 'none';
                             if (ok) hits++;
                         });
-                        var cnt = board.querySelector('.kanban-item.py-2.px-3 h5 .text-muted');
+                        var cnt = col.querySelector('.xf-kanban-count');
                         if (cnt) cnt.textContent = '(' + hits + ')';
                     });
                 }, 200);
             });
         }
-        // 新增按钮（顶栏/列头）：触发事件，交由宿主处理
+
+        // 新增按钮（列头）：触发事件，交由宿主处理
         el.querySelectorAll('[data-kanban-add]').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
+                var col = btn.closest('.xf-kanban-col');
                 el.dispatchEvent(new CustomEvent('xf.kanban.add', {
-                    detail: { column: btn.closest('.kanban-board').getAttribute('data-column') },
+                    detail: { column: col ? col.getAttribute('data-column') : null },
                     bubbles: true
                 }));
             });
@@ -3771,6 +3804,9 @@
                 form.classList.add('was-validated');
             });
         });
+        // 全局托管远程表单：任何标记 data-xf-remote 的 <form> 自动获得
+        // AJAX 提交 + 接收处理（成功 toast/刷新/关闭，失败回填校验错误），与登录页逻辑一致。
+        XFAdmin.bindRemoteForms(root);
         if (global.bootstrap) {
             Array.prototype.forEach.call(root.querySelectorAll('[data-bs-toggle="tooltip"]'), function (el) {
                 if (!global.bootstrap.Tooltip.getInstance(el)) new global.bootstrap.Tooltip(el);
@@ -3781,12 +3817,60 @@
         }
     }
 
+    /* 托管远程表单：拦截 submit -> AJAX 提交 -> 成功刷新/关闭、失败回填校验错误。
+     * 与 XFAdmin.handleRemoteForm 复用同一套逻辑；定位所有 [data-xf-remote] 且尚未接管的 form。 */
+    XFAdmin.bindRemoteForms = function (root) {
+        root = root || document;
+        Array.prototype.forEach.call(root.querySelectorAll('form[data-xf-remote]:not(.xf-remote-form-bound)'), function (form) {
+            form.classList.add('xf-remote-form-bound');
+            XFAdmin.handleRemoteForm(form, {
+                reload: form.hasAttribute('data-xf-reload') ? form.getAttribute('data-xf-reload') !== 'false' : true,
+                tableEl: form.getAttribute('data-xf-table')
+            });
+        });
+    };
+
+    /* 加载/忙碌按钮：点击后切换为忙碌态（显示 spinner、禁用按钮），避免重复提交。
+     * 支持 data-loading-reset="0" 控制提交后是否自动恢复。 */
+    XFAdmin.bindLoadingButtons = function (root) {
+        root = root || document;
+        Array.prototype.forEach.call(root.querySelectorAll('.xf-lbtn:not([data-xf-lbtn-bound])'), function (btn) {
+            btn.setAttribute('data-xf-lbtn-bound', '1');
+            btn.addEventListener('click', function () {
+                XFAdmin.setLoading(btn, true);
+                // 非表单提交场景（纯 JS 操作）下，若未显式声明保持忙碌，2s 后自动恢复。
+                if (btn.getAttribute('data-loading-reset') === '0') return;
+                if (btn.closest('form')) return; // 表单提交由后端响应或页面跳转控制恢复
+                setTimeout(function () { XFAdmin.setLoading(btn, false); }, 2000);
+            });
+        });
+    };
+
+    /* 设置/取消按钮忙碌态 */
+    XFAdmin.setLoading = function (btn, on) {
+        if (!btn) return;
+        var label = btn.querySelector('.xf-lbtn-label');
+        var spin = btn.querySelector('.xf-lbtn-spinner');
+        if (on) {
+            btn.classList.add('disabled');
+            btn.setAttribute('disabled', 'disabled');
+            if (label) label.style.visibility = 'hidden';
+            if (spin) spin.classList.remove('d-none');
+        } else {
+            btn.classList.remove('disabled');
+            btn.removeAttribute('disabled');
+            if (label) label.style.visibility = '';
+            if (spin) spin.classList.add('d-none');
+        }
+    };
+
     /* ------------------------------------------------------------------
      * 启动
      * ---------------------------------------------------------------- */
     function boot() {
         XFAdmin.scan(document);
         initBootstrapExtras(document);
+        XFAdmin.bindLoadingButtons(document);
         XFAdmin.bindXfPageLinks(document);
         XFAdmin._readyQueue.forEach(function (fn) {
             try { fn(); } catch (e) { console.error('[XFAdmin] onReady', e); }
@@ -3808,7 +3892,7 @@
                 var url = el.getAttribute('data-xf-page');
                 var title = el.getAttribute('data-xf-title') || '详情';
                 if (!url) return;
-                XFAdmin.pageDialog({ url: url, title: title, size: el.getAttribute('data-xf-size') || 'lg', maximizable: true, reload: false });
+                XFAdmin.pageDialog(url, { title: title, size: el.getAttribute('data-xf-size') || 'lg', maximizable: true, reload: false });
             });
         });
     };
@@ -3986,18 +4070,68 @@
                     toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
                 }, true);
 
-                // ---- 桌面端边界避让 ----
-                function place(menu) {
-                    if (!menu || !isDesktop()) return;
+                // ---- 桌面端边界避让 + 定位 ----
+                // 浮出面板用 position:fixed（由 CSS 桌面端声明），脱离 .navbar-nav
+                // 的 overflow-x 滚动裁剪上下文（否则滚动容器会把 absolute 浮出的
+                // 二级/三级菜单裁掉，表现为「点一级菜单不显示下拉」）。
+                // 这里只负责把菜单钉到触发器下方，并做左右边界翻转。
+                function place(menu, trigger) {
+                    if (!menu || !isDesktop() || !trigger) return;
+                    // 强制 fixed：脱离 .navbar-nav 的 overflow-x 滚动裁剪上下文，
+                    // 否则滚动容器会把浮出的二/三级菜单裁掉。
+                    // 注意：app-topbar 为 position:sticky，会成为 fixed 后代的包含块；
+                    // 深层菜单的父级 .dropdown-menu 也是 fixed（建立包含块）。因此
+                    // fixed 元素的坐标是「相对其包含块」而非视口。本函数据此用
+                    // 视口坐标相减得到相对包含块的偏移，避免多层 fixed 坐标叠加偏移。
+                    menu.style.position = 'fixed';
                     menu.classList.remove('xf-flip-start', 'xf-flip-end');
-                    var rect = menu.getBoundingClientRect();
+                    // 先清除上一次的内联定位，才能正确测量菜单自身尺寸
+                    menu.style.left = '';
+                    menu.style.top = '';
+                    menu.style.right = '';
+
+                    var r = trigger.getBoundingClientRect();
                     var vw = document.documentElement.clientWidth;
-                    if (rect.right <= vw - 4) return;
-                    // 一级面板右对齐触发器，深层面板向左翻转
-                    var isTop = menu.parentElement
-                        && menu.parentElement.parentElement
-                        && menu.parentElement.parentElement.classList.contains('navbar-nav');
-                    menu.classList.add(isTop ? 'xf-flip-end' : 'xf-flip-start');
+                    var vh = document.documentElement.clientHeight;
+                    var mw = menu.offsetWidth || 240;
+                    var mh = menu.offsetHeight || 0;
+
+                    // 本菜单的包含块：深层菜单=父级 .dropdown-menu；顶层=app-topbar
+                    var parentMenu = menu.parentElement && menu.parentElement.parentElement
+                        ? menu.parentElement.parentElement : null;
+                    var isTop = !parentMenu || !parentMenu.classList.contains('dropdown-menu');
+                    var base = isTop
+                        ? (document.querySelector('.app-topbar') || document.body).getBoundingClientRect()
+                        : parentMenu.getBoundingClientRect();
+
+                    var bLeft = base.left, bTop = base.top;
+
+                    if (isTop) {
+                        // 一级 / Mega：触发器正下方、左缘对齐（相对顶栏）
+                        var left = r.left - bLeft;
+                        var top = r.bottom - bTop;
+                        if (r.right + mw > vw - 8) {
+                            // 右侧放不下 → 右对齐到触发器
+                            left = Math.max(8 - bLeft, r.right - bLeft - mw);
+                            menu.classList.add('xf-flip-end');
+                        }
+                        if (top + mh > vh - 8) top = Math.max(8 - bTop, vh - mh - 8 - bTop);
+                        menu.style.left = Math.max(0, left) + 'px';
+                        menu.style.top = Math.max(0, top) + 'px';
+                    } else {
+                        // 深层（二/三/...级）：紧贴父级面板右缘、与触发器上缘对齐
+                        var l2 = r.right - bLeft;
+                        var t2 = r.top - bTop;
+                        if (r.right + mw > vw - 8) {
+                            // 右侧放不下 → 翻到父级面板左侧
+                            l2 = (r.left - bLeft) - mw;
+                            menu.classList.add('xf-flip-start');
+                        }
+                        if (l2 < 0) l2 = 0;
+                        if (r.top - bTop + mh > vh - 8) t2 = Math.max(0, vh - mh - 8 - bTop);
+                        menu.style.left = l2 + 'px';
+                        menu.style.top = t2 + 'px';
+                    }
                 }
 
                 root.addEventListener('mouseover', function (e) {
@@ -4005,11 +4139,32 @@
                     var item = e.target.closest('.dropdown');
                     if (!item || !root.contains(item)) return;
                     var menu = item.querySelector(':scope > .dropdown-menu');
-                    if (menu) requestAnimationFrame(function () { place(menu); });
+                    if (menu) {
+                        var trigger = item.querySelector(':scope > .dropdown-toggle, :scope > a.nav-link');
+                        requestAnimationFrame(function () { place(menu, trigger); });
+                    }
                 });
+                // 鼠标离开整条菜单后清除内联定位，回到 CSS 默认
+                root.addEventListener('mouseleave', function () {
+                    if (!isDesktop()) return;
+                    clearInlinePosition(root);
+                });
+
+                function clearInlinePosition(scope) {
+                    Array.prototype.forEach.call(
+                        scope.querySelectorAll('.dropdown-menu'),
+                        function (m) {
+                            m.style.position = '';
+                            m.style.left = '';
+                            m.style.top = '';
+                            m.style.right = '';
+                        }
+                    );
+                }
             });
 
-            // 视口切换时清理状态，避免移动端 .show 残留到桌面端
+            // 视口切换时清理状态，避免移动端 .show 残留到桌面端，
+            // 同时清除桌面端注入的 inline position/left/top，让对端 CSS 接管。
             var lastDesktop = isDesktop();
             window.addEventListener('resize', function () {
                 var now = isDesktop();
@@ -4017,7 +4172,13 @@
                 lastDesktop = now;
                 Array.prototype.forEach.call(
                     document.querySelectorAll('.topnav-inline .dropdown-menu'),
-                    function (m) { m.classList.remove('show', 'xf-flip-start', 'xf-flip-end'); }
+                    function (m) {
+                        m.classList.remove('show', 'xf-flip-start', 'xf-flip-end');
+                        m.style.position = '';
+                        m.style.left = '';
+                        m.style.top = '';
+                        m.style.right = '';
+                    }
                 );
             });
         });
@@ -4454,7 +4615,7 @@
         });
         function onScroll() {
             var y = global.pageYOffset || global.scrollY || document.documentElement.scrollTop || 0;
-            el.style.display = y > offset ? 'block' : 'none';
+            el.style.display = y > offset ? 'flex' : 'none';
         }
         global.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
@@ -4470,16 +4631,20 @@
             el.textContent = msg;
             setTimeout(function () { el.textContent = old; }, 1200);
         }
-        if (global.navigator && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(function () { flash('已复制'); }, function () { flash('复制失败'); });
-        } else {
-            try {
-                var ta = document.createElement('textarea');
-                ta.value = text; document.body.appendChild(ta); ta.select();
-                document.execCommand('copy'); document.body.removeChild(ta);
-                flash('已复制');
-            } catch (e) { flash('复制失败'); }
+        function copy() {
+            if (global.navigator && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function () { flash('已复制'); }, function () { flash('复制失败'); });
+            } else {
+                try {
+                    var ta = document.createElement('textarea');
+                    ta.value = text; document.body.appendChild(ta); ta.select();
+                    document.execCommand('copy'); document.body.removeChild(ta);
+                    flash('已复制');
+                } catch (e) { flash('复制失败'); }
+            }
         }
+        // 仅在用户点击复制按钮时才执行复制，避免挂载即复制（加载即把代码塞进剪贴板）的问题。
+        el.addEventListener('click', copy);
     });
 
     /* ------------------------------------------------------------------

@@ -69,9 +69,12 @@ if (appItem) {
   const li = await appItem.evaluateHandle(el => el.closest('li.nav-item'));
   await li.hover();
   await page.waitForTimeout(400);
-  cascadeVisible = await page.evaluate(() => {
-    const open = [...document.querySelectorAll('.topnav .nav-item.dropdown:hover .dropdown-menu')];
-    return open.some(d => d.offsetParent !== null && d.getBoundingClientRect().height > 10);
+  cascadeVisible = await li.evaluate(el => {
+    const d = el.querySelector(':scope > .dropdown-menu');
+    if (!d) return false;
+    const cs = getComputedStyle(d);
+    const r = d.getBoundingClientRect();
+    return cs.display !== 'none' && r.height > 10 && r.top >= 0 && r.top < window.innerHeight;
   });
 }
 
@@ -81,10 +84,26 @@ if (ecomItem) {
   const li = await ecomItem.evaluateHandle(el => el.closest('li.nav-item'));
   await li.hover();
   await page.waitForTimeout(400);
-  megaVisible = await page.evaluate(() => {
-    const m = document.querySelector('.topnav .dropdown-menu-xxl');
-    return !!m && m.offsetParent !== null && m.getBoundingClientRect().height > 20;
+  megaVisible = await li.evaluate(el => {
+    const m = el.querySelector(':scope > .dropdown-menu-xxl') || el.querySelector(':scope > .dropdown-menu');
+    if (!m) return false;
+    const cs = getComputedStyle(m);
+    const r = m.getBoundingClientRect();
+    return cs.display !== 'none' && r.height > 20 && r.top >= 0 && r.top < window.innerHeight;
   });
+}
+
+// 桌面端右侧搜索框（问题6）：不应收缩为 0×0，且不遮挡左侧菜单
+let searchWidthOk = false;
+{
+  const r = await page.evaluate(() => {
+    const b = document.querySelector('.app-topbar .topnav-search.d-lg-flex');
+    if (!b) return { found: false };
+    const cs = getComputedStyle(b);
+    const rect = b.getBoundingClientRect();
+    return { found: true, display: cs.display, w: Math.round(rect.width), h: Math.round(rect.height) };
+  });
+  searchWidthOk = r.found && r.display !== 'none' && r.w >= 180 && r.h >= 28;
 }
 
 await page.setViewportSize({ width: 480, height: 900 });
@@ -115,7 +134,8 @@ const result = {
   pageErrors: errors, consoleErrors: realConsole, failedLocal, brokenImgs: broken,
   horizontalOverflow: hasHOverflow ? overflow : false,
   desktopCascade: cascadeVisible, megaPanel: megaVisible, mobileAccordion: accordionWorks,
-  pass: errors.length === 0 && realConsole.length === 0 && broken.length === 0 && !hasHOverflow && cascadeVisible && megaVisible && accordionWorks,
+  searchBoxWidth: searchWidthOk,
+  pass: errors.length === 0 && realConsole.length === 0 && broken.length === 0 && !hasHOverflow && cascadeVisible && megaVisible && accordionWorks && searchWidthOk,
 };
 console.log(JSON.stringify(result, null, 2));
 process.exit(result.pass ? 0 : 1);

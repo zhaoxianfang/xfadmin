@@ -49,7 +49,7 @@ class LoadingButton extends Component
         $attrs = [
             'type'    => $this->get('type'),
             'id'      => $id,
-            'class'   => Html::cls('btn btn-' . $this->get('variant') . $size, $this->get('class')),
+            'class'   => Html::cls('btn btn-' . $this->get('variant') . $size . ' xf-lbtn', $this->get('class')),
             'data-xf' => 'loading-btn',
             'data-driver' => $driver,
         ];

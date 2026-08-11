@@ -119,6 +119,9 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\UI\Toolbar       toolbar(array $options = [])
  * @method static Components\UI\SearchBox     searchBox(array $options = [])
  * @method static Components\UI\LoadingButton loadingButton(array $options = [])
+ * @method static Components\UI\Countdown     countdown(array $options = [])
+ * @method static Components\UI\CountUp       countUp(array $options = [])
+ * @method static Components\UI\BackToTop     backToTop(array $options = [])
  * @method static Components\Data\PricingCard   pricingCard(array $options = [])
  * @method static Components\Data\Faq           faq(array $options = [])
  * @method static Components\Data\ProfileHeader profileHeader(array $options = [])
@@ -395,6 +398,32 @@ final class XfAdmin
     public static function setting(string $key, mixed $default = null): mixed
     {
         return Support\Html::get(self::$config, $key, $default);
+    }
+
+    /**
+     * CSRF 令牌解析（可扩展）。
+     *
+     * 扩展包本身框架无关，不直接耦合 Laravel/ThinkPHP 的 token 生成。
+     * 由宿主框架在引导时注册解析器：
+     *   XfAdmin::setCsrfResolver(fn () => csrf_token());
+     * 未注册时返回空字符串（组件仍输出 _token 隐藏域占位，由框架 @csrf 覆盖亦可）。
+     *
+     * @return string
+     */
+    private static ?\Closure $csrfResolver = null;
+
+    public static function setCsrfResolver(\Closure $resolver): void
+    {
+        self::$csrfResolver = $resolver;
+    }
+
+    public static function csrfToken(): string
+    {
+        if (self::$csrfResolver !== null) {
+            return (string) (self::$csrfResolver)();
+        }
+        $fromConfig = self::setting('csrf_token');
+        return is_string($fromConfig) ? $fromConfig : '';
     }
 
     /**

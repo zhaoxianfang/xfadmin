@@ -74,7 +74,7 @@ class Customizer extends Component
             return $html . '</div>';
         };
 
-        $section = fn (string $title, string $body): string => '<div class="p-3 border-bottom border-dashed"><h5 class="mb-3 fw-bold">' . $this->e($title) . '</h5>' . $body . '</div>';
+        $section = fn (string $title, string $body): string => '<div class="p-3 border-bottom"><h5 class="mb-3 fw-bold">' . $this->e($title) . '</h5>' . $body . '</div>';
 
         $html  = '<div class="offcanvas offcanvas-end overflow-hidden" tabindex="-1" id="theme-settings-offcanvas">';
         $html .= '<div class="d-flex justify-content-between text-bg-primary gap-2 p-3" style="background-image: url(' . $this->e($a('images/user-bg-pattern.png')) . ');">'
@@ -88,7 +88,7 @@ class Customizer extends Component
         $html .= $section('顶栏颜色', $radioGroup('data-topbar-color', $topbarColors));
         $html .= $section('菜单颜色', $radioGroup('data-menu-color', $menuColors));
         $html .= $section('侧栏尺寸', $radioGroup('data-sidenav-size', $sizes));
-        $html .= '<div class="p-3 border-bottom border-dashed"><div class="d-flex justify-content-between align-items-center"><h5 class="fw-bold mb-0">布局位置</h5>'
+        $html .= '<div class="p-3 border-bottom"><div class="d-flex justify-content-between align-items-center"><h5 class="fw-bold mb-0">布局位置</h5>'
             . '<div class="btn-group radio" role="group">'
             . '<input type="radio" class="btn-check" name="data-layout-position" id="layout-position-fixed" value="fixed">'
             . '<label class="btn btn-sm btn-soft-warning w-sm" for="layout-position-fixed">Fixed</label>'

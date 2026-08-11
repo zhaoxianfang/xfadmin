@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Components\Form;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 表单容器（支持浏览器原生校验样式 / AJAX 提交 / 行内布局）
@@ -19,7 +20,7 @@ use zxf\XfAdmin\Support\Html;
  *     'label_width' => 180,      // horizontal 布局的标签列宽（px）
  *     'fields'  => [ Input、Select、Check ... 组件或 HTML 的数组 ],
  *     'buttons' => '<button class="btn btn-primary" type="submit">提交</button>',
- *     'csrf'    => ['_token' => 'xxx'],   // 附加隐藏域
+ *     'csrf'    => true,   // true（默认，自动注入 _token）/ false（不注入）/ [name=>value]（自定义隐藏域）
  * ])
  */
 class Form extends Component
@@ -32,6 +33,7 @@ class Form extends Component
             'enctype'     => null,
             'validation'  => false,
             'ajax'        => false,
+            'remote'      => false,    // true：表单带 data-xf-remote，由前端全局托管 AJAX 提交 + 接收处理（与登录页一致）
             'inline'      => false,     // 兼容旧写法（等价 layout=inline）
             'layout'      => null,      // vertical | horizontal | inline（form-layouts.html）
             'label_width' => 180,       // horizontal 布局标签列宽（px）
@@ -65,16 +67,24 @@ class Form extends Component
         if ($layout === 'horizontal') {
             $attrs['style'] = '--xf-label-width:' . (int) $this->get('label_width', 180) . 'px';
         }
-        if ($this->get('ajax')) {
-            $attrs['data-xf'] = 'form';
+        if ($this->get('ajax') || $this->get('remote')) {
+            // 远程表单：交由前端 XFAdmin.bindRemoteForms 全局托管（拦截提交 -> AJAX -> 成功刷新/关闭、失败回填）
+            $attrs['data-xf-remote'] = '';
         }
 
         $html = '<form' . $this->attrs($attrs) . '>';
 
         // 隐藏域（CSRF / 方法伪装）
-        foreach ((array) $this->get('csrf', []) as $name => $value) {
-            $html .= '<input type="hidden" name="' . $this->e($name) . '" value="' . $this->e($value) . '">';
+        $csrf = $this->get('csrf', true);
+        if ($csrf === true) {
+            // 自动注入框架 CSRF 令牌（宿主框架通过 XfAdmin::setCsrfResolver 注册）
+            $html .= '<input type="hidden" name="_token" value="' . $this->e(XfAdmin::csrfToken()) . '">';
+        } elseif (is_array($csrf) && $csrf !== []) {
+            foreach ($csrf as $name => $value) {
+                $html .= '<input type="hidden" name="' . $this->e($name) . '" value="' . $this->e($value) . '">';
+            }
         }
+        // csrf === false 时不输出任何令牌隐藏域
         if (! in_array($method, ['GET', 'POST'], true)) {
             $html .= '<input type="hidden" name="_method" value="' . $this->e($method) . '">';
         }

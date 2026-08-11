@@ -245,6 +245,9 @@ class DataTable extends Table
             if (isset($col['width'])) {
                 $c['width'] = $col['width'];
             }
+            if (isset($col['minWidth'])) {
+                $c['minWidth'] = $col['minWidth'];
+            }
             if (isset($col['class'])) {
                 $c['className'] = $col['class'];
             }
@@ -467,7 +470,20 @@ class DataTable extends Table
         foreach ($columns as $col) {
             // th 带上列 class（前端依赖 thead th.xf-dt-select-col 定位全选框等）
             $thCls = (string) ($col['class'] ?? '');
-            $html .= '<th' . ($thCls !== '' ? ' class="' . $this->e($thCls) . '"' : '') . '>' . $this->e($col['label']) . '</th>';
+            // 列固定宽度 / 最小宽度：直接落到 th 的内联 style，确保 DataTables 渲染后生效
+            $thStyle = '';
+            if (isset($col['minWidth'])) {
+                $thStyle .= 'min-width:' . $this->e($col['minWidth']) . ';';
+            }
+            if (isset($col['width'])) {
+                $thStyle .= 'width:' . $this->e($col['width']) . ';';
+            }
+            if (isset($col['style'])) {
+                $thStyle .= $this->e($col['style']);
+            }
+            $thAttr = ($thCls !== '' ? ' class="' . $this->e($thCls) . '"' : '')
+                . ($thStyle !== '' ? ' style="' . trim($thStyle) . '"' : '');
+            $html .= '<th' . $thAttr . '>' . $this->e($col['label']) . '</th>';
         }
         $html .= '</tr></thead>';
         // 始终输出空 tbody：保证 HTML 结构合法（DataTables 会在客户端/服务端填充行），

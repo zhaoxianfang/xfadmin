@@ -31,6 +31,9 @@ class Wizard extends Component
             'vertical' => false,
             'progress' => true,
             'labels'   => ['prev' => '上一步', 'next' => '下一步', 'finish' => '提交'],
+            'action'   => '',          // 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit）
+            'method'   => 'post',      // 提交方法
+            'remote'   => false,       // 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管）
         ];
     }
 
@@ -41,9 +44,24 @@ class Wizard extends Component
         $variant = $this->e($this->get('variant'));
         $labels = (array) $this->get('labels');
         $vertical = (bool) $this->get('vertical');
+        $action = $this->get('action');
+        $remote = $this->get('remote');
 
         $wrapCls = Html::cls('xf-wizard', ['xf-wizard-vertical row' => $vertical]);
-        $html = '<div' . $this->attrs(['class' => $wrapCls, 'id' => $id]) . ' data-xf="wizard">';
+        $open = '';
+        // 配置了 action 时整体以 <form> 包裹，使最后一步「提交」能真正提交并被后端接收处理。
+        if ($action) {
+            $attrs = [
+                'action'  => $action,
+                'method'  => $this->e($this->get('method')),
+                'class'   => 'xf-wizard-form',
+            ];
+            if ($remote) {
+                $attrs['data-xf-remote'] = '';
+            }
+            $open = '<form' . $this->attrs($attrs) . '>';
+        }
+        $html = $open . '<div' . $this->attrs(['class' => $wrapCls, 'id' => $id]) . ' data-xf="wizard">';
 
         // 步骤导航
         $navCls = $vertical ? 'nav flex-column nav-pills col-md-3' : 'nav nav-pills nav-justified mb-3';
@@ -79,6 +97,6 @@ class Wizard extends Component
         $html .= '</div>';
         $html .= '</div>';
 
-        return $html . '</div>';
+        return $open ? $html . '</div></form>' : $html . '</div>';
     }
 }

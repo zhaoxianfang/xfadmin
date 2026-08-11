@@ -65,6 +65,17 @@
     --bs-border-color-translucent: var(--ins-border-color-translucent, #eef2f7);
     --bs-font-monospace: var(--ins-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
 
+    /* 表格主题令牌（INSPINIA 模板 --ins-* 族）：此前 DataTable 表头背景
+       var(--ins-table-thead-bg, #f8f9fa) 因模板未定义 --ins-table-thead-bg 而
+       只能依赖兜底值；此处显式定义，使表头/表体/边框/隔行在明暗主题下统一。 */
+    --ins-table-thead-bg: #f1f3f7;
+    --ins-table-thead-color: #495057;
+    --ins-table-bg: var(--bs-body-bg, #fff);
+    --ins-table-accent-bg: rgba(0, 0, 0, 0.03);
+    --ins-table-border-width: 1px;
+    --ins-table-border-color: var(--bs-border-color, #e7e9eb);
+    --ins-border-radius-sm: 0.2rem;
+
     /* XfAdmin 设计令牌 */
     --xf-sidebar-width: 260px;
     --xf-sidebar-width-condensed: 70px;
@@ -134,6 +145,15 @@
     --bs-tertiary-bg-rgb: var(--ins-tertiary-bg-rgb, 39, 40, 50);
     --bs-border-color: var(--ins-border-color, rgba(255, 255, 255, 0.1));
     --bs-border-color-translucent: var(--ins-border-color-translucent, rgba(255, 255, 255, 0.1));
+
+    /* 表格主题令牌（暗色）：与 :root 中的 --ins-table-* 对应，使表头/表体/边框
+       在暗色主题下也呈现正确的深色背景；此前缺少这些暗色定义，导致暗色下表头
+       仍沿用 :root 的浅色 #f1f3f7，形成刺眼的浅色条带。 */
+    --ins-table-thead-bg: #1b1e24;
+    --ins-table-thead-color: #ced4da;
+    --ins-table-bg: var(--bs-body-bg, #17181e);
+    --ins-table-accent-bg: rgba(255, 255, 255, 0.04);
+    --ins-table-border-color: var(--bs-border-color, rgba(255, 255, 255, 0.1));
 }
 
 /* --------------------------------------------------------------------------
@@ -560,12 +580,82 @@ img[width][height] { object-fit: cover; }
 /* --------------------------------------------------------------------------
    13. 看板（Kanban）
    -------------------------------------------------------------------------- */
-/* 看板（kanban）—— 列宽/排列/卡片组高度由 INSPINIA 的 .kanban-app 上下文（app.min.css）提供，
- * 这里仅补齐交互态（抓取光标 + 卡片悬停微浮起），不覆盖框架的 flex 排列与列宽。 */
-.kanban-item { cursor: grab; }
-.kanban-item:active { cursor: grabbing; }
-.kanban-item .card { transition: box-shadow .15s, transform .15s; }
-.kanban-item .card:hover { box-shadow: var(--xf-shadow); transform: translateY(-1px); }
+/* 看板（Kanban）—— 自包含水平滚动布局（不依赖 INSPINIA 的 .kanban-app 上下文）。
+ * 关键：.xf-kanban 用 flex nowrap + overflow-x:auto，避免列像 .row 默认那样换行堆叠。 */
+.xf-kanban {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: .75rem;
+    scrollbar-width: thin;
+}
+.xf-kanban-col {
+    flex: 0 0 auto;
+    width: 290px;
+    max-width: 290px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bs-tertiary-bg, #f6f7fb);
+    border: 1px solid var(--bs-border-color, #e7e9eb);
+    border-radius: .5rem;
+    max-height: 70vh;
+}
+.xf-kanban-head {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    padding: .65rem .75rem;
+    border-bottom: 1px solid var(--bs-border-color, #e7e9eb);
+    font-weight: 600;
+}
+.xf-kanban-add { padding: .1rem .35rem; line-height: 1; color: var(--bs-secondary); }
+.xf-kanban-add:hover { color: var(--bs-primary); }
+.xf-kanban-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: .6rem;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    min-height: 60px;
+}
+.xf-kanban-body.xf-kanban-dropzone {
+    outline: 2px dashed var(--bs-primary);
+    outline-offset: -4px;
+    background: rgba(var(--bs-primary-rgb), .06);
+}
+.xf-kanban-card {
+    display: block;
+    text-decoration: none;
+    color: var(--bs-body-color, #1f2a37);
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e7e9eb);
+    border-radius: .45rem;
+    padding: .65rem .7rem;
+    cursor: grab;
+    transition: box-shadow .15s, transform .15s, border-color .15s;
+}
+.xf-kanban-card:hover { box-shadow: var(--xf-shadow, 0 .5rem 1rem rgba(0,0,0,.08)); transform: translateY(-1px); border-color: var(--bs-primary); }
+.xf-kanban-card.xf-kanban-dragging { opacity: .5; }
+.xf-kanban-card-title { display: block; }
+.xf-kanban-prio { font-size: .7rem; padding: .15rem .4rem; }
+.xf-kanban-card-desc { line-height: 1.35; }
+.text-truncate-2 {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.xf-kanban-progress .progress-bar { background: var(--bs-primary); }
+.xf-kanban-people .avatar-group { display: inline-flex; }
+.xf-kanban-people .avatar {
+    width: 22px; height: 22px; border-radius: 50%; font-size: .7rem; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--bs-primary); color: #fff; border: 2px solid var(--bs-body-bg, #fff);
+    margin-left: -6px;
+}
+.xf-kanban-people .avatar:first-child { margin-left: 0; }
+.xf-kanban-people .avatar-more { background: var(--bs-secondary); }
+.xf-kanban-card-tags .badge { font-weight: 500; }
 
 /* 邮件中心（email）—— 对齐 INSPINIA email.html 的 table 式邮件行 */
 .email-table tbody tr { position: relative; }                 /* 支撑 stretched-link 整行可点 */
@@ -2200,7 +2290,7 @@ a.xf-qr-open { align-self: center; }
 .xf-pointer:hover { text-decoration: underline; }
 
 /* 单元格复制（input-group + 复制按钮） */
-.xf-cell-copy { display: flex; align-items: center; gap: .35rem; max-width: 100%; }
+.xf-cell-copy { display: flex; align-items: center; gap: 0; max-width: 100%; }
 .xf-cell-copy .input-group { flex: 1 1 auto; min-width: 0; }
 .xf-cell-copy input.form-control { font-family: var(--bs-font-monospace, SFMono-Regular, Menlo, monospace); font-size: .8rem; }
 .xf-cell-copy .btn { flex: 0 0 auto; }
@@ -2465,8 +2555,8 @@ a.card:hover, .card.hoverable:hover {
 
 /* ---- 11. 暗色模式补充适配（表格类已在 7.x/10.x 节统一处理，此处不重复） ---- */
 
-/* ---- 12. 顶栏通知铃铛徽标（补充模板未定义的属性，不覆盖模板的 top/right） ---- */
-.topbar-badge {
+/* ---- 12. 顶栏通知铃铛徽标（补充模板未定义的属性，用与模板同级特异性选择器覆盖 top/right） ---- */
+.app-topbar .topbar-menu .topbar-item .topbar-badge {
     width: .6rem; height: .6rem;
     font-size: .65rem; padding: 0;
     display: flex; align-items: center; justify-content: center;
@@ -2841,25 +2931,17 @@ html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu .dropdown-i
     flex-direction: row;
     flex-wrap: nowrap;
   }
-  /* 第三级及更深子菜单：逐级向右浮出 */
-  .topnav .dropdown .dropdown-menu .dropdown .dropdown-menu .dropdown .dropdown-menu {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    display: none;
+  /* 浮出面板统一用 position:fixed：脱离 .navbar-nav 的 overflow-x 滚动裁剪上下文，
+   * 否则滚动容器会把 absolute 浮出的二级/三级菜单裁掉（点击/悬浮一级菜单不显示下拉）。
+   * 定位坐标由 xfadmin.js 的 place() 在 hover 时注入；display 仍由 :hover 规则控制。 */
+  html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu {
+    position: fixed;
+    z-index: 1080;
   }
-  .topnav .dropdown:hover > .dropdown-menu > .dropdown:hover > .dropdown-menu > .dropdown:hover > .dropdown-menu {
-    display: block;
-  }
-  /* 右侧空间不足时向左翻转（由 JS 添加 .xf-flip-start） */
-  .topnav .dropdown .dropdown-menu.xf-flip-start {
-    left: auto !important;
-    right: 100%;
-  }
-  .topnav .navbar-nav > .nav-item > .dropdown-menu.xf-flip-end {
-    left: auto !important;
-    right: 0;
-  }
+  /* 浮出面板的定位坐标（left/top）完全由 xfadmin.js 的 place() 在 hover 时
+   * 以视口坐标注入；.xf-flip-start / .xf-flip-end 仅作为「已翻转」的语义钩子
+   * （可用于翻转箭头图标方向），不参与定位，避免与 JS 内联 left 冲突或被
+   * !important 覆盖导致菜单飞出视口。 */
 }
 
 /* 移动端：菜单折叠为下拉面板浮出于顶栏之下 */
@@ -2937,4 +3019,103 @@ html[data-layout="topnav"] .app-topbar .topnav-inline .dropdown-menu .dropdown-i
 }
 @media (max-width: 991.98px) {
   .dropdown-menu-xxl { min-width: 0; }
+}
+
+/* =========================================================================
+ * TopNav 增强（badge 下移 / 箭头右对齐 / 滚动条 / 品牌名截断 / simplebar 去虚线 / 响应式）
+ * ========================================================================= */
+
+/* 1) 消息 / 通知徽标定位（固定在图标右上角，top 统一为 2px，覆盖模板 -10px）。
+   必须使用与模板 app.css 同级特异性选择器（.app-topbar .topbar-menu .topbar-item .topbar-badge），
+   否则单类 .topbar-badge 特异性更低，会被模板的 -10px 覆盖而失效。 */
+.app-topbar .topbar-menu .topbar-item .topbar-badge {
+    top: 2px;
+    right: 2px;
+    transform: translate(35%, 0);
+    pointer-events: none;
+}
+.topbar-badge.badge-circle {
+    width: 1.05rem; height: 1.05rem;
+    font-size: .6rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* 2) 一级菜单项的小箭头与二级一样推到最右边 */
+html[data-layout="topnav"] .app-topbar .topnav-inline .nav-link .menu-arrow {
+    margin-left: auto;
+    display: inline-block;
+}
+
+/* 5) 减少水平菜单 nav-link 左右内边距 */
+html[data-layout="topnav"] .app-topbar .topnav-inline .navbar-nav > .nav-item > .nav-link {
+    padding-left: .55rem;
+    padding-right: .55rem;
+}
+
+/* 8) 品牌名称截断（PC 与移动端均显示，超出最大宽度显示 …） */
+html[data-layout="topnav"] .app-topbar .logo-topbar { max-width: 42vw; }
+html[data-layout="topnav"] .app-topbar .logo-topbar .logo-text {
+    max-width: 12rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 9) PC 大屏菜单超长时水平滚动（隐藏滚动条）
+ * 注意：滚动容器【必须】放在 .navbar-nav 上，而非 .navbar。
+ * 因为任何 axis=auto/scroll 都会把另一轴从 visible 隐式计算为 auto，
+ * 若给 .navbar 加 overflow-x:auto，会使整个 .navbar 被裁剪，而下拉面板
+ * 是 position:absolute 浮于 .navbar 之外、相对 .nav-item 定位的，
+ * 会被 overflow 裁掉导致「hover/点击不显示二级菜单」的故障。
+ * 把滚动放到 .navbar-nav 后，浮出的 dropdown-menu 直接挂在 .navbar 上、
+ * 脱离滚动容器，不再被裁剪；同时显式给 .navbar 设 overflow:visible 兜底。 */
+@media (min-width: 992px) {
+    html[data-layout="topnav"] .app-topbar .topnav-inline > .navbar {
+        overflow: visible;
+    }
+    html[data-layout="topnav"] .app-topbar .topnav-inline .navbar-nav {
+        flex-wrap: nowrap;
+        width: max-content;
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    html[data-layout="topnav"] .app-topbar .topnav-inline .navbar-nav::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* 11) 响应式微调：小屏工具区换行保护、搜索框宽度 */
+@media (max-width: 575.98px) {
+    html[data-layout="topnav"] .app-topbar .topbar-menu { flex-wrap: wrap; gap: .25rem; }
+    html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search { flex: 1 1 100%; }
+    html[data-layout="topnav"] .app-topbar .topnav-inline { flex: 1 1 100%; }
+}
+@media (min-width: 576px) and (max-width: 991.98px) {
+    html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search.d-none { display: none !important; }
+}
+
+/* 右侧搜索框（问题6）：桌面端（d-lg-flex）需显式宽度。
+ * 容器为 flex，内部 input 的 width:100% 与 flex 父宽度互相依赖会收缩为 0×0，
+ * 且其 .app-search-icon 是 position:absolute（width:40px）会溢出到左侧菜单区，
+ * 遮挡「设置」等右侧菜单项的 hover 指针。给定宽度后图标收纳在容器内，不再遮挡。 */
+html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search {
+    flex: 0 0 auto;
+    width: 220px;
+    max-width: 26vw;
+}
+/* 移动端折叠面板顶部的搜索框（d-lg-none）占满整宽 */
+html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search.d-lg-none {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 表单小组件内边距：覆盖模板 .input-group-sm 的 .3125rem .7rem，统一为 .4125rem .7rem */
+.input-group-sm > .btn,
+.input-group-sm > .form-control,
+.input-group-sm > .form-select,
+.input-group-sm > .input-group-text {
+    padding: 0.4125rem 0.7rem;
 }

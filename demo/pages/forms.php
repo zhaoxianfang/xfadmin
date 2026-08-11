@@ -15,7 +15,8 @@ echo XfAdmin::page([
             ['width' => ['lg' => 6], 'content' => XfAdmin::card([
                 'title' => '基础字段 + 客户端校验',
                 'body'  => XfAdmin::form([
-                    'action'     => '/save',
+                    'action'     => '/api/demo/form/save',
+                    'remote'     => true,
                     'validation' => true,
                     'fields'     => [
                         XfAdmin::input(['name' => 'name', 'label' => '姓名', 'required' => true, 'placeholder' => '请输入姓名', 'feedback' => ['invalid' => '姓名不能为空']]),
@@ -36,6 +37,8 @@ echo XfAdmin::page([
             ['width' => ['lg' => 6], 'content' => XfAdmin::card([
                 'title' => '高级控件',
                 'body'  => XfAdmin::form([
+                    'action'     => '/api/demo/form/advanced',
+                    'remote'     => true,
                     'fields' => [
                         XfAdmin::slider(['name' => 'price', 'label' => '价格区间（noUiSlider）', 'min' => 0, 'max' => 1000, 'value' => [200, 600], 'tooltips' => true]),
                         XfAdmin::colorPicker(['name' => 'color', 'label' => '主题色（Pickr）', 'value' => '#3e60d5']),
