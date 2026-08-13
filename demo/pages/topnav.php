@@ -22,6 +22,7 @@ echo XfAdmin::page([
     'menu'        => DemoMenu::topNavMenu('#!'),
     'topnav'      => [
         'search'        => true,
+        'apps'          => $tools['apps'],
         'languages'     => $tools['languages'],
         'messages'      => $tools['messages'],
         'notifications' => $tools['notifications'],

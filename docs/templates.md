@@ -21,7 +21,7 @@ XfAdmin::page([ /* 见组件详细参考 */ ]);
 XfAdmin::authPage([ /* 见组件详细参考 */ ]);
 ```
 
-> 详细选项 / 示例：[组件详细参考#authPage](../components-reference.md#authPage)
+> 详细选项 / 示例：[组件详细参考#authpage](../components-reference.md#authpage)
 
 ## `lockScreen`
 
@@ -31,7 +31,7 @@ XfAdmin::authPage([ /* 见组件详细参考 */ ]);
 XfAdmin::lockScreen([ /* 见组件详细参考 */ ]);
 ```
 
-> 详细选项 / 示例：[组件详细参考#lockScreen](../components-reference.md#lockScreen)
+> 详细选项 / 示例：[组件详细参考#lockscreen](../components-reference.md#lockscreen)
 
 ## `errorPage`
 
@@ -41,7 +41,7 @@ XfAdmin::lockScreen([ /* 见组件详细参考 */ ]);
 XfAdmin::errorPage([ /* 见组件详细参考 */ ]);
 ```
 
-> 详细选项 / 示例：[组件详细参考#errorPage](../components-reference.md#errorPage)
+> 详细选项 / 示例：[组件详细参考#errorpage](../components-reference.md#errorpage)
 
 ## `comingSoon`
 
@@ -51,7 +51,7 @@ XfAdmin::errorPage([ /* 见组件详细参考 */ ]);
 XfAdmin::comingSoon([ /* 见组件详细参考 */ ]);
 ```
 
-> 详细选项 / 示例：[组件详细参考#comingSoon](../components-reference.md#comingSoon)
+> 详细选项 / 示例：[组件详细参考#comingsoon](../components-reference.md#comingsoon)
 
 ## `maintenance`
 
@@ -71,7 +71,7 @@ XfAdmin::maintenance([ /* 见组件详细参考 */ ]);
 XfAdmin::emptyState([ /* 见组件详细参考 */ ]);
 ```
 
-> 详细选项 / 示例：[组件详细参考#emptyState](../components-reference.md#emptyState)
+> 详细选项 / 示例：[组件详细参考#emptystate](../components-reference.md#emptystate)
 
 ## `landing`
 
@@ -91,4 +91,4 @@ XfAdmin::landing([ /* 见组件详细参考 */ ]);
 XfAdmin::profilePage([ /* 见组件详细参考 */ ]);
 ```
 
-> 详细选项 / 示例：[组件详细参考#profilePage](../components-reference.md#profilePage)
+> 详细选项 / 示例：[组件详细参考#profilepage](../components-reference.md#profilepage)

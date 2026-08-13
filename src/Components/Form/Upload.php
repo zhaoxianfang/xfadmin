@@ -57,7 +57,7 @@ class Upload extends Component
                 'id'             => $id,
                 'class'          => 'dropzone',
                 'data-xf'        => 'dropzone',
-                'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT),
+                'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
             ]) . '><div class="dz-message needsclick"><i class="ti ti-cloud-upload h1 text-muted"></i><h4>' . $this->e($this->get('text')) . '</h4></div></div>';
 
             return $this->wrapField($control, $id);
@@ -76,7 +76,7 @@ class Upload extends Component
                 'multiple'       => (bool) $this->get('multiple'),
                 'accept'         => $this->get('accept'),
                 'data-xf'        => 'filepond',
-                'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT),
+                'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
             ]) . '>';
 
             return $this->wrapField($control, $id);

@@ -19,6 +19,9 @@ use zxf\XfAdmin\XfAdmin;
  *     'customizer'    => true,            // 主题定制按钮
  *     'languages'     => [['flag'=>..,'name'=>'中文','code'=>'zh'], ...],
  *     'notifications' => ['count' => 3, 'items' => [['title'=>..,'text'=>..,'time'=>..,'avatar'=>..,'icon'=>..,'url'=>..]], 'all_url' => '#'],
+ *     'messages'      => ['count' => 7, 'title'=>'消息', 'items' => [['from'=>..,'avatar'=>..,'text'=>..,'time'=>..,'url'=>..,'unread'=>true]], 'all_url'=>'#'],
+ *     'apps'          => ['items' => [['icon'=>'ti ti-mail','text'=>'邮件','url'=>'#','variant'=>'primary'], ...]],
+ *     'search_modal'  => true,              // 点击搜索图标弹出全屏搜索模态（需 search=true）
  *     'user'          => ['name'=>'张三','role'=>'管理员','avatar'=>'/a.jpg','items'=>[['text'=>'退出','icon'=>'ti ti-logout-2','url'=>'/logout']]],
  *     'right'         => '自定义HTML',     // 右侧附加插槽
  * ])
@@ -31,12 +34,15 @@ class Topbar extends Component
             'brand'         => true,
             'search'        => true,
             'search_placeholder' => 'Search...',
+            'search_modal'  => false,           // 点击搜索图标弹出全屏模态（替代内联搜索框）
             'left'          => null,
             'theme_toggle'  => true,
             'fullscreen'    => true,
             'customizer'    => true,
             'languages'     => [],
             'notifications' => false,
+            'messages'      => false,
+            'apps'          => false,
             'user'          => false,
             'right'         => null,
         ];
@@ -52,9 +58,15 @@ class Topbar extends Component
         $html .= $this->renderBrand();
         $html .= '<button class="sidenav-toggle-button btn btn-primary btn-icon"><i class="ti ti-menu-4 fs-22"></i></button>';
         if ($this->get('search')) {
-            $html .= '<div class="app-search d-none d-xl-flex">'
-                . '<input type="search" class="form-control topbar-search" name="search" placeholder="' . $this->e($this->get('search_placeholder')) . '">'
-                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
+            if ($this->get('search_modal')) {
+                // 点击弹出全屏搜索模态
+                $html .= '<div class="topbar-item d-none d-xl-flex"><button class="topbar-link" type="button" data-bs-toggle="modal" data-bs-target="#xfTopbarSearchModal"><i class="ti ti-search fs-xxl"></i></button></div>';
+                $html .= $this->renderSearchModal();
+            } else {
+                $html .= '<div class="app-search d-none d-xl-flex">'
+                    . '<input type="search" class="form-control topbar-search" name="search" placeholder="' . $this->e($this->get('search_placeholder')) . '">'
+                    . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
+            }
         }
         $html .= $this->raw($this->get('left'));
         $html .= '</div>';
@@ -63,6 +75,8 @@ class Topbar extends Component
         $html .= '<div class="d-flex align-items-center gap-2">';
         $html .= $this->raw($this->get('right'));
         $html .= $this->renderLanguages();
+        $html .= $this->renderMessages();
+        $html .= $this->renderApps();
         $html .= $this->renderNotifications();
         if ($this->get('customizer')) {
             $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" type="button"><i class="ti ti-settings fs-xxl"></i></button></div>';
@@ -180,6 +194,136 @@ class Topbar extends Component
         $html .= '</div></div></div>';
 
         return $html;
+    }
+
+    /**
+     * 消息中心入口（与 TopNav 风格一致）。
+     * 配置：messages => ['count'=>int,'title'=>str,'items'=>[['from'=>,'avatar'=>,'text'=>,'time'=>,'url'=>,'unread'=>bool]],'all_url'=>,'all_text'=>]
+     */
+    protected function renderMessages(): string
+    {
+        $conf = $this->get('messages');
+        if (! $conf) {
+            return '';
+        }
+        $conf  = (array) $conf;
+        $items = $conf['items'] ?? [];
+        $count = $conf['count'] ?? count($items);
+
+        $html = '<div class="topbar-item"><div class="dropdown">'
+            . '<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,25" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
+            . '<i class="ti ti-message-2 fs-xxl"></i>';
+        if ($count > 0) {
+            $html .= '<span class="position-absolute topbar-badge fs-xxs translate-middle badge bg-danger rounded-pill">' . $this->e($count) . '</span>';
+        }
+        $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-start dropdown-menu-lg" style="min-height: 300px;">';
+        $html .= '<div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border"><div class="row align-items-center"><div class="col">'
+            . '<h6 class="m-0 fs-md fw-semibold">' . $this->e($conf['title'] ?? '消息') . '</h6></div></div></div>';
+        $html .= '<div style="max-height: 300px;" data-simplebar>';
+        foreach ($items as $item) {
+            $item   = (array) $item;
+            $avatar = isset($item['avatar']) ? '<img src="' . $this->e($item['avatar']) . '" class="avatar-md rounded-circle" alt="">'
+                : '<div class="avatar-md"><span class="avatar-title bg-' . $this->e($item['variant'] ?? 'info') . '-subtle text-' . $this->e($item['variant'] ?? 'info') . ' rounded-circle"><i class="ti ti-user fs-22"></i></span></div>';
+            $html .= '<div class="dropdown-item py-2 text-wrap' . (! empty($item['unread']) ? ' unread' : '') . '">'
+                . '<a href="' . $this->e($item['url'] ?? 'javascript:void(0);') . '" class="d-flex align-items-center gap-2 text-reset">'
+                . '<span class="flex-shrink-0">' . $avatar . '</span>'
+                . '<span class="flex-grow-1">'
+                . '<span class="fw-medium text-body">' . $this->e($item['from'] ?? '') . '</span>'
+                . '<span class="d-block text-muted">' . $this->e($item['text'] ?? '') . '</span>'
+                . (isset($item['time']) ? '<small class="text-muted">' . $this->e($item['time']) . '</small>' : '')
+                . '</span></a></div>';
+        }
+        $html .= '</div>';
+        if (! empty($conf['all_url'])) {
+            $html .= '<a href="' . $this->e($conf['all_url']) . '" class="dropdown-item text-center text-reset text-decoration-underline link-offset-2 fw-bold border-top border-light py-2">'
+                . $this->e($conf['all_text'] ?? '查看全部') . '</a>';
+        }
+        $html .= '</div></div></div>';
+
+        return $html;
+    }
+
+    /**
+     * 应用启动器入口（九宫格图标下拉）。
+     * 配置：apps => [
+     *     'title'   => str,
+     *     'variant' => 'grid'|'rounded',     // grid=方角九宫格（默认）；rounded=圆形图标（对齐后台模板 #apps-dropdown-rounded）
+     *     'all_url' => str, 'all_text' => str,
+     *     'add_url' => str, 'add_text' => str,
+     *     'items'   => [['icon'=>,'text'=>,'url'=>,'variant'=>], ...],
+     * ]
+     * 圆形变体输出容器 id="apps-dropdown-rounded"，与后台模板（INSPINIA v4）顶栏 App Launcher 标记一致，
+     * 便于样式挂钩与 JS 定位（xfadmin.js 的 initAppsDropdown）。
+     */
+    protected function renderApps(): string
+    {
+        $conf = $this->get('apps');
+        if (! $conf) {
+            return '';
+        }
+        $conf  = (array) $conf;
+        $items = $conf['items'] ?? [];
+        if ($items === []) {
+            return '';
+        }
+        $variant = strtolower((string) ($conf['variant'] ?? 'grid'));
+        $rounded = $variant === 'rounded';
+
+        $html = '<div class="topbar-item"><div class="dropdown">'
+            . '<button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" data-bs-offset="0,25" type="button" aria-haspopup="false" aria-expanded="false">'
+            . '<i class="ti ti-layout-grid fs-xxl"></i></button>';
+        $menuCls = 'dropdown-menu dropdown-menu-start p-2' . ($rounded ? ' apps-dropdown-rounded-menu' : '');
+        $html .= '<div class="' . $menuCls . '"' . ($rounded ? ' id="apps-dropdown-rounded"' : '') . ' style="min-width: 280px;">';
+        if (! empty($conf['title'])) {
+            $html .= '<h6 class="dropdown-header">' . $this->e($conf['title']) . '</h6>';
+        }
+        $html .= '<div class="row g-1 app-launcher-grid' . ($rounded ? ' app-launcher-rounded' : '') . '">';
+        foreach ($items as $item) {
+            $item    = (array) $item;
+            $iv      = $item['variant'] ?? 'primary';
+            $shape   = $rounded ? 'rounded-circle' : 'rounded';
+            $html .= '<div class="col-4">'
+                . '<a href="' . $this->e($item['url'] ?? 'javascript:void(0);') . '" class="d-flex flex-column align-items-center text-reset text-decoration-none rounded p-2 app-launcher-item">'
+                . '<span class="avatar-md mb-1"><span class="avatar-title bg-' . $this->e($iv) . '-subtle text-' . $this->e($iv) . ' ' . $shape . '"><i class="' . $this->e($item['icon'] ?? 'ti ti-apps') . ' fs-22"></i></span></span>'
+                . '<small class="text-truncate">' . $this->e($item['text'] ?? '') . '</small>'
+                . '</a></div>';
+        }
+        $html .= '</div>';
+        // 底部操作：查看全部 / 添加应用
+        $foot = '';
+        if (! empty($conf['all_url']) || ! empty($conf['add_url'])) {
+            $foot .= '<div class="d-flex gap-2 mt-2 pt-2 border-top app-launcher-foot">';
+            if (! empty($conf['all_url'])) {
+                $foot .= '<a href="' . $this->e($conf['all_url']) . '" class="btn btn-sm btn-soft-primary flex-fill">' . $this->e($conf['all_text'] ?? '查看全部应用') . '</a>';
+            }
+            if (! empty($conf['add_url'])) {
+                $foot .= '<a href="' . $this->e($conf['add_url']) . '" class="btn btn-sm btn-soft-secondary flex-fill"><i class="ti ti-plus me-1"></i>' . $this->e($conf['add_text'] ?? '添加应用') . '</a>';
+            }
+            $foot .= '</div>';
+        }
+        $html .= $foot;
+        $html .= '</div></div></div>';
+
+        return $html;
+    }
+
+    /**
+     * 全屏搜索模态（点击搜索图标弹出）。
+     * 配置：search_modal => true（需同时 search=true）
+     */
+    protected function renderSearchModal(): string
+    {
+        $ph = $this->e($this->get('search_placeholder'));
+        return '<div class="modal fade" id="xfTopbarSearchModal" tabindex="-1" aria-hidden="true">'
+            . '<div class="modal-dialog modal-dialog-centered modal-lg">'
+            . '<div class="modal-content border-0 shadow">'
+            . '<div class="modal-body p-3">'
+            . '<div class="position-relative">'
+            . '<input type="search" class="form-control form-control-lg ps-5" placeholder="' . $ph . '" autocomplete="off">'
+            . '<i class="ti ti-search position-absolute top-50 translate-middle-y ms-3 text-muted fs-18"></i>'
+            . '</div>'
+            . '<div class="mt-3 text-muted small"><i class="ti ti-info-circle me-1"></i>' . $this->e($this->get('search_hint') ?? '输入关键字后回车进行搜索') . '</div>'
+            . '</div></div></div></div>';
     }
 
     protected function renderUser(): string

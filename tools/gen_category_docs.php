@@ -81,7 +81,7 @@ foreach ($byCat as $cat => $items) {
     foreach ($items as $alias => $it) {
         $desc = $it['desc'] ?: '—';
         $assets = $it['assets'] ? '`' . implode('`,`', $it['assets']) . '`' : '—';
-        $b[] = "| `{$alias}` | {$desc} | {$assets} | [查看](../components-reference.md#{$alias}) |";
+        $b[] = "| `{$alias}` | {$desc} | {$assets} | [查看](../components-reference.md#" . strtolower($alias) . ") |";
     }
     $b[] = "";
     file_put_contents("/Users/aha/www/xfadmin/docs/categories/" . strtolower($cat) . ".md", implode("\n", $b));
@@ -100,7 +100,7 @@ foreach ($tplAliases as $alias) {
     $b[] = "## `{$alias}`\n";
     $b[] = $mt['desc'] ? $mt['desc'] . "\n" : "（无描述）\n";
     $b[] = "```php\nXfAdmin::{$alias}([ /* 见组件详细参考 */ ]);\n```\n";
-    $b[] = "> 详细选项 / 示例：[组件详细参考#{$alias}](../components-reference.md#{$alias})\n";
+    $b[] = "> 详细选项 / 示例：[组件详细参考#" . strtolower($alias) . "](../components-reference.md#" . strtolower($alias) . ")\n";
 }
 file_put_contents('/Users/aha/www/xfadmin/docs/templates.md', implode("\n", $b));
 echo "TEMPLATES DOC written\n";

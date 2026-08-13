@@ -80,7 +80,7 @@ class Orders extends Component
 
         // 根节点：card 容器；交互能力交给 xftable 模块（前端搜索/筛选/分页/全选/批删）
         $html = '<div' . $this->attrs(['class' => 'card', 'id' => $id])
-            . ($interactive ? ' data-xf="xftable" data-xf-config="' . $this->e(json_encode(['pageSize' => $pageSize > 0 ? $pageSize : 100000], JSON_UNESCAPED_UNICODE)) . '"' : '') . '>';
+            . ($interactive ? ' data-xf="xftable" data-xf-config="' . $this->e(json_encode(['pageSize' => $pageSize > 0 ? $pageSize : 100000], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)) . '"' : '') . '>';
 
         /* ---------- 卡片头：标题 + 搜索 + 筛选 + 批量操作（对齐模板 card-header 布局） ---------- */
         if ($this->get('title') || $interactive) {

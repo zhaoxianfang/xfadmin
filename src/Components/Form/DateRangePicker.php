@@ -56,7 +56,7 @@ class DateRangePicker extends Component
             'disabled'       => (bool) $this->get('disabled'),
             'readonly'       => (bool) $this->get('readonly'),
             'data-xf'        => 'daterangepicker',
-            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT),
+            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
         ]) . '>';
 
         return $this->wrapField($control, $id);

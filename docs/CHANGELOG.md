@@ -4,6 +4,83 @@
 
 ---
 
+## v2.1.1 看板/会话/商品卡视觉打磨 + 组件计数元数据同步（2026-08-13）
+
+### 看板（Kanban）视觉打磨（resources/assets/css/xfadmin.css）
+- **修复列横向滚动失效**：`.kanban-content` 原为 `flex-wrap`（列会换行），而外层 `.xf-kanban` 的 `nowrap+overflow-x` 因列并非其直接子级而失效；补 `.xf-kanban .kanban-content { flex-wrap: nowrap; overflow-x: auto }`，列真正横向滚动。
+- **修复卡片过肥**：`.xf-kanban-card` 自带 padding 与内层 `.card-body` 的 1.25rem padding 叠加；改为卡片 `padding: 0` + `.xf-kanban-card .card-body { padding: .65rem .7rem }`，紧凑一致。
+- **悬停左缘主色条**：`box-shadow: inset 3px 0 0 0 transparent`（默认）→ hover 变主色，无布局位移。
+- **列头计数徽标**：`.xf-kanban-count` 灰底胶囊；新增按钮 hover 放大 + 旋转 90°。
+- **卡片排版**：标题 `font-weight:600`、描述 `-webkit-line-clamp:2` 两行截断、头像组 24px 叠放 + 白描边 + 微阴影、进度条浅底。
+- **删除重复定义**：文件末尾的「看板」兜底块与上方权威节重复（列宽/背景/卡片 padding 冲突），收敛为注释占位。
+
+### 会话（Chat）与商品卡打磨
+- `.xf-chat-session.active` 左缘主色条；`.xf-chat-avatar` 白描边；气泡统一微阴影，发出气泡改 `linear-gradient(135deg, primary, #2563eb)` 渐变。
+- `.xf-product-card:hover` 增加主色边框，提升悬停反馈。
+
+### 元数据同步
+- 注册组件实测 **213**（含 3 个别名变体），README 计数 200 → 213（分类数同步微调），组件一览/文档索引同步。
+
+### 清理
+- 删除 `/tmp` 残留诊断脚本与日志（`diag_err*.mjs`、`xf_http.log`、`xfadmin_selftest_php.log`、`xfeditor_serve.log`）。
+
+### 验证
+- `run.sh` 全量自测（build + XSS 审计 + 资源校验 + Playwright 214 页）**PASS**；demo 4 页截图目检无异常。
+
+---
+
+## v2.1.0 领域管理动作体系 + 数据表格批量/看板增强（2026-08-13）
+
+### 领域管理动作（业务闭环）
+- 新增 `XFAdmin.prompt(opts)` 输入对话框（优先 SweetAlert2，回退原生 prompt，返回 Promise）。
+- 详情操作面板 / 行操作列 / 看板卡片统一支持领域动作按钮：`data-xf-op` + `data-xf-dataset` +
+  `data-xf-id` + `data-xf-prompt`（需输入）+ `data-xf-arg`（输入值字段名），提交 `{_op,dataset,id,[arg]}`。
+- 表格行操作列 `actions` 元素新增 `op` / `dataset` / `prompt` / `arg` 契约；批量按钮新增 `action` 键（渲染 `data-action`）。
+- `<table>` 新增 `data-xf-dataset` 属性（config 提供 `dataset` 键时输出），供前端批量提交携带。
+- `bindBulk` 提交完整 payload（`{action,dataset,ids}`）；`bindXfPageLinks` 跳过卡片内领域按钮（不触发详情弹窗）。
+
+### DataTable 领域动作后端契约
+- `DataController::op` 分发扩展 18 个领域动作：`assign/claim/transfer/reply/rate/invite/inbound/outbound/
+  inventory/complete/onboard/regularize/offboard/ship/refund/publish/run/pause`（含时间线留痕）。
+- `DataController::bulk` 支持领域批量动作（逐行 domainOp）+ 状态 key 批量置位 + 批量删除。
+- `EnterpriseData::domainOp()`：语义化字段探测（负责人/数量）+ 状态流转 + 时间线留痕，任意数据集不因缺字段报错。
+
+### 企业演示模块能力增强（wsf 侧消费）
+- 行操作列按模块语义注入领域按钮（工单：派发/认领/转派/回复/评价；审批：审批/驳回/转审；任务：认领/分派/完成；
+  供应链：入库/出库/盘点；OA：审批/驳回/协办；人事：入职/转正/离职；订单：发货/退款/完成；知识库：协作/发布；
+  采集：重抓；自动化：执行/暂停）+ 通用启用/停用。
+- 批量栏：批量删除 + 状态流转 + 审批类批量通过/驳回 + 派发类批量分派。
+- 详情操作面板按模块语义动态生成；看板卡片渲染领域快捷操作按钮。
+- 表格默认 `fixed_columns => ['left'=>1,'right'=>1]` 冻结首列与操作列。
+
+### 修复
+- `Deals` 组件 `color` 结构性字段未转义（拼 class 可被属性逃逸注入）→ 白名单校验（XSS 审计 208/208 PASS）。
+
+### 文档
+- `docs/datatable-advanced.md` 补充「领域管理动作」完整契约（op/prompt/arg/dataset/action 键表 + 前端扩展点）。
+
+---
+
+## v2.0.0 元数据与双框架增强 + 文档体系补全（2026-08-12）
+
+### 组件规模
+- 注册组件总数达到 **200 个**（197 个独立类），覆盖布局(15)/导航(1)/栅格(2)/UI(50)/表单(20)/图表(7)/表格(4)/数据业务(81)/杂项(17)。
+- 刷新所有滞后元数据：composer.json 描述、README 计数、components-reference.md 标题、config/xfadmin.php 版本号（→ 2.0.0）。
+
+### ThinkPHP 适配增强
+- `ThinkPHP\Service::register()` 新增全局助手函数 `xfadmin()`（与 Laravel 门面 `XfAdmin::` 平行：`xfadmin('card', [...])` / `xfadmin()` 返回类）。
+- `ThinkPHP\PublishCommand` 新增 `--force`（`-f`）覆盖参数：已有资源时默认跳过并提示，加 `--force` 才覆盖；`copyDir` 支持按文件跳过。
+
+### 文档体系补全
+- 新增 `DEVELOPMENT.md`：组件开发完整指南（生命周期、基类方法、标准骨架、注册、转义、本地自测、文档生成、wsf 同步）。
+- 新增 `THEMING.md`：主题与外观定制（后端配置 / 前端持久化 / 明暗原理 / 布局方向 / 配色方案）。
+- 新增 `DATATABLES_PROTOCOL.md`：DataTables 服务端协议（标准响应 / DataSet / 紧凑协议 / 单元格渲染 / 批量 / 滚动冻结修复）。
+- 新增 `DEPLOY.md`：部署与发布（Laravel/TP 安装、资源托管机制、版本管理、CI 清单）。
+- 新增 `FAQ.md`：常见问题与故障排查（JS 报错 / 破图 / 下拉 / state_save / XSS / 样式冲突 / 403 / TP 资源）。
+- 新增 `UPGRADE.md`：版本升级指南。
+
+---
+
 ## 本轮：Modal 修复 + 侧边栏修复 + 全面审计（2026-08-07）
 
 ### Modal 弹窗头部工具定位修复

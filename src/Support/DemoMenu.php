@@ -72,6 +72,23 @@ final class DemoMenu
                     ['text' => '退出登录', 'icon' => 'ti ti-logout', 'url' => $url, 'class' => 'text-danger'],
                 ],
             ],
+            'apps' => [
+                'title'   => '我的应用',
+                'variant' => 'rounded',
+                'all_url' => $url,
+                'add_url' => $url,
+                'items'   => [
+                    ['text' => '邮箱', 'icon' => 'ti ti-mail', 'variant' => 'primary', 'url' => $url],
+                    ['text' => '日历', 'icon' => 'ti ti-calendar', 'variant' => 'info', 'url' => $url],
+                    ['text' => '聊天', 'icon' => 'ti ti-messages', 'variant' => 'success', 'url' => $url],
+                    ['text' => '文件', 'icon' => 'ti ti-folder', 'variant' => 'warning', 'url' => $url],
+                    ['text' => '项目', 'icon' => 'ti ti-folder-kanban', 'variant' => 'danger', 'url' => $url],
+                    ['text' => '报表', 'icon' => 'ti ti-chart-bar', 'variant' => 'purple', 'url' => $url],
+                    ['text' => 'CRM', 'icon' => 'ti ti-id-badge-2', 'variant' => 'teal', 'url' => $url],
+                    ['text' => '工单', 'icon' => 'ti ti-ticket', 'variant' => 'orange', 'url' => $url],
+                    ['text' => '知识库', 'icon' => 'ti ti-book', 'variant' => 'cyan', 'url' => $url],
+                ],
+            ],
         ];
     }
 

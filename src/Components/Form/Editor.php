@@ -43,7 +43,7 @@ class Editor extends Component
             'input'  => $this->get('name'),
         ], (array) $this->get('options', []));
 
-        $json = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT);
+        $json = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
         if ($driver === 'summernote') {
             $control = '<textarea' . $this->attrs([

@@ -390,6 +390,13 @@ html[data-layout="topnav"] .app-topbar .logo-topbar img {
 .auth-box .card-body { padding: 1.75rem; }
 .auth-pass-inputgroup .btn { border-color: var(--bs-border-color); }
 .auth-footer-text { text-align: center; margin-top: 1rem; font-size: .875rem; color: var(--bs-secondary-color); }
+/* 左右分栏认证布局（复刻 inspinia auth-split-*） */
+.auth-split-wrapper { min-height: 100vh; }
+.auth-split-aside {
+    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
+    background-size: cover;
+}
+.auth-split-form { background: var(--bs-body-bg); }
 
 /* 错误页 / 即将上线 / 维护：这些组件自带完整文档结构，这里做基础美化 */
 .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
@@ -640,6 +647,7 @@ img[width][height] { object-fit: cover; }
     padding-bottom: .75rem;
     scrollbar-width: thin;
 }
+.xf-kanban .kanban-content { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
 .xf-kanban-col {
     flex: 0 0 auto;
     width: 290px;
@@ -648,8 +656,9 @@ img[width][height] { object-fit: cover; }
     flex-direction: column;
     background: var(--bs-tertiary-bg, #f6f7fb);
     border: 1px solid var(--bs-border-color, #e7e9eb);
-    border-radius: .5rem;
+    border-radius: .75rem;
     max-height: 70vh;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
 }
 .xf-kanban-head {
     display: flex;
@@ -659,6 +668,10 @@ img[width][height] { object-fit: cover; }
     border-bottom: 1px solid var(--bs-border-color, #e7e9eb);
     font-weight: 600;
 }
+.xf-kanban-head h5 { font-size: .95rem; letter-spacing: .01em; }
+.xf-kanban-count { font-size: .72rem; font-weight: 500; color: var(--bs-secondary); background: rgba(0,0,0,.05); border-radius: 1rem; padding: .1rem .5rem; margin-left: .3rem; }
+.xf-kanban-head .btn-icon { transition: transform .18s ease, background-color .18s ease; }
+.xf-kanban-head .btn-icon:hover { transform: scale(1.1) rotate(90deg); }
 .xf-kanban-add { padding: .1rem .35rem; line-height: 1; color: var(--bs-secondary); }
 .xf-kanban-add:hover { color: var(--bs-primary); }
 .xf-kanban-body {
@@ -669,6 +682,7 @@ img[width][height] { object-fit: cover; }
     flex-direction: column;
     gap: .6rem;
     min-height: 60px;
+    scrollbar-width: thin;
 }
 .xf-kanban-body.xf-kanban-dropzone {
     outline: 2px dashed var(--bs-primary);
@@ -682,13 +696,24 @@ img[width][height] { object-fit: cover; }
     background: var(--bs-body-bg, #fff);
     border: 1px solid var(--bs-border-color, #e7e9eb);
     border-radius: .45rem;
-    padding: .65rem .7rem;
+    padding: 0;
     cursor: grab;
-    transition: box-shadow .15s, transform .15s, border-color .15s;
+    box-shadow: inset 3px 0 0 0 transparent, 0 1px 2px rgba(16, 24, 40, .05);
+    transition: box-shadow .18s, transform .18s, border-color .18s;
 }
-.xf-kanban-card:hover { box-shadow: var(--xf-shadow, 0 .5rem 1rem rgba(0,0,0,.08)); transform: translateY(-1px); border-color: var(--bs-primary); }
+.xf-kanban-card .card-body { padding: .65rem .7rem; }
+.xf-kanban-card:hover { box-shadow: inset 3px 0 0 0 var(--bs-primary), var(--xf-shadow, 0 .5rem 1rem rgba(0,0,0,.08)); transform: translateY(-2px); border-color: var(--bs-border-color); }
 .xf-kanban-card.xf-kanban-dragging { opacity: .5; }
-.xf-kanban-card-title { display: block; }
+.xf-kanban-card-title { display: block; font-weight: 600; font-size: .95rem; line-height: 1.4; }
+.xf-kanban-card .card-body > p.text-muted { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .82rem; }
+.xf-kanban-card .card-body > p { margin-bottom: .6rem; }
+.xf-kanban-card .avatar-group .avatar {
+    width: 24px; height: 24px; margin-left: -7px;
+    border: 2px solid var(--bs-body-bg, #fff);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .1);
+}
+.xf-kanban-card .avatar-group .avatar:first-child { margin-left: 0; }
+.xf-kanban-card .progress { background: rgba(16, 24, 40, .07); }
 .xf-kanban-prio { font-size: .7rem; padding: .15rem .4rem; }
 .xf-kanban-card-desc { line-height: 1.35; }
 .text-truncate-2 {
@@ -705,6 +730,16 @@ img[width][height] { object-fit: cover; }
 .xf-kanban-people .avatar:first-child { margin-left: 0; }
 .xf-kanban-people .avatar-more { background: var(--bs-secondary); }
 .xf-kanban-card-tags .badge { font-weight: 500; }
+
+/* 看板卡片领域快捷操作（派发/认领/回复/评价等） */
+.xf-kanban-ops { flex-wrap: wrap; }
+.xf-kanban-ops .xf-kanban-op {
+    display: inline-flex; align-items: center; gap: .25rem;
+    font-size: .7rem; line-height: 1.2; padding: .2rem .45rem;
+    border-radius: .375rem; cursor: pointer; user-select: none; white-space: nowrap;
+    border: 1px solid transparent;
+}
+.xf-kanban-ops .xf-kanban-op:active { transform: scale(.96); }
 
 /* 邮件中心（email）—— 对齐 INSPINIA email.html 的 table 式邮件行 */
 .email-table tbody tr { position: relative; }                 /* 支撑 stretched-link 整行可点 */
@@ -967,6 +1002,14 @@ body.layout-boxed .wrapper { max-width: 1320px; margin: 0 auto; box-shadow: var(
 /* 19.1 紫色语义色（退款 / 次要强调） */
 .bg-purple-subtle { background-color: rgba(168, 85, 247, .12) !important; }
 .text-purple { color: #a855f7 !important; }
+
+/* 19.1b 扩展语义色（teal / orange / cyan）subtle + text，供 App 启动器等使用 */
+.bg-teal-subtle   { background-color: rgba(20, 184, 166, .12) !important; }
+.text-teal        { color: #14b8a6 !important; }
+.bg-orange-subtle { background-color: rgba(249, 115, 22, .12) !important; }
+.text-orange      { color: #f97316 !important; }
+.bg-cyan-subtle   { background-color: rgba(6, 182, 212, .12) !important; }
+.text-cyan        { color: #06b6d4 !important; }
 
 /* 19.2 垂直时间线（订单物流 / 项目动态） */
 .timeline-x { position: relative; }
@@ -1474,6 +1517,87 @@ form[data-xf-filter-for] .select2-container--default .select2-selection--single 
 .xf-cell-tl-dot { width: .45rem; height: .45rem; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
 .xf-cell-toggle { white-space: nowrap; }
 
+/* —— DataTable 新增富单元格渲染器样式（badge / statusPill / priority / rate / duration / currency / json / copyBtn / linkBtn / miniBar / progressBar / sparkbar / heatmap / ranking / progressSteps / gradient / tagInput / avatarStack / 单元格事件） —— */
+.badge-soft-warning { --bs-badge-bg: rgba(255,193,7,.18); --bs-badge-color: #997404; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-danger  { --bs-badge-bg: rgba(220,53,69,.16); --bs-badge-color: #b02a37; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-success { --bs-badge-bg: rgba(25,135,84,.16); --bs-badge-color: #146c43; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-info    { --bs-badge-bg: rgba(13,202,240,.16); --bs-badge-color: #087990; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-primary { --bs-badge-bg: rgba(62,96,213,.16); --bs-badge-color: #2842b3; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-secondary { --bs-badge-bg: rgba(108,117,125,.16); --bs-badge-color: #41464b; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-light { --bs-badge-bg: rgba(248,249,250,.6); --bs-badge-color: #636b73; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.badge-soft-dark { --bs-badge-bg: rgba(33,37,41,.16); --bs-badge-color: #1c1f23; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
+.xf-status-dot { width: .55rem; height: .55rem; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.xf-status-dot-primary { background: var(--xf-brand, #3e60d5); }
+.xf-status-dot-success { background: #198754; }
+.xf-status-dot-danger  { background: #dc3545; }
+.xf-status-dot-warning { background: #ffc107; }
+.xf-status-dot-info    { background: #0dcaf0; }
+.xf-status-dot-secondary { background: #6c757d; }
+.xf-dot { width: .5rem; height: .5rem; border-radius: 50%; display: inline-block; margin-right: .3rem; }
+.xf-dot-primary { background: var(--xf-brand, #3e60d5); }
+.xf-dot-success { background: #198754; }
+.xf-dot-danger  { background: #dc3545; }
+.xf-dot-warning { background: #ffc107; }
+.xf-dot-info    { background: #0dcaf0; }
+.xf-dot-secondary { background: #6c757d; }
+.xf-rate { display: inline-flex; align-items: center; gap: .15rem; }
+.xf-rate i { font-size: .9rem; line-height: 1; }
+.xf-duration { font-variant-numeric: tabular-nums; }
+.xf-currency { font-variant-numeric: tabular-nums; font-weight: 600; }
+.xf-json-toggle { white-space: nowrap; }
+.xf-json-view { font-size: .8125rem; background: var(--bs-tertiary-bg, #f8f9fa); border-radius: .375rem; padding: .75rem; max-height: 60vh; overflow: auto; }
+.xf-copy-btn { padding: .15rem .4rem; }
+.xf-mini-bar { position: relative; height: 1.25rem; display: flex; align-items: center; }
+.xf-mini-bar-fill { position: absolute; left: 0; top: 50%; transform: translateY(-50%); height: .35rem; border-radius: 99px; min-width: 2px; }
+.xf-mini-bar-val { position: relative; margin-left: calc(100% + .35rem); font-size: .75rem; color: var(--bs-secondary-color, #6c757d); white-space: nowrap; }
+.xf-sparkbar { vertical-align: middle; }
+.xf-heatmap-cell { display: inline-block; min-width: 2.25rem; text-align: center; padding: .15rem .4rem; border-radius: .25rem; font-size: .75rem; font-weight: 600; }
+.xf-ranking i { font-size: .85em; }
+.xf-gradient-val { display: inline-block; }
+.xf-steps-mini { display: inline-flex; align-items: center; gap: .15rem; }
+.xf-step-dot { width: .6rem; height: .6rem; border-radius: 50%; border: 2px solid var(--bs-border-color, #dee2e6); background: #fff; box-sizing: border-box; }
+.xf-step-dot.done { border-color: var(--xf-brand, #3e60d5); background: var(--xf-brand, #3e60d5); }
+.xf-step-dot.active { border-color: var(--xf-brand, #3e60d5); box-shadow: 0 0 0 .15rem rgba(62,96,213,.25); }
+.xf-step-line { width: .85rem; height: 2px; background: var(--bs-border-color, #dee2e6); }
+.xf-step-line.done { background: var(--xf-brand, #3e60d5); }
+/* 单元格事件可点击态 */
+.xf-cell-event { cursor: pointer; outline: none; }
+.xf-cell-event:focus-visible { box-shadow: 0 0 0 .15rem rgba(62,96,213,.35); border-radius: .25rem; }
+
+/* —— 复合信息单元格（rich 渲染器）：负责人 / 申请人 / 客户 等多字段列 —— */
+.xf-rich-cell { min-width: 9rem; }
+.xf-rich-icon { width: 2rem; height: 2rem; border-radius: .5rem; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; font-size: 1rem; }
+.xf-rich-title { font-weight: 600; line-height: 1.25; color: var(--bs-body-color, #212529); }
+.xf-rich-sub { font-size: .75rem; color: var(--bs-secondary-color, #6c757d); line-height: 1.2; }
+.xf-rich-meta { font-size: .72rem; }
+.xf-rich-badge { font-weight: 500; }
+[data-bs-theme="dark"] .xf-rich-title { color: var(--bs-body-color, #f1f3f5); }
+
+/* —— 命令面板 CommandPalette —— */
+.xf-cmd-palette .modal-content { border-radius: .75rem; }
+.xf-cmd-palette .xf-cmd-input { font-size: .95rem; }
+.xf-cmd-palette .xf-cmd-item { border: 0; border-radius: .5rem; padding: .55rem .75rem; }
+.xf-cmd-palette .xf-cmd-item:hover, .xf-cmd-palette .xf-cmd-item.active { background: var(--xf-brand-soft, #eef1fb); }
+.xf-cmd-palette kbd { background: var(--bs-tertiary-bg, #f1f3f5); border-radius: .3rem; padding: .05rem .35rem; }
+
+/* —— 通知中心 NotificationCenter —— */
+.xf-notify-center { width: 360px; }
+.xf-notify-item { border-left: 3px solid transparent; }
+.xf-notify-item.unread { background: var(--xf-brand-soft, #eef1fb); border-left-color: var(--xf-brand, #3e60d5); }
+.xf-notify-dot { width: .5rem; height: .5rem; border-radius: 50%; background: var(--xf-brand, #3e60d5); align-self: center; }
+.avatar-sm { width: 38px; height: 38px; font-size: 1rem; }
+
+/* —— 拖拽上传 DropzoneUpload —— */
+.xf-dropzone { background: var(--bs-tertiary-bg, #f8f9fa); border-style: dashed !important; cursor: pointer; transition: border-color .15s, background .15s; }
+.xf-dropzone:hover, .xf-dropzone.border-primary { border-color: var(--xf-brand, #3e60d5) !important; background: var(--xf-brand-soft, #eef1fb); }
+.xf-dropzone .xf-dropzone-file { font-weight: 400; }
+/* 自定过滤组件：滑块 / 树 */
+.xf-slider-filter { padding: .25rem .5rem .5rem; border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .5rem; background: var(--bs-body-bg, #fff); }
+.xf-slider-filter .form-range { padding: 0; }
+.xf-tree-filter .xf-tree-node { padding-top: .15rem; }
+.xf-tree-filter .xf-tree-children { margin-left: .5rem; border-left: 1px dashed var(--bs-border-color, #e5e7eb); padding-left: .5rem; }
+.xf-tree-toggle { color: var(--bs-secondary-color, #6c757d); }
+
 /* ==================================================================
  * 行详情弹窗（viewRow 多布局：kv / profile / sections / tabs / stats / timeline）
  * ================================================================== */
@@ -1520,7 +1644,7 @@ form[data-xf-filter-for] .select2-container--default .select2-selection--single 
 }
 
 /* =====================================================================
- * DataTables 2.x scrollX 容器样式（参照 yoc_cn 项目 app.css）
+ * DataTables 2.x scrollX 容器样式
  *
  * 【关键架构】DataTables 2.x 初始化后，<table class="xf-datatable"> 被包裹在
  * <div class="dt-container"> 中。.dt-scroll-head / .dt-scroll-body / .dt-scroll
@@ -1528,7 +1652,7 @@ form[data-xf-filter-for] .select2-container--default .select2-selection--single 
  * 表头/表体的宿主，而非 table 的后代节点。
  *
  * 因此 dt-container 级别规则 **不能** 用 .xf-datatable .dt-scroll-*（死代码），
- * 必须用 div.dt-scroll-* 直接选择器（与 yoc_cn 一致）。
+ * 必须用 div.dt-scroll-* 直接选择器。
  *
  * 列宽同步的最佳实践（详见下方「yoc 项目 DataTable 核心修复」区段）：
  * - display:table-row!important 覆盖 INSPINIA 的 display:none（根因修复）
@@ -1750,12 +1874,12 @@ table.dataTable thead th { -webkit-user-select: none; user-select: none; }
 table.dataTable tbody tr:hover { background: var(--bs-primary-bg-subtle, #f5f8ff); }
 
 /* =====================================================================
- * DataTables 2.x dt-container 级别规则（参照 yoc_cn app.css）
+ * DataTables 2.x dt-container 级别规则（参照 app.css）
  *
  * 【关键】dt-layout-row / dt-search / dt-length / dt-info / dt-paging 等元素
  * 是 .dt-container 的直接子元素（与 xf-datatable table 同级或包裹关系），
  * **不能**用 .xf-datatable .dt-*（table 的后代选择器），必须用 div.dt-container *
- * 或 裸选择器（与 yoc_cn 保持一致）。
+ * 或 裸选择器（与 标准 保持一致）。
  * ===================================================================== */
 
 /* 容器顶部微调（对齐卡片内边距） */
@@ -1916,7 +2040,7 @@ div.dt-scroll-body > table {
 /* 5) 列标题内边距归零（DataTables 2.x .dt-column-header / .dt-column-title
  *    默认有 30px padding-right 用于排序图标，
  *    但我们的图标已用 flex 布局，不需要额外内边距；
- *    对标 yoc_cn app.css zxf:20260318 注释操作，同步移除该内边距） */
+ *    app.css zxf:20260318 注释操作，同步移除该内边距） */
 .dt-column-header {
     padding: 0;
 }
@@ -1985,7 +2109,7 @@ table.dataTable > tbody > tr.selected *:not(.form-control) {
     --ins-light-rgb: 208, 208, 208 !important;
 }
 
-/* 13) DataTables Select 扩展选中行样式（参照 yoc_cn app.css）
+/* 13) DataTables Select 扩展选中行样式（参照 app.css）
    使用 DataTables 原生 --dt-row-selected 变量，确保与 Select 扩展一致 */
 table.dataTable > tbody > tr.selected > * {
     box-shadow: inset 0 0 0 9999px rgba(var(--dt-row-selected), 0.9) !important;
@@ -2011,7 +2135,7 @@ table.dataTable tbody > tr.selected a:not(.btn):hover {
     font-weight: var(--ins-font-weight-semibold);
 }
 
-/* 14) DataTables Buttons 扩展导出按钮信息层（参照 yoc_cn） */
+/* 14) DataTables Buttons 扩展导出按钮信息层（参照） */
 div.dt-button-info {
     position: fixed;
     top: 50%;
@@ -2037,13 +2161,13 @@ div.dt-button-info > div {
     padding: 1.5rem;
 }
 
-/* 15) Responsive 子行展开/收起样式（参照 yoc_cn） */
+/* 15) Responsive 子行展开/收起样式（参照） */
 table.dataTable.dtr-column td.dt-hasChild,
 table.dataTable.dtr-column > tbody > tr > td.dt-hasChild {
     cursor: pointer;
 }
 
-/* 16) 列搜索输入栏（参照 yoc_cn） */
+/* 16) 列搜索输入栏（参照） */
 .column-search-input-bar {
     display: flex;
     flex-wrap: wrap;
@@ -2052,7 +2176,7 @@ table.dataTable.dtr-column > tbody > tr > td.dt-hasChild {
     margin-bottom: .5rem;
 }
 
-/* 17) 复选框选择的 DataTable 列样式（参照 yoc_cn） */
+/* 17) 复选框选择的 DataTable 列样式（参照） */
 .checkbox-select-datatable {
     width: 1px;
     white-space: nowrap;
@@ -2285,6 +2409,10 @@ a.xf-qr-open { align-self: center; }
 .xf-module-subnav .nav-link { border-radius: .5rem; color: var(--bs-secondary-color, #6b7280); }
 .xf-module-subnav .nav-link.active { background: var(--bs-primary, #3b82f6); color: #fff; }
 
+/* 模块卡片（企业应用中心）：悬停抬升 + 阴影 */
+.hover-shadow { transition: transform .15s ease, box-shadow .15s ease; }
+.hover-shadow:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+
 /* 画廊 */
 .xf-gallery-item { display: block; text-decoration: none; color: inherit; border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .75rem; overflow: hidden; background: var(--bs-body-bg, #fff); transition: transform .15s, box-shadow .15s; }
 .xf-gallery-item:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
@@ -2293,24 +2421,20 @@ a.xf-qr-open { align-self: center; }
 .xf-gallery-meta { padding: .5rem .6rem; }
 
 /* 卡片 */
-.xf-product-card { transition: transform .15s, box-shadow .15s; }
-.xf-product-card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+.xf-product-card { transition: transform .15s, box-shadow .15s, border-color .15s; }
+.xf-product-card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); border-color: var(--bs-primary); }
 .xf-product-img { height: 160px; object-fit: cover; }
 
-/* 看板 */
+/* 看板（权威样式见上方“13. 看板（Kanban）”节，此处仅保留历史选择器兜底，勿重复定义） */
 .xf-kanban { overflow-x: auto; }
-.xf-kanban-col { min-width: 240px; background: var(--bs-tertiary-bg, #f4f6f9); border-radius: .75rem; padding: .5rem; }
-.xf-kanban-head { display: flex; align-items: center; padding: .25rem .35rem .6rem; }
-.xf-kanban-body { display: flex; flex-direction: column; gap: .5rem; max-height: 60vh; overflow: auto; }
-.xf-kanban-card { display: block; text-decoration: none; color: inherit; background: var(--bs-body-bg, #fff); border: 1px solid var(--bs-border-color, #e5e7eb); border-radius: .5rem; padding: .5rem .6rem; transition: box-shadow .15s; }
-.xf-kanban-card:hover { box-shadow: 0 .25rem .6rem rgba(0,0,0,.08); }
 
 /* 会话 */
 .xf-chat { min-height: 520px; }
-.xf-chat-list { max-height: 560px; overflow: auto; }
-.xf-chat-session { display: flex; gap: .6rem; padding: .6rem .75rem; cursor: pointer; border-bottom: 1px solid var(--bs-border-color, #eef0f3); }
-.xf-chat-session:hover, .xf-chat-session.active { background: var(--bs-tertiary-bg, #f4f6f9); }
-.xf-chat-avatar { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--bs-primary, #3b82f6); color: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto; font-weight: 600; }
+.xf-chat-list { max-height: 560px; overflow: auto; scrollbar-width: thin; }
+.xf-chat-session { display: flex; gap: .6rem; padding: .6rem .75rem; cursor: pointer; border-bottom: 1px solid var(--bs-border-color, #eef0f3); transition: background .15s, box-shadow .15s; }
+.xf-chat-session:hover { background: var(--bs-tertiary-bg, #f4f6f9); }
+.xf-chat-session.active { background: var(--bs-tertiary-bg, #f4f6f9); box-shadow: inset 3px 0 0 0 var(--bs-primary); }
+.xf-chat-avatar { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--bs-primary, #3b82f6); color: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto; font-weight: 600; box-shadow: 0 0 0 2px var(--bs-body-bg, #fff); }
 .xf-chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .xf-chat-session-main { min-width: 0; }
 .xf-chat-window { display: flex; flex-direction: column; height: 560px; }
@@ -2320,9 +2444,9 @@ a.xf-qr-open { align-self: center; }
 .xf-chat-msg { display: flex; margin-bottom: .75rem; }
 .xf-chat-in { justify-content: flex-start; }
 .xf-chat-out { justify-content: flex-end; }
-.xf-chat-bubble { max-width: 75%; padding: .5rem .75rem; border-radius: .75rem; }
+.xf-chat-bubble { max-width: 75%; padding: .5rem .75rem; border-radius: .75rem; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
 .xf-chat-in .xf-chat-bubble { background: var(--bs-body-bg, #fff); border: 1px solid var(--bs-border-color, #e5e7eb); border-top-left-radius: 0; }
-.xf-chat-out .xf-chat-bubble { background: var(--bs-primary, #3b82f6); color: #fff; border-top-right-radius: 0; }
+.xf-chat-out .xf-chat-bubble { background: linear-gradient(135deg, var(--bs-primary, #3b82f6), #2563eb); color: #fff; border-top-right-radius: 0; }
 .xf-chat-name { font-size: .7rem; opacity: .7; margin-bottom: .15rem; }
 .xf-chat-input { display: flex; gap: .5rem; padding: .6rem; border-top: 1px solid var(--bs-border-color, #eef0f3); }
 .xf-gallery-item, .xf-kanban-card { cursor: pointer; }
@@ -2686,7 +2810,7 @@ a.card:hover, .card.hoverable:hover {
 }
 
 /* ===================================================================
- * DataTable 工具区 & 搜索表单 & 行详情（参照 yoc_cn 对标样式）
+ * DataTable 工具区 & 搜索表单 & 行详情（参照 对标样式）
  * =================================================================== */
 
 /* ---- 表格顶部按钮栏 ---- */
@@ -2864,10 +2988,18 @@ table.dataTable tfoot select {
     line-height: 1.4;
 }
 
-/* ---- 表格内下拉菜单防裁剪 ---- */
+/* ---- 表格内下拉菜单防裁剪 ----
+ * 原 z-index-only 方案无效：z-index 无法解除父容器 overflow:auto 对子元素的裁剪。
+ * 裁剪已由 xfadmin.js 的 shown.bs.dropdown 事件处理（position:fixed 脱离裁剪上下文）。
+ * CSS 侧仅保留 min-width 和视觉增强。 */
 table.dataTable .dropdown-menu {
     z-index: 1055;
     min-width: 120px;
+}
+/* 表格行操作下拉菜单：固定定位准备（JS 在展开时动态设置 position:fixed） */
+.xf-datatable .dt-scroll-body .dropdown-menu,
+.dataTables_scrollBody .dropdown-menu {
+    will-change: top, left;
 }
 
 /* ---- 固定列表格选中/悬停背景增强 ---- */
@@ -2911,8 +3043,8 @@ table.dataTable thead th {
 }
 
 /* =====================================================================
- * ZXF 全局工具类与修复（对齐 yoc_cn app.css 中所有 zxf 标记段落）
- * 原路径: /Users/aha/www/yoc_cn/public/static/inspinia/v4.0/assets/css/app.css
+ * ZXF 全局工具类与修复（app.css 中所有 zxf 标记段落）
+ * 原路径: /Users/aha/www/标准/public/static/inspinia/v4.0/assets/css/app.css
  * xfadmin.css 最后加载，覆盖 INSPINIA/Bootstrap 默认样式
  * ===================================================================== */
 
@@ -3229,6 +3361,104 @@ html[data-layout="topnav"] .app-topbar .topnav-search.topnav-search.d-lg-none {
 .xf-text-truncate-2 { -webkit-line-clamp: 2; }
 .xf-text-truncate-3 { -webkit-line-clamp: 3; }
 
+/* =====================================================================
+ * Topbar 新增子组件：应用启动器 / 消息未读态（xfadmin 自有）
+ * ===================================================================== */
+
+/* 应用启动器九宫格 */
+.app-launcher-grid { margin: 0; }
+.app-launcher-grid .col-4 { padding: .25rem; }
+.app-launcher-item {
+    transition: background-color .15s ease, transform .15s ease;
+    background: transparent;
+}
+.app-launcher-item:hover {
+    background: var(--bs-light);
+    transform: translateY(-1px);
+}
+html[data-bs-theme="dark"] .app-launcher-item:hover { background: rgba(255, 255, 255, .06); }
+
+/* 圆形应用启动器（对齐后台模板 #apps-dropdown-rounded / INSPINIA v4 App Launcher） */
+#apps-dropdown-rounded.apps-dropdown-rounded-menu {
+    min-width: 296px !important;
+    max-width: 340px;
+    padding: .875rem !important;
+}
+#apps-dropdown-rounded .dropdown-header { padding: 0 0 .5rem; margin-bottom: .25rem; font-weight: 600; }
+#apps-dropdown-rounded .app-launcher-rounded {
+    --launcher-icon: 44px;
+    margin: 0 -.375rem;
+}
+#apps-dropdown-rounded .app-launcher-rounded .col-4 {
+    padding: .375rem;
+    display: flex;
+}
+#apps-dropdown-rounded .app-launcher-rounded .app-launcher-item {
+    width: 100%;
+    gap: .4rem;
+    padding: .5rem .25rem !important;
+    border-radius: .65rem;
+}
+#apps-dropdown-rounded .app-launcher-rounded .app-launcher-item .avatar-md {
+    width: var(--launcher-icon);
+    height: var(--launcher-icon);
+    margin: 0 auto !important;
+}
+#apps-dropdown-rounded .app-launcher-rounded .app-launcher-item .avatar-title {
+    width: var(--launcher-icon);
+    height: var(--launcher-icon);
+    font-size: 1.15rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .04);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+#apps-dropdown-rounded .app-launcher-rounded .app-launcher-item small {
+    font-size: .72rem;
+    line-height: 1.1;
+    max-width: 100%;
+    margin: 0 auto;
+}
+#apps-dropdown-rounded .app-launcher-rounded .app-launcher-item:hover {
+    background: var(--bs-light);
+    transform: none;
+}
+#apps-dropdown-rounded .app-launcher-rounded .app-launcher-item:hover .avatar-title {
+    transform: scale(1.1);
+    box-shadow: 0 4px 14px rgba(13, 110, 253, .28);
+}
+#apps-dropdown-rounded .app-launcher-foot {
+    margin-top: .625rem !important;
+    padding-top: .625rem !important;
+}
+#apps-dropdown-rounded .app-launcher-foot .btn { font-size: .8rem; padding: .3rem .5rem; }
+html[data-bs-theme="dark"] #apps-dropdown-rounded .app-launcher-rounded .app-launcher-item .avatar-title {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+}
+html[data-bs-theme="dark"] #apps-dropdown-rounded .app-launcher-rounded .app-launcher-item:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+/* 任务清单面板（对齐 INSPINIA tasks.html） */
+.xf-tasklist .xf-task-item { cursor: pointer; transition: background .15s ease; }
+.xf-tasklist .xf-task-item:hover { background: var(--bs-light); }
+.xf-tasklist .xf-task-check { width: 1.05rem; height: 1.05rem; cursor: pointer; }
+.xf-tasklist .xf-task-done .xf-task-title { text-decoration: line-through; color: var(--bs-secondary); }
+.xf-tasklist .xf-task-done { opacity: .7; }
+.xf-tasklist .xf-task-filter .btn.active { background: var(--bs-primary); color: #fff; border-color: var(--bs-primary); }
+html[data-bs-theme="dark"] .xf-tasklist .xf-task-item:hover { background: rgba(255, 255, 255, .05); }
+
+/* 销售漏斗 / 商机管线（对齐 INSPINIA deals.html） */
+.xf-deals .xf-deal-stage { min-width: 0; }
+.xf-deals .xf-deal-card { transition: transform .12s ease, box-shadow .12s ease; }
+.xf-deals .xf-deal-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, .08) !important; }
+.xf-deals .card-header .badge { font-size: .8rem; }
+
+
+/* 消息中心未读项高亮 */
+.topbar-item .dropdown-menu .dropdown-item.unread {
+    background: rgba(var(--bs-primary-rgb), .06);
+}
+.topbar-item .dropdown-item.unread .fw-medium { color: var(--bs-emphasis-color); }
+
 /* 卡片悬浮微交互（仅自家 .xf-card，不覆盖框架 .card 的 box-shadow） */
 .xf-card {
     transition: box-shadow .2s ease, transform .2s ease;
@@ -3278,4 +3508,53 @@ table.dataTable td .btn-icon,
     align-items: center;
     justify-content: center;
     padding: 0;
+}
+
+/* 错误页状态码降级展示（无 svg 插画时显示大号状态码） */
+.xf-error-code {
+    line-height: 1;
+    letter-spacing: -0.04em;
+    opacity: 0.9;
+}
+
+/* 认证页 split 分栏布局（复刻 inspinia auth-split-*） */
+.auth-split-wrapper { min-height: 100vh; }
+.auth-split-aside {
+    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
+}
+.auth-split-aside img { filter: brightness(0) invert(1); }
+.auth-split-form { background: var(--bs-body-bg, #fff); }
+[data-bs-theme="dark"] .auth-split-form { background: var(--bs-body-bg, #0f1117); }
+@media (max-width: 991.98px) {
+    .auth-split-aside { display: none !important; }
+}
+
+/* 认证页 split 布局（复刻 inspinia auth-split-*） */
+.auth-split-wrapper { min-height: 100vh; }
+.auth-split-aside {
+    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
+}
+.auth-split-form { background: var(--bs-body-bg, #fff); }
+[data-bs-theme="dark"] .auth-split-form { background: var(--bs-body-bg, #1a1d21); }
+.min-vh-100 { min-height: 100vh; }
+
+/* ===================== 全量封装新增组件样式 ===================== */
+/* 两步验证 OTP 输入 */
+.xf-2fa-cell { width: 46px; height: 54px; font-size: 1.4rem; }
+.xf-2fa:focus-within { outline: none; }
+
+/* 数量步进器 */
+.xf-qty .xf-qty-input { text-align: center; }
+
+/* 迷你 sparkline 卡 */
+.xf-spark { display: block; }
+
+/* 订单物流进度 */
+.xf-order-track-step .rounded-circle { position: relative; z-index: 2; }
+
+/* 发票打印 */
+@media print {
+    body * { visibility: hidden; }
+    .xf-invoice-print-area, .xf-invoice-print-area * { visibility: visible; }
+    .xf-invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; }
 }

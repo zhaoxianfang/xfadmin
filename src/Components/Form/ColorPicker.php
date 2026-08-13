@@ -39,7 +39,7 @@ class ColorPicker extends Component
         ], (array) $this->get('options', []));
 
         $control = '<div class="d-flex align-items-center gap-2">'
-            . '<div id="' . $this->e($id) . '" data-xf="pickr" data-xf-config="' . $this->e(json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT)) . '"></div>'
+            . '<div id="' . $this->e($id) . '" data-xf="pickr" data-xf-config="' . $this->e(json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)) . '"></div>'
             . ($this->get('name') ? '<input type="hidden" name="' . $this->e($this->get('name')) . '" value="' . $this->e($this->get('value')) . '">' : '')
             . '</div>';
 

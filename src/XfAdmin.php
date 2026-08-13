@@ -76,6 +76,12 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\UI\Pagination     pagination(array $options = [])
  * @method static Components\UI\ListGroup      listGroup(array $options = [])
  * @method static Components\UI\Avatar         avatar(array $options = [])
+ * @method static Components\UI\AvatarGroup    avatarGroup(array $options = [])
+ * @method static Components\UI\Callout        callout(array $options = [])
+ * @method static Components\UI\Divider        divider(array $options = [])
+ * @method static Components\UI\Kbd            kbd(array $options = [])
+ * @method static Components\UI\Media          media(array $options = [])
+ * @method static Components\UI\Skeleton       skeleton(array $options = [])
  * @method static Components\UI\Icon           icon(array $options = [])
  * @method static Components\UI\Toast          toast(array $options = [])
  * @method static Components\UI\Timeline       timeline(array $options = [])
@@ -99,6 +105,7 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Layout\Maintenance maintenance(array $options = [])
  * @method static Components\Layout\EmptyState  emptyState(array $options = [])
  * @method static Components\Layout\LockScreen  lockScreen(array $options = [])
+ * @method static Components\Layout\AccountSettingsPanel accountSettingsPanel(array $options = [])
  * @method static Components\Form\Tags          tags(array $options = [])
  * @method static Components\Form\MaskedInput   maskedInput(array $options = [])
  * @method static Components\Form\Wizard        wizard(array $options = [])
@@ -143,6 +150,8 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Data\EmailCompose  emailCompose(array $options = [])
  * @method static Components\Data\Customers      customers(array $options = [])
  * @method static Components\Data\Orders         orders(array $options = [])
+ * @method static Components\Data\TaskList        taskList(array $options = [])
+ * @method static Components\Data\Deals           deals(array $options = [])
  * @method static Components\Data\OrderDetails   orderDetails(array $options = [])
  * @method static Components\Data\ProductDetails productDetails(array $options = [])
  * @method static Components\Data\Projects       projects(array $options = [])
@@ -175,14 +184,63 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Data\SellerDetails  sellerDetails(array $options = [])
  * @method static Components\Data\Article        article(array $options = [])
  * @method static Components\Data\ProjectActivity projectActivity(array $options = [])
+ * @method static Components\Data\ShoppingCart   shoppingCart(array $options = [])
+ * @method static Components\Data\Checkout       checkout(array $options = [])
+ * @method static Components\Data\Marketplace    marketplace(array $options = [])
+ * @method static Components\Data\AccountSettings accountSettings(array $options = [])
+ * @method static Components\Data\Sitemap        sitemap(array $options = [])
+ * @method static Components\Data\PrivacyPolicy  privacyPolicy(array $options = [])
+ * @method static Components\Data\AppManage      appManage(array $options = [])
+ * @method static Components\Data\Warehouse      warehouse(array $options = [])
+ * @method static Components\Data\Refunds        refunds(array $options = [])
+ * @method static Components\Data\Sales           sales(array $options = [])
+ * @method static Components\Data\PurchasedOrders purchasedOrders(array $options = [])
+ * @method static Components\Data\Attributes     attributes(array $options = [])
+ * @method static Components\Data\EcommerceSettings ecommerceSettings(array $options = [])
+ * @method static Components\Data\ProductsGrid   productsGrid(array $options = [])
+ * @method static Components\Data\ProductViews   productViews(array $options = [])
+ * @method static Components\Data\AnalyticsDashboard analyticsDashboard(array $options = [])
+ * @method static Components\UI\ColorPalette    colorPalette(array $options = [])
+ * @method static Components\UI\IconSet         iconSet(array $options = [])
+ * @method static Components\UI\VideoEmbed      videoEmbed(array $options = [])
+ * @method static Components\Table\TablesCustom tablesCustom(array $options = [])
+ * @method static Components\Misc\VideoPlayer    videoPlayer(array $options = [])
+ * @method static Components\Misc\I18n          i18n(array $options = [])
  * @method static Components\Misc\PinBoard       pinBoard(array $options = [])
  * @method static Components\Misc\Masonry        masonry(array $options = [])
  * @method static Components\Layout\Landing      landing(array $options = [])
+ * @method static Components\Data\EcommerceDashboard ecommerceDashboard(array $options = [])
+ * @method static Components\Data\WidgetsDashboard widgetsDashboard(array $options = [])
+ * @method static Components\Data\ModuleNav      moduleNav(array $options = [])
+ * @method static Components\Data\ModuleGrid     moduleGrid(array $options = [])
+ * @method static Components\Data\DashboardGrid   dashboardGrid(array $options = [])
+ * @method static Components\Data\SettingsCenter  settingsCenter(array $options = [])
+ * @method static Components\Data\ReportPage      reportPage(array $options = [])
+ * @method static Components\Data\CartSummary      cartSummary(array $options = [])
+ * @method static Components\Data\ChatConversationPanel chatConversationPanel(array $options = [])
+ * @method static Components\Data\ChatMessageBubble chatMessageBubble(array $options = [])
+ * @method static Components\Data\FeatureComparisonTable featureComparisonTable(array $options = [])
+ * @method static Components\Data\FilterSidebar   filterSidebar(array $options = [])
+ * @method static Components\Data\OrderTrackingTimeline orderTrackingTimeline(array $options = [])
+ * @method static Components\Data\SearchResultsRich searchResultsRich(array $options = [])
+ * @method static Components\Data\StatMiniSparkline statMiniSparkline(array $options = [])
+ * @method static Components\Data\SocialFeed      socialFeed(array $options = [])
+ * @method static Components\Data\FaqAccordion    faqAccordion(array $options = [])
+ * @method static Components\Data\ContactList     contactList(array $options = [])
+ * @method static Components\Data\UserProfile     userProfile(array $options = [])
+ * @method static Components\Data\InvoiceView     invoiceView(array $options = [])
+ * @method static Components\Form\FormElements   formElements(array $options = [])
+ * @method static Components\Form\FormLayout     formLayout(array $options = [])
+ * @method static Components\Form\FormOtherPlugin formOtherPlugin(array $options = [])
+ * @method static Components\Form\FormValidation formValidation(array $options = [])
+ * @method static Components\UI\CommandPalette     commandPalette(array $options = [])
+ * @method static Components\UI\NotificationCenter notificationCenter(array $options = [])
+ * @method static Components\UI\DropzoneUpload     dropzoneUpload(array $options = [])
  */
 final class XfAdmin
 {
     /** 扩展包版本号（与 config/xfadmin.php 的 version 同步，用于运行时自检） */
-    public const VERSION = '1.0.0';
+    public const VERSION = '2.0.0';
 
     /** 组件注册表：alias => class */
     private static array $components = [
@@ -213,6 +271,7 @@ final class XfAdmin
         // 表格
         'table'       => Components\Table\Table::class,
         'dataTable'   => Components\Table\DataTable::class,
+        'tablesCustom' => Components\Table\TablesCustom::class,
         // 表单
         'form'        => Components\Form\Form::class,
         'input'       => Components\Form\Input::class,
@@ -229,6 +288,10 @@ final class XfAdmin
         'maskedInput' => Components\Form\MaskedInput::class,
         'wizard'      => Components\Form\Wizard::class,
         'passwordStrength' => Components\Form\PasswordStrength::class,
+        'formElements' => Components\Form\FormElements::class,
+        'formLayout' => Components\Form\FormLayout::class,
+        'formOtherPlugin' => Components\Form\FormOtherPlugin::class,
+        'formValidation' => Components\Form\FormValidation::class,
         // 图表 / 地图
         'apexChart'   => Components\Chart\ApexChart::class,
         'apexTree'    => Components\Chart\ApexTree::class,
@@ -282,6 +345,13 @@ final class XfAdmin
         'empty'        => Components\UI\EmptyState::class,
         'toolbar'      => Components\UI\Toolbar::class,
         'searchBox'    => Components\UI\SearchBox::class,
+        'colorPalette' => Components\UI\ColorPalette::class,
+        'iconSet'      => Components\UI\IconSet::class,
+        'videoEmbed'   => Components\UI\VideoEmbed::class,
+        // 新增：对标 INSPINIA 缺失的业务组件
+        'commandPalette'    => Components\UI\CommandPalette::class,
+        'notificationCenter' => Components\UI\NotificationCenter::class,
+        'dropzoneUpload'    => Components\UI\DropzoneUpload::class,
         // 数据 / 业务
         'pricingCard'  => Components\Data\PricingCard::class,
         'faq'          => Components\Data\Faq::class,
@@ -304,6 +374,8 @@ final class XfAdmin
         'emailCompose' => Components\Data\EmailCompose::class,
         'customers'     => Components\Data\Customers::class,
         'orders'        => Components\Data\Orders::class,
+        'taskList'      => Components\Data\TaskList::class,
+        'deals'         => Components\Data\Deals::class,
         'orderDetails'  => Components\Data\OrderDetails::class,
         'productDetails'=> Components\Data\ProductDetails::class,
         'projects'      => Components\Data\Projects::class,
@@ -336,6 +408,31 @@ final class XfAdmin
         'sellerDetails' => Components\Data\SellerDetails::class,
         'article'       => Components\Data\Article::class,
         'projectActivity' => Components\Data\ProjectActivity::class,
+        'shoppingCart'   => Components\Data\ShoppingCart::class,
+        'checkout'       => Components\Data\Checkout::class,
+        'marketplace'    => Components\Data\Marketplace::class,
+        'accountSettings' => Components\Data\AccountSettings::class,
+        'sitemap'        => Components\Data\Sitemap::class,
+        'privacyPolicy'  => Components\Data\PrivacyPolicy::class,
+        'appManage'      => Components\Data\AppManage::class,
+        'warehouse'      => Components\Data\Warehouse::class,
+        'refunds'        => Components\Data\Refunds::class,
+        'sales'           => Components\Data\Sales::class,
+        'purchasedOrders' => Components\Data\PurchasedOrders::class,
+        'attributes'     => Components\Data\Attributes::class,
+        'ecommerceSettings' => Components\Data\EcommerceSettings::class,
+        'productsGrid'   => Components\Data\ProductsGrid::class,
+        'productViews'   => Components\Data\ProductViews::class,
+        'analyticsDashboard' => Components\Data\AnalyticsDashboard::class,
+        'ecommerceDashboard' => Components\Data\EcommerceDashboard::class,
+        'widgetsDashboard' => Components\Data\WidgetsDashboard::class,
+        // 后台模板可复用组件
+        'moduleNav'   => Components\Data\ModuleNav::class,
+        'moduleGrid'  => Components\Data\ModuleGrid::class,
+        // 页面级可复用布局（仪表盘 / 设置中心 / 报表）
+        'dashboardGrid' => Components\Data\DashboardGrid::class,
+        'settingsCenter' => Components\Data\SettingsCenter::class,
+        'reportPage'   => Components\Data\ReportPage::class,
         // 杂项
         'calendar'    => Components\Misc\Calendar::class,
         'treeView'    => Components\Misc\TreeView::class,
@@ -353,6 +450,28 @@ final class XfAdmin
         'textDiff'    => Components\Misc\TextDiff::class,
         'pinBoard'    => Components\Misc\PinBoard::class,
         'masonry'     => Components\Misc\Masonry::class,
+        'videoPlayer' => Components\Misc\VideoPlayer::class,
+        'i18n' => Components\Misc\I18n::class,
+
+        // —— 全量封装新增组件（对照 inspinia 模板补齐的高频可复用 UI 模式）——
+        'twoFactorInput'      => Components\Form\TwoFactorInput::class,
+        'quantityStepper'     => Components\Form\QuantityStepper::class,
+        'statMiniSparkline'   => Components\Data\StatMiniSparkline::class,
+        'cartSummary'         => Components\Data\CartSummary::class,
+        'chatMessageBubble'   => Components\Data\ChatMessageBubble::class,
+        'chatConversationPanel' => Components\Data\ChatConversationPanel::class,
+        'dataTableToolbar'    => Components\Table\DataTableToolbar::class,
+        'orderTrackingTimeline' => Components\Data\OrderTrackingTimeline::class,
+        'featureComparisonTable' => Components\Data\FeatureComparisonTable::class,
+        'filterSidebar'       => Components\Data\FilterSidebar::class,
+        'accountSettingsPanel' => Components\Layout\AccountSettingsPanel::class,
+        'searchResultsRich'   => Components\Data\SearchResultsRich::class,
+        'invoicePrintButton'  => Components\UI\InvoicePrintButton::class,
+        'socialFeed'          => Components\Data\SocialFeed::class,
+        'faqAccordion'        => Components\Data\FaqAccordion::class,
+        'contactList'         => Components\Data\ContactList::class,
+        'userProfile'         => Components\Data\UserProfile::class,
+        'invoiceView'         => Components\Data\InvoiceView::class,
     ];
 
     /** 全局配置（theme/brand/footer 等，Page 等组件的默认值来源） */

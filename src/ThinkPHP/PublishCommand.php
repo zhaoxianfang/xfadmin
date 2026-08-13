@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\ThinkPHP;
 
 use think\console\Command;
 use think\console\Input;
+use think\console\input\Option;
 use think\console\Output;
 
 /**
@@ -16,13 +17,16 @@ class PublishCommand extends Command
 {
     protected function configure(): void
     {
-        $this->setName('xfadmin:publish')->setDescription('发布 XfAdmin 静态资源到 public/zxf/xfadmin');
+        $this->setName('xfadmin:publish')
+            ->setDescription('发布 XfAdmin 静态资源到 public/zxf/xfadmin')
+            ->addOption('force', 'f', Option::VALUE_NONE, '覆盖已存在的资源文件');
     }
 
     protected function execute(Input $input, Output $output): int
     {
         $source = realpath(__DIR__ . '/../../resources/assets');
         $target = $this->app->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'zxf' . DIRECTORY_SEPARATOR . 'xfadmin';
+        $force  = (bool) $input->getOption('force');
 
         if ($source === false) {
             $output->error('未找到资源目录');
@@ -30,13 +34,21 @@ class PublishCommand extends Command
             return 1;
         }
 
-        $this->copyDir($source, $target);
-        $output->info("XfAdmin 资源已发布到: {$target}");
+        if (! $force && is_dir($target) && $this->dirHasFiles($target)) {
+            $output->warning("目标目录已存在资源: {$target}");
+            $output->info('如需覆盖已发布资源，请加 --force 参数：php think xfadmin:publish --force');
+            $output->info('（已跳过，未覆盖任何文件）');
+
+            return 0;
+        }
+
+        $this->copyDir($source, $target, $force);
+        $output->info("XfAdmin 资源已发布到: {$target}" . ($force ? '（已覆盖）' : ''));
 
         return 0;
     }
 
-    private function copyDir(string $source, string $target): void
+    private function copyDir(string $source, string $target, bool $force = false): void
     {
         if (! is_dir($target)) {
             mkdir($target, 0755, true);
@@ -52,8 +64,24 @@ class PublishCommand extends Command
                     mkdir($dest, 0755, true);
                 }
             } else {
+                if (! $force && file_exists($dest)) {
+                    continue;
+                }
                 copy($item->getPathname(), $dest);
             }
         }
+    }
+
+    private function dirHasFiles(string $dir): bool
+    {
+        foreach (scandir($dir) ?: [] as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

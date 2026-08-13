@@ -52,7 +52,7 @@ class Input extends Component
 
     protected function html(): string
     {
-        $id    = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-input');
+        $id    = $this->resolveId('xf-input');
         $attrs = [
             'type'        => $this->get('type'),
             'class'       => Html::cls('form-control', $this->get('size') ? 'form-control-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : ''),

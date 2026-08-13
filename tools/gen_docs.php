@@ -345,7 +345,8 @@ foreach (['Layout','Navigation','Grid','UI','Form','Chart','Table','Data','Misc'
 }
 $toc[] = "";
 
-$header = "# 组件详细参考（自动生成 · 全量 {$totalClasses} 个组件）\n\n";
+$totalAliases = count($list);
+$header = "# 组件详细参考（自动生成 · 全量 {$totalClasses} 个组件 / {$totalAliases} 个别名）\n\n";
 $header .= "> 本文档由 `tools/gen_docs.php` 扫描全部已注册组件自动生成，列出每个组件的别名、分类、类、描述、依赖资源、全部 `defaults()` 选项（含类型 / 默认值 / 行内说明）、链式方法与实际调用示例。\n";
 $header .= "> 调用统一形式：`XfAdmin::<alias>(array \$options)`。所有组件均支持通用键 `id` / `class` / `attributes`。\n";
 $header .= "> 资源前缀统一为 `zxf/xfadmin`，无需发布即可在 `demo/` 中直接加载。返回 → [组件总览](components.md)\n\n";

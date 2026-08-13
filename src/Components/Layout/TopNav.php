@@ -56,6 +56,7 @@ class TopNav extends Component
             'fullscreen'         => true,
             'customizer'         => true,
             'user'               => false,
+            'apps'               => false,   // 应用启动器（圆形九宫格 #apps-dropdown-rounded）
             'right'              => null,
         ];
     }
@@ -93,6 +94,7 @@ class TopNav extends Component
                 . $this->e($this->get('search_placeholder')) . '">'
                 . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
         }
+        $html .= $this->renderApps();
         $html .= $this->renderLanguages();
         $html .= $this->renderMessages();
         $html .= $this->renderNotifications();
@@ -554,5 +556,70 @@ class TopNav extends Component
         }
 
         return $html . '</div></div></div>';
+    }
+
+    /**
+     * 应用启动器（圆形九宫格下拉，对齐后台模板 #apps-dropdown-rounded / INSPINIA v4 App Launcher）。
+     * 配置：apps => [
+     *     'title'   => str,
+     *     'variant' => 'rounded'（默认，圆形图标；'grid' 为方角）,
+     *     'all_url' => str, 'all_text' => str,
+     *     'add_url' => str, 'add_text' => str,
+     *     'items'   => [['icon'=>,'text'=>,'url'=>,'variant'=>], ...],
+     * ]
+     */
+    protected function renderApps(): string
+    {
+        $conf = $this->get('apps');
+        if (! $conf) {
+            return '';
+        }
+        $conf   = (array) $conf;
+        $items  = $conf['items'] ?? [];
+        if ($items === []) {
+            return '';
+        }
+        $variant = strtolower((string) ($conf['variant'] ?? 'rounded'));
+        $rounded = $variant !== 'grid';
+
+        $html = '<div class="topbar-item d-none d-lg-flex"><div class="dropdown">'
+            . '<button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"'
+            . ' data-bs-offset="0,16" type="button" aria-haspopup="false" aria-expanded="false">'
+            . '<i class="ti ti-layout-grid fs-xxl"></i></button>';
+        $menuCls = 'dropdown-menu dropdown-menu-end p-2' . ($rounded ? ' apps-dropdown-rounded-menu' : '');
+        $html .= '<div class="' . $menuCls . '"' . ($rounded ? ' id="apps-dropdown-rounded"' : '') . ' style="min-width: 300px;">';
+        if (! empty($conf['title'])) {
+            $html .= '<h6 class="dropdown-header">' . $this->e($conf['title']) . '</h6>';
+        }
+        $html .= '<div class="row g-1 app-launcher-grid' . ($rounded ? ' app-launcher-rounded' : '') . '">';
+        foreach ($items as $item) {
+            $item  = (array) $item;
+            $iv    = $item['variant'] ?? 'primary';
+            $shape = $rounded ? 'rounded-circle' : 'rounded';
+            $html .= '<div class="col-4">'
+                . '<a href="' . $this->e($item['url'] ?? 'javascript:void(0);') . '"'
+                . ' class="d-flex flex-column align-items-center text-reset text-decoration-none rounded p-2 app-launcher-item">'
+                . '<span class="avatar-md mb-1"><span class="avatar-title bg-' . $this->e($iv) . '-subtle text-' . $this->e($iv) . ' ' . $shape . '">'
+                . '<i class="' . $this->e($item['icon'] ?? 'ti ti-apps') . ' fs-22"></i></span></span>'
+                . '<small class="text-truncate">' . $this->e($item['text'] ?? '') . '</small>'
+                . '</a></div>';
+        }
+        $html .= '</div>';
+        $foot = '';
+        if (! empty($conf['all_url']) || ! empty($conf['add_url'])) {
+            $foot .= '<div class="d-flex gap-2 mt-2 pt-2 border-top app-launcher-foot">';
+            if (! empty($conf['all_url'])) {
+                $foot .= '<a href="' . $this->e($conf['all_url']) . '" class="btn btn-sm btn-soft-primary flex-fill">'
+                    . $this->e($conf['all_text'] ?? '查看全部应用') . '</a>';
+            }
+            if (! empty($conf['add_url'])) {
+                $foot .= '<a href="' . $this->e($conf['add_url']) . '" class="btn btn-sm btn-soft-secondary flex-fill">'
+                    . '<i class="ti ti-plus me-1"></i>' . $this->e($conf['add_text'] ?? '添加应用') . '</a>';
+            }
+            $foot .= '</div>';
+        }
+        $html .= $foot . '</div></div></div>';
+
+        return $html;
     }
 }

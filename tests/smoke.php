@@ -253,7 +253,7 @@ if (trim($nested) === '') {
 
 echo "\n== 资源去重 ==\n";
 Assets::reset();
-XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => '1.0.0']);
+XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => XfAdmin::VERSION]);
 // 同一组件渲染 3 次 + 多组件共用插件
 XfAdmin::dataTable(['columns' => ['a' => 'A'], 'data' => []])->render();
 XfAdmin::dataTable(['columns' => ['a' => 'A'], 'data' => []])->render();
@@ -278,11 +278,11 @@ $head    = Assets::instance()->head();
 $scripts = Assets::instance()->scripts();
 $assert(substr_count($head, 'vendors.min.css') === 1, 'head 含 vendors.min.css 一次');
 $assert(substr_count($scripts, 'xfadmin.js') === 1, 'scripts 含 xfadmin.js 一次');
-$assert(str_contains($head, '?v=1.0.0'), '版本号附加');
+$assert(str_contains($head, '?v=' . XfAdmin::VERSION), '版本号附加');
 
 // 兜底：head() 先于组件渲染时，渲染期注册的插件 CSS 不应丢失（修复样式丢失）
 Assets::reset();
-XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => '1.0.0']);
+XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => XfAdmin::VERSION]);
 $headLate    = Assets::instance()->head(); // 此时尚无任何插件 CSS
 XfAdmin::dataTable(['columns' => [['key' => 'a', 'title' => 'A']], 'data' => []])->render();
 $scriptsLate = Assets::instance()->scripts();
@@ -338,7 +338,7 @@ $assert(XfAdmin::has('dataTable'), 'XfAdmin::has 已知组件返回 true');
 $assert(! XfAdmin::has('__not_exist__'), 'XfAdmin::has 未知组件返回 false');
 $assert(XfAdmin::has('dateRangePicker'), '别名 dateRangePicker 已注册（文档调用名可用）');
 $assert(XfAdmin::has('clipboardButton'), '别名 clipboardButton 已注册（文档调用名可用）');
-$assert(XfAdmin::version() === '1.0.0', 'XfAdmin::version 返回包版本号');
+$assert(XfAdmin::version() === XfAdmin::VERSION, 'XfAdmin::version 返回包版本号');
 $assert(is_string(XfAdmin::asset('css/xfadmin.css')) && str_contains(XfAdmin::asset('css/xfadmin.css'), 'xfadmin.css'), 'XfAdmin::asset 返回资源 URL');
 $assert(trim((string) XfAdmin::dateRangePicker(['name' => 'd', 'label' => '日期'])) !== '', 'dateRangePicker 别名可正常渲染');
 $assert(trim((string) XfAdmin::clipboardButton(['text' => 'hi'])) !== '', 'clipboardButton 别名可正常渲染');

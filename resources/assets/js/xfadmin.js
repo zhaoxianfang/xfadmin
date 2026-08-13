@@ -253,6 +253,213 @@
         /* 纯文本（转义） */
         text: function (d) { return escapeHtml(d); },
 
+        /* 自定义徽章：cfg = {variant, dot, pill, icon, text, soft}
+         * d 可为字符串（直接显示）或 {text, variant, icon} 对象 */
+        badge: function (d, row, cfg) {
+            var label = d, variant = (cfg && cfg.variant) || 'primary', icon = (cfg && cfg.icon) || '', dot = cfg && cfg.dot, pill = cfg && cfg.pill !== false, soft = cfg && cfg.soft !== false;
+            if (d && typeof d === 'object') {
+                label = d.text != null ? d.text : '';
+                variant = d.variant || variant;
+                icon = d.icon || icon;
+                if (d.dot != null) dot = d.dot;
+                if (d.pill === false) pill = false;
+                if (d.soft === false) soft = false;
+            }
+            var cls = 'badge' + (pill ? ' rounded-pill' : '') + ' ' + (soft ? 'badge-soft-' : 'bg-') + variant;
+            var inner = (dot ? '<span class="xf-dot xf-dot-' + variant + '"></span>' : '') +
+                (icon ? '<i class="' + icon + '"></i> ' : '') + escapeHtml(label);
+            return '<span class="' + cls + '">' + inner + '</span>';
+        },
+
+        /* 状态胶囊：在 badge 基础上带左侧状态点（语义化状态展示）
+         * cfg = {variant, text, icon, map} —— map: {值:variant} 按数据值取色 */
+        statusPill: function (d, row, cfg) {
+            var variant = (cfg && cfg.variant) || 'secondary';
+            if (cfg && cfg.map && d != null) {
+                var key = String(d);
+                if (cfg.map[key] != null) variant = cfg.map[key];
+                else if (cfg.map['*'] != null) variant = cfg.map['*'];
+            }
+            var label = (cfg && cfg.text) || d;
+            var icon = cfg && cfg.icon ? (cfg.icon[key || '*'] || '') : '';
+            return '<span class="badge rounded-pill ' + (cfg && cfg.soft !== false ? 'badge-soft-' : 'bg-') + variant + '">' +
+                '<span class="xf-status-dot xf-status-dot-' + variant + '"></span>' +
+                (icon ? '<i class="' + icon + ' me-1"></i>' : '') + escapeHtml(label) + '</span>';
+        },
+
+        /* 优先级展示：cfg = {high, medium, low} 等级名映射；d 为 low/medium/high 或数值 */
+        priority: function (d, row, cfg) {
+            var map = { high: ['高', 'danger', 'ti ti-arrow-up'], medium: ['中', 'warning', 'ti ti-equal'], low: ['低', 'success', 'ti ti-arrow-down'] };
+            var key = d;
+            if (typeof d === 'number') { key = d >= 7 ? 'high' : (d >= 4 ? 'medium' : 'low'); }
+            else { key = String(d).toLowerCase(); }
+            var m = map[key] || (cfg && cfg[key] ? cfg[key] : ['普通', 'secondary', 'ti ti-minus']);
+            return '<span class="badge badge-soft-' + m[1] + '"><i class="' + m[2] + ' me-1"></i>' + escapeHtml(m[0]) + '</span>';
+        },
+
+        /* 评分（支持半星）：cfg = {max:5}；d 为数值（允许小数） */
+        rate: function (d, row, cfg) {
+            var max = (cfg && cfg.max) || 5;
+            var v = parseFloat(d) || 0;
+            var html = '<span class="xf-rate" title="' + v.toFixed(1) + ' / ' + max + '">';
+            for (var i = 1; i <= max; i++) {
+                if (v >= i) html += '<i class="ti ti-star-filled text-warning"></i>';
+                else if (v >= i - 0.5) html += '<i class="ti ti-star-half-filled text-warning"></i>';
+                else html += '<i class="ti ti-star text-muted"></i>';
+            }
+            html += ' <span class="small text-muted ms-1">' + v.toFixed(1) + '</span></span>';
+            return html;
+        },
+
+        /* 时长：d 为秒数（或 "1h2m" 字符串），格式化为 人类可读时长 */
+        duration: function (d, row, cfg) {
+            var s = parseInt(d, 10);
+            if (isNaN(s)) return escapeHtml(d);
+            var prefix = '';
+            if (s < 0) { prefix = '-'; s = -s; }
+            var dd = Math.floor(s / 86400), hh = Math.floor((s % 86400) / 3600), mm = Math.floor((s % 3600) / 60), ss = s % 60;
+            var parts = [];
+            if (dd) parts.push(dd + '天');
+            if (hh) parts.push(hh + '时');
+            if (mm) parts.push(mm + '分');
+            if (ss || parts.length === 0) parts.push(ss + '秒');
+            return '<span class="xf-duration">' + prefix + parts.join('') + '</span>';
+        },
+
+        /* 货币：cfg = {symbol:'¥', decimals:2, color} */
+        currency: function (d, row, cfg) {
+            var num = parseFloat(d);
+            if (isNaN(num)) return escapeHtml(d);
+            var sym = (cfg && cfg.symbol) || '¥';
+            var dec = (cfg && cfg.decimals != null) ? cfg.decimals : 2;
+            var str = num.toLocaleString('zh-CN', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+            var neg = num < 0;
+            var color = (cfg && cfg.color) ? ' style="color:' + cfg.color + '"' : '';
+            return '<span class="xf-currency"' + color + '>' + (neg ? '-' : '') + sym + str.replace('-', '') + '</span>';
+        },
+
+        /* JSON 字段格式化展示（折叠的 <pre>） */
+        json: function (d, row, cfg) {
+            if (d == null) return '';
+            var txt;
+            try { txt = typeof d === 'string' ? d : JSON.stringify(d, null, 2); }
+            catch (e) { txt = String(d); }
+            return '<button type="button" class="btn btn-sm btn-soft-secondary xf-json-toggle" data-json="' + escapeHtml(txt) + '">' +
+                '<i class="ti ti-braces"></i> 查看</button>';
+        },
+
+        /* 独立复制按钮（点击复制到剪贴板） */
+        copyBtn: function (d, row, cfg) {
+            return '<button type="button" class="btn btn-sm btn-soft-light xf-copy-btn" data-copy="' + escapeHtml(d) + '" title="复制">' +
+                '<i class="ti ti-copy"></i></button>';
+        },
+
+        /* 按钮式链接：cfg = {url, text, variant, icon, target, confirm} */
+        linkBtn: function (d, row, cfg) {
+            var url = XFAdmin.tpl((cfg && cfg.url) || '#', row || {});
+            var text = (cfg && cfg.text) || d;
+            var variant = (cfg && cfg.variant) || 'primary';
+            var icon = (cfg && cfg.icon) ? '<i class="' + cfg.icon + ' me-1"></i>' : '';
+            var target = (cfg && cfg.target) ? ' target="' + cfg.target + '"' : '';
+            var confirm = (cfg && cfg.confirm) ? ' data-xf-confirm="' + escapeHtml(cfg.confirm) + '"' : '';
+            return '<a href="' + escapeHtml(url) + '" class="btn btn-sm btn-soft-' + variant + '"' + target + confirm + '>' + icon + escapeHtml(text) + '</a>';
+        },
+
+        /* 迷你条（单值横向条，表内迷你进度）：cfg = {max, variant, showVal} */
+        miniBar: function (d, row, cfg) {
+            var max = (cfg && cfg.max) || 100;
+            var v = parseFloat(d) || 0;
+            var pct = max ? Math.max(0, Math.min(100, (v / max) * 100)) : 0;
+            var variant = (cfg && cfg.variant) || 'primary';
+            var showVal = cfg && cfg.showVal !== false;
+            return '<div class="xf-mini-bar"><div class="xf-mini-bar-fill bg-' + variant + '" style="width:' + pct + '%"></div>' +
+                (showVal ? '<span class="xf-mini-bar-val">' + escapeHtml(d) + '</span>' : '') + '</div>';
+        },
+
+        /* 带阈值色映射的进度条：cfg = {thresholds:[{max:30,variant:'danger'},...], variant, showVal} */
+        progressBar: function (d, row, cfg) {
+            var v = parseFloat(d) || 0;
+            var pct = Math.max(0, Math.min(100, v));
+            var variant = (cfg && cfg.variant) || 'primary';
+            if (cfg && Array.isArray(cfg.thresholds)) {
+                for (var i = 0; i < cfg.thresholds.length; i++) {
+                    if (v <= cfg.thresholds[i].max) { variant = cfg.thresholds[i].variant; break; }
+                }
+            }
+            var showVal = cfg && cfg.showVal !== false;
+            return '<div class="progress xf-progress" style="height:6px">' +
+                '<div class="progress-bar bg-' + variant + '" style="width:' + pct + '%"></div></div>' +
+                (showVal ? '<div class="small text-muted mt-1">' + escapeHtml(d) + (cfg && cfg.suffix || '') + '</div>' : '');
+        },
+
+        /* 迷你火花线（sparkline）：d 为逗号分隔数字或数组；cfg = {variant, width, height} */
+        sparkbar: function (d, row, cfg) {
+            var arr = Array.isArray(d) ? d : String(d).split(',').map(function (x) { return parseFloat(x) || 0; });
+            if (!arr.length) return '';
+            var w = (cfg && cfg.width) || 80, h = (cfg && cfg.height) || 24;
+            var max = Math.max.apply(null, arr), min = Math.min.apply(null, arr);
+            var range = (max - min) || 1;
+            var step = arr.length > 1 ? w / (arr.length - 1) : w;
+            var pts = arr.map(function (v, i) { return (i * step) + ',' + (h - ((v - min) / range) * h); }).join(' ');
+            var variant = (cfg && cfg.variant) || 'primary';
+            return '<svg class="xf-sparkbar" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' +
+                '<polyline points="' + pts + '" fill="none" stroke="var(--bs-' + variant + ') " stroke-width="2" ' +
+                'style="stroke:var(--bs-' + variant + ')" /></svg>';
+        },
+
+        /* 热力格（单格颜色深浅表示强度）：d 为 0~1 或数值；cfg = {max, palette} */
+        heatmap: function (d, row, cfg) {
+            var max = (cfg && cfg.max) || 100;
+            var v = parseFloat(d) || 0;
+            var pct = max ? Math.max(0, Math.min(1, v / max)) : 0;
+            var palette = (cfg && cfg.palette) || ['#e8f0fe', '#9cc1f5', '#3e60d5', '#1e3a8a'];
+            var idx = Math.min(palette.length - 1, Math.floor(pct * palette.length));
+            return '<span class="xf-heatmap-cell" style="background:' + palette[idx] + ';color:' +
+                (pct > 0.6 ? '#fff' : '#333') + '">' + escapeHtml(d) + '</span>';
+        },
+
+        /* 排名徽章：d 为 1..N；前三名特殊样式 */
+        ranking: function (d, row, cfg) {
+            var n = parseInt(d, 10);
+            if (isNaN(n)) return escapeHtml(d);
+            var variant = n === 1 ? 'warning' : (n === 2 ? 'secondary' : (n === 3 ? 'danger' : 'light'));
+            var icon = n <= 3 ? '<i class="ti ti-trophy ' + (n === 1 ? 'text-warning' : '') + '"></i> ' : '';
+            return '<span class="badge rounded-pill bg-' + variant + ' xf-ranking">' + icon + '#' + n + '</span>';
+        },
+
+        /* 步骤进度（横向小步骤条）：d 为已完成步数或当前步索引；cfg = {steps:['a','b','c'], variant} */
+        progressSteps: function (d, row, cfg) {
+            var steps = (cfg && cfg.steps) || [];
+            var cur = parseInt(d, 10) || 0;
+            if (!steps.length) return escapeHtml(d);
+            var variant = (cfg && cfg.variant) || 'primary';
+            var html = '<div class="xf-steps-mini">';
+            steps.forEach(function (s, i) {
+                var done = i < cur, active = i === cur;
+                html += '<span class="xf-step-dot ' + (done ? 'done bg-' + variant : (active ? 'active border-' + variant : '')) + '"></span>';
+                if (i < steps.length - 1) html += '<span class="xf-step-line ' + (done ? 'bg-' + variant : '') + '"></span>';
+            });
+            html += '</div>';
+            return html;
+        },
+
+        /* 渐变数值（按值大小显示渐变文字色）：cfg = {from, to} */
+        gradient: function (d, row, cfg) {
+            var v = parseFloat(d) || 0;
+            var from = (cfg && cfg.from) || '#3e60d5', to = (cfg && cfg.to) || '#e83e8c';
+            return '<span class="xf-gradient-val" style="background:linear-gradient(90deg,' + from + ',' + to + ');' +
+                '-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600">' + escapeHtml(d) + '</span>';
+        },
+
+        /* 标签输入展示（只读）：d 为逗号串或数组；cfg = {variant} */
+        tagInput: function (d, row, cfg) {
+            var arr = Array.isArray(d) ? d : String(d).split(',');
+            var variant = (cfg && cfg.variant) || 'soft-secondary';
+            return arr.filter(function (x) { return x !== ''; }).map(function (x) {
+                return '<span class="badge rounded-pill bg-' + variant + ' me-1">' + escapeHtml(x) + '</span>';
+            }).join('');
+        },
+
         /* 单元格输入框：cfg = {size, url(可选，change 时 PATCH 提交), placeholder} */
         input: function (d, row, cfg) {
             return '<input type="text" class="form-control form-control-' + (cfg.size || 'sm') + ' xf-cell-input" value="' + escapeHtml(d) +
@@ -766,6 +973,13 @@
                 if (item.confirm_popover) attrs += ' data-xf-confirm-popover="1"';
                 if (item.reload) attrs += ' data-xf-reload="1"';
                 if (item.event) attrs += ' data-xf-event="' + escapeHtml(item.event) + '"';
+                // 领域管理动作：op 端点提交（_op + dataset + id [+ 输入值]）
+                if (item.op) {
+                    attrs += ' data-xf-op="' + escapeHtml(item.op) + '"';
+                    if (item.dataset) attrs += ' data-xf-dataset="' + escapeHtml(item.dataset) + '"';
+                    if (item.prompt) attrs += ' data-xf-prompt="' + escapeHtml(item.prompt) + '"';
+                    if (item.arg) attrs += ' data-xf-arg="' + escapeHtml(item.arg) + '"';
+                }
                 return '<button type="button"' + attrs + '>' + inner + '</button>';
             }
         }
@@ -773,6 +987,74 @@
 
     /* 按钮组别名（与 actions 等价，语义化命名） */
     XFAdmin.cellRenderers.buttons = XFAdmin.cellRenderers.actions;
+
+    /* 复合信息单元格：常用于「负责人 / 申请人 / 客户」等多字段信息列。
+     * d 可为对象 {icon, title, sub, meta, url, color, status, badge} 或字符串（降级为 title）。
+     * cfg = {showMeta, showStatus, statusMap} */
+    XFAdmin.cellRenderers.rich = function (d, row, cfg) {
+        cfg = cfg || {};
+        // cfg.title/sub/status/avatar/url/meta 的取值：若字符串含 {field} 占位则按模板解析，
+        // 否则若 row 中存在同名键则直接取该字段值，再否则当作字面量。
+        function fieldOrTpl(v, r) {
+            if (typeof v !== 'string') return v;
+            if (v.indexOf('{') !== -1) return XFAdmin.tpl(v, r);
+            return (r && r[v] !== undefined) ? r[v] : v;
+        }
+        // 兼容两种数据来源：
+        //  1) d 已是对象 {icon,title,sub,meta,url,color,status}
+        //  2) d 为字段值字符串；title/sub/status 经 cfg 从 row 取字段（支持 {field} 占位与字面量）
+        var o = (typeof d === 'object' && d !== null) ? d : {};
+        var titleVal = o.title !== undefined ? o.title : (cfg.title !== undefined ? fieldOrTpl(cfg.title, row) : d);
+        var subVal   = o.sub   !== undefined ? o.sub   : (cfg.sub   !== undefined ? fieldOrTpl(cfg.sub, row) : '');
+        var iconVal  = o.icon  !== undefined ? o.icon  : (cfg.icon  || '');
+        var metaVal  = o.meta  !== undefined ? o.meta  : (cfg.meta  !== undefined ? fieldOrTpl(cfg.meta, row) : '');
+        var urlVal   = o.url   !== undefined ? o.url   : (cfg.url   !== undefined ? fieldOrTpl(cfg.url, row) : '');
+        var colorVal = o.color !== undefined ? o.color : (cfg.color || '');
+        var statusKey = o.status !== undefined ? o.status : (cfg.status !== undefined ? fieldOrTpl(cfg.status, row) : '');
+        var avatarVal = o.avatar !== undefined ? o.avatar : (cfg.avatar !== undefined ? fieldOrTpl(cfg.avatar, row) : '');
+        var iconHtml = '';
+        if (avatarVal) {
+            iconHtml = '<img src="' + escapeHtml(avatarVal) + '" class="xf-rich-icon rounded-circle object-fit-cover" alt="" onerror="this.style.display=\'none\'">';
+        } else if (iconVal) {
+            iconHtml = '<span class="xf-rich-icon ' + escapeHtml(colorVal ? 'bg-' + colorVal + '-subtle text-' + colorVal : 'bg-light text-secondary') + '"><i class="' + escapeHtml(iconVal) + '"></i></span>';
+        }
+        if (!titleVal && !subVal && !iconHtml) return '<span class="text-muted">-</span>';
+        var title = '<span class="xf-rich-title">' + escapeHtml(str(titleVal)) + '</span>';
+        if (urlVal) {
+            title = '<a href="' + escapeHtml(urlVal) + '" class="link-body">' + title + '</a>';
+        }
+        var sub = subVal ? '<span class="xf-rich-sub">' + escapeHtml(str(subVal)) + '</span>' : '';
+        var meta = (cfg.showMeta && metaVal) ? '<span class="xf-rich-meta text-muted fs-12">' + escapeHtml(str(metaVal)) + '</span>' : '';
+        var status = '';
+        if (statusKey) {
+            var sm = (cfg.statusMap || {})[statusKey];
+            var sv = typeof sm === 'string' ? sm : (sm && sm.variant ? sm.variant : 'secondary');
+            var sl = sm && sm.label ? sm.label : statusKey;
+            status = ' <span class="badge rounded-pill badge-soft-' + escapeHtml(sv) + ' xf-rich-badge">' + escapeHtml(sl) + '</span>';
+        }
+        return '<div class="d-flex align-items-center gap-2 xf-rich-cell">' + iconHtml +
+            '<div class="d-flex flex-column lh-sm">' + title + sub + meta + '</div>' + status + '</div>';
+    };
+
+    /* 官方插件注册入口：供外部 JS 扩展自定义单元格渲染器。
+     * name 为类型字符串，fn(data, row, cfg, meta) 返回 HTML 字符串。
+     * 注册后可在 DataTable 列配置中直接使用 ['type'=>name, 'cfg'=>...]。
+     * 若 name 已存在则覆盖并输出 console.warn（避免静默丢失实现）。 */
+    XFAdmin.registerCellRenderer = function (name, fn) {
+        if (!name || typeof fn !== 'function') {
+            console.error('[XfAdmin] registerCellRenderer 失败：name 与 fn 必填');
+            return;
+        }
+        if (XFAdmin.cellRenderers[name]) {
+            console.warn('[XfAdmin] 单元格渲染器 "' + name + '" 已被覆盖');
+        }
+        XFAdmin.cellRenderers[name] = fn;
+    };
+
+    /* 安全获取渲染器（不存在返回 null，便于调用方自行回退） */
+    XFAdmin.getCellRenderer = function (name) {
+        return XFAdmin.cellRenderers[name] || null;
+    };
 
     XFAdmin.scan = function (root) {
         root = root || document;
@@ -935,9 +1217,19 @@
                     };
                 }
                 renderer = renderer || XFAdmin.cellRenderers.text;
+                var cellEvent = cfg.event || null; // 单元格事件：'click' 或 {click:'handler', dblclick:'handler'}
                 col.render = function (data, type, row, meta) {
                     if (type && type !== 'display') return cfg.type === 'actions' ? '' : data;
-                    return renderer(data, row || {}, cfg, meta);
+                    var html = renderer(data, row || {}, cfg, meta);
+                    // 单元格事件系统：渲染结果包裹可点击/双击的透明事件锚，
+                    // 点击时 dispatch xf:cell-event 自定义事件，开发者用 XFAdmin.onCell(name, fn) 订阅。
+                    if (cellEvent && html) {
+                        var evs = (typeof cellEvent === 'string') ? { click: cellEvent } : cellEvent;
+                        var evAttr = ' data-xf-cell-event="' + escapeHtml(JSON.stringify(evs)) + '"';
+                        return '<span class="xf-cell-event" tabindex="0"' + evAttr +
+                            ' data-xf-cell-row="' + escapeHtml(JSON.stringify(row || {})) + '">' + html + '</span>';
+                    }
+                    return html;
                 };
                 delete col.xfRender;
                 // 交互/操作类渲染器不适合在详情弹窗中静态展示，不纳入详情复用
@@ -1015,11 +1307,11 @@
             dt.ajax = ajaxCfg;
         }
 
-        // AJAX 错误优雅提示（阻止 DataTables 原生 alert 弹窗，参照 yoc_cn TableTools 错误处理）
+        // AJAX 错误优雅提示（阻止 DataTables 原生 alert 弹窗，参照 TableTools 错误处理）
         try { global.DataTable.ext.errMode = 'none'; } catch (e) { /* noop */ }
         var dtContainer = el.closest('.dt-container');
         el.addEventListener('error.dt', function () {
-            // 设置 .dt-empty 为错误信息（yoc_cn 模式）
+            // 设置 .dt-empty 为错误信息（模式）
             var tmp = dtContainer ? dtContainer.querySelector('.dt-empty') : null;
             if (tmp) tmp.innerHTML = '<div class="text-danger"><i class="ti ti-alert-circle"></i> 数据加载失败，请稍后重试</div>';
             // 隐藏 processing 遮罩
@@ -1033,7 +1325,7 @@
             });
         }
 
-        // 智能 dataSrc：兼容多种服务端返回格式（参照 yoc_cn TableTools）
+        // 智能 dataSrc：兼容多种服务端返回格式（参照 TableTools）
         // 支持格式：{data:[...], recordsTotal:...} | {list:[...], total:...} | {rows:[...], count:...} | 纯数组
         if (dt.ajax && !(typeof dt.ajax === 'object' && dt.ajax.dataSrc)) {
             var srcAjax = typeof dt.ajax === 'string' ? { url: dt.ajax } : (dt.ajax || {});
@@ -1056,7 +1348,7 @@
             dt.ajax = srcAjax;
         }
 
-        // processing 遮罩层显示/隐藏（参照 yoc_cn）：xhr 请求期间展示加载状态
+        // processing 遮罩层显示/隐藏（参照）：xhr 请求期间展示加载状态
         if (dt.processing !== false) {
             var _procContainer = dtContainer;
             if (global.jQuery) {
@@ -1102,7 +1394,7 @@
             };
         }
 
-        // createdRow 回调（参照 yoc_cn TableTools.createdRow）
+        // createdRow 回调（参照 TableTools.createdRow）
         if (dt.createdRow) {
             var _origCreatedRow = dt.createdRow;
             dt.createdRow = function (row, data, dataIndex) {
@@ -1118,7 +1410,7 @@
             };
         }
 
-        // drawCallback 包装：rowGroup 用 drawCallback，同时支持用户自定义回调（参照 yoc_cn TableTools.drawCallback）
+        // drawCallback 包装：rowGroup 用 drawCallback，同时支持用户自定义回调（参照 TableTools.drawCallback）
         var _hasRowGroupDraw = !!dt.drawCallback;
         var _userDrawCallback = config.drawCallback && typeof global[config.drawCallback] === 'function' ? global[config.drawCallback] : null;
         if (_userDrawCallback && _hasRowGroupDraw) {
@@ -1142,7 +1434,7 @@
             }
         } catch (e) { /* noop */ }
 
-        // show_custom_search 搜索表单展开/收起切换（参照 yoc_cn）
+        // show_custom_search 搜索表单展开/收起切换（参照）
         var _showCustomSearch = !!(config.showCustomSearch || (dt.show_custom_search));
         if (_showCustomSearch) {
             var _searchForm = dtContainer ? dtContainer.querySelector('.xf-dt-search-form,.custom-datatable-search') : null;
@@ -1200,7 +1492,7 @@
         } catch (metaErr) { /* noop */ }
         el.__xfColMeta = colMeta;
 
-        // show_detail：dt-control 子行展开（参照 yoc_cn TableTools show_detail 两种模式）
+        // show_detail：dt-control 子行展开（参照 TableTools show_detail 两种模式）
         // 模式1：callback——列配置 showDetail 为函数，调用回调生成 HTML
         // 模式2：auto——showDetail 为 true/字符串，自动渲染所有列或指定字段
         if (_showDetailCols.length > 0 && global.jQuery) {
@@ -1212,7 +1504,7 @@
                     var colIdx = table.cell(this).index().column;
                     var colSettings = table.settings().init().columns[colIdx] || {};
                     var html = '';
-                    // 模式1：回调函数（参照 yoc_cn：row.context[0].aoColumns[col].show_detail(data, idx, row, table)）
+                    // 模式1：回调函数（参照：row.context[0].aoColumns[col].show_detail(data, idx, row, table)）
                     if (typeof colSettings.showDetail === 'function') {
                         try {
                             var cbHtml = colSettings.showDetail(rowData, row.index(), row, table);
@@ -1269,7 +1561,7 @@
         if (global.jQuery) global.jQuery(el).on('draw.dt', function () { setTimeout(initTips, 0); });
         setTimeout(initTips, 0);
 
-        // === DataTables 2.x scrollX 列宽同步修复（参照 yoc_cn 项目 TableTools） ===
+        // === DataTables 2.x scrollX 列宽同步修复（参照 项目 TableTools） ===
         // 核心：DataTables 2.x scrollX 创建独立表头(.dt-scroll-head)和表体(.dt-scroll-body)容器。
         // 两独立 table 的列宽对齐依赖三个层面协同：
         //   - CSS: 覆盖 INSPINIA display:none!important（保布局流）+ table-layout:fixed（统一计算模式）
@@ -1316,7 +1608,7 @@
             }, 50);
         }
 
-        // 4) Bootstrap Tab 切换时同步所有可见表（yoc_cn 模式）
+        // 4) Bootstrap Tab 切换时同步所有可见表（模式）
         if (!XFAdmin._dtTabBound) {
             XFAdmin._dtTabBound = true;
             document.addEventListener('shown.bs.tab', function () {
@@ -1365,7 +1657,9 @@
                 td.appendChild(input);
                 filterRow.appendChild(td);
             });
-            el.querySelector('thead').appendChild(filterRow);
+            var thead = el.querySelector('thead');
+            if (!thead) return;
+            thead.appendChild(filterRow);
         }
 
         // 过滤工具栏（filter_bar）：变更 => 拼查询参数 => 重载
@@ -1396,8 +1690,64 @@
                         });
                     });
                 }
-                // 收集单个控件的过滤值
+                // slider 双滑块初始化：约束 lo<=hi，更新隐藏框与标签
+                bar.querySelectorAll('.xf-slider-filter[data-type="slider"]').forEach(function (box) {
+                    var lo = box.querySelector('.xf-slider-lo');
+                    var hi = box.querySelector('.xf-slider-hi');
+                    var loLbl = box.querySelector('.xf-slider-lo-label');
+                    var hiLbl = box.querySelector('.xf-slider-hi-label');
+                    var loH = box.querySelector('[data-xf-min]');
+                    var hiH = box.querySelector('[data-xf-max]');
+                    if (!lo || !hi) return;
+                    var suffix = lo.getAttribute('data-suffix') || '';
+                    var sync = function () {
+                        var lv = parseFloat(lo.value), hv = parseFloat(hi.value);
+                        if (lv > hv) { if (this === lo) lo.value = hi.value; else hi.value = lo.value; lv = parseFloat(lo.value); hv = parseFloat(hi.value); }
+                        if (loLbl) loLbl.textContent = (lo.value === lo.min ? '不限' : lo.value + suffix);
+                        if (hiLbl) hiLbl.textContent = (hi.value === hi.max ? '不限' : hi.value + suffix);
+                        if (loH) loH.value = lo.value;
+                        if (hiH) hiH.value = hi.value;
+                    };
+                    lo.addEventListener('input', sync);
+                    hi.addEventListener('input', sync);
+                    sync.call(lo);
+                });
+                // 树形过滤：折叠/展开
+                bar.querySelectorAll('.xf-tree-filter').forEach(function (box) {
+                    box.querySelectorAll('.xf-tree-toggle').forEach(function (t) {
+                        t.style.cursor = 'pointer';
+                        t.addEventListener('click', function () {
+                            var kids = t.closest('.xf-tree-node').querySelector('.xf-tree-children');
+                            if (kids) { var open = kids.style.display !== 'none'; kids.style.display = open ? 'none' : 'block'; t.classList.toggle('ti-chevron-down', open); t.classList.toggle('ti-chevron-right', !open); }
+                        });
+                    });
+                });
+                // 收集单个控件的过滤值（支持自定义搜索组件类型）
                 var controlValue = function (c) {
+                    if (c.classList && c.classList.contains('xf-filter-custom')) {
+                        // 自定义组件：优先读 data-xf-custom-value，否则 dispatch 事件让宿主提供
+                        if (c.dataset.xfCustomValue != null && c.dataset.xfCustomValue !== '') return c.dataset.xfCustomValue;
+                        var ev = new CustomEvent('xf:filter-custom', { detail: { name: c.dataset.filter, el: c }, bubbles: false, cancelable: true });
+                        c.__xfCustomValue = '';
+                        ev.detail.getValue = function (v) { c.__xfCustomValue = v == null ? '' : String(v); };
+                        document.dispatchEvent(ev);
+                        return c.__xfCustomValue || '';
+                    }
+                    var ctype = c.dataset ? c.dataset.type : null;
+                    if (ctype === 'slider' || ctype === 'range-slider') {
+                        // 双滑块范围：data-xf-min / data-xf-max 隐藏框；后端 between 协议 = "lo,hi"（逗号），空端留空
+                        var mn = c.querySelector && c.querySelector('[data-xf-min]');
+                        var mx = c.querySelector && c.querySelector('[data-xf-max]');
+                        var lo = mn ? mn.value : (c.querySelector('.xf-slider-lo') ? c.querySelector('.xf-slider-lo').value : '');
+                        var hi = mx ? mx.value : (c.querySelector('.xf-slider-hi') ? c.querySelector('.xf-slider-hi').value : '');
+                        if (lo === '' && hi === '') return '';
+                        return (lo || '') + ',' + (hi || '');
+                    }
+                    if (ctype === 'tree') {
+                        // 树形选择：勾选的叶子值逗号连接
+                        var leaves = c.querySelectorAll ? c.querySelectorAll('input.xf-tree-leaf:checked') : [];
+                        return Array.from(leaves).map(function (i) { return i.value; }).join(',');
+                    }
                     if (c.type === 'checkbox') return c.checked ? (c.value || '1') : '';
                     if (c.multiple) {
                         return Array.from(c.selectedOptions).map(function (o) { return o.value; })
@@ -1445,11 +1795,24 @@
                                 filterTimer = setTimeout(reloadWithFilters, 400);
                             });
                         }
+                        // 自定义搜索类型：slider 双滑块 / tree 树形 / autocomplete 自动完成
+                        var ctype = c.dataset ? c.dataset.type : null;
+                        if (ctype === 'slider' || ctype === 'range-slider') {
+                            c.querySelectorAll('input[type=range]').forEach(function (r) {
+                                r.addEventListener('input', function () { clearTimeout(filterTimer); filterTimer = setTimeout(reloadWithFilters, 300); });
+                            });
+                        } else if (ctype === 'tree') {
+                            c.querySelectorAll('input.xf-tree-leaf').forEach(function (i) { i.addEventListener('change', reloadWithFilters); });
+                        } else if (ctype === 'autocomplete') {
+                            var inp = c.querySelector('input');
+                            if (inp) inp.addEventListener('input', function () { clearTimeout(filterTimer); filterTimer = setTimeout(reloadWithFilters, 350); });
+                        }
                     });
                     if (global.jQuery && global.jQuery.fn.select2) {
                         global.jQuery(bar).on('change', 'select.xf-filter-s2, select.xf-filter[multiple]', reloadWithFilters);
                     }
                     bar.querySelectorAll('.xf-filter-checks input').forEach(function (i) { i.addEventListener('change', reloadWithFilters); });
+                    bar.querySelectorAll('.xf-filter-custom').forEach(function (c) { c.addEventListener('xf:custom-change', reloadWithFilters); });
                 }
                 // 回车 = 搜索（两种模式均支持）
                 bar.querySelectorAll('.xf-filter').forEach(function (c) {
@@ -1548,11 +1911,16 @@
             }
             scheduleSticky();
             window.addEventListener('resize', scheduleSticky);
+            // 存储事件引用在元素上，供外部调用 XFAdmin.destroyTableSticky(el) 清理
+            el.__xfStickyCleanup = function () { window.removeEventListener('resize', scheduleSticky); };
             // ResizeObserver 监听容器尺寸变化（侧边栏折叠等）
             var wrapper = el.closest('.dt-container') || el.closest('.dataTables_wrapper') || el.parentElement;
             if (wrapper && typeof ResizeObserver !== 'undefined') {
                 var ro = new ResizeObserver(function () { scheduleSticky(); });
                 ro.observe(wrapper);
+                // 存储 observer，供手动 disconnect
+                var origCleanup = el.__xfStickyCleanup;
+                el.__xfStickyCleanup = function () { try { ro.disconnect(); } catch (_) {} if (origCleanup) origCleanup(); };
             }
         }
         return table;
@@ -1575,6 +1943,285 @@
             table.draw(false);
         }
     };
+
+    /* 清理表格的 sticky 表头监听器（resize + ResizeObserver）。
+       页面动态移除表格时调用，避免内存泄漏。 */
+    XFAdmin.destroyTableSticky = function (idOrEl) {
+        var el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+        if (el && typeof el.__xfStickyCleanup === 'function') {
+            el.__xfStickyCleanup();
+            delete el.__xfStickyCleanup;
+        }
+    };
+
+    /* ---- 表格内下拉菜单防裁剪 -------------------------------------------------
+     * 根因：DataTable 开启 scrollX/scrollY 时会创建 .dt-scroll-body 滚动容器，
+     * 其 overflow:auto 会将内部 .dropdown-menu（position:absolute）的下半部分
+     * 裁剪掉，表现为"更多"按钮的下拉菜单被下一行遮挡。
+     *
+     * 解决方案：监听 Bootstrap shown.bs.dropdown 事件，检测到菜单位于滚动容器内时，
+     * 将菜单改为 position:fixed 并用 getBoundingClientRect() 计算视口坐标，
+     * 使其脱离 overflow 裁剪上下文（与 TopNav 菜单的 place() 同策略）。
+     * ----------------------------------------------------------------- */
+    /* 表格内下拉菜单防裁剪的时序根因说明：
+     * Bootstrap 5 dropdown 在 shown 事件之后仍有一次 Popper 定位收尾（在
+     * requestAnimationFrame 中），会用 position:absolute + transform 覆盖我们
+     * 同步写入的 fixed，导致菜单最终仍被推到视口外（如 left:2302px），表现为
+     * "更多"按钮的下拉菜单飞出屏幕、看似"不弹出"。因此 fixed 定位必须延迟到
+     * 下一帧执行（晚于 Bootstrap 收尾），才能稳定覆盖。 */
+    var _dtDropdownFixInited = false;
+    function initDtDropdownFix() {
+        if (_dtDropdownFixInited) return;
+        _dtDropdownFixInited = true;
+        // 提升触发按钮所在的冻结列单元格（.xf-dt-sticky）的 z-index：
+        // 根因——菜单虽被 JS 设为 position:fixed，但仍在祖先 .xf-dt-sticky
+        // （position:sticky + z-index:3，自身构成独立层叠上下文）之内。
+        // 该上下文把所有后代（含 fixed 菜单）封印在 z-index:3 这一层；
+        // 其它行的 .xf-dt-sticky 同为 z-index:3，DOM 靠后 → 后绘制覆盖先绘制，
+        // 于是“下一行的冻结单元格”盖住了第一行单元格里的弹出菜单（被遮挡）。
+        // 解法：展开时把当前行的冻结列单元格临时提到极高 z-index，
+        // 使其整体（含其内的 fixed 菜单）盖过所有其它行；关闭时还原。
+        var _raisedCell = null;   // 记录当前被提升的冻结列单元格，供关闭时还原
+        function raiseSticky(trigger) {
+            var cell = trigger.closest('.xf-dt-sticky');
+            if (!cell || cell.__xfRaised) return null;
+            cell.__xfRaised = true;
+            cell.__xfOrigZ = cell.style.zIndex;
+            cell.style.zIndex = '1060';
+            _raisedCell = cell;
+            return cell;
+        }
+        function lowerSticky(cell) {
+            if (!cell || !cell.__xfRaised) return;
+            cell.style.zIndex = cell.__xfOrigZ || '';
+            delete cell.__xfRaised;
+            delete cell.__xfOrigZ;
+            if (_raisedCell === cell) _raisedCell = null;
+        }
+        function placeMenu(menu, trigger) {
+            var r = trigger.getBoundingClientRect();
+            var vw = document.documentElement.clientWidth;
+            var vh = document.documentElement.clientHeight;
+            // 清除 Popper 注入的 absolute/transform/inset，改用 fixed + 视口坐标
+            menu.style.position = 'fixed';
+            menu.style.zIndex = '1061';    // 高于 sticky 单元格(1060)，确保菜单在行上下文内最上层
+            menu.style.inset = 'auto';      // 复位 Popper 可能写入的 inset 逻辑属性
+            menu.style.transform = 'none'; // 清除 Popper 的 translate 偏移
+            menu.style.top = r.bottom + 'px';
+            menu.style.left = r.left + 'px';
+            // 右边界翻转：超出视口右侧时向左偏移（菜单在按钮右侧展开）
+            var estW = menu.offsetWidth || 160;
+            if (r.left + estW > vw) {
+                menu.style.left = Math.max(8, vw - estW - 8) + 'px';
+            }
+            // 下边界翻转：超出视口底部时向上翻转（避免被裁切/溢出）
+            var mh = menu.offsetHeight;
+            if (r.bottom + mh > vh && r.top - mh > 0) {
+                menu.style.top = (r.top - mh) + 'px';
+            }
+        }
+        function resolveMenu(e) {
+            var trigger = e.target;
+            var menu = trigger && trigger.nextElementSibling;
+            if (!menu || !menu.classList.contains('dropdown-menu')) {
+                // 防御性兼容：从 dropdown 容器内取菜单
+                var drop = (trigger && trigger.closest && trigger.closest('.dropdown, .btn-group')) || null;
+                menu = drop ? drop.querySelector('.dropdown-menu') : null;
+                if (!menu) return null;
+            }
+            return menu;
+        }
+        // 展开时：延迟一帧 fixed 定位，脱离滚动容器/冻结列裁剪上下文
+        document.addEventListener('shown.bs.dropdown', function (e) {
+            var menu = resolveMenu(e);
+            if (!menu) return;
+            // 仅处理 DataTable 滚动容器 / 冻结列（xf-dt-sticky）/ 表格内场景
+            if (!menu.closest('.dt-scroll-body')
+                && !menu.closest('.dataTables_scrollBody')
+                && !menu.closest('.xf-dt-sticky')
+                && !menu.closest('.dataTable')) {
+                return;
+            }
+            var trigger = e.target;
+            // ★ 延迟到下一帧：晚于 Bootstrap/Popper 的 shown 收尾，确保 fixed 不被覆盖
+            requestAnimationFrame(function () {
+                raiseSticky(trigger);   // 提升当前行冻结列层级，避免被下一行遮挡
+                placeMenu(menu, trigger);
+            });
+        });
+        // 关闭时清理 inline style，避免干扰后续正常布局
+        document.addEventListener('hidden.bs.dropdown', function (e) {
+            var menu = resolveMenu(e);
+            // 还原被提升的冻结列单元格（用 _raisedCell 直接还原，不依赖 menu 状态）
+            lowerSticky(_raisedCell);
+            if (!menu) return;
+            if (menu.style.position === 'fixed' || menu.closest('.dt-scroll-body, .dataTables_scrollBody, .xf-dt-sticky, .dataTable')) {
+                menu.style.position = '';
+                menu.style.zIndex = '';
+                menu.style.top = '';
+                menu.style.left = '';
+                menu.style.transform = '';
+                menu.style.inset = '';
+            }
+        });
+    }
+    initDtDropdownFix();  // 在脚本加载时即注册全局委托监听（无需等待 DOM Ready）
+
+    /* 圆形应用启动器（#apps-dropdown-rounded）：
+       菜单较宽，打开时根据视口右边界做翻转，避免溢出；并支持打开时 Esc 关闭。 */
+    function initAppsDropdown() {
+        document.addEventListener('shown.bs.dropdown', function (e) {
+            var toggle = e.relatedTarget;
+            if (! toggle || ! toggle.classList.contains('dropdown-toggle')) return;
+            var menu = toggle.parentElement.querySelector('#apps-dropdown-rounded');
+            if (! menu) return;
+            requestAnimationFrame(function () {
+                var r = toggle.getBoundingClientRect();
+                var mw = menu.offsetWidth || 300;
+                if (r.left + mw > window.innerWidth - 8) {
+                    menu.style.insetInlineStart = 'auto';
+                    menu.style.insetInlineEnd = '0';
+                }
+                toggle.addEventListener('keydown', function onEsc(ev) {
+                    if (ev.key === 'Escape') { bootstrap.Dropdown.getOrCreateInstance(toggle).hide(); }
+                    toggle.removeEventListener('keydown', onEsc);
+                });
+            });
+        });
+    }
+    initAppsDropdown();
+
+    /* 通用「记录详情闭环页」操作面板：审批 / 驳回 / 分配 / 回复 / 评价 / 派发 / 转派 等。
+       点击后确认（或要求输入）并提交到演示接收端点，成功写入处理时间线（演示闭环）。 */
+    function initRecordDetailOps() {
+        document.addEventListener('click', function (e) {
+            // 详情操作面板 / 看板卡片快捷操作 / 表格行按钮（data-xf-op 领域动作统一处理）
+            var btn = e.target.closest('[data-xf-op]');
+            if (! btn || btn.tagName === 'A' && btn.getAttribute('href')) return;
+            e.preventDefault();
+            var op = btn.getAttribute('data-xf-op');
+            var confirmText = btn.getAttribute('data-xf-confirm');
+            var promptText = btn.getAttribute('data-xf-prompt');
+            var promptKey = btn.getAttribute('data-xf-arg') || 'comment';
+            var attach = btn.getAttribute('data-xf-attach') === '1' || btn.getAttribute('data-xf-attach') === 'true';
+            var dataset = btn.getAttribute('data-xf-dataset');
+            var rid = btn.getAttribute('data-xf-id');
+            var doSubmit = function (extra) {
+                extra = extra || {};
+                var panel = btn.closest('.xf-op-panel');
+                btn.disabled = true;
+                var payload = Object.assign({ _op: op, dataset: dataset, id: rid }, extra);
+                XFAdmin.request('/admin/api/enterprise/op', {
+                    method: 'POST',
+                    data: payload,
+                }).then(function (res) {
+                    btn.disabled = false;
+                    if (res && res.ok) {
+                        XFAdmin.toast({ body: '操作「' + (btn.textContent.trim()) + '」已提交', variant: 'success' });
+                        // 向时间线插入新节点（演示闭环）：找到最近的 timeline 组件
+                        var tl = document.querySelector('.timeline, .xf-timeline');
+                        if (tl) {
+                            var now = new Date();
+                            var hh = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+                            var node = document.createElement('div');
+                            node.className = 'timeline-item';
+                            var imgSrc = (extra && extra.image) ? String(extra.image) : '';
+                            if (imgSrc && /^images\//i.test(imgSrc)) {
+                                // 相对 images/ 前缀 → 推断资源基址（页面任意 /images/ 资源的前缀），
+                                // 避免解析成 /admin/app/.../images/ 404
+                                var imgBase = '';
+                                var anyImg = document.querySelector('img[src*="/images/"]');
+                                if (anyImg) {
+                                    var hit = anyImg.getAttribute('src').split('/images/')[0];
+                                    if (hit && hit.indexOf('//') < 0) imgBase = hit;
+                                }
+                                imgSrc = imgBase + '/' + imgSrc;
+                            }
+                            var imgHtml = (imgSrc && (imgSrc.indexOf('http') === 0 || imgSrc.indexOf('/images/') >= 0 || imgSrc.indexOf('images/') === 0))
+                                ? '<div class="d-flex align-items-center gap-2 mt-2"><img src="' + imgSrc.replace(/[&<>"']/g, function (c) {
+                                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                                }) + '" class="img-thumbnail" style="width:88px;height:88px;object-fit:cover" onerror="this.style.display=\'none\'" alt="回复图片">'
+                                + '<span class="text-muted small">附图片回复</span></div>' : '';
+                            node.innerHTML = '<div class="timeline-icon bg-success-subtle text-success"><i class="ti ti-circle-check"></i></div>'
+                                + '<div class="timeline-content"><div class="d-flex justify-content-between"><span class="fw-medium">' + (btn.textContent.trim()) + ' 完成</span>'
+                                + '<span class="text-muted small">今天 ' + hh + '</span></div>'
+                                + '<p class="text-muted mb-0 small">操作角色：当前管理员</p>'
+                                + imgHtml + '</div>';
+                            var list = tl.querySelector('.timeline-list, .timeline');
+                            if (list) list.insertBefore(node, list.firstChild);
+                            else tl.insertBefore(node, tl.firstChild);
+                        }
+                    } else {
+                        XFAdmin.toast({ body: (res && res.data && (res.data.message || res.data.msg)) || '操作失败', variant: 'danger' });
+                    }
+                }).catch(function () {
+                    btn.disabled = false;
+                    XFAdmin.toast({ body: '网络错误，请稍后重试', variant: 'danger' });
+                });
+            };
+            if (promptText) {
+                if (attach && typeof XFAdmin.promptFields === 'function') {
+                    // 图片回复类动作：内容 + 可选图片 URL 双输入，回调收到 {comment, image}
+                    XFAdmin.promptFields({
+                        title: promptText,
+                        fields: [
+                            { name: 'comment', label: '内容', placeholder: '请输入内容', required: true },
+                            { name: 'image', label: '图片（可选）', placeholder: 'https://… 或 images/…', required: false },
+                        ],
+                        onOk: function (vals) { doSubmit(vals || {}); },
+                    });
+                    return;
+                }
+                // 需要输入的动作（回复 / 评价 / 转派 / 入库数量 等）：弹出输入框
+                if (typeof XFAdmin.prompt === 'function') {
+                    XFAdmin.prompt({ title: promptText, confirmText: '提交', cancelText: '取消', onOk: function (val) {
+                        var extra = {}; extra[promptKey] = val; doSubmit(extra);
+                    } });
+                } else {
+                    var val = window.prompt(promptText);
+                    if (val !== null) { var extra = {}; extra[promptKey] = val; doSubmit(extra); }
+                }
+            } else if (confirmText) {
+                if (typeof XFAdmin.confirm === 'function') {
+                    XFAdmin.confirm({ title: confirmText, confirmText: '确认', cancelText: '取消', onOk: doSubmit });
+                } else if (window.confirm(confirmText)) {
+                    doSubmit();
+                }
+            } else {
+                doSubmit();
+            }
+        });
+    }
+    initRecordDetailOps();
+
+    /* 任务清单面板（TaskList 组件）：勾选切换完成态 + 过滤（全部/进行中/已完成）。 */
+    function initTaskList() {
+        document.addEventListener('click', function (e) {
+            var box = e.target.closest('.xf-task-check');
+            if (box) {
+                var item = box.closest('.xf-task-item');
+                if (item) {
+                    var done = box.checked;
+                    item.classList.toggle('xf-task-done', done);
+                    item.setAttribute('data-done', done ? '1' : '0');
+                }
+                return;
+            }
+            var fbtn = e.target.closest('.xf-task-filter button[data-filter]');
+            if (fbtn) {
+                var group = fbtn.closest('.xf-task-filter');
+                group.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); b.classList.add('btn-light'); });
+                fbtn.classList.add('active'); fbtn.classList.remove('btn-light');
+                var f = fbtn.getAttribute('data-filter');
+                var list = fbtn.closest('.xf-tasklist').querySelector('.xf-task-group');
+                list.querySelectorAll('.xf-task-item').forEach(function (it) {
+                    var show = f === 'all' || (f === 'done' && it.getAttribute('data-done') === '1') || (f === 'active' && it.getAttribute('data-done') !== '1');
+                    it.style.display = show ? '' : 'none';
+                });
+            }
+        });
+    }
+    initTaskList();
 
     /* 弹窗关闭事件全局桥接：当某弹窗（编辑/新增/详情）由 DataTable 行操作打开且
        内部表单已成功保存后关闭时，派发的 xf:dialog-closed 事件在此被任何表格页面接收。
@@ -1754,9 +2401,21 @@
         if (act === 'ajax') {
             var url = actEl.getAttribute('data-xf-url');
             if (!url) return;
-            var doIt = function () {
+            // 领域管理动作（data-xf-op）：向 op 端点提交 _op + dataset + id [+ 输入值]
+            var opName = actEl.getAttribute('data-xf-op');
+            var opDataset = actEl.getAttribute('data-xf-dataset');
+            var opArgKey = actEl.getAttribute('data-xf-arg') || 'comment';
+            var rowId = (row && row.id !== undefined) ? row.id : (actEl.getAttribute('data-xf-id') || '');
+            var doIt = function (promptVal) {
                 actEl.disabled = true;
-                XFAdmin.request(url, { method: actEl.getAttribute('data-xf-method') || 'POST' }).then(function (res) {
+                var payload = null;
+                if (opName) {
+                    payload = { _op: opName, dataset: opDataset || '', id: rowId };
+                    if (promptVal !== undefined && promptVal !== null && promptVal !== '') {
+                        payload[opArgKey] = promptVal;
+                    }
+                }
+                XFAdmin.request(url, { method: actEl.getAttribute('data-xf-method') || 'POST', data: payload }).then(function (res) {
                     actEl.disabled = false;
                     if (res.ok) {
                         XFAdmin.toast({ body: (res.data && res.data.message) || '操作成功', variant: 'success' });
@@ -1765,7 +2424,19 @@
                 });
             };
             var confirmMsg = actEl.getAttribute('data-xf-confirm');
-            if (confirmMsg) { XFAdmin.confirm(confirmMsg, doIt); } else { doIt(); }
+            var promptMsg = actEl.getAttribute('data-xf-prompt');
+            if (promptMsg) {
+                if (typeof XFAdmin.prompt === 'function') {
+                    XFAdmin.prompt({ text: promptMsg }, function (val) { doIt(val); });
+                } else {
+                    var pv = window.prompt(promptMsg);
+                    if (pv !== null) doIt(pv);
+                }
+            } else if (confirmMsg) {
+                XFAdmin.confirm(confirmMsg, function () { doIt(); });
+            } else {
+                doIt();
+            }
         }
         if (act === 'download') {
             var dlUrl = actEl.getAttribute('data-xf-url');
@@ -1942,6 +2613,161 @@
         }
         finish(window.confirm(opts.text || opts.title || '确认操作？'));
         return promise;
+    };
+
+    /**
+     * 通用输入对话框（回复 / 评价 / 转派 / 入库数量 等需要文本的动作）。
+     * 优先 SweetAlert2，其次原生 prompt。
+     */
+    XFAdmin.prompt = function (message, onOk, onCancel) {
+        var opts = (message && typeof message === 'object') ? Object.assign({}, message) : { text: str(message) };
+        if (typeof onOk === 'function' && !opts.onOk) opts.onOk = onOk;
+        if (typeof onCancel === 'function' && !opts.onCancel) opts.onCancel = onCancel;
+        var settled = false;
+        var finish;
+        var promise = new Promise(function (resolve) {
+            finish = function (val) {
+                if (settled) return;
+                settled = true;
+                resolve(val);
+                try { if (val !== null && val !== undefined && val !== false) { opts.onOk && opts.onOk(val); } else { opts.onCancel && opts.onCancel(); } }
+                catch (err) { console.error('[XFAdmin] prompt callback', err); }
+            };
+        });
+        if (global.Swal) {
+            global.Swal.fire({
+                title: opts.title || '请输入',
+                text: opts.text || '',
+                input: opts.input || 'text',
+                inputPlaceholder: opts.placeholder || '',
+                showCancelButton: true,
+                confirmButtonText: opts.confirmText || '提交',
+                cancelButtonText: opts.cancelText || '取消',
+                customClass: { confirmButton: 'btn btn-primary me-2 mt-2', cancelButton: 'btn btn-light mt-2' },
+                buttonsStyling: false
+            }).then(function (r) { finish(r.isConfirmed ? (r.value !== undefined ? r.value : '') : false); });
+            return promise;
+        }
+        finish(window.prompt(opts.text || opts.title || '请输入'));
+        return promise;
+    };
+
+    /* 多字段输入对话框（图片回复等动作）：
+     *   XFAdmin.promptFields({ title, fields: [{name,label,placeholder,required,type}], onOk(values) })
+     * 优先 SweetAlert2 html 表单；回退到逐个 window.prompt。回调收到 { name: value } 对象。 */
+    XFAdmin.promptFields = function (opts) {
+        var fields = (opts && opts.fields) || [];
+        var onOk = (opts && opts.onOk) || function () {};
+        if (global.Swal && fields.length) {
+            var html = '';
+            for (var i = 0; i < fields.length; i++) {
+                var f = fields[i];
+                var inputId = 'xf-pf-' + i;
+                html += '<div class="text-start mb-2">'
+                    + '<label class="form-label d-block mb-1" for="' + inputId + '">' + str(f.label || f.name || '') + '</label>';
+                if (f.type === 'textarea' || (f.name && (f.name.indexOf('comment') >= 0 || f.name.indexOf('content') >= 0 || f.name.indexOf('reason') >= 0))) {
+                    html += '<textarea id="' + inputId + '" class="form-control" rows="3" placeholder="' + str(f.placeholder || '') + '"></textarea>';
+                } else {
+                    html += '<input id="' + inputId + '" class="form-control" type="text" placeholder="' + str(f.placeholder || '') + '">';
+                }
+                html += '</div>';
+            }
+            global.Swal.fire({
+                title: opts.title || '请输入',
+                html: html,
+                showCancelButton: true,
+                confirmButtonText: opts.confirmText || '提交',
+                cancelButtonText: opts.cancelText || '取消',
+                customClass: { confirmButton: 'btn btn-primary me-2 mt-2', cancelButton: 'btn btn-light mt-2' },
+                buttonsStyling: false,
+                preConfirm: function () {
+                    var vals = {};
+                    for (var j = 0; j < fields.length; j++) {
+                        var el = document.getElementById('xf-pf-' + j);
+                        vals[fields[j].name] = el ? el.value : '';
+                        if (fields[j].required && !vals[fields[j].name]) {
+                            global.Swal.showValidationMessage('请输入' + (fields[j].label || fields[j].name));
+                            return false;
+                        }
+                    }
+                    return vals;
+                }
+            }).then(function (r) {
+                if (r.isConfirmed && r.value) { onOk(r.value); }
+            });
+            return;
+        }
+        // 回退：Bootstrap Modal 多字段表单（不依赖 SweetAlert2）
+        if (global.bootstrap && global.bootstrap.Modal && fields.length) {
+            var modalId = 'xf-prompt-fields-modal';
+            var modalEl = document.getElementById(modalId);
+            if (!modalEl) {
+                modalEl = document.createElement('div');
+                modalEl.id = modalId;
+                modalEl.className = 'modal fade';
+                modalEl.tabIndex = -1;
+                modalEl.setAttribute('data-bs-backdrop', 'static');
+                modalEl.innerHTML = '<div class="modal-dialog"><div class="modal-content">' +
+                    '<div class="modal-header"><h5 class="modal-title xf-pf-title"></h5>' +
+                    '<button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>' +
+                    '<div class="modal-body xf-pf-body"></div>' +
+                    '<div class="modal-footer">' +
+                    '<button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>' +
+                    '<button type="button" class="btn btn-primary xf-pf-ok">提交</button></div></div></div>';
+                document.body.appendChild(modalEl);
+            }
+            modalEl.querySelector('.xf-pf-title').textContent = opts.title || '请输入';
+            var body = modalEl.querySelector('.xf-pf-body');
+            body.innerHTML = '';
+            for (var m = 0; m < fields.length; m++) {
+                var fm = fields[m];
+                var idm = 'xf-pfm-' + m;
+                var wrap = document.createElement('div');
+                wrap.className = 'mb-2';
+                var lbl = document.createElement('label');
+                lbl.className = 'form-label d-block mb-1';
+                lbl.textContent = fm.label || fm.name || '';
+                var input;
+                if (fm.type === 'textarea' || (fm.name && (fm.name.indexOf('comment') >= 0 || fm.name.indexOf('content') >= 0 || fm.name.indexOf('reason') >= 0))) {
+                    input = document.createElement('textarea');
+                    input.rows = 3;
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                }
+                input.className = 'form-control';
+                input.id = idm;
+                input.placeholder = fm.placeholder || '';
+                wrap.appendChild(lbl);
+                wrap.appendChild(input);
+                body.appendChild(wrap);
+            }
+            var mInst = global.bootstrap.Modal.getOrCreateInstance ? global.bootstrap.Modal.getOrCreateInstance(modalEl) : new global.bootstrap.Modal(modalEl);
+            var okBtn = modalEl.querySelector('.xf-pf-ok');
+            var onOkClick = function () {
+                var res = {};
+                for (var n = 0; n < fields.length; n++) {
+                    var el = document.getElementById('xf-pfm-' + n);
+                    res[fields[n].name] = el ? el.value : '';
+                    if (fields[n].required && !res[fields[n].name]) { el && el.focus(); return; }
+                }
+                mInst.hide();
+                onOk(res);
+            };
+            okBtn.onclick = onOkClick;
+            mInst.show();
+            var first = document.getElementById('xf-pfm-0');
+            first && first.focus();
+            return;
+        }
+        // 最终回退：逐个 window.prompt
+        var vals = {};
+        for (var k = 0; k < fields.length; k++) {
+            var fv = window.prompt((fields[k].label || fields[k].name) + (fields[k].required ? '' : '（可选）') + '：', '');
+            if (fv === null) return;
+            vals[fields[k].name] = fv;
+        }
+        onOk(vals);
     };
 
     /* ------------------------------------------------------------------
@@ -2320,10 +3146,21 @@
                 var url = String($btn.attr('data-url') || '').replace(/\{ids\}/g, ids.join(','));
                 var method = String($btn.attr('data-method') || 'POST').toUpperCase();
                 var confirmMsg = $btn.attr('data-confirm');
+                // 批量动作名（后端据此分发 domainOp / 状态流转 / 启用停用 / 删除等）
+                var actionName = $btn.attr('data-action') || '';
                 // data-reload="0" 表示成功后仅本地重绘（attr 返回字符串，避免 .data() 的数字 0 判定歧义）
                 var reload = $btn.attr('data-reload') !== '0';
                 var run = function () {
-                    XFAdmin.request(url, { method: method, silent: false }).then(function (res) {
+                    // 组装完整 payload：dataset（表格容器）+ ids（数组）+ action（批量动作名）
+                    var payload = actionName ? { action: actionName } : {};
+                    var ds = $el.attr('data-xf-dataset') || $el.closest('[data-xf-dataset]').attr('data-xf-dataset') || '';
+                    if (ds) payload.dataset = ds;
+                    payload.ids = ids;
+                    XFAdmin.request(url, {
+                        method: method,
+                        silent: false,
+                        data: payload
+                    }).then(function (res) {
                         if (res.ok) {
                             XFAdmin.toast({ body: (res.data && res.data.message) || '批量操作成功', variant: 'success' });
                             // 服务端模式重新请求，本地模式直接重绘
@@ -2816,6 +3653,67 @@
         }
     });
 
+    /* 单元格事件系统：订阅与分发 */
+    // XFAdmin.onCell('handlerName', function(detail){...}) 注册处理器；detail={event,row,el,value,field}
+    XFAdmin.cellEventHandlers = {};
+    XFAdmin.onCell = function (name, fn) { XFAdmin.cellEventHandlers[name] = fn; return XFAdmin; };
+    function fireCellEvent(evtName, e, el) {
+        var handler = XFAdmin.cellEventHandlers[evtName];
+        if (!handler) return;
+        var row = {};
+        try { row = JSON.parse(el.getAttribute('data-xf-cell-row') || '{}'); } catch (_) {}
+        handler({
+            event: e.type, el: el, row: row,
+            value: el.getAttribute('data-xf-cell-value'),
+            field: el.getAttribute('data-xf-cell-field'),
+            originalEvent: e
+        });
+    }
+    document.addEventListener('click', function (e) {
+        var el = e.target.closest && e.target.closest('[data-xf-cell-event]');
+        if (!el) return;
+        var map = {};
+        try { map = JSON.parse(el.getAttribute('data-xf-cell-event') || '{}'); } catch (_) {}
+        if (map.click) { fireCellEvent(map.click, e, el); }
+    });
+    document.addEventListener('dblclick', function (e) {
+        var el = e.target.closest && e.target.closest('[data-xf-cell-event]');
+        if (!el) return;
+        var map = {};
+        try { map = JSON.parse(el.getAttribute('data-xf-cell-event') || '{}'); } catch (_) {}
+        if (map.dblclick) { fireCellEvent(map.dblclick, e, el); }
+    });
+    document.addEventListener('mouseover', function (e) {
+        var el = e.target.closest && e.target.closest('[data-xf-cell-event]');
+        if (!el || el.__xfHoverBound) return;
+        el.__xfHoverBound = true;
+        var map = {};
+        try { map = JSON.parse(el.getAttribute('data-xf-cell-event') || '{}'); } catch (_) {}
+        if (map.hover) {
+            el.addEventListener('mouseenter', function (ev) { fireCellEvent(map.hover, ev, el); });
+            el.addEventListener('mouseleave', function (ev) { if (map.hoverout) fireCellEvent(map.hoverout, ev, el); });
+        }
+    });
+
+    /* 单元格复制/JSON 查看（copyBtn / json 渲染器的交互） */
+    document.addEventListener('click', function (e) {
+        var copyBtn = e.target.closest && e.target.closest('.xf-copy-btn');
+        if (copyBtn) {
+            var txt = copyBtn.getAttribute('data-copy') || '';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt).then(function () {
+                    XFAdmin.toast({ body: '已复制', variant: 'success', delay: 1200 });
+                });
+            }
+            return;
+        }
+        var jsonBtn = e.target.closest && e.target.closest('.xf-json-toggle');
+        if (jsonBtn) {
+            var raw = jsonBtn.getAttribute('data-json') || '{}';
+            XFAdmin.dialog({ title: 'JSON 数据', size: 'lg', body: '<pre class="mb-0 xf-json-view">' + escapeHtml(raw) + '</pre>' });
+        }
+    });
+
     // ---------- 静态交互表格（对标 INSPINIA custom-table.js 的 data-table-* 体系） ----------
     // 用于 Orders / Customers / Clients 等"静态数据 + 前端交互"表格：
     //   搜索 [data-xftable-search]、下拉筛选 [data-xftable-filter=行data键]、
@@ -3100,7 +3998,7 @@
         delete config.input;
         global.noUiSlider.create(el, config);
         if (inputName) {
-            var input = el.parentElement.querySelector('input[name="' + inputName + '"]') ||
+            var input = (el.parentElement ? el.parentElement.querySelector('input[name="' + inputName + '"]') : null) ||
                 document.querySelector('input[name="' + inputName + '"]');
             if (input) {
                 el.noUiSlider.on('update', function (values) {
@@ -3532,15 +4430,61 @@
         var cols = el.querySelectorAll('.xf-kanban-col[data-column]');
         var instances = [];
 
+        // 实时刷新每个看板列头计数（移动卡片后必须同步）
+        function updateCounts() {
+            cols.forEach(function (col) {
+                var body = col.querySelector('.xf-kanban-body');
+                var n = body ? body.querySelectorAll(':scope > .xf-kanban-card').length : 0;
+                var cnt = col.querySelector('.xf-kanban-count');
+                if (cnt) cnt.textContent = String(n);
+            });
+        }
+
+        // 持久化状态变更：若看板容器声明了 data-xf-update-url，则自动 PATCH 后端
+        // 例：<div class="xf-kanban" data-xf="kanban" data-xf-update-url="/admin/api/kanban/move"
+        //        data-xf-status-field="status"> ；卡片 data-item 含 {id, status}
+        function persistMove(detail) {
+            var url = el.getAttribute('data-xf-update-url');
+            if (!url || !detail.item || !detail.item.id) return;
+            var field = el.getAttribute('data-xf-status-field') || 'status';
+            var dataset = el.getAttribute('data-xf-dataset');
+            var payload = { id: detail.item.id, [field]: detail.to, from: detail.from };
+            if (dataset) payload.dataset = dataset;
+            if (window.XFAdmin && typeof window.XFAdmin.request === 'function') {
+                window.XFAdmin.request(url, payload, { method: 'PATCH' })
+                    .then(function (res) {
+                        if (res && res.ok) {
+                            try {
+                                var it = JSON.parse(card.getAttribute('data-item'));
+                                it[field] = detail.to;
+                                card.setAttribute('data-item', JSON.stringify(it));
+                            } catch (e) {}
+                            if (window.XFAdmin.toast) window.XFAdmin.toast({ body: '状态已更新', variant: 'success' });
+                        } else if (window.XFAdmin.toast) {
+                            window.XFAdmin.toast({ body: '状态更新失败', variant: 'warning' });
+                        }
+                    })
+                    .catch(function () { if (window.XFAdmin.toast) window.XFAdmin.toast({ body: '状态更新失败', variant: 'warning' }); });
+            }
+        }
+
         function emitMove(card, fromCol, toCol, fromIndex, toIndex) {
             // 卡片上的数据对象（data-item 为 JSON），供宿主打印 / 持久化
             var item = null;
             try { item = card.getAttribute('data-item') ? JSON.parse(card.getAttribute('data-item')) : { text: (card.querySelector('.xf-kanban-card-title') || card).textContent.trim() }; } catch (e) { item = null; }
-            console.log('[xf.kanban.move]', { item: item, from: fromCol, to: toCol, fromIndex: fromIndex, toIndex: toIndex });
+            // 跨列移动时同步更新卡片的 data-item 状态值
+            if (fromCol !== toCol && item) {
+                var field = el.getAttribute('data-xf-status-field') || 'status';
+                item[field] = toCol;
+                try { card.setAttribute('data-item', JSON.stringify(item)); } catch (e) {}
+            }
+            // 调试日志：可在控制台设置 localStorage.debug_kanban=1 开启
+            try { if (window.localStorage && window.localStorage.getItem('debug_kanban')) { console.debug('[xf.kanban.move]', { item: item, from: fromCol, to: toCol, fromIndex: fromIndex, toIndex: toIndex }); } } catch (_) { /* noop */ }
             el.dispatchEvent(new CustomEvent('xf.kanban.move', {
                 detail: { item: item, from: fromCol, to: toCol, fromIndex: fromIndex, toIndex: toIndex, card: card },
                 bubbles: true
             }));
+            if (fromCol !== toCol) persistMove({ item: item, from: fromCol, to: toCol });
         }
 
         // 1) Sortable.js 路径
@@ -3552,6 +4496,8 @@
                     onEnd: function (evt) {
                         var from = (evt.from.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
                         var to = (evt.to.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
+                        // 跨列拖动：先刷新计数，再持久化状态（若页面配置了更新接口）
+                        updateCounts();
                         emitMove(evt.item, from, to, evt.oldIndex, evt.newIndex);
                     }
                 }));
@@ -3581,6 +4527,7 @@
                     var toCol = (list.closest('.xf-kanban-col') || { getAttribute: function () { return null; } }).getAttribute('data-column');
                     list.appendChild(card);
                     var idx = Array.prototype.indexOf.call(list.children, card);
+                    updateCounts();
                     emitMove(card, fromCol, toCol, -1, idx);
                 });
             });
@@ -3731,7 +4678,9 @@
                     '<span class="flex-grow-1"></span>' +
                     '<button type="button" class="btn btn-sm btn-link text-muted xf-todo-del" aria-label="删除"><i class="ti ti-x"></i></button>';
                 li.querySelector('span').textContent = text;
-                el.querySelector('.xf-todo-list').appendChild(li);
+                var todoList = el.querySelector('.xf-todo-list');
+                if (!todoList) return;
+                todoList.appendChild(li);
                 input.value = '';
                 recount();
             });
@@ -3867,6 +4816,110 @@
     };
 
     /* ------------------------------------------------------------------
+     * 命令面板（Command Palette）：Ctrl/Cmd+K 唤起，模糊搜索命令并跳转/触发
+     * ------------------------------------------------------------------ */
+    XFAdmin.initCommandPalette = function (cfg) {
+        cfg = cfg || {};
+        var modal = document.getElementById(cfg.id);
+        if (!modal) return;
+        var input = modal.querySelector('.xf-cmd-input');
+        var list = modal.querySelector('.xf-cmd-list');
+        var empty = modal.querySelector('.xf-cmd-empty');
+        var items = Array.prototype.slice.call(list ? list.querySelectorAll('.xf-cmd-item') : []);
+        var hotkey = (cfg.hotkey || 'meta+k').toLowerCase();
+
+        // 快捷键唤起
+        document.addEventListener('keydown', function (e) {
+            var want = hotkey.split('+');
+            var ctrl = want.indexOf('ctrl') > -1 || want.indexOf('meta') > -1;
+            var key = want[want.length - 1];
+            if (ctrl && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === key) {
+                e.preventDefault();
+                var bs = global.bootstrap && global.bootstrap.Modal ? global.bootstrap.Modal.getOrCreateInstance(modal) : null;
+                if (bs) bs.show(); else modal.classList.add('show');
+                if (input) setTimeout(function () { input.focus(); }, 50);
+            }
+        });
+
+        // 模糊过滤
+        if (input) {
+            input.addEventListener('input', function () {
+                var q = (input.value || '').trim().toLowerCase();
+                var shown = 0;
+                items.forEach(function (it) {
+                    var hit = !q || (it.textContent || '').toLowerCase().indexOf(q) > -1;
+                    it.style.display = hit ? '' : 'none';
+                    if (hit) shown++;
+                });
+                if (empty) empty.classList.toggle('d-none', shown > 0);
+            });
+        }
+        // 执行命令
+        items.forEach(function (it) {
+            it.addEventListener('click', function () {
+                var url = it.getAttribute('data-url');
+                var action = it.getAttribute('data-action');
+                if (action && XFAdmin.onCommand) { XFAdmin.onCommand(action, { el: it }); }
+                if (url) { window.location.href = url; }
+                var bs = global.bootstrap && global.bootstrap.Modal ? global.bootstrap.Modal.getOrCreateInstance(modal) : null;
+                if (bs) bs.hide();
+            });
+        });
+    };
+    XFAdmin.commandHandlers = {};
+    XFAdmin.onCommand = function (name, fn) { XFAdmin.commandHandlers[name] = fn; return XFAdmin; };
+
+    /* ------------------------------------------------------------------
+     * 拖拽上传（Dropzone）：拖拽/点击选择，自动 XFAdmin.request 上传
+     * ------------------------------------------------------------------ */
+    XFAdmin.initDropzone = function (cfg) {
+        cfg = cfg || {};
+        var box = document.getElementById(cfg.id);
+        if (!box) return;
+        var input = box.querySelector('.xf-dropzone-input');
+        var listEl = box.querySelector('.xf-dropzone-list');
+        var url = box.getAttribute('data-url') || '';
+        var maxSize = parseInt(box.getAttribute('data-max-size') || '10', 10) * 1024 * 1024;
+        var multiple = box.getAttribute('data-multiple') === '1';
+        var field = box.getAttribute('data-name') || 'file';
+
+        var renderItem = function (f) {
+            var el = document.createElement('div');
+            el.className = 'xf-dropzone-file badge bg-soft-secondary d-inline-flex align-items-center gap-1 mb-1';
+            el.innerHTML = '<i class="ti ti-file"></i><span>' + escapeHtml(f.name) + '</span>'
+                + (f.size ? '<small class="text-muted">(' + (f.size / 1024).toFixed(0) + 'KB)</small>' : '')
+                + '<i class="ti ti-x ms-1 xf-dropzone-rm" style="cursor:pointer"></i>';
+            el.querySelector('.xf-dropzone-rm').addEventListener('click', function () { el.remove(); });
+            return el;
+        };
+        // 已存在文件
+        (cfg.initial || []).forEach(function (f) { if (listEl) listEl.appendChild(renderItem(f)); });
+
+        box.addEventListener('click', function (e) { if (e.target === box || e.target.classList.contains('ti-cloud-upload') || e.target.tagName === 'P' || e.target.tagName === 'SMALL') { if (input) input.click(); } });
+        ['dragover', 'dragenter'].forEach(function (ev) { box.addEventListener(ev, function (e) { e.preventDefault(); box.classList.add('border-primary'); }); });
+        ['dragleave', 'drop'].forEach(function (ev) { box.addEventListener(ev, function (e) { e.preventDefault(); box.classList.remove('border-primary'); }); });
+        box.addEventListener('drop', function (e) {
+            if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+        });
+        if (input) input.addEventListener('change', function () { handleFiles(input.files); input.value = ''; });
+
+        function handleFiles(fileList) {
+            Array.prototype.slice.call(fileList).forEach(function (file) {
+                if (file.size > maxSize) { XFAdmin.toast && XFAdmin.toast({ body: file.name + ' 超出大小限制', variant: 'warning' }); return; }
+                var item = listEl ? listEl.appendChild(renderItem({ name: file.name, size: file.size })) : null;
+                if (!url) return;
+                var fd = new FormData();
+                fd.append(field, file);
+                XFAdmin.request(url, { method: 'POST', body: fd, raw: true }).then(function (res) {
+                    if (res && res.ok && XFAdmin.onUpload) XFAdmin.onUpload(cfg.id, res.data);
+                });
+            });
+        }
+    };
+    XFAdmin.uploadHandlers = {};
+    XFAdmin.onUpload = function (id, fn) { XFAdmin.uploadHandlers[id] = fn; return XFAdmin; };
+
+    /* ------------------------------------------------------------------
      * 启动
      * ---------------------------------------------------------------- */
     function boot() {
@@ -3874,6 +4927,9 @@
         initBootstrapExtras(document);
         XFAdmin.bindLoadingButtons(document);
         XFAdmin.bindXfPageLinks(document);
+        XFAdmin.bindTwoFactor(document);
+        XFAdmin.bindQtyStepper(document);
+        XFAdmin.bindInvoicePrint(document);
         XFAdmin._readyQueue.forEach(function (fn) {
             try { fn(); } catch (e) { console.error('[XFAdmin] onReady', e); }
         });
@@ -3890,6 +4946,10 @@
             if (el.__xfPageBound) return;
             el.__xfPageBound = true;
             el.addEventListener('click', function (e) {
+                // 卡片内的领域快捷按钮（data-xf-op）不触发详情弹窗
+                if (e.target && typeof e.target.closest === 'function' && e.target.closest('[data-xf-op]')) {
+                    return;
+                }
                 e.preventDefault();
                 var url = el.getAttribute('data-xf-page');
                 var title = el.getAttribute('data-xf-title') || '详情';
@@ -4667,6 +5727,106 @@
         global.addEventListener('load', hidePreloader);
         setTimeout(hidePreloader, 3000);
     }
+
+    /* ------------------------------------------------------------------
+     * 两步验证 OTP 输入：自动跳格 / 退格回退 / 粘贴填充 / 同步隐藏域
+     * ---------------------------------------------------------------- */
+    XFAdmin.bindTwoFactor = function (root) {
+        root = root || document;
+        Array.prototype.forEach.call(root.querySelectorAll('[data-xf="twoFactor"]'), function (box) {
+            if (box.__xfBound) return;
+            box.__xfBound = true;
+            var cells = Array.prototype.slice.call(box.querySelectorAll('.xf-2fa-cell'));
+            var hidden = box.querySelector('.xf-2fa-value');
+
+            function sync() {
+                if (hidden) hidden.value = cells.map(function (c) { return c.value; }).join('');
+            }
+            function focusFirstEmpty() {
+                for (var i = 0; i < cells.length; i++) {
+                    if (!cells[i].value) { cells[i].focus(); return; }
+                }
+                cells[cells.length - 1].focus();
+            }
+
+            box.addEventListener('input', function (e) {
+                var cell = e.target;
+                cell.value = (cell.value.replace(/\D/g, '')).slice(0, 1);
+                var idx = cells.indexOf(cell);
+                if (cell.value && idx < cells.length - 1) cells[idx + 1].focus();
+                sync();
+            });
+            box.addEventListener('keydown', function (e) {
+                var cell = e.target;
+                var idx = cells.indexOf(cell);
+                if (e.key === 'Backspace' && !cell.value && idx > 0) {
+                    cells[idx - 1].focus();
+                    cells[idx - 1].value = '';
+                    sync();
+                }
+                if (e.key === 'ArrowLeft' && idx > 0) cells[idx - 1].focus();
+                if (e.key === 'ArrowRight' && idx < cells.length - 1) cells[idx + 1].focus();
+            });
+            box.addEventListener('paste', function (e) {
+                e.preventDefault();
+                var text = (e.clipboardData || global.clipboardData).getData('text').replace(/\D/g, '').slice(0, cells.length);
+                for (var i = 0; i < cells.length; i++) cells[i].value = text[i] || '';
+                if (text.length) cells[Math.min(text.length, cells.length) - 1].focus();
+                sync();
+            });
+            if (box.hasAttribute('data-xf-autofocus')) focusFirstEmpty();
+        });
+    };
+
+    /* ------------------------------------------------------------------
+     * 数量步进器：+/- 调整，含 min/max/step 边界
+     * ---------------------------------------------------------------- */
+    XFAdmin.bindQtyStepper = function (root) {
+        root = root || document;
+        Array.prototype.forEach.call(root.querySelectorAll('[data-xf="qtyStepper"]'), function (box) {
+            if (box.__xfBound) return;
+            box.__xfBound = true;
+            var input = box.querySelector('.xf-qty-input');
+            var min = parseInt(box.getAttribute('data-min'), 10) || 0;
+            var max = parseInt(box.getAttribute('data-max'), 10) || 9999;
+            var step = parseInt(box.getAttribute('data-step'), 10) || 1;
+
+            function clamp(v) { return Math.max(min, Math.min(max, v)); }
+            box.addEventListener('click', function (e) {
+                if (e.target.closest('.xf-qty-inc')) {
+                    input.value = clamp((parseInt(input.value, 10) || min) + step);
+                } else if (e.target.closest('.xf-qty-dec')) {
+                    input.value = clamp((parseInt(input.value, 10) || min) - step);
+                }
+            });
+            input.addEventListener('change', function () {
+                input.value = clamp(parseInt(input.value, 10) || min);
+            });
+        });
+    };
+
+    /* ------------------------------------------------------------------
+     * 发票打印按钮：仅打印目标区域（无目标则整页）
+     * ---------------------------------------------------------------- */
+    XFAdmin.bindInvoicePrint = function (root) {
+        root = root || document;
+        Array.prototype.forEach.call(root.querySelectorAll('[data-xf="print"]'), function (btn) {
+            if (btn.__xfBound) return;
+            btn.__xfBound = true;
+            btn.addEventListener('click', function () {
+                var t = btn.getAttribute('data-target');
+                if (t) {
+                    var node = document.querySelector(t);
+                    if (node) node.classList.add('xf-invoice-print-area');
+                }
+                global.print();
+                if (t) {
+                    var node2 = document.querySelector(t);
+                    if (node2) setTimeout(function () { node2.classList.remove('xf-invoice-print-area'); }, 500);
+                }
+            });
+        });
+    };
 
     global.XFAdmin = XFAdmin;
 })(window);

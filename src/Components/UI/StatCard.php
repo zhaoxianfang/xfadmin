@@ -49,7 +49,7 @@ class StatCard extends Component
             'target' => $this->get('counter'),
             'prefix' => $this->get('prefix'),
             'suffix' => $this->get('suffix'),
-        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         $value = $this->get('counter') !== null
             ? '<span data-xf="counter" data-xf-config="' . $this->e($counterCfg ?: '{}') . '">0</span>'
             : $this->e($this->get('prefix')) . $this->e($this->get('value')) . $this->e($this->get('suffix'));

@@ -1,4 +1,4 @@
-# 组件详细参考（自动生成 · 全量 154 个组件）
+# 组件详细参考（自动生成 · 全量 210 个组件 / 213 个别名）
 
 > 本文档由 `tools/gen_docs.php` 扫描全部已注册组件自动生成，列出每个组件的别名、分类、类、描述、依赖资源、全部 `defaults()` 选项（含类型 / 默认值 / 行内说明）、链式方法与实际调用示例。
 > 调用统一形式：`XfAdmin::<alias>(array $options)`。所有组件均支持通用键 `id` / `class` / `attributes`。
@@ -6,10 +6,11 @@
 
 ## 分类索引
 
-- **布局 / 页面**（14）
+- **布局 / 页面**（15）
   - [`page`](#page)
   - [`sidenav`](#sidenav)
   - [`topbar`](#topbar)
+  - [`topNav`](#topnav)
   - [`pageTitle`](#pagetitle)
   - [`footer`](#footer)
   - [`customizer`](#customizer)
@@ -20,12 +21,13 @@
   - [`emptyState`](#emptystate)
   - [`lockScreen`](#lockscreen)
   - [`landing`](#landing)
+  - [`accountSettingsPanel`](#accountsettingspanel)
 - **导航**（1）
   - [`menu`](#menu)
 - **栅格**（2）
   - [`row`](#row)
   - [`col`](#col)
-- **UI 基础**（46）
+- **UI 基础**（53）
   - [`card`](#card)
   - [`statCard`](#statcard)
   - [`alert`](#alert)
@@ -72,7 +74,14 @@
   - [`empty`](#empty)
   - [`toolbar`](#toolbar)
   - [`searchBox`](#searchbox)
-- **表单**（14）
+  - [`colorPalette`](#colorpalette)
+  - [`iconSet`](#iconset)
+  - [`videoEmbed`](#videoembed)
+  - [`commandPalette`](#commandpalette)
+  - [`notificationCenter`](#notificationcenter)
+  - [`dropzoneUpload`](#dropzoneupload)
+  - [`invoicePrintButton`](#invoiceprintbutton)
+- **表单**（20）
   - [`form`](#form)
   - [`input`](#input)
   - [`textarea`](#textarea)
@@ -87,6 +96,12 @@
   - [`maskedInput`](#maskedinput)
   - [`wizard`](#wizard)
   - [`passwordStrength`](#passwordstrength)
+  - [`formElements`](#formelements)
+  - [`formLayout`](#formlayout)
+  - [`formOtherPlugin`](#formotherplugin)
+  - [`formValidation`](#formvalidation)
+  - [`twoFactorInput`](#twofactorinput)
+  - [`quantityStepper`](#quantitystepper)
 - **图表 / 地图**（7）
   - [`apexChart`](#apexchart)
   - [`apexTree`](#apextree)
@@ -95,10 +110,12 @@
   - [`vectorMap`](#vectormap)
   - [`leafletMap`](#leafletmap)
   - [`googleMap`](#googlemap)
-- **表格**（2）
+- **表格**（4）
   - [`table`](#table)
   - [`dataTable`](#datatable)
-- **数据 / 业务**（53）
+  - [`tablesCustom`](#tablescustom)
+  - [`dataTableToolbar`](#datatabletoolbar)
+- **数据 / 业务**（91）
   - [`pricingCard`](#pricingcard)
   - [`faq`](#faq)
   - [`profileHeader`](#profileheader)
@@ -120,6 +137,8 @@
   - [`emailCompose`](#emailcompose)
   - [`customers`](#customers)
   - [`orders`](#orders)
+  - [`taskList`](#tasklist)
+  - [`deals`](#deals)
   - [`orderDetails`](#orderdetails)
   - [`productDetails`](#productdetails)
   - [`projects`](#projects)
@@ -152,7 +171,43 @@
   - [`sellerDetails`](#sellerdetails)
   - [`article`](#article)
   - [`projectActivity`](#projectactivity)
-- **杂项**（15）
+  - [`shoppingCart`](#shoppingcart)
+  - [`checkout`](#checkout)
+  - [`marketplace`](#marketplace)
+  - [`accountSettings`](#accountsettings)
+  - [`sitemap`](#sitemap)
+  - [`privacyPolicy`](#privacypolicy)
+  - [`appManage`](#appmanage)
+  - [`warehouse`](#warehouse)
+  - [`refunds`](#refunds)
+  - [`sales`](#sales)
+  - [`purchasedOrders`](#purchasedorders)
+  - [`attributes`](#attributes)
+  - [`ecommerceSettings`](#ecommercesettings)
+  - [`productsGrid`](#productsgrid)
+  - [`productViews`](#productviews)
+  - [`analyticsDashboard`](#analyticsdashboard)
+  - [`ecommerceDashboard`](#ecommercedashboard)
+  - [`widgetsDashboard`](#widgetsdashboard)
+  - [`moduleNav`](#modulenav)
+  - [`moduleGrid`](#modulegrid)
+  - [`dashboardGrid`](#dashboardgrid)
+  - [`settingsCenter`](#settingscenter)
+  - [`reportPage`](#reportpage)
+  - [`statMiniSparkline`](#statminisparkline)
+  - [`cartSummary`](#cartsummary)
+  - [`chatMessageBubble`](#chatmessagebubble)
+  - [`chatConversationPanel`](#chatconversationpanel)
+  - [`orderTrackingTimeline`](#ordertrackingtimeline)
+  - [`featureComparisonTable`](#featurecomparisontable)
+  - [`filterSidebar`](#filtersidebar)
+  - [`searchResultsRich`](#searchresultsrich)
+  - [`socialFeed`](#socialfeed)
+  - [`faqAccordion`](#faqaccordion)
+  - [`contactList`](#contactlist)
+  - [`userProfile`](#userprofile)
+  - [`invoiceView`](#invoiceview)
+- **杂项**（17）
   - [`calendar`](#calendar)
   - [`treeView`](#treeview)
   - [`nestable`](#nestable)
@@ -168,12 +223,14 @@
   - [`textDiff`](#textdiff)
   - [`pinBoard`](#pinboard)
   - [`masonry`](#masonry)
+  - [`videoPlayer`](#videoplayer)
+  - [`i18n`](#i18n)
 
 ## page
 
 > 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\Page`
 
-整页骨架（完整 HTML 文档） 一行代码渲染完整后台页面，自动组装：主题属性 + 侧边栏 + 顶栏 + 水平导航 + 页面标题 + 内容 + 页脚 + 主题定制面板 + 全部按需资源（去重加载）。
+整页骨架（完整 HTML 文档） 一行代码渲染完整后台页面，自动组装：主题属性 + 侧边栏 + 顶栏 + 页面标题 + 内容 + 页脚 + 主题定制面板 + 全部按需资源（去重加载）。
 
 **依赖资源**：无
 
@@ -193,6 +250,7 @@
 | `current_url` | `null` | — |
 | `sidenav` | `[]` | — |
 | `topbar` | `[]` | — |
+| `topnav` | `null` | 水平布局顶部导航（layout=horizontal 时启用） |
 | `page_title` | `null` | — |
 | `content` | `''` | — |
 | `container` | `'container-fluid'` | — |
@@ -297,14 +355,18 @@ echo XfAdmin::sidenav([
 | `brand` | `true` | — |
 | `search` | `true` | — |
 | `search_placeholder` | `'Search...'` | — |
+| `search_modal` | `false` | 点击搜索图标弹出全屏模态（替代内联搜索框） |
 | `left` | `null` | — |
 | `theme_toggle` | `true` | — |
 | `fullscreen` | `true` | — |
 | `customizer` | `true` | — |
 | `languages` | `[]` | — |
 | `notifications` | `false` | — |
+| `messages` | `false` | — |
+| `apps` | `false` | — |
 | `user` | `false` | — |
 | `right` | `null` | — |
+
 <details><summary>查看 defaults() 源码字面量</summary>
 
 ```php
@@ -312,12 +374,15 @@ echo XfAdmin::sidenav([
             'brand'         => true,
             'search'        => true,
             'search_placeholder' => 'Search...',
+            'search_modal'  => false,           // 点击搜索图标弹出全屏模态（替代内联搜索框）
             'left'          => null,
             'theme_toggle'  => true,
             'fullscreen'    => true,
             'customizer'    => true,
             'languages'     => [],
             'notifications' => false,
+            'messages'      => false,
+            'apps'          => false,
             'user'          => false,
             'right'         => null,
         ]
@@ -335,6 +400,8 @@ echo XfAdmin::topbar([
 
     'search_placeholder' => 'Search...',
 
+    'search_modal' => false,
+
     'left' => null,
 
     'theme_toggle' => true,
@@ -347,7 +414,90 @@ echo XfAdmin::topbar([
 
     'notifications' => false,
 
-    'user' => false,
+    // … 其余选项见上表 / 默认值（源码）
+]);
+```
+
+## topNav
+_别名：_ `topnav`
+
+> 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\TopNav`
+
+顶部水平导航（TopNav） 来源：INSPINIA v4.0 layouts-horizontal.html 的 header.app-topbar 与 header.topnav 两个 DOM 的拆分 / 重构 / 合并 —— 原模板中「横向菜单」独立成第二个 header.topnav， 本组件将其合并进 header.app-topbar：菜单渲染在品牌 Logo 之后、右侧工具区（语言 / 消息 / 通知 / 主题 / 用户头像）之前，即「系统头像右侧」的水平菜单条。 布局要点：  - 单一 <header class="app-topbar"> 容器，内部 topbar-menu 使用 flex 三段式；  - 菜单沿用模板 .topnav .navbar-nav 的 class 契约，直接复用 app.min.css 中    已实现的 hover 级联下拉（含无限级嵌套 .dropdown > .dropdown-menu）；  - 小屏（<lg）由 .topnav-toggle-button 触发 Bootstrap collapse 折叠展开。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `brand` | `true` | — |
+| `sidenav_toggle` | `false` | 纯水平布局默认不显示侧栏切换按钮 |
+| `menu` | `[]` | — |
+| `current_url` | `null` | — |
+| `search` | `false` | — |
+| `search_placeholder` | `'Search for something...'` | — |
+| `mega` | `false` | — |
+| `left` | `null` | — |
+| `languages` | `[]` | — |
+| `messages` | `false` | — |
+| `notifications` | `false` | — |
+| `theme_toggle` | `true` | — |
+| `fullscreen` | `true` | — |
+| `customizer` | `true` | — |
+| `user` | `false` | — |
+| `apps` | `false` | 应用启动器（圆形九宫格 #apps-dropdown-rounded） |
+| `right` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'brand'              => true,
+            'sidenav_toggle'     => false,  // 纯水平布局默认不显示侧栏切换按钮
+            'menu'               => [],
+            'current_url'        => null,
+            'search'             => false,
+            'search_placeholder' => 'Search for something...',
+            'mega'               => false,
+            'left'               => null,
+            'languages'          => [],
+            'messages'           => false,
+            'notifications'      => false,
+            'theme_toggle'       => true,
+            'fullscreen'         => true,
+            'customizer'         => true,
+            'user'               => false,
+            'apps'               => false,   // 应用启动器（圆形九宫格 #apps-dropdown-rounded）
+            'right'              => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::topNav([
+
+    'brand' => true,
+
+    'sidenav_toggle' => false,
+
+    'menu' => [],
+
+    'current_url' => null,
+
+    'search' => false,
+
+    'search_placeholder' => 'Search for something...',
+
+    'mega' => false,
+
+    'left' => null,
+
+    'languages' => [],
+
+    'messages' => false,
 
     // … 其余选项见上表 / 默认值（源码）
 ]);
@@ -472,10 +622,11 @@ echo XfAdmin::customizer([
 | `title` | `''` | — |
 | `theme` | `[]` | — |
 | `brand` | `[]` | — |
+| `layout` | `'card'` | card | split | basic |
 | `heading` | `null` | — |
 | `subheading` | `null` | — |
 | `content` | `''` | — |
-| `card` | `true` | 内容是否包裹在卡片中 |
+| `card` | `true` | 内容是否包裹在卡片中（layout=split 时固定为卡片） |
 | `below` | `null` | — |
 | `copyright` | `null` | — |
 | `width` | `'col-xxl-4 col-md-6 col-sm-8'` | — |
@@ -491,10 +642,11 @@ echo XfAdmin::customizer([
             'title'      => '',
             'theme'      => [],
             'brand'      => [],
+            'layout'     => 'card',    // card | split | basic
             'heading'    => null,
             'subheading' => null,
             'content'    => '',
-            'card'       => true,     // 内容是否包裹在卡片中
+            'card'       => true,     // 内容是否包裹在卡片中（layout=split 时固定为卡片）
             'below'      => null,
             'copyright'  => null,
             'width'      => 'col-xxl-4 col-md-6 col-sm-8',
@@ -518,6 +670,8 @@ echo XfAdmin::authPage([
 
     'brand' => [],
 
+    'layout' => 'card',
+
     'heading' => null,
 
     'subheading' => null,
@@ -527,8 +681,6 @@ echo XfAdmin::authPage([
     'card' => true,
 
     'below' => null,
-
-    'copyright' => null,
 
     // … 其余选项见上表 / 默认值（源码）
 ]);
@@ -801,7 +953,7 @@ echo XfAdmin::landing([
 
 > 分类：**导航** · 类：`zxf\XfAdmin\Components\Navigation\Menu`
 
-无限极菜单导航 支持两种渲染模式：  - side：侧边栏菜单（collapse 折叠，层级不限）  - top ：水平导航菜单（dropdown 下拉，层级不限）
+无限极菜单导航（侧边栏模式）
 
 **依赖资源**：无
 
@@ -809,7 +961,7 @@ echo XfAdmin::landing([
 
 | 键 | 默认值 | 说明 |
 |----|--------|------|
-| `mode` | `'side'` | side | top |
+| `mode` | `'side'` | side |
 | `items` | `[]` | — |
 | `current_url` | `null` | — |
 
@@ -817,7 +969,7 @@ echo XfAdmin::landing([
 
 ```php
 [
-            'mode'        => 'side',   // side | top
+            'mode'        => 'side',   // side
             'items'       => [],
             'current_url' => null,
         ]
@@ -1172,6 +1324,67 @@ echo XfAdmin::dataTable([
 ]);
 ```
 
+## tablesCustom
+
+> 分类：**表格** · 类：`zxf\XfAdmin\Components\Table\TablesCustom`
+
+自定义表格（tables-custom.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `columns` | `[]` | — |
+| `rows` | `[]` | — |
+| `headerBg` | `''` | — |
+| `striped` | `true` | — |
+| `hover` | `true` | — |
+| `bordered` | `true` | — |
+| `compact` | `false` | — |
+| `footable` | `[]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'columns' => [],
+            'rows' => [],
+            'headerBg' => '',
+            'striped' => true,
+            'hover' => true,
+            'bordered' => true,
+            'compact' => false,
+            'footable' => [],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::tablesCustom([
+
+    'columns' => [],
+
+    'rows' => [],
+
+    'headerBg' => '',
+
+    'striped' => true,
+
+    'hover' => true,
+
+    'bordered' => true,
+
+    'compact' => false,
+
+    'footable' => [],
+
+]);
+```
+
 ## form
 
 > 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\Form`
@@ -1189,6 +1402,7 @@ echo XfAdmin::dataTable([
 | `enctype` | `null` | — |
 | `validation` | `false` | — |
 | `ajax` | `false` | — |
+| `remote` | `false` | true：表单带 data-xf-remote，由前端全局托管 AJAX 提交 + 接收处理（与登录页一致） |
 | `inline` | `false` | 兼容旧写法（等价 layout=inline） |
 | `layout` | `null` | vertical | horizontal | inline（form-layouts.html） |
 | `label_width` | `180` | horizontal 布局标签列宽（px） |
@@ -1206,6 +1420,7 @@ echo XfAdmin::dataTable([
             'enctype'     => null,
             'validation'  => false,
             'ajax'        => false,
+            'remote'      => false,    // true：表单带 data-xf-remote，由前端全局托管 AJAX 提交 + 接收处理（与登录页一致）
             'inline'      => false,     // 兼容旧写法（等价 layout=inline）
             'layout'      => null,      // vertical | horizontal | inline（form-layouts.html）
             'label_width' => 180,       // horizontal 布局标签列宽（px）
@@ -1232,6 +1447,8 @@ echo XfAdmin::form([
 
     'ajax' => false,
 
+    'remote' => false,
+
     'inline' => false,
 
     'layout' => null,
@@ -1239,8 +1456,6 @@ echo XfAdmin::form([
     'label_width' => 180,
 
     'fields' => [],
-
-    'content' => null,
 
     // … 其余选项见上表 / 默认值（源码）
 ]);
@@ -1666,6 +1881,9 @@ echo XfAdmin::maskedInput([
 | `vertical` | `false` | — |
 | `progress` | `true` | — |
 | `labels` | `['prev' => '上一步', 'next' => '下一步', 'finish' => '提交']` | — |
+| `action` | `''` | 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit） |
+| `method` | `'post'` | 提交方法 |
+| `remote` | `false` | 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管） |
 
 <details><summary>查看 defaults() 源码字面量</summary>
 
@@ -1676,6 +1894,9 @@ echo XfAdmin::maskedInput([
             'vertical' => false,
             'progress' => true,
             'labels'   => ['prev' => '上一步', 'next' => '下一步', 'finish' => '提交'],
+            'action'   => '',          // 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit）
+            'method'   => 'post',      // 提交方法
+            'remote'   => false,       // 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管）
         ]
 ```
 </details>
@@ -1694,6 +1915,12 @@ echo XfAdmin::wizard([
     'progress' => true,
 
     'labels' => ['prev' => '上一步', 'next' => '下一步', 'finish' => '提交'],
+
+    'action' => '',
+
+    'method' => 'post',
+
+    'remote' => false,
 
 ]);
 ```
@@ -1751,6 +1978,144 @@ echo XfAdmin::passwordStrength([
     'minScore' => 0,
 
     'hint' => '',
+
+]);
+```
+
+## formElements
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\FormElements`
+
+表单元素展示（form-elements.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'sections' => null,
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::formElements([
+
+    'sections' => null,
+
+]);
+```
+
+## formLayout
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\FormLayout`
+
+表单布局变体（form-layout.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `layout` | `'vertical'` | — |
+| `columns` | `2` | — |
+| `fields` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'layout' => 'vertical',
+            'columns' => 2,
+            'fields' => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::formLayout([
+
+    'layout' => 'vertical',
+
+    'columns' => 2,
+
+    'fields' => null,
+
+]);
+```
+
+## formOtherPlugin
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\FormOtherPlugin`
+
+其他表单插件展示（form-other-plugin.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'plugins' => ['mask', 'autosize', 'maxlength', 'touchspin'],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::formOtherPlugin([
+
+    'plugins' => ['mask', 'autosize', 'maxlength', 'touchspin'],
+
+]);
+```
+
+## formValidation
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\FormValidation`
+
+表单验证展示（form-validation.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `showBuiltin` | `true` | — |
+| `formId` | `'xf_form_val'` | — |
+| `fields` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'showBuiltin' => true,
+            'formId' => 'xf_form_val',
+            'fields' => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::formValidation([
+
+    'showBuiltin' => true,
+
+    'formId' => 'xf_form_val',
+
+    'fields' => null,
 
 ]);
 ```
@@ -4426,6 +4791,303 @@ echo XfAdmin::searchBox([
 ]);
 ```
 
+## colorPalette
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\ColorPalette`
+
+配色方案展示（ui-colors.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'groups' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::colorPalette([
+
+    'groups' => [],
+
+]);
+```
+
+## iconSet
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\IconSet`
+
+图标集合展示（icons-flags.html / icons-lucide.html / icons-tabler.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `set` | `'tabler'` | — |
+| `icons` | `[]` | — |
+| `columns` | `6` | — |
+| `searchable` | `true` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'set' => 'tabler',
+            'icons' => [],
+            'columns' => 6,
+            'searchable' => true,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::iconSet([
+
+    'set' => 'tabler',
+
+    'icons' => [],
+
+    'columns' => 6,
+
+    'searchable' => true,
+
+]);
+```
+
+## videoEmbed
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\VideoEmbed`
+
+视频嵌入（ui-videos.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `src` | `''` | — |
+| `provider` | `'youtube'` | — |
+| `title` | `''` | — |
+| `description` | `''` | — |
+| `ratio` | `'16x9'` | — |
+| `autoplay` | `false` | — |
+| `allow` | `'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'src' => '',
+            'provider' => 'youtube',
+            'title' => '',
+            'description' => '',
+            'ratio' => '16x9',
+            'autoplay' => false,
+            'allow' => 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::videoEmbed([
+
+    'src' => '',
+
+    'provider' => 'youtube',
+
+    'title' => '',
+
+    'description' => '',
+
+    'ratio' => '16x9',
+
+    'autoplay' => false,
+
+    'allow' => 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+
+]);
+```
+
+## commandPalette
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\CommandPalette`
+
+命令面板（Command Palette）—— 对标 INSPINIA 缺失的全局快捷键命令中心
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `id` | `'xf-cmd-palette'` | — |
+| `title` | `'快捷命令'` | — |
+| `placeholder` | `'输入命令或搜索…'` | — |
+| `hotkey` | `'meta+k'` | — |
+| `commands` | `[]` | — |
+| `empty` | `'未找到匹配的命令'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'id'        => 'xf-cmd-palette',
+            'title'     => '快捷命令',
+            'placeholder' => '输入命令或搜索…',
+            'hotkey'    => 'meta+k',
+            'commands'  => [],
+            'empty'     => '未找到匹配的命令',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::commandPalette([
+
+    'id' => 'xf-cmd-palette',
+
+    'title' => '快捷命令',
+
+    'placeholder' => '输入命令或搜索…',
+
+    'hotkey' => 'meta+k',
+
+    'commands' => [],
+
+    'empty' => '未找到匹配的命令',
+
+]);
+```
+
+## notificationCenter
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\NotificationCenter`
+
+通知中心（Notification Center）—— 对标 INSPINIA 缺失的右侧通知抽屉
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `id` | `'xf-notify-center'` | — |
+| `title` | `'通知中心'` | — |
+| `badge` | `…` | — |
+| `empty` | `'暂无新通知'` | — |
+| `items` | `[]` | — |
+| `footer` | `['all' => null, 'clear' => true]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'id'     => 'xf-notify-center',
+            'title'  => '通知中心',
+            'badge'  => 0,
+            'empty'  => '暂无新通知',
+            'items'  => [],
+            'footer' => ['all' => null, 'clear' => true],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::notificationCenter([
+
+    'id' => 'xf-notify-center',
+
+    'title' => '通知中心',
+
+    'badge' => 0,
+
+    'empty' => '暂无新通知',
+
+    'items' => [],
+
+    'footer' => ['all' => null, 'clear' => true],
+
+]);
+```
+
+## dropzoneUpload
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\DropzoneUpload`
+
+拖拽上传区（Dropzone Upload）—— 对标 INSPINIA 缺失的拖拽上传组件
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `id` | `'xf-dropzone'` | — |
+| `url` | `''` | — |
+| `multiple` | `true` | — |
+| `accept` | `'*'` | — |
+| `maxSize` | `10` | MB |
+| `hint` | `'将文件拖到此处，或点击浏览'` | — |
+| `value` | `[]` | — |
+| `name` | `'file'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'id'       => 'xf-dropzone',
+            'url'      => '',
+            'multiple' => true,
+            'accept'   => '*',
+            'maxSize'  => 10,         // MB
+            'hint'     => '将文件拖到此处，或点击浏览',
+            'value'    => [],
+            'name'     => 'file',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::dropzoneUpload([
+
+    'id' => 'xf-dropzone',
+
+    'url' => '',
+
+    'multiple' => true,
+
+    'accept' => '*',
+
+    'maxSize' => 10,
+
+    'hint' => '将文件拖到此处，或点击浏览',
+
+    'value' => [],
+
+    'name' => 'file',
+
+]);
+```
+
 ## pricingCard
 
 > 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\PricingCard`
@@ -5400,6 +6062,108 @@ echo XfAdmin::orders([
     'selectable' => true,
 
     'page_size' => 10,
+
+]);
+```
+
+## taskList
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\TaskList`
+
+任务清单面板（Tasks）—— 严格对齐 INSPINIA v4 `tasks.html` 的看板式任务列表结构。 输出蓝本：   <div class="card xf-tasklist">     <div class="card-header"> 标题 + 过滤（全部/进行中/已完成）+ 新建按钮     <div class="list-group xf-task-group">       每个任务：         <label class="list-group-item xf-task-item">  ← 含自定义勾选框 + 标题 + 元信息（优先级徽标/指派人/截止日） 前端交互（勾选完成、过滤）由 xfadmin.js 的 initTaskList 驱动。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `title` | `''` | — |
+| `tasks` | `[]` | — |
+| `filterable` | `true` | — |
+| `addable` | `true` | — |
+| `add_url` | `'javascript:void(0);'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'title'      => '',
+            'tasks'      => [],
+            'filterable' => true,
+            'addable'    => true,
+            'add_url'    => 'javascript:void(0);',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::taskList([
+
+    'title' => '',
+
+    'tasks' => [],
+
+    'filterable' => true,
+
+    'addable' => true,
+
+    'add_url' => 'javascript:void(0);',
+
+]);
+```
+
+## deals
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Deals`
+
+销售漏斗 / 商机管线（Deals / Pipeline）—— 对齐 INSPINIA v4 `deals.html` 的阶段看板结构。 输出蓝本：   <div class="xf-deals">     <div class="row">       每个阶段一列：         <div class="col-xl-3 xf-deal-stage">           <div class="card"> 标题 + 合计金额 + 数量             <div class="xf-deal-card"> 每个商机卡片：标题/客户/金额/负责人/概率 阶段通过 stages 配置定义（key=阶段标识，name=显示名，color=语义色，total 自动汇总）。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `stages` | `…` | — |
+| `lead` | `['name' => '线索', 'color' => 'info']` | — |
+| `contact` | `['name' => '接洽', 'color' => 'primary']` | — |
+| `proposal` | `['name' => '方案', 'color' => 'warning']` | — |
+| `won` | `['name' => '成交', 'color' => 'success']` | — |
+| `deals` | `[]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'stages' => [
+                'lead'     => ['name' => '线索', 'color' => 'info'],
+                'contact'  => ['name' => '接洽', 'color' => 'primary'],
+                'proposal' => ['name' => '方案', 'color' => 'warning'],
+                'won'      => ['name' => '成交', 'color' => 'success'],
+            ],
+            'deals'  => [],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::deals([
+
+    'stages' => …, // 见说明
+    'lead' => ['name' => '线索', 'color' => 'info'],
+
+    'contact' => ['name' => '接洽', 'color' => 'primary'],
+
+    'proposal' => ['name' => '方案', 'color' => 'warning'],
+
+    'won' => ['name' => '成交', 'color' => 'success'],
+
+    'deals' => [],
 
 ]);
 ```
@@ -6655,6 +7419,1009 @@ echo XfAdmin::projectActivity([
 ]);
 ```
 
+## shoppingCart
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ShoppingCart`
+
+购物车列表（apps-ecommerce-cart.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `items` | `[]` | — |
+| `subtotal` | `…` | — |
+| `shipping` | `…` | — |
+| `tax` | `…` | — |
+| `discount` | `…` | — |
+| `total` | `…` | — |
+| `currency` | `'¥'` | — |
+| `emptyMessage` | `'购物车为空'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'items' => [],
+            'subtotal' => 0,
+            'shipping' => 0,
+            'tax' => 0,
+            'discount' => 0,
+            'total' => 0,
+            'currency' => '¥',
+            'emptyMessage' => '购物车为空',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::shoppingCart([
+
+    'items' => [],
+
+    'subtotal' => 0,
+
+    'shipping' => 0,
+
+    'tax' => 0,
+
+    'discount' => 0,
+
+    'total' => 0,
+
+    'currency' => '¥',
+
+    'emptyMessage' => '购物车为空',
+
+]);
+```
+
+## checkout
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Checkout`
+
+电商结算页（apps-ecommerce-checkout.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `steps` | `[]` | — |
+| `orderSummary` | `…` | — |
+| `subtotal` | `…` | — |
+| `shipping` | `…` | — |
+| `tax` | `…` | — |
+| `total` | `…` | — |
+| `currency` | `'¥'` | — |
+| `currentStep` | `…` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'steps' => [],
+            'orderSummary' => [
+                'subtotal' => 0,
+                'shipping' => 0,
+                'tax' => 0,
+                'total' => 0,
+            ],
+            'currency' => '¥',
+            'currentStep' => 0,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::checkout([
+
+    'steps' => [],
+
+    'orderSummary' => …, // 见说明
+    'subtotal' => 0,
+
+    'shipping' => 0,
+
+    'tax' => 0,
+
+    'total' => 0,
+
+    'currency' => '¥',
+
+    'currentStep' => 0,
+
+]);
+```
+
+## marketplace
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Marketplace`
+
+商城市场首页（apps-ecommerce-marketplace.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `categories` | `[]` | — |
+| `filters` | `[]` | — |
+| `products` | `[]` | — |
+| `currency` | `'$'` | — |
+| `columns` | `[4, 3, 2, 1]` | — |
+| `subtitle` | `'Find Your Perfect Style'` | — |
+| `subtitle_desc` | `'👕 Discover styles tailored for everyone'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'categories' => [],
+            'filters' => [],
+            'products' => [],
+            'currency' => '$',
+            'columns' => [4, 3, 2, 1],
+            'subtitle' => 'Find Your Perfect Style',
+            'subtitle_desc' => '👕 Discover styles tailored for everyone',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::marketplace([
+
+    'categories' => [],
+
+    'filters' => [],
+
+    'products' => [],
+
+    'currency' => '$',
+
+    'columns' => [4, 3, 2, 1],
+
+    'subtitle' => 'Find Your Perfect Style',
+
+    'subtitle_desc' => '👕 Discover styles tailored for everyone',
+
+]);
+```
+
+## accountSettings
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\AccountSettings`
+
+账号设置页面（pages-account-settings.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `tabs` | `[]` | — |
+| `user` | `[]` | — |
+| `activeTab` | `…` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'tabs' => [],
+            'user' => [],
+            'activeTab' => 0,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::accountSettings([
+
+    'tabs' => [],
+
+    'user' => [],
+
+    'activeTab' => 0,
+
+]);
+```
+
+## sitemap
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Sitemap`
+
+站点地图（pages-sitemap.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'columns' => [],
+            'colClass' => 'col-md-4',
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::sitemap([
+
+    'columns' => [],
+
+    'colClass' => 'col-md-4',
+
+]);
+```
+
+## privacyPolicy
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\PrivacyPolicy`
+
+隐私政策页面（pages-privacy-policy.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `title` | `'Privacy Policy'` | — |
+| `effectiveDate` | `''` | — |
+| `intro` | `''` | — |
+| `sections` | `[]` | — |
+| `contactEmail` | `''` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'title' => 'Privacy Policy',
+            'effectiveDate' => '',
+            'intro' => '',
+            'sections' => [],
+            'contactEmail' => '',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::privacyPolicy([
+
+    'title' => 'Privacy Policy',
+
+    'effectiveDate' => '',
+
+    'intro' => '',
+
+    'sections' => [],
+
+    'contactEmail' => '',
+
+]);
+```
+
+## appManage
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\AppManage`
+
+应用管理中心（apps-manage.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `stats` | `[]` | — |
+| `apps` | `[]` | — |
+| `maxApps` | `10` | — |
+| `search` | `''` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'stats' => [],
+            'apps' => [],
+            'maxApps' => 10,
+            'search' => '',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::appManage([
+
+    'stats' => [],
+
+    'apps' => [],
+
+    'maxApps' => 10,
+
+    'search' => '',
+
+]);
+```
+
+## warehouse
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Warehouse`
+
+仓库管理（apps-ecommerce-warehouse.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `warehouses` | `[]` | — |
+| `totalCapacity` | `'0'` | — |
+| `totalInventory` | `'0'` | — |
+| `title` | `'仓库管理'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'warehouses' => [],
+            'totalCapacity' => '0',
+            'totalInventory' => '0',
+            'title' => '仓库管理',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::warehouse([
+
+    'warehouses' => [],
+
+    'totalCapacity' => '0',
+
+    'totalInventory' => '0',
+
+    'title' => '仓库管理',
+
+]);
+```
+
+## refunds
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Refunds`
+
+退款管理（apps-ecommerce-refunds.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `refunds` | `[]` | — |
+| `currency` | `'¥'` | — |
+| `title` | `'退款管理'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'refunds' => [],
+            'currency' => '¥',
+            'title' => '退款管理',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::refunds([
+
+    'refunds' => [],
+
+    'currency' => '¥',
+
+    'title' => '退款管理',
+
+]);
+```
+
+## sales
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Sales`
+
+销售仪表板（apps-ecommerce-sales.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `stats` | `[]` | — |
+| `recentOrders` | `[]` | — |
+| `topProducts` | `[]` | — |
+| `currency` | `'¥'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'stats' => [],
+            'recentOrders' => [],
+            'topProducts' => [],
+            'currency' => '¥',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::sales([
+
+    'stats' => [],
+
+    'recentOrders' => [],
+
+    'topProducts' => [],
+
+    'currency' => '¥',
+
+]);
+```
+
+## purchasedOrders
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\PurchasedOrders`
+
+已采购订单（apps-ecommerce-purchased-orders.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `orders` | `[]` | — |
+| `currency` | `'¥'` | — |
+| `title` | `'采购订单'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'orders' => [],
+            'currency' => '¥',
+            'title' => '采购订单',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::purchasedOrders([
+
+    'orders' => [],
+
+    'currency' => '¥',
+
+    'title' => '采购订单',
+
+]);
+```
+
+## attributes
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\Attributes`
+
+产品属性管理（apps-ecommerce-attributes.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'attributes' => [],
+            'title' => '产品属性',
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::attributes([
+
+    'attributes' => [],
+
+    'title' => '产品属性',
+
+]);
+```
+
+## ecommerceSettings
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\EcommerceSettings`
+
+电商设置（apps-ecommerce-settings.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'store' => [],
+            'sections' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::ecommerceSettings([
+
+    'store' => [],
+
+    'sections' => [],
+
+]);
+```
+
+## productsGrid
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ProductsGrid`
+
+商品网格视图（apps-ecommerce-products-grid.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `products` | `[]` | — |
+| `currency` | `'¥'` | — |
+| `columns` | `[4, 3, 2, 1]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'products' => [],
+            'currency' => '¥',
+            'columns' => [4, 3, 2, 1],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::productsGrid([
+
+    'products' => [],
+
+    'currency' => '¥',
+
+    'columns' => [4, 3, 2, 1],
+
+]);
+```
+
+## productViews
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ProductViews`
+
+商品浏览统计（apps-ecommerce-product-views.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `products` | `[]` | — |
+| `totalViews` | `'0'` | — |
+| `totalUnique` | `'0'` | — |
+| `title` | `'商品浏览量'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'products' => [],
+            'totalViews' => '0',
+            'totalUnique' => '0',
+            'title' => '商品浏览量',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::productViews([
+
+    'products' => [],
+
+    'totalViews' => '0',
+
+    'totalUnique' => '0',
+
+    'title' => '商品浏览量',
+
+]);
+```
+
+## analyticsDashboard
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\AnalyticsDashboard`
+
+分析仪表盘（dashboards-analytics.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'stats' => [],
+            'recentActivity' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::analyticsDashboard([
+
+    'stats' => [],
+
+    'recentActivity' => [],
+
+]);
+```
+
+## ecommerceDashboard
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\EcommerceDashboard`
+
+电商仪表盘（dashboard-ecommerce.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `stats` | `[]` | — |
+| `recentOrders` | `[]` | — |
+| `topProducts` | `[]` | — |
+| `chart` | `true` | — |
+| `chartData` | `null` | 图表自定义数据数组；为 null 时生成占位演示数据 |
+| `currency` | `'¥'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'stats' => [],
+            'recentOrders' => [],
+            'topProducts' => [],
+            'chart' => true,
+            'chartData' => null,  // 图表自定义数据数组；为 null 时生成占位演示数据
+            'currency' => '¥',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::ecommerceDashboard([
+
+    'stats' => [],
+
+    'recentOrders' => [],
+
+    'topProducts' => [],
+
+    'chart' => true,
+
+    'chartData' => null,
+
+    'currency' => '¥',
+
+]);
+```
+
+## widgetsDashboard
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\WidgetsDashboard`
+
+小部件仪表盘（widgets.html）
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'widgets' => ['stats', 'charts', 'messages', 'activity', 'tasks'],
+            'currency' => '¥',
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::widgetsDashboard([
+
+    'widgets' => ['stats', 'charts', 'messages', 'activity', 'tasks'],
+
+    'currency' => '¥',
+
+]);
+```
+
+## moduleNav
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ModuleNav`
+
+模块子导航 / 分段标签导航 用于后台「企业应用」等模块的页面内切换导航，把原先散落在各控制器里 重复拼接的 <ul class="nav nav-pills"> 循环提炼为可复用组件。 支持两种形态：   1) 扁平列表：items = [['label'=>.., 'url'=>.., 'active'=>true, 'icon'=>..], ...]   2) 分组（带分区标题）：sections = [['title'=>.., 'items'=>[...]], ...]
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `items` | `[]` | — |
+| `sections` | `[]` | — |
+| `type` | `'pills'` | pills | tabs | underline |
+| `align` | `'start'` | start | center | end |
+| `class` | `'xf-module-subnav'` | — |
+| `id` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'items'    => [],
+            'sections' => [],
+            'type'     => 'pills',   // pills | tabs | underline
+            'align'    => 'start',   // start | center | end
+            'class'    => 'xf-module-subnav',
+            'id'       => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::moduleNav([
+
+    'items' => [],
+
+    'sections' => [],
+
+    'type' => 'pills',
+
+    'align' => 'start',
+
+    'class' => 'xf-module-subnav',
+
+    'id' => null,
+
+]);
+```
+
+## moduleGrid
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ModuleGrid`
+
+模块网格 / 应用中心卡片墙 用于后台「企业应用中心」等场景：按分区展示一组模块入口卡片， 把原先散落在各控制器里重复拼接的「分区标题 + 卡片行」提炼为可复用组件。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `sections` | `[]` | — |
+| `columns` | `4` | 桌面列数 |
+| `title` | `''` | — |
+| `subtitle` | `''` | — |
+| `class` | `''` | — |
+| `id` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'sections' => [],
+            'columns'  => 4,     // 桌面列数
+            'title'    => '',
+            'subtitle' => '',
+            'class'    => '',
+            'id'       => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::moduleGrid([
+
+    'sections' => [],
+
+    'columns' => 4,
+
+    'title' => '',
+
+    'subtitle' => '',
+
+    'class' => '',
+
+    'id' => null,
+
+]);
+```
+
+## dashboardGrid
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\DashboardGrid`
+
+通用仪表盘网格（dashboards-* 系列页面抽象） 将「统计卡片行 + 图表区（左右两列）+ 底部标签页内容」封装为单组件， 适用于所有仪表盘类页面（运营 / 分析 / 电商 / 项目 …）。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `stats` | `[]` | — |
+| `charts` | `[]` | — |
+| `bottom` | `''` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'stats'  => [],
+            'charts' => [],
+            'bottom' => '',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::dashboardGrid([
+
+    'stats' => [],
+
+    'charts' => [],
+
+    'bottom' => '',
+
+]);
+```
+
+## settingsCenter
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\SettingsCenter`
+
+设置中心（settings.html 抽象） 左侧分组导航 + 右侧表单面板，典型的后台「设置」页面。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'title'  => '设置',
+            'groups' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::settingsCenter([
+
+    'title' => '设置',
+
+    'groups' => [],
+
+]);
+```
+
+## reportPage
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ReportPage`
+
+报表页（报表类页面抽象） 顶部筛选栏 + 图表区（可多列）+ 底部数据表，典型的后台「数据分析 / 报表」页面。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `title` | `'报表'` | — |
+| `filters` | `''` | — |
+| `charts` | `[]` | — |
+| `table` | `''` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'title'   => '报表',
+            'filters' => '',
+            'charts'  => [],
+            'table'   => '',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::reportPage([
+
+    'title' => '报表',
+
+    'filters' => '',
+
+    'charts' => [],
+
+    'table' => '',
+
+]);
+```
+
 ## calendar
 
 > 分类：**杂项** · 类：`zxf\XfAdmin\Components\Misc\Calendar`
@@ -7299,6 +9066,902 @@ _本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离�
 echo XfAdmin::masonry([
 
     // 内容 / 数据由描述与默认值（源码）决定，例如传入 'data' / 'content' / 'items' 等槽位
+
+]);
+```
+
+## videoPlayer
+
+> 分类：**杂项** · 类：`zxf\XfAdmin\Components\Misc\VideoPlayer`
+
+视频播放器（plugins-video-player.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `src` | `''` | — |
+| `poster` | `''` | — |
+| `type` | `'video/mp4'` | — |
+| `width` | `'100%'` | — |
+| `autoplay` | `false` | — |
+| `controls` | `true` | — |
+| `loop` | `false` | — |
+| `muted` | `false` | — |
+| `title` | `''` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'src' => '',
+            'poster' => '',
+            'type' => 'video/mp4',
+            'width' => '100%',
+            'autoplay' => false,
+            'controls' => true,
+            'loop' => false,
+            'muted' => false,
+            'title' => '',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::videoPlayer([
+
+    'src' => '',
+
+    'poster' => '',
+
+    'type' => 'video/mp4',
+
+    'width' => '100%',
+
+    'autoplay' => false,
+
+    'controls' => true,
+
+    'loop' => false,
+
+    'muted' => false,
+
+    'title' => '',
+
+]);
+```
+
+## i18n
+
+> 分类：**杂项** · 类：`zxf\XfAdmin\Components\Misc\I18n`
+
+国际化 i18n 展示（plugins-i18.html）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `currentLocale` | `'zh-CN'` | — |
+| `locales` | `[]` | — |
+| `demoKeys` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'currentLocale' => 'zh-CN',
+            'locales' => [],
+            'demoKeys' => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::i18n([
+
+    'currentLocale' => 'zh-CN',
+
+    'locales' => [],
+
+    'demoKeys' => null,
+
+]);
+```
+
+## twoFactorInput
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\TwoFactorInput`
+
+两步验证 / OTP 验证码输入框 6 格独立输入，自动跳格、退格回退、粘贴自动填充， 复刻 inspinia auth-two-factor.html 的验证码交互。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `length` | `6` | — |
+| `name` | `'code'` | — |
+| `value` | `''` | — |
+| `mask` | `null` | — |
+| `autofocus` | `true` | — |
+| `disabled` | `false` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'length'    => 6,
+            'name'      => 'code',
+            'value'     => '',
+            'mask'      => null,
+            'autofocus' => true,
+            'disabled'  => false,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::twoFactorInput([
+
+    'length' => 6,
+
+    'name' => 'code',
+
+    'value' => '',
+
+    'mask' => null,
+
+    'autofocus' => true,
+
+    'disabled' => false,
+
+]);
+```
+
+## quantityStepper
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\QuantityStepper`
+
+数量步进器 − 数字 + 按钮组，含 min / max / step，复刻电商购物车数量控件。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `name` | `'qty'` | — |
+| `value` | `1` | — |
+| `min` | `1` | — |
+| `max` | `99` | — |
+| `step` | `1` | — |
+| `size` | `'md'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'name'  => 'qty',
+            'value' => 1,
+            'min'   => 1,
+            'max'   => 99,
+            'step'  => 1,
+            'size'  => 'md',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::quantityStepper([
+
+    'name' => 'qty',
+
+    'value' => 1,
+
+    'min' => 1,
+
+    'max' => 99,
+
+    'step' => 1,
+
+    'size' => 'md',
+
+]);
+```
+
+## statMiniSparkline
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\StatMiniSparkline`
+
+迷你 sparkline 统计卡 大数字 + 趋势 sparkline（内联 SVG）+ 同比涨跌幅小标， 复刻 inspinia dashboard-analytics 的迷你统计卡。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `label` | `''` | — |
+| `value` | `''` | — |
+| `delta` | `null` | — |
+| `series` | `[]` | — |
+| `variant` | `'primary'` | — |
+| `icon` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'label'   => '',
+            'value'   => '',
+            'delta'   => null,
+            'series'  => [],
+            'variant' => 'primary',
+            'icon'    => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::statMiniSparkline([
+
+    'label' => '',
+
+    'value' => '',
+
+    'delta' => null,
+
+    'series' => [],
+
+    'variant' => 'primary',
+
+    'icon' => null,
+
+]);
+```
+
+## cartSummary
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\CartSummary`
+
+购物车结算摘要卡 小计 / 运费 / 优惠 / 总计 + 优惠码输入，复刻电商购物车结算侧栏。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `subtotal` | `…` | — |
+| `shipping` | `…` | — |
+| `discount` | `…` | — |
+| `currency` | `'￥'` | — |
+| `promo` | `true` | — |
+| `button` | `['text' => '去结算', 'variant' => 'primary']` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'subtotal' => 0,
+            'shipping' => 0,
+            'discount' => 0,
+            'currency' => '￥',
+            'promo'    => true,
+            'button'   => ['text' => '去结算', 'variant' => 'primary'],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::cartSummary([
+
+    'subtotal' => 0,
+
+    'shipping' => 0,
+
+    'discount' => 0,
+
+    'currency' => '￥',
+
+    'promo' => true,
+
+    'button' => ['text' => '去结算', 'variant' => 'primary'],
+
+]);
+```
+
+## chatMessageBubble
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ChatMessageBubble`
+
+聊天气泡 左/右对齐、已读状态、时间、头像、附件预览， 复刻 inspinia apps-chat.html 的会话气泡。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `side` | `'in'` | — |
+| `avatar` | `null` | — |
+| `text` | `''` | — |
+| `time` | `''` | — |
+| `read` | `false` | — |
+| `attach` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'side'   => 'in',
+            'avatar' => null,
+            'text'   => '',
+            'time'   => '',
+            'read'   => false,
+            'attach' => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::chatMessageBubble([
+
+    'side' => 'in',
+
+    'avatar' => null,
+
+    'text' => '',
+
+    'time' => '',
+
+    'read' => false,
+
+    'attach' => null,
+
+]);
+```
+
+## chatConversationPanel
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ChatConversationPanel`
+
+会话面板框架 左侧联系人列表 + 右侧消息区 + 底部输入工具栏， 复刻 inspinia apps-chat.html 的会话面板。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `contacts` | `[]` | — |
+| `messages` | `[]` | — |
+| `title` | `'会话'` | — |
+| `me` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'contacts' => [],
+            'messages' => [],
+            'title'    => '会话',
+            'me'       => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::chatConversationPanel([
+
+    'contacts' => [],
+
+    'messages' => [],
+
+    'title' => '会话',
+
+    'me' => null,
+
+]);
+```
+
+## dataTableToolbar
+
+> 分类：**表格** · 类：`zxf\XfAdmin\Components\Table\DataTableToolbar`
+
+列表工具条 搜索 + 列筛选 + 每页条数 + 批量操作按钮 + 视图切换， 复刻文件管理器 / 订单等页面的列表工具栏。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `search` | `true` | — |
+| `searchPlaceholder` | `'搜索...'` | — |
+| `filters` | `[]` | — |
+| `pageSize` | `[10, 20, 50]` | — |
+| `actions` | `[]` | — |
+| `views` | `[]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'search'           => true,
+            'searchPlaceholder' => '搜索...',
+            'filters'          => [],
+            'pageSize'         => [10, 20, 50],
+            'actions'          => [],
+            'views'            => [],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::dataTableToolbar([
+
+    'search' => true,
+
+    'searchPlaceholder' => '搜索...',
+
+    'filters' => [],
+
+    'pageSize' => [10, 20, 50],
+
+    'actions' => [],
+
+    'views' => [],
+
+]);
+```
+
+## orderTrackingTimeline
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\OrderTrackingTimeline`
+
+订单物流进度时间线 节点（已下单/已发货/运输中/已签收）+ 当前节点高亮， 复刻 inspinia apps-ecommerce-order-details.html 的物流进度。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'steps' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::orderTrackingTimeline([
+
+    'steps' => [],
+
+]);
+```
+
+## featureComparisonTable
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\FeatureComparisonTable`
+
+套餐功能对比矩阵表 行 × 列（计划）交叉 ✓ / ✗ / 文本，复刻价格页的"功能对比表"。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `plans` | `[]` | — |
+| `featured` | `null` | — |
+| `rows` | `[]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'plans'    => [],
+            'featured' => null,
+            'rows'     => [],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::featureComparisonTable([
+
+    'plans' => [],
+
+    'featured' => null,
+
+    'rows' => [],
+
+]);
+```
+
+## filterSidebar
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\FilterSidebar`
+
+电商筛选侧栏 分类树 / 价格区间 / 属性多选 / 品牌，含可折叠分组， 复刻 inspinia apps-ecommerce-products.html 的筛选侧栏。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'groups' => [],
+            'button' => ['text' => '应用筛选', 'variant' => 'primary'],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::filterSidebar([
+
+    'groups' => [],
+
+    'button' => ['text' => '应用筛选', 'variant' => 'primary'],
+
+]);
+```
+
+## accountSettingsPanel
+
+> 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\AccountSettingsPanel`
+
+账户设置双栏面板 左侧 sidebar 导航（tab）+ 右侧内容区，点击切换， 复刻 inspinia pages-account-settings.html 的设置布局。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `title` | `'账户设置'` | — |
+| `tabs` | `[]` | — |
+| `active` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'title'  => '账户设置',
+            'tabs'   => [],
+            'active' => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::accountSettingsPanel([
+
+    'title' => '账户设置',
+
+    'tabs' => [],
+
+    'active' => null,
+
+]);
+```
+
+## searchResultsRich
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\SearchResultsRich`
+
+全局搜索结果页 分类结果分组 + 关键词高亮 + 分页/空态，复刻 inspinia pages-search-results.html。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'query'  => '',
+            'groups' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::searchResultsRich([
+
+    'query' => '',
+
+    'groups' => [],
+
+]);
+```
+
+## invoicePrintButton
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\InvoicePrintButton`
+
+发票打印 / 下载按钮 触发 window.print()（配合打印样式仅打印发票区域），复刻 inspinia apps-invoice 的打印按钮。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `text` | `'打印 / 下载 PDF'` | — |
+| `variant` | `'primary'` | — |
+| `target` | `null` | — |
+| `icon` | `'ti ti-printer'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'text'   => '打印 / 下载 PDF',
+            'variant' => 'primary',
+            'target' => null,
+            'icon'   => 'ti ti-printer',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::invoicePrintButton([
+
+    'text' => '打印 / 下载 PDF',
+
+    'variant' => 'primary',
+
+    'target' => null,
+
+    'icon' => 'ti ti-printer',
+
+]);
+```
+
+## socialFeed
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\SocialFeed`
+
+社交动态流（apps-social-feed.html） 头像 + 用户名 + 时间 + 文本内容 + 配图 + 点赞/评论/转发 操作条。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'posts' => [],
+            'title' => '团队动态',
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::socialFeed([
+
+    'posts' => [],
+
+    'title' => '团队动态',
+
+]);
+```
+
+## faqAccordion
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\FaqAccordion`
+
+FAQ 折叠列表（pages-faq.html） 基于 Bootstrap 原生 accordion 的问答列表。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'items' => [],
+            'title' => '常见问题',
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::faqAccordion([
+
+    'items' => [],
+
+    'title' => '常见问题',
+
+]);
+```
+
+## contactList
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\ContactList`
+
+联系人列表（apps-users-contacts.html） 头像 + 名称 + 角色/职位 + 状态点 + 操作按钮。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'contacts' => [],
+            'title'    => '团队成员',
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::contactList([
+
+    'contacts' => [],
+
+    'title' => '团队成员',
+
+]);
+```
+
+## userProfile
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\UserProfile`
+
+用户资料页（pages-profile.html） 封面 + 头像 + 基本信息 + 统计 + 操作按钮。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `avatar` | `''` | — |
+| `cover` | `''` | — |
+| `name` | `'匿名用户'` | — |
+| `title` | `''` | — |
+| `bio` | `''` | — |
+| `stats` | `[]` | — |
+| `actions` | `['message' => true, 'follow' => true]` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'avatar'  => '',
+            'cover'   => '',
+            'name'    => '匿名用户',
+            'title'   => '',
+            'bio'     => '',
+            'stats'   => [],
+            'actions' => ['message' => true, 'follow' => true],
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::userProfile([
+
+    'avatar' => '',
+
+    'cover' => '',
+
+    'name' => '匿名用户',
+
+    'title' => '',
+
+    'bio' => '',
+
+    'stats' => [],
+
+    'actions' => ['message' => true, 'follow' => true],
+
+]);
+```
+
+## invoiceView
+
+> 分类：**数据 / 业务** · 类：`zxf\XfAdmin\Components\Data\InvoiceView`
+
+发票详情页（apps-invoice-details.html） 发票头（买家/卖家/发票号/日期）+ 明细表 + 合计。
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `invoice_no` | `''` | — |
+| `issued_at` | `''` | — |
+| `due_at` | `''` | — |
+| `from` | `[]` | — |
+| `to` | `[]` | — |
+| `items` | `[]` | — |
+| `tax_rate` | `…` | — |
+| `currency` | `'¥'` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'invoice_no' => '',
+            'issued_at'  => '',
+            'due_at'     => '',
+            'from'       => [],
+            'to'         => [],
+            'items'      => [],
+            'tax_rate'   => 0.06,
+            'currency'   => '¥',
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::invoiceView([
+
+    'invoice_no' => '',
+
+    'issued_at' => '',
+
+    'due_at' => '',
+
+    'from' => [],
+
+    'to' => [],
+
+    'items' => [],
+
+    'tax_rate' => …, // 见说明
+    'currency' => '¥',
 
 ]);
 ```

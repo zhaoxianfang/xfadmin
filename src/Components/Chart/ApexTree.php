@@ -19,7 +19,7 @@ use zxf\XfAdmin\Components\Component;
  *         'id'   => '1',
  *         'name' => '董事长',
  *         'role' => 'CEO',               // 副标题（职位）
- *         'avatar' => 'users/1.jpg',     // 头像（相对 images/ 或完整 URL）
+ *         'avatar' => 'users/user-1.jpg',     // 头像（相对 images/ 或完整 URL）
  *         'color'  => '#3e60d5',         // 节点边框色
  *         'children' => [ [...], [...] ],
  *     ],

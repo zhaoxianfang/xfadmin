@@ -1,0 +1,40 @@
+import { spawn, execSync } from 'node:child_process';
+import { writeFileSync, rmSync } from 'node:fs';
+import path from 'node:path';
+const WSF = '/Users/aha/www/wsf';
+const PORT = 8077;
+const ROUTER = path.join(WSF, '.kanban_move_router.php');
+const B = String.fromCharCode(92);
+const ILL = 'Illuminate' + B + 'Contracts' + B + 'Http' + B + 'Kernel';
+const REQ = 'Illuminate' + B + 'Http' + B + 'Request';
+const routerPhp = `<?php
+$uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+require ${JSON.stringify(WSF + '/vendor/autoload.php')};
+$app = require ${JSON.stringify(WSF + '/bootstrap/app.php')};
+$kernel = $app->make(${JSON.stringify(ILL)}::class);
+$kernel->bootstrap();
+session()->start();
+session(['admin_user' => ['id' => 1, 'name' => '演示', 'username' => 'demo', 'avatar' => null]]);
+// 直接调用 kanbanMove 验证后端逻辑（绕过路由 POST 细节）
+use Modules\\Admin\\Services\\EnterpriseData;
+use Modules\\Admin\\Services\\EnterpriseCatalog;
+$ds = 'ent_ticket_list';
+$rows = EnterpriseData::rows($ds);
+$first = $rows[0];
+echo 'BEFORE id=' . $first['id'] . ' status=' . ($first['status'] ?? '?') . "\\n";
+$statusField = null;
+foreach (EnterpriseCatalog::dataset($ds)['fields'] as $f) { if (($f[2]??'')==='enum' && in_array('open', $f[3]??[], true)) { $statusField = $f[0]; break; } }
+$statusField = $statusField ?: 'status';
+echo 'statusField=' . $statusField . "\\n";
+$ok = EnterpriseData::moveStatus($ds, $first['id'], $statusField, 'processing');
+echo 'moveStatus=' . ($ok ? 'true' : 'false') . "\\n";
+$rows2 = EnterpriseData::rows($ds);
+echo 'AFTER id=' . $rows2[0]['id'] . ' status=' . ($rows2[0]['status'] ?? '?') . "\\n";
+echo 'count processing after=' . count(array_filter($rows2, fn($r)=>($r['status']??'')=== 'processing')) . "\\n";
+`;
+writeFileSync(ROUTER, routerPhp);
+const srv = spawn('php', ['-S', `127.0.0.1:${PORT}`, ROUTER], { cwd: WSF, stdio: 'ignore' });
+await new Promise(r => setTimeout(r, 1500));
+console.log(execSync(`curl -s http://127.0.0.1:${PORT}/x`).toString());
+srv.kill();
+rmSync(ROUTER);

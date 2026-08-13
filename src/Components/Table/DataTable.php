@@ -79,6 +79,10 @@ class DataTable extends Table
         // page：单元格文本变为可点击链接，点击弹窗加载后端页面（URL 支持 {字段} 占位），
         // 关闭弹窗后可选刷新表格（['url'=>..,'title'=>..,'size'=>..,'frame'=>..,'reload'=>true]）
         'page',
+        // 丰富多彩的单元格渲染器（前端 XFAdmin.cellRenderers 对应实现）
+        'badge', 'statusPill', 'priority', 'rate', 'duration', 'currency', 'json', 'copyBtn',
+        'linkBtn', 'miniBar', 'progressBar', 'sparkbar', 'heatmap', 'ranking', 'progressSteps',
+        'gradient', 'tagInput', 'avatarStack', 'rich',
     ];
 
     protected function defaults(): array
@@ -96,18 +100,18 @@ class DataTable extends Table
             'ajax'           => null,
             'server_side'    => false,
             'method'         => 'GET',    // 服务端数据请求方式（POST 可规避 URL 长度限制/WAF）
-            'searching'         => false,   // yoc_cn: 默认关闭内置搜索，改用自定义搜索表单
+            'searching'         => false,   // 默认关闭内置搜索，改用自定义搜索表单
             'ordering'          => true,
             'paging'            => true,
             'info'              => true,
-            'processing'        => true,    // yoc_cn: 默认显示加载处理提示
+            'processing'        => true,    // 默认显示加载处理提示
             'page_length'       => 10,
-            'length_menu'       => [10, 15, 20, 25, 50],  // yoc_cn 标准每页条数菜单
-            'show_custom_search' => true,   // yoc_cn: 启用自定义搜索表单
-            'show_detail'       => null,    // yoc_cn: 行详情展开 callback / 列名（null=不启用）
-            'show_header_btn'   => null,    // yoc_cn: 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true]
-            'created_row'       => null,    // yoc_cn: createdRow 回调（JS 函数名/全局函数引用）
-            'draw_callback'     => null,    // yoc_cn: drawCallback 全局函数名
+            'length_menu'       => [10, 15, 20, 25, 50],  // 标准每页条数菜单
+            'show_custom_search' => true,   // 启用自定义搜索表单
+            'row_detail'        => null,    // 行详情展开 callback / 列名（null=不启用）
+            'show_header_btn'   => null,    // 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true]
+            'created_row'       => null,    // createdRow 回调（JS 函数名/全局函数引用）
+            'draw_callback'     => null,    // drawCallback 全局函数名
             'buttons'           => [],
             'select'            => false,
             'fixed_header'   => false,
@@ -116,6 +120,7 @@ class DataTable extends Table
             'order'          => [],       // [[0, 'asc']]
             'language'       => null,     // DataTables 语言包配置数组（缺省内置中文）
             'row_id'         => null,     // 行 id 字段
+            'row_url'        => null,     // 整行点击跳转 URL（支持 {id} 占位符，如 '/admin/app/{module}/{page}/detail/{id}'）
             'auto_width'     => null,
             'scroll_x'       => true,     // 默认启用横向滚动，溢出列通过滚动条展示（scroll_x=false 可关闭）
             'fixed_columns'  => null,     // 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动）
@@ -305,7 +310,7 @@ class DataTable extends Table
             'processing' => (bool) $this->get('processing'),
             'pageLength' => (int) $this->get('page_length'),
             'lengthMenu' => $this->get('length_menu'),
-            // 参照 yoc_cn 最佳实践：搜索延迟 1200ms + 首尾分页按钮
+            // 搜索延迟 1200ms + 首尾分页按钮（最佳实践）
             'searchDelay'       => 1200,
             'pagingType'        => 'first_last_numbers',
         ];
@@ -333,20 +338,20 @@ class DataTable extends Table
         if ($this->get('responsive') && ! $this->get('row_detail')) {
             $config['responsive'] = true;
         }
-        // 横向滚动：参照 yoc_cn 项目最佳实践，默认始终启用 scrollX + scrollY 联合模式
+        // 横向滚动：默认始终启用 scrollX + scrollY 联合模式。
         // 关键：DataTables 2.x 在 scrollX+scrollY 联合模式下创建协调的 .dt-scroll-head/.dt-scroll-body
         // 双表结构，列宽在固定高度容器内统一计算→表头表体完美对齐。
         // 仅 scrollX（无 scrollY）时双表独立计算列宽→严重错位。
         // - autoWidth: true + columns.adjust() 同步表头/表体列宽
         // - scrollCollapse: true 让表格高度随内容收缩，不产生多余空白
-        // - scrollY: "100%" = 父容器高度 (yoc_cn 标准)，配合 scrollCollapse 多余空间缩至内容高度
+        // - scrollY: "100%" = 父容器高度，配合 scrollCollapse 多余空间缩至内容高度
         // 用户可通过 scroll_x=false / auto_width=false / scroll_y=false 显式关闭
         $disableScrollX = $this->get('scroll_x') === false || $this->get('auto_width') === false;
         if (! $disableScrollX) {
             $config['scrollX']      = true;
             $config['autoWidth']    = true;
             $config['scrollCollapse'] = true;
-            // yoc_cn 标准：scrollX + scrollY 联合模式，保证表头表体列宽一致
+            // scrollX + scrollY 联合模式，保证表头表体列宽一致
             if ($this->get('scroll_y') !== false) {
                 $config['scrollY'] = $this->get('scroll_y') ? (string) $this->get('scroll_y') : '100%';
             }
@@ -373,12 +378,33 @@ class DataTable extends Table
             if ($fixedCols === true) {
                 $fixedCols = ['left' => 1];
             }
+        } else {
+            // 自动固定操作列：当表格存在「操作列」（actions/dropdown/buttons 类型）时，
+            // 默认将最后一列（操作列）右固定，避免横向滚动/冻结列场景下「更多」下拉被裁剪飞出。
+            // 同时满足「列较多时操作列固定展示」的产品需求（用户列表 / 管理员列表等统一行为）。
+            $opCols = array_filter((array) $this->columns(), function ($c) {
+                // 行操作栏（actions 键）或显式 render 类型为操作型
+                if (isset($c['actions']) && is_array($c['actions'])) {
+                    return true;
+                }
+                $r = $c['render'] ?? null;
+                $t = is_array($r) ? ($r['type'] ?? '') : (is_string($r) ? $r : '');
+                return $t === 'actions' || $t === 'dropdown' || $t === 'buttons';
+            });
+            if ($opCols !== []) {
+                $fixedCols = ['right' => 1];
+                $config['scrollX'] = true;
+            }
         }
         if ($this->get('auto_width') !== null) {
             $config['autoWidth'] = (bool) $this->get('auto_width');
         }
         if ($this->get('row_id')) {
             $config['rowId'] = (string) $this->get('row_id');
+        }
+        // 整行点击跳转：把 row_url（支持 {id} 占位符）透传给前端，由 initDataTable 绑定行点击
+        if ($this->get('row_url')) {
+            $xfConfig['rowUrl'] = (string) $this->get('row_url');
         }
         if ($this->get('select')) {
             $config['select'] = $this->get('select') === true ? ['style' => 'multi'] : ['style' => (string) $this->get('select')];
@@ -452,12 +478,14 @@ class DataTable extends Table
             }
         }
         // ---------- HTML ----------
+        $dtDataset = (string) ($xfConfig['dataset'] ?? $this->get('dataset', ''));
         $html = '<table' . $this->attrs([
             'id'             => $id,
             // 移除 w-100：避免 !important 宽度压制 min-width，确保 table-responsive 在内容/列过多时
             // 能出现水平滚动条；Bootstrap .table 自身已带 width:100%，列少时仍会自然撑满。
             'class'          => $this->tableClass(),
             'data-xf'        => 'datatable',
+            'data-xf-dataset'=> $dtDataset !== '' ? $dtDataset : null,
             'data-xf-config' => json_encode($xfConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP),
         ]) . '>';
 
@@ -494,7 +522,7 @@ class DataTable extends Table
         // 水平滚动容器：
         // - DataTables 2.x 启用 scrollX 时，会自动创建 .dt-scroll-body/.dt-scroll-head 结构
         // - 此时再套 .table-responsive 会导致双滚动条，故仅在未开启 scrollX 时包裹
-        // - scrollX 默认启用（参照 yoc_cn 最佳实践），仅 scroll_x=false 时关闭
+        // - scrollX 默认启用（最佳实践），仅 scroll_x=false 时关闭
         $scrollXDisabled = $this->get('scroll_x') === false || $this->get('auto_width') === false;
         if ($scrollXDisabled && ! $this->get('fixed_columns')) {
             $html = '<div class="table-responsive">' . $html . '</div>';
@@ -583,11 +611,14 @@ class DataTable extends Table
             $method = strtoupper((string) ($a['method'] ?? 'POST'));
             $confirm = (string) ($a['confirm'] ?? '');
             $reload = ! isset($a['reload']) || $a['reload'];
+            // 批量动作名（后端据此分发领域动作 / 状态流转 / 启用停用 / 删除等）
+            $actName = (string) ($a['action'] ?? '');
 
             $btns .= '<button type="button" class="' . $this->e($cls) . '"'
                 . ' data-xf-bulk-action data-url="' . $this->e($url) . '"'
                 . ' data-method="' . $this->e($method) . '"'
                 . (! empty($confirm) ? ' data-confirm="' . $this->e($confirm) . '"' : '')
+                . (! empty($actName) ? ' data-action="' . $this->e($actName) . '"' : '')
                 . ' data-reload="' . ($reload ? '1' : '0') . '">'
                 . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
                 . $this->e($label) . '</button>';
@@ -703,6 +734,40 @@ class DataTable extends Table
                     $html .= '<button type="button" class="btn btn-outline-secondary" data-value="' . $this->e($v) . '">' . $this->e($t) . '</button>';
                 }
                 $html .= '</div>';
+            } elseif ($type === 'slider' || $type === 'range-slider') {
+                // 双滑块范围过滤：data-type=slider，值形如 lo-hi（* 表示不限）
+                $smin   = $c['min'] ?? 0;
+                $smax   = $c['max'] ?? 100;
+                $sstep  = $c['step'] ?? 1;
+                $suffix = $c['suffix'] ?? '';
+                $html .= '<div class="xf-filter xf-slider-filter" data-type="slider" data-filter="' . $this->e($name) . '">'
+                    . '<div class="d-flex justify-content-between small text-muted mb-1"><span class="xf-slider-lo-label"></span><span class="xf-slider-hi-label"></span></div>'
+                    . '<input type="range" class="xf-slider-lo form-range" min="' . $this->e($smin) . '" max="' . $this->e($smax) . '" step="' . $this->e($sstep) . '" value="' . $this->e($smin) . '" data-suffix="' . $this->e($suffix) . '">'
+                    . '<input type="range" class="xf-slider-hi form-range" min="' . $this->e($smin) . '" max="' . $this->e($smax) . '" step="' . $this->e($sstep) . '" value="' . $this->e($smax) . '" data-suffix="' . $this->e($suffix) . '">'
+                    . '<input type="hidden" data-xf-min value="' . $this->e($smin) . '">'
+                    . '<input type="hidden" data-xf-max value="' . $this->e($smax) . '">'
+                    . '</div>';
+            } elseif ($type === 'tree') {
+                // 树形选择过滤：options 为 [['value'=>..,'label'=>..,'children'=>[...]]] 层级结构
+                $html .= '<div class="xf-filter xf-tree-filter" data-type="tree" data-filter="' . $this->e($name) . '">';
+                $html .= $this->renderTreeFilter($c['options'] ?? [], $tableId, $name);
+                $html .= '</div>';
+            } elseif ($type === 'autocomplete') {
+                // 自动完成过滤：datalist 提供候选（或 data-url 走远程搜索）
+                $remote = $c['url'] ?? '';
+                $html .= '<input type="text" class="form-control form-control-sm xf-filter" data-type="autocomplete" data-filter="' . $this->e($name) . '"'
+                    . ' placeholder="' . $this->e($placeholder ?: '输入并选择') . '"' . ($remote ? ' data-url="' . $this->e($remote) . '"' : '') . ' list="xf-ac-' . $this->e($tableId . '-' . $name) . '">';
+                if (! $remote && ! empty($c['options'])) {
+                    $html .= '<datalist id="xf-ac-' . $this->e($tableId . '-' . $name) . '">';
+                    foreach ((array) $c['options'] as $v => $t) {
+                        $html .= '<option value="' . $this->e($v) . '">' . $this->e($t) . '</option>';
+                    }
+                    $html .= '</datalist>';
+                }
+            } elseif ($type === 'custom') {
+                // 完全自定义过滤控件：开发者传入 'control' => '<任意带 class="xf-filter" data-filter="x" 的 HTML>'
+                // 前端通过 data-xf-custom-value 或 xf:filter-custom 事件获取值
+                $html .= '<div class="xf-filter xf-filter-custom" data-filter="' . $this->e($name) . '">' . (string) ($c['control'] ?? '') . '</div>';
             } else {
                 // select / select2（multiple 时自动启用 select2 多选交互）
                 $multiple = ! empty($c['multiple']);
@@ -723,6 +788,30 @@ class DataTable extends Table
             . '<button type="button" class="btn btn-sm btn-soft-secondary xf-filter-reset"><i class="ti ti-rotate"></i> 重置</button></div>';
         $html .= '</form>';
 
+        return $html;
+    }
+
+    /** 递归渲染树形过滤控件 */
+    protected function renderTreeFilter(array $nodes, string $tableId, string $name, int $depth = 0): string
+    {
+        $html = '';
+        foreach ($nodes as $node) {
+            if (! is_array($node)) continue;
+            $v    = (string) ($node['value'] ?? '');
+            $t    = (string) ($node['label'] ?? $v);
+            $cid  = 'xf-tree-' . $this->e($tableId . '-' . $name . '-' . $v);
+            $children = $node['children'] ?? [];
+            $html .= '<div class="xf-tree-node' . ($depth ? ' ps-3' : '') . '">'
+                . '<div class="form-check m-0">'
+                . '<input type="checkbox" class="form-check-input xf-tree-leaf" value="' . $this->e($v) . '" id="' . $cid . '">'
+                . '<label class="form-check-label small" for="' . $cid . '">' . $this->e($t) . '</label>'
+                . ($children ? ' <i class="ti ti-chevron-down xf-tree-toggle small"></i>' : '')
+                . '</div>';
+            if ($children) {
+                $html .= '<div class="xf-tree-children">' . $this->renderTreeFilter($children, $tableId, $name, $depth + 1) . '</div>';
+            }
+            $html .= '</div>';
+        }
         return $html;
     }
 

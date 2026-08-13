@@ -34,6 +34,40 @@ echo XfAdmin::page([
 
 > 所有布局均渲染 `sidenav`（侧边栏）；可通过 `topbar` 选项叠加顶部栏。
 
+### 顶栏 / 顶部导航工具区配置
+
+`topbar`（垂直布局顶栏，组件 `Topbar`）与 `topnav`（水平布局顶栏，组件 `TopNav`）共用同一组工具项配置：
+
+```php
+XfAdmin::page([
+    'layout' => 'horizontal',                 // 或 'default'（此时用 topbar 而非 topnav）
+    'topnav' => [                             // horizontal 布局
+        'search'    => true,
+        'apps'      => [                       // 应用启动器（圆形九宫格，输出 #apps-dropdown-rounded）
+            'title'   => '我的应用',
+            'variant' => 'rounded',            // rounded=圆形（默认，对齐 INSPINIA #apps-dropdown-rounded）；grid=方角
+            'all_url' => '/apps', 'all_text' => '查看全部应用',
+            'add_url' => '/apps/new', 'add_text' => '添加应用',
+            'items'   => [
+                ['text' => '邮箱', 'icon' => 'ti ti-mail', 'variant' => 'primary', 'url' => '/mail'],
+                ['text' => '日历', 'icon' => 'ti ti-calendar', 'variant' => 'info', 'url' => '/cal'],
+                // ... 9 宫格，每格 icon + text + variant(语义色) + url
+            ],
+        ],
+        'languages'     => [...],
+        'messages'      => [...],
+        'notifications' => [...],
+        'user'          => [...],
+    ],
+    // 垂直布局用 topbar 同名键：
+    'topbar' => [ 'apps' => [...], 'user' => [...], ... ],
+]);
+```
+
+- **apps 圆形启动器**：`variant='rounded'` 时容器输出 `id="apps-dropdown-rounded"`，图标为 `rounded-circle` 圆形九宫格，底部含「查看全部 / 添加应用」操作，对齐后台模板 INSPINIA v4 的 App Launcher 标记，便于样式挂钩与 JS 定位（`xfadmin.js` 的 `initAppsDropdown` 会在打开时做视口边界翻转）。
+- `variant='grid'` 则为方角九宫格变体（无 `#apps-dropdown-rounded` id）。
+- 语义色 `variant` 支持 `primary/info/success/warning/danger/light/dark/purple/teal/orange/cyan`，对应 `bg-*-subtle` + `text-*` 类（已内置）。
+
 ### 主题属性
 
 `page` 会在 `<html>` 上输出模板所需的 `data-bs-theme`、`data-menu-color`、`data-topbar-color`、`data-layout` 等属性，与 INSPINIA 客制化面板完全兼容。可通过 `html_attrs` 覆盖：

@@ -18,6 +18,24 @@ class Service extends BaseService
     public function register(): void
     {
         $this->app->bind('xfadmin', XfAdmin::class);
+
+        // 注册全局助手函数 xfadmin()，与 Laravel 门面 XfAdmin:: 平行
+        if (! function_exists('xfadmin')) {
+            /**
+             * XfAdmin 全局助手
+             *
+             * xfadmin('card', ['title' => '标题'])  => Component
+             * xfadmin()                             => XfAdmin::class（用于静态调用）
+             */
+            function xfadmin(?string $component = null, array $options = []): Component|string
+            {
+                if ($component === null) {
+                    return XfAdmin::class;
+                }
+
+                return XfAdmin::component($component, $options);
+            }
+        }
     }
 
     public function boot(): void

@@ -36,7 +36,7 @@ class ClipboardButton extends Component
             'type'     => 'button',
             'class'    => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
             'data-xf'  => 'clipboard',
-            'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT),
+            'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
         ];
         if ($this->get('text') !== null) {
             $attrs['data-clipboard-text'] = $this->get('text');

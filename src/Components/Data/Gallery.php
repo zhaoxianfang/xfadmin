@@ -78,7 +78,7 @@ class Gallery extends Component
         // 根节点：保留 xf-gallery 标识类；灯箱通过 data-xf 委托给 xfadmin.js 统一初始化
         $rootCls = 'xf-gallery' . ($useCard ? ' card' : '');
         $html    = '<div' . $this->attrs(['class' => $rootCls, 'id' => $id])
-            . ($lightbox ? ' data-xf="lightbox" data-xf-config="' . $this->e(json_encode(['selector' => '[data-gallery="' . $id . '"]'], JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT)) . '"' : '') . '>';
+            . ($lightbox ? ' data-xf="lightbox" data-xf-config="' . $this->e(json_encode(['selector' => '[data-gallery="' . $id . '"]'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)) . '"' : '') . '>';
 
         // 卡片头部：搜索框 + 分类筛选按钮（对齐 misc-gallery.html 的 card-header 布局）
         if ($search || ! empty($filter)) {

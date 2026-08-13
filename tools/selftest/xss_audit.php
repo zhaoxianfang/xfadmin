@@ -72,6 +72,9 @@ const SKIP_KEYS = [
     'body', 'content', 'slot', 'footer', 'header', 'header_left', 'header_right',
     'left', 'right', 'toggle', 'menu', 'custom', 'extra', 'prepend', 'append',
     'raw', 'image', 'thumb',
+    // 页面级布局组件的内容容器（接受组件 HTML / 整页片段，raw 输出）
+    'bottom', 'table', 'filters', 'charts', 'stats', 'groups', 'nav', 'panels',
+    'topnav', 'sidenav', 'toolbar', 'dropdowns', 'main', 'aside', 'actions',
 ];
 
 /** 递归把数组字符串叶子替换为 payload，但跳过 SKIP_KEYS */

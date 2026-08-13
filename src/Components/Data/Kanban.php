@@ -19,7 +19,7 @@ use zxf\XfAdmin\XfAdmin;
  *     'columns' => [
  *         ['id'=>'todo','title'=>'待办','variant'=>'danger',
  *          'cards'=>[
- *             ['title'=>'设计首页','label'=>'设计','variant'=>'info','text'=>'…','members'=>['users/1.jpg'],
+ *             ['title'=>'设计首页','label'=>'设计','variant'=>'info','text'=>'…','members'=>['users/user-1.jpg'],
  *              'due'=>'今天','progress'=>60,'comments'=>3,'attachments'=>1],
  *          ]],
  *     ],
