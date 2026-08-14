@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Accordion extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class Accordion extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id   = $this->resolveId('xf-accordion');
@@ -52,7 +62,6 @@ class Accordion extends Component
                 . '<div class="accordion-body">' . $this->raw($item['content'] ?? '') . '</div></div>';
             $html .= '</div>';
         }
-
         return $html . '</div>';
     }
 }

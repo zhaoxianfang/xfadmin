@@ -23,16 +23,31 @@ use zxf\XfAdmin\Components\Component;
  */
 class Masonry extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['columns' => 3, 'gap' => 4, 'items' => []];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['masonry'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
@@ -42,7 +57,6 @@ class Masonry extends Component
         if (empty($items)) {
             return '';
         }
-
         // 列数 → Bootstrap xl 跨度（2→6, 3→4, 4→3）
         $xl = [1 => 12, 2 => 6, 3 => 4, 4 => 3][$cols] ?? 4;
 
@@ -51,7 +65,6 @@ class Masonry extends Component
             $inner = is_array($item) ? (string) ($item['html'] ?? '') : (string) $item;
             $html .= '<div class="col-xl-' . $xl . ' col-md-6 masonry-cell">' . $inner . '</div>';
         }
-
         return $html . '</div>';
     }
 }

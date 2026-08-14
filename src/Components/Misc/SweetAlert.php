@@ -24,6 +24,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class SweetAlert extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -41,11 +46,21 @@ class SweetAlert extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['sweetalert2'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $config = array_replace_recursive(array_filter([
@@ -78,7 +93,6 @@ class SweetAlert extends Component
                 'data-xf-config' => $json,
             ]) . '>' . $this->e($this->get('trigger')) . '</button>';
         }
-
         return '<span' . $this->attrs(['data-xf' => 'sweetalert', 'data-xf-config' => $json, 'hidden' => true]) . '></span>';
     }
 }

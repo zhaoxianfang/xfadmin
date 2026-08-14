@@ -23,6 +23,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Wizard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class Wizard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id     = $this->resolveId('wizard');
@@ -85,7 +95,6 @@ class Wizard extends Component
         if ($this->get('progress') && ! $vertical) {
             $html .= '<div class="progress mb-3" style="height:4px;"><div class="progress-bar bg-' . $variant . ' xf-wizard-progress" style="width:' . (count($steps) ? round(100 / count($steps)) : 0) . '%"></div></div>';
         }
-
         // 内容面板
         $paneWrap = $vertical ? '<div class="col-md-9">' : '<div>';
         $html .= $paneWrap;
@@ -96,7 +105,6 @@ class Wizard extends Component
             $show = $i === 0 ? '' : ' d-none';
             $html .= '<div class="xf-wizard-pane' . $show . '" data-pane="' . $i . '">' . $this->raw($s['content'] ?? '') . '</div>';
         }
-
         // 按钮
         $html .= '<div class="d-flex justify-content-between mt-3">';
         $html .= '<button type="button" class="btn btn-light xf-wizard-prev" disabled>' . $this->e($labels['prev'] ?? '上一步') . '</button>';

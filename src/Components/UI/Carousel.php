@@ -24,6 +24,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Carousel extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class Carousel extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id    = $this->resolveId('xf-carousel');
@@ -56,7 +66,6 @@ class Carousel extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="carousel-inner">';
         foreach ($items as $i => $item) {
             // 标量（字符串）容错：非数组项按 image 处理，避免 PHP 8 下标访问致命错误
@@ -83,7 +92,6 @@ class Carousel extends Component
             $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#' . $this->e($id) . '" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">上一页</span></button>'
                 . '<button class="carousel-control-next" type="button" data-bs-target="#' . $this->e($id) . '" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">下一页</span></button>';
         }
-
         return $html . '</div>';
     }
 }

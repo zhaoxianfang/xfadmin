@@ -7,70 +7,10 @@ namespace zxf\XfAdmin\Components\Table;
 use zxf\XfAdmin\Support\Html;
 
 /**
- * 全功能数据表格（基于 DataTables，前端由 xfadmin.js 自动初始化）
+ * Data Table
  *
- * 支持：搜索、排序、分页、多选、导出（Excel/CSV/打印/PDF）、固定表头、
- * 响应式折叠、列筛选、AJAX / 服务端模式、超丰富单元格渲染器、行操作栏等
- *
- * XfAdmin::dataTable([
- *     'columns' => [
- *         'id'     => ['label' => 'ID', 'sortable' => true],
- *         'name'   => ['label' => '姓名', 'render' => 'input'],                    // 单元格输入框
- *         'token'  => ['label' => '令牌', 'render' => 'copy'],                     // 带复制按钮
- *         'ip'     => ['label' => 'IP', 'render' => 'ip'],                        // IP 展示（等宽字体 + 复制）
- *         'status' => ['label' => '状态', 'render' => ['type' => 'switch', 'url' => '/api/toggle/{id}']],  // 状态切换
- *         'roles'  => ['label' => '角色', 'render' => 'tags'],                     // 标签组
- *         'color'  => ['label' => '颜色', 'render' => 'color'],                    // 颜色块
- *         'level'  => ['label' => '级别', 'badges' => ['ERROR' => 'danger']],      // 徽章映射
- *         'op'     => ['label' => '操作', 'actions' => [                          // 行操作栏
- *             ['label' => '编辑', 'icon' => 'ti ti-edit', 'action' => 'edit',     // 模态表单行编辑
- *              'ajax' => '/api/users/{id}', 'method' => 'PUT', 'fields' => [      // 省略 fields 时按行数据自动生成
- *                  ['name' => 'nickname', 'label' => '昵称', 'required' => true],
- *                  ['name' => 'status', 'label' => '状态', 'type' => 'select', 'options' => [...]],
- *                  ['name' => 'vip', 'label' => 'VIP', 'type' => 'switch'],
- *              ]],
- *             ['label' => '删除', 'icon' => 'ti ti-trash', 'class' => 'btn-soft-danger',
- *              'ajax' => '/del/{id}', 'method' => 'DELETE', 'confirm' => '确认删除？', 'reload' => true],
- *             ['label' => '详情', 'action' => 'view'],
- *             ['label' => '复制行', 'action' => 'copy-row'],
- *         ]],
- *     ],
- *     'data'        => [...],                 // 本地数据；或使用 ajax
- *     'ajax'        => '/api/users',          // 远程数据（返回 {data: [...]}）
- *     'server_side' => false,                 // 服务端分页/排序/搜索（配合 Support\DataSet）
- *     'method'      => 'GET',                 // 服务端数据请求方式；POST 规避超长 URL 被 WAF/服务器拒绝
- *     'buttons'     => ['copy', 'csv', 'excel', 'print', 'colvis', 'refresh'],
- *     'select'      => true | 'multi' | 'single',
- *     'fixed_header'   => true,
- *     'responsive'     => true,
- *     'column_filters' => true,               // 每列底部筛选输入框
- *     'row_id'      => 'id',                  // 行 id 字段（行操作定位用）
- *     'options'     => [],                    // 透传 DataTables 原生配置（最高优先级）
- * ])
- *
- * 内置单元格渲染器（render 可为字符串或 ['type' => ..., ...配置]）：
- *   input | copy | ip | switch | toggle | tags | color | image | images | avatar | user |
- *   progress | percent | bool | link | code | datetime | money | number | filesize |
- *   truncate | rating | icon | enum | email | phone | url | select | status | trend |
- *   sparkline | timeline | tooltip | popover | dropdown | buttons | actions
- *
- * 交互/展示渲染器补充说明：
- *   - tooltip   悬浮提示：['type' => 'tooltip', 'text' => '注册于 {created_at}', 'length' => 20]
- *   - popover   气泡提示（点击弹出）：['type' => 'popover', 'title' => '备注', 'content' => '{remark}']
- *   - toggle    按钮式状态切换（点击提交后端）：['type' => 'toggle', 'url' => '/api/x/{id}/toggle', 'on_label' => '已启用', 'off_label' => '已停用']
- *   - status    彩色状态点：['type' => 'status', 'map' => ['active' => ['label' => '运行中', 'color' => 'success']]]
- *   - trend     涨跌趋势（红降绿升）：['type' => 'trend', 'suffix' => '%']
- *   - sparkline 迷你趋势图（内联 SVG）：['type' => 'sparkline', 'type' => 'line|bar']，值为数字数组
- *   - timeline  单元格时间线（超出弹窗查看全部）：值为 [{time,title,color}]
- *   - dropdown  点击按钮展开下拉操作组：['type' => 'dropdown', 'label' => '操作', 'items' => [...同 actions 子项]]
- *
- * 行操作（actions 子项）闭环能力：
- *   - action=view    详情弹窗；'view' => [...] 可个性化布局（layout: kv|profile|tabs|sections|template、
- *                    header、sections（kv/table/timeline/stats/tags/progress/images/html）、ajax 详情接口）
- *   - action=edit    模态表单编辑；'ajax' + 'fields' 保存后 PUT 提交并自动刷新表格
- *   - action=delete  删除闭环；'ajax' 指定后端 DELETE 接口，确认后请求并刷新；本地数据源省略 ajax 时直接移除行
- */
-class DataTable extends Table
+ * 由 xfadmin 组件系统注册，封装对应 INSPINIA 后台模板的 UI / 业务 / 布局单元。
+ */class DataTable extends Table
 {
     /** 快捷渲染器列键（列定义中出现即转为 render 配置） */
     protected const RENDER_SHORTCUTS = [
@@ -85,6 +25,11 @@ class DataTable extends Table
         'gradient', 'tagInput', 'avatarStack', 'rich',
     ];
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return array_replace(parent::defaults(), [
@@ -132,6 +77,11 @@ class DataTable extends Table
         ]);
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         $assets = ['datatables'];
@@ -153,14 +103,12 @@ class DataTable extends Table
                 break;
             }
         }
-
         // 二维码渲染器按需依赖 qrcode 库
         foreach ((array) $this->get('columns', []) as $col) {
             if (! is_array($col)) continue;
             $r = $this->columnRender($col);
             if ($r && ($r['type'] ?? null) === 'qr') { $assets[] = 'qrcode'; break; }
         }
-
         return $assets;
     }
 
@@ -184,14 +132,17 @@ class DataTable extends Table
                 } elseif (is_array($col[$key])) {
                     $cfg += $col[$key];
                 }
-
                 return $cfg;
             }
         }
-
         return null;
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id      = $this->resolveId('xf-datatable');
@@ -233,7 +184,6 @@ class DataTable extends Table
                 'searchable' => false,
             ]);
         }
-
         // ---------- 组装 DataTables 配置 ----------
         $dtColumns = [];
         foreach ($columns as $col) {
@@ -300,7 +250,6 @@ class DataTable extends Table
             }
             $dtColumns[] = $c;
         }
-
         $config = [
             'columns'    => $dtColumns,
             'searching'  => (bool) $this->get('searching'),
@@ -409,7 +358,6 @@ class DataTable extends Table
         if ($this->get('select')) {
             $config['select'] = $this->get('select') === true ? ['style' => 'multi'] : ['style' => (string) $this->get('select')];
         }
-
         // 导出按钮：export 快捷开启（true=全格式；数组=指定格式）；亦支持 buttons 自定义
         $buttons = (array) $this->get('buttons', []);
         $export  = $this->get('export');
@@ -428,13 +376,11 @@ class DataTable extends Table
         if ($this->get('language')) {
             $config['language'] = $this->get('language');
         }
-
         // 状态持久化（DataTables 原生选项：排序/分页/列显隐持久化到 localStorage）
         // 注意：必须在 $config 拷入 $xfConfig 之前设置，否则丢失
         if ($this->get('state_save')) {
             $config['stateSave'] = true;
         }
-
         // 透传原生配置（最高优先级）
         $config = array_replace_recursive($config, (array) $this->get('options', []));
 
@@ -456,7 +402,6 @@ class DataTable extends Table
                 'right' => max(0, (int) ($fixedCols['right'] ?? 0)),
             ];
         }
-
         // 交互增强接线（供前端 initDataTable 消费）
         if ($this->get('bulk')) {
             $bulkCfg = is_array($this->get('bulk')) ? $this->get('bulk') : [];
@@ -527,25 +472,21 @@ class DataTable extends Table
         if ($scrollXDisabled && ! $this->get('fixed_columns')) {
             $html = '<div class="table-responsive">' . $html . '</div>';
         }
-
         // 过滤工具栏（前端自动接线：变更 => 拼接查询参数 => 重载表格）
         $filterBar = (array) $this->get('filter_bar', []);
         if ($filterBar !== []) {
             $html = $this->renderFilterBar($id, $filterBar) . $html;
         }
-
         // 「新增」弹窗按钮（点击后以弹窗加载服务端新建页面，提交成功自动刷新表格）
         $create = $this->get('create');
         if ($create) {
             $html = $this->renderCreateButton($id, is_array($create) ? $create : ['page' => (string) $create]) . $html;
         }
-
         // 批量操作栏（选中行后显示，提交至各 action 的 url，{ids} 占位自动替换为选中 id 列表）
         if ($this->get('bulk')) {
             $bk = $this->get('bulk');
             $html = $this->renderBulkToolbar($id, is_array($bk) ? ($bk['actions'] ?? []) : []) . $html;
         }
-
         return $html;
     }
 
@@ -600,7 +541,6 @@ class DataTable extends Table
                 . ' data-dt="' . $this->e($tableId) . '">'
                 . '<span class="xf-dt-bulk-count text-muted small">已选 <b class="text-primary">0</b> 项</span></div>';
         }
-
         $btns = '';
         foreach ($actions as $a) {
             $a      = (array) $a;
@@ -623,7 +563,6 @@ class DataTable extends Table
                 . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
                 . $this->e($label) . '</button>';
         }
-
         return '<div class="xf-dt-bulk d-none card card-body py-2 px-3 mb-2 d-flex flex-wrap align-items-center gap-2"'
             . ' data-dt="' . $this->e($tableId) . '">'
             . '<span class="xf-dt-bulk-count text-muted small me-1">已选 <b class="text-primary">0</b> 项</span>'
@@ -821,12 +760,10 @@ class DataTable extends Table
         if (! is_string($b)) {
             return (array) $b;
         }
-
         // 包内扩展按钮（由 xfadmin.js 转换为带 action 的真实按钮）
         if (in_array($b, ['refresh', 'fullscreen', 'density'], true)) {
             return ['xfButton' => $b, 'className' => 'btn btn-sm btn-secondary xf-btn-' . $b];
         }
-
         // DataTables 原生导出/列显隐按钮（需 datatables 资源的 buttons.html5 / print）
         $map = [
             'copy'   => ['extend' => 'copyHtml5',   'text' => '<i class="ti ti-copy"></i> 复制',     'className' => 'btn btn-soft-secondary btn-sm'],
@@ -841,7 +778,6 @@ class DataTable extends Table
         if (array_key_exists($b, $map)) {
             return $map[$b];
         }
-
         // 未知 key 作为自定义集合按钮
         return ['extend' => 'collection', 'text' => $b, 'className' => 'btn btn-soft-secondary btn-sm'];
     }
@@ -862,7 +798,6 @@ class DataTable extends Table
         if (($this->get('density') ?? 'comfortable') === 'compact') {
             $cls .= ' xf-dt-compact';
         }
-
         return $cls;
     }
 }

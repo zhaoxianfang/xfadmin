@@ -28,6 +28,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Topbar extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -48,6 +53,11 @@ class Topbar extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html  = '<header' . $this->attrs(['class' => 'app-topbar']) . '>';
@@ -95,6 +105,11 @@ class Topbar extends Component
         return $html;
     }
 
+    /**
+     * render Brand（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderBrand(): string
     {
         if (! $this->get('brand')) {
@@ -118,6 +133,11 @@ class Topbar extends Component
             . '</div>';
     }
 
+    /**
+     * render Languages（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderLanguages(): string
     {
         $languages = (array) $this->get('languages', []);
@@ -150,6 +170,11 @@ class Topbar extends Component
         return $html;
     }
 
+    /**
+     * render Notifications（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderNotifications(): string
     {
         $conf = $this->get('notifications');
@@ -326,6 +351,11 @@ class Topbar extends Component
             . '</div></div></div></div>';
     }
 
+    /**
+     * render User（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderUser(): string
     {
         $user = $this->get('user');

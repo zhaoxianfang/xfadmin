@@ -24,6 +24,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Calendar extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,11 +41,21 @@ class Calendar extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['fullcalendar'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $editable = (bool) $this->get('editable');
@@ -69,7 +84,6 @@ class Calendar extends Component
         if ($external) {
             $config['externalEvents'] = true;
         }
-
         $calendarDiv = '<div' . $this->attrs([
             'id'             => $this->resolveId('xf-calendar'),
             'data-xf'        => 'calendar',
@@ -79,7 +93,6 @@ class Calendar extends Component
         if (!$external) {
             return '<div class="card"><div class="card-body">' . $calendarDiv . '</div></div>';
         }
-
         // 两栏：左 外部事件 + 右 日历
         $side = '<div class="col-xl-3 col-lg-4 border-end p-3">';
         $side .= '<button class="btn btn-primary w-100 mb-3 btn-new-event"><i class="ti ti-plus me-1"></i>' . $this->e($addText) . '</button>';

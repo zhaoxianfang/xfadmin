@@ -20,6 +20,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ProductViews extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class ProductViews extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $products = (array) $this->get('products', []);
@@ -71,11 +81,9 @@ class ProductViews extends Component
             $html .= '<td><span class="text-' . $ctrColor . ' fw-semibold">' . number_format($ctr, 1) . '%</span></td>';
             $html .= '<td>' . number_format($sales) . '</td></tr>';
         }
-
         if (empty($products)) {
             $html .= '<tr><td colspan="6" class="text-center text-muted py-4">暂无浏览数据</td></tr>';
         }
-
         $html .= '</tbody></table></div></div></div>';
 
         return $html;

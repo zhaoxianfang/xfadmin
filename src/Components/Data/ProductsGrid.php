@@ -21,6 +21,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProductsGrid extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class ProductsGrid extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $products = (array) $this->get('products', []);
@@ -56,17 +66,23 @@ class ProductsGrid extends Component
             $p = (array) $p;
             $html .= $this->renderProductCard($p, $currency);
         }
-
         if (empty($products)) {
             $html .= '<div class="col-12 text-center py-5"><div class="text-muted"><i class="ti ti-package fs-48 d-block mb-3"></i>'
                 . '<h5>暂无商品</h5><p>点击"添加商品"开始上架</p></div></div>';
         }
-
         $html .= '</div>';
 
         return $html;
     }
 
+    /**
+     * render Product Card（private实例方法）
+     *
+     * @param array $p p
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderProductCard(array $p, string $currency): string
     {
         $title = (string) ($p['title'] ?? '');
@@ -90,7 +106,6 @@ class ProductsGrid extends Component
         if ($image) {
             $html .= '<img src="' . $this->e($image) . '" class="card-img-top" alt="' . $this->e($title) . '" style="height:180px;object-fit:cover">';
         }
-
         $html .= '<div class="card-body d-flex flex-column">';
         if ($category) {
             $html .= '<small class="text-muted text-uppercase">' . $this->e($category) . '</small>';

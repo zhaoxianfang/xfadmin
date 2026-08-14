@@ -25,11 +25,21 @@ use zxf\XfAdmin\XfAdmin;
  */
 class EmailApp extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['folders' => [], 'messages' => [], 'selected' => [], 'view' => 'split', 'composeText' => '写邮件'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $folders = (array) $this->get('folders', []);
@@ -82,10 +92,16 @@ class EmailApp extends Component
         if ($view === 'split') {
             $html .= $this->renderReadPane($sel);
         }
-
         return $html . '</div></div>';
     }
 
+    /**
+     * render Read Pane（protected实例方法）
+     *
+     * @param array $sel sel
+     *
+     * @return string result
+     */
     protected function renderReadPane(array $sel): string
     {
         $html = '<div class="col-xl-6 col-lg-4 p-0 email-read">';

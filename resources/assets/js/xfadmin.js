@@ -4922,6 +4922,65 @@
     /* ------------------------------------------------------------------
      * 启动
      * ---------------------------------------------------------------- */
+    /* 密码强度条：绑定 .password-input 输入到同组 .password-bar（AuthPage / PasswordStrength 复用） */
+    function initPasswordStrength(root) {
+        root = root || document;
+        Array.prototype.forEach.call(root.querySelectorAll('.password-input'), function (input) {
+            if (input.__xfPwdBound) return;
+            input.__xfPwdBound = true;
+            var bar = input.closest('.mb-3') ? input.closest('.mb-3').querySelector('.password-bar') : null;
+            if (!bar) return;
+            function score(v) {
+                if (!v) return 0;
+                var s = 0;
+                if (v.length >= 8) s++;
+                if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+                if (/\d/.test(v)) s++;
+                if (/[^A-Za-z0-9]/.test(v)) s++;
+                if (v.length >= 12) s++;
+                return s; // 0..5
+            }
+            input.addEventListener('input', function () {
+                var s = score(input.value);
+                bar.className = 'password-bar';
+                if (input.value) {
+                    if (s <= 2) bar.classList.add('weak');
+                    else if (s === 3 || s === 4) bar.classList.add('medium');
+                    else bar.classList.add('strong');
+                }
+            });
+        });
+    }
+
+    /* 验证码交互：图片刷新 + 滑块占位 */
+    function initCaptcha(root) {
+        root = root || document;
+        // 图片刷新
+        Array.prototype.forEach.call(root.querySelectorAll('[data-xf-captcha-refresh]'), function (btn) {
+            if (btn.__xfCapBound) return;
+            btn.__xfCapBound = true;
+            btn.addEventListener('click', function () {
+                var id = btn.getAttribute('data-xf-captcha-refresh');
+                var img = root.querySelector('img[data-xf-captcha="' + id + '"]');
+                if (img) {
+                    var base = img.getAttribute('src').split('?')[0];
+                    img.setAttribute('src', base + '?t=' + Date.now());
+                }
+            });
+        });
+        // 滑块占位交互（演示：拖到最右视为通过）
+        Array.prototype.forEach.call(root.querySelectorAll('[data-xf-captcha-slide]'), function (box) {
+            if (box.__xfSlideBound) return;
+            box.__xfSlideBound = true;
+            box.addEventListener('click', function () {
+                box.querySelector('span.badge') && (box.querySelector('span.badge').className = 'badge bg-success me-2');
+                box.querySelector('.text-muted') && (box.querySelector('.text-muted').textContent = '验证通过');
+                var input = box.parentNode.querySelector('input[type=hidden]');
+                if (input) input.value = '1';
+            });
+        });
+    }
+
     function boot() {
         XFAdmin.scan(document);
         initBootstrapExtras(document);
@@ -4929,6 +4988,8 @@
         XFAdmin.bindXfPageLinks(document);
         XFAdmin.bindTwoFactor(document);
         XFAdmin.bindQtyStepper(document);
+        initPasswordStrength(document);
+        initCaptcha(document);
         XFAdmin.bindInvoicePrint(document);
         XFAdmin._readyQueue.forEach(function (fn) {
             try { fn(); } catch (e) { console.error('[XFAdmin] onReady', e); }

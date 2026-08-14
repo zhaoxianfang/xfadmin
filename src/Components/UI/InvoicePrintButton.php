@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class InvoicePrintButton extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class InvoicePrintButton extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $text    = $this->get('text');
@@ -43,7 +53,6 @@ class InvoicePrintButton extends Component
         foreach ($attrs as $k => $v) {
             $attrStr .= ' ' . $k . '="' . $this->e($v) . '"';
         }
-
         return '<button type="button" class="btn btn-' . $variant . '"' . $attrStr . '>'
             . ($icon ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '') . $this->e($text) . '</button>';
     }

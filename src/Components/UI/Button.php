@@ -17,6 +17,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Button extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,11 +44,21 @@ class Button extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return $this->get('ladda') ? ['ladda'] : [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $variant = $this->get('variant');
@@ -55,7 +70,6 @@ class Button extends Component
         } elseif ($this->get('ghost')) {
             $style = 'btn-ghost-' . $variant;
         }
-
         $class = Html::cls('btn', $style, [
             'btn-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') => (bool) $this->get('size'),
             'rounded-pill'              => $this->get('rounded'),
@@ -78,7 +92,6 @@ class Button extends Component
         if ($this->get('onclick')) {
             $attrs['onclick'] = $this->get('onclick');
         }
-
         $icon  = $this->get('icon') ? '<i class="' . $this->e($this->get('icon')) . ($this->get('icon_only') || $this->get('text') === '' ? '"' : ' me-1"') . '></i>' : '';
         $label = $this->get('ladda') ? '<span class="ladda-label">' . $icon . $this->e($this->get('text')) . '</span>' : $icon . $this->e($this->get('text'));
 
@@ -88,7 +101,6 @@ class Button extends Component
 
             return '<a' . $this->attrs($attrs) . '>' . $label . '</a>';
         }
-
         $attrs['type']     = $this->get('type');
         $attrs['disabled'] = (bool) $this->get('disabled');
 

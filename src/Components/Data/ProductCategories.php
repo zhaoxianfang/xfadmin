@@ -49,7 +49,6 @@ class ProductCategories extends Component
         if (empty($items)) {
             return '';
         }
-
         $html = '<div' . $this->attrs(['class' => 'card xf-product-categories']) . '>';
 
         // 工具栏
@@ -106,7 +105,6 @@ class ProductCategories extends Component
                 . '</div></td>';
             $html .= '</tr>';
         }
-
         $html .= '</tbody></table></div></div>';
 
         // 页脚统计

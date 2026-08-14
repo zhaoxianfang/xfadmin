@@ -42,6 +42,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ReviewList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -51,13 +56,17 @@ class ReviewList extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $reviews = (array) $this->get('reviews', []);
         if (empty($reviews)) {
             return '';
         }
-
         $html = '<div' . $this->attrs(['class' => 'card xf-reviews']) . '>';
 
         // 顶部评分汇总
@@ -92,7 +101,6 @@ class ReviewList extends Component
             }
             $html .= '</div></div>';
         }
-
         // 工具栏
         $html .= '<div class="card-header border-light justify-content-between"><h5 class="card-title mb-0">' . $this->e($this->get('title')) . '</h5>';
         $html .= '<div class="d-flex gap-2"><div class="search-box"><input type="text" class="form-control form-control-sm" placeholder="搜索评价…"></div>'
@@ -133,7 +141,6 @@ class ReviewList extends Component
                 . '<a href="#" class="btn btn-light btn-icon btn-sm rounded-circle text-danger"><i class="ti ti-trash"></i></a></div></td>';
             $html .= '</tr>';
         }
-
         $html .= '</tbody></table></div></div>';
         $html .= '<div class="card-footer border-0"><div class="d-flex justify-content-between align-items-center">'
             . '<span class="text-muted">' . count($reviews) . ' 条评价</span>'
@@ -143,6 +150,13 @@ class ReviewList extends Component
         return $html . '</div>';
     }
 
+    /**
+     * stars（protected实例方法）
+     *
+     * @param int $rating rating
+     *
+     * @return string result
+     */
     protected function stars(int $rating): string
     {
         $html = '<span class="text-warning fs-base">';
@@ -152,6 +166,13 @@ class ReviewList extends Component
         return $html . '</span>';
     }
 
+    /**
+     * badge（protected实例方法）
+     *
+     * @param mixed $status status
+     *
+     * @return string result
+     */
     protected function badge(mixed $status): string
     {
         if (empty($status)) {

@@ -15,6 +15,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Progress extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,13 @@ class Progress extends Component
         ];
     }
 
+    /**
+     * bar（protected实例方法）
+     *
+     * @param array $bar bar
+     *
+     * @return string result
+     */
     protected function bar(array $bar): string
     {
         $value = (float) ($bar['value'] ?? 0);
@@ -40,6 +52,11 @@ class Progress extends Component
             . $this->e($bar['label'] ?? '') . '</div>';
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $bars = (array) $this->get('bars', []);
@@ -50,13 +67,11 @@ class Progress extends Component
                 'label'   => $this->get('label'),
             ]];
         }
-
         $style = $this->get('height') !== null ? 'height: ' . (int) $this->get('height') . 'px;' : null;
         $html  = '<div' . $this->attrs(array_filter(['class' => 'progress', 'style' => $style])) . '>';
         foreach ($bars as $bar) {
             $html .= $this->bar((array) $bar);
         }
-
         return $html . '</div>';
     }
 }

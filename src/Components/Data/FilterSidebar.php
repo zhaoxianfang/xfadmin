@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FilterSidebar extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -31,6 +36,11 @@ class FilterSidebar extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $groups = (array) $this->get('groups', []);
@@ -63,13 +73,20 @@ class FilterSidebar extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<button class="btn btn-' . $variant . ' w-100">' . $this->e($btn['text'] ?? '应用筛选') . '</button>';
         $html .= '</div></div>';
 
         return $html;
     }
 
+    /**
+     * render Tree（private实例方法）
+     *
+     * @param array $items items
+     * @param int $depth depth
+     *
+     * @return string result
+     */
     private function renderTree(array $items, int $depth): string
     {
         if (empty($items)) {

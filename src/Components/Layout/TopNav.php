@@ -38,6 +38,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class TopNav extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -61,6 +66,11 @@ class TopNav extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html  = '<header' . $this->attrs(['class' => 'app-topbar']) . '>';
@@ -124,6 +134,11 @@ class TopNav extends Component
     /* 品牌                                                                */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * render Brand（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderBrand(): string
     {
         if (! $this->get('brand')) {
@@ -170,7 +185,6 @@ class TopNav extends Component
         if ($items === []) {
             return '';
         }
-
         // 外层保留模板 .topnav 类：app.min.css 中水平菜单的全部样式
         // （hover 级联下拉、菜单项排版、移动端手风琴）均以 .topnav 为作用域，
         // 合并进 app-topbar 后仍需该 class 才能命中框架样式。
@@ -227,7 +241,6 @@ class TopNav extends Component
             $html .= '<a class="nav-link" href="' . $this->e($item['url'] ?? '#') . '">'
                 . $icon . $text . $badge . '</a>';
         }
-
         return $html . '</li>';
     }
 
@@ -248,7 +261,6 @@ class TopNav extends Component
                     . $this->e($child['title']) . '</div>';
                 continue;
             }
-
             $children = (array) ($child['children'] ?? []);
             $icon     = ! empty($child['icon']) ? '<i class="' . $this->e($child['icon']) . '"></i> ' : '';
             $badge    = $this->renderBadge($child);
@@ -264,13 +276,11 @@ class TopNav extends Component
                     . '</div>';
                 continue;
             }
-
             $cls   = 'dropdown-item' . (! empty($child['disabled']) ? ' disabled' : '')
                 . ($this->isActive($child) ? ' active' : '');
             $html .= '<a href="' . $this->e($child['url'] ?? '#!') . '" class="' . $cls . '">'
                 . $icon . $this->e($child['text'] ?? '') . $badge . '</a>';
         }
-
         return $html . '</div>';
     }
 
@@ -290,7 +300,6 @@ class TopNav extends Component
                 . '<h4 class="mb-0 fs-lg fw-semibold">' . $this->e($mega['title']) . '</h4>'
                 . '</div></div></div>';
         }
-
         $html .= '<div class="row g-0">';
         foreach ((array) ($mega['columns'] ?? []) as $column) {
             $column = (array) $column;
@@ -313,7 +322,6 @@ class TopNav extends Component
             $html .= '<div class="row g-0"><div class="col-12"><div class="p-2 border-top text-center">'
                 . $this->raw($mega['footer']) . '</div></div></div>';
         }
-
         return $html . '</div></div>';
     }
 
@@ -335,6 +343,13 @@ class TopNav extends Component
             . '</div></div>';
     }
 
+    /**
+     * render Badge（protected实例方法）
+     *
+     * @param array $item item
+     *
+     * @return string result
+     */
     protected function renderBadge(array $item): string
     {
         if (empty($item['badge'])) {
@@ -357,7 +372,6 @@ class TopNav extends Component
         if ($current === '' || $url === '' || $url === '#' || $url === '#!') {
             return false;
         }
-
         return trim($url, '/') === trim($current, '/');
     }
 
@@ -365,6 +379,11 @@ class TopNav extends Component
     /* 右侧工具区                                                          */
     /* ------------------------------------------------------------------ */
 
+    /**
+     * render Languages（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderLanguages(): string
     {
         $languages = (array) $this->get('languages', []);
@@ -400,10 +419,14 @@ class TopNav extends Component
                 . ' title="' . $this->e($lang['name'] ?? '') . '">'
                 . $flag . '<span class="align-middle">' . $this->e($lang['name'] ?? '') . '</span></a>';
         }
-
         return $html . '</div></div></div>';
     }
 
+    /**
+     * render Messages（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderMessages(): string
     {
         $conf = $this->get('messages');
@@ -437,10 +460,14 @@ class TopNav extends Component
                 . ' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
                 . $this->e($conf['all_text'] ?? '查看全部') . '</a>';
         }
-
         return $html . '</div></div></div>';
     }
 
+    /**
+     * render Notifications（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderNotifications(): string
     {
         $conf = $this->get('notifications');
@@ -471,7 +498,6 @@ class TopNav extends Component
                 . ' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
                 . $this->e($conf['all_text'] ?? '查看全部') . '</a>';
         }
-
         return $html . '</div></div></div>';
     }
 
@@ -503,10 +529,14 @@ class TopNav extends Component
                 . (isset($item['time']) ? '<br><span class="fs-xs">' . $this->e($item['time']) . '</span>' : '')
                 . '</span></a></div>';
         }
-
         return $html;
     }
 
+    /**
+     * render User（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderUser(): string
     {
         $user = $this->get('user');
@@ -554,7 +584,6 @@ class TopNav extends Component
                 . $this->e($item['class'] ?? '') . '">'
                 . $icon . '<span class="align-middle">' . $this->e($item['text'] ?? '') . '</span></a>';
         }
-
         return $html . '</div></div></div>';
     }
 

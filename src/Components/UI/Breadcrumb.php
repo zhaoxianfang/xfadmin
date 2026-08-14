@@ -13,6 +13,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Breadcrumb extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -21,6 +26,11 @@ class Breadcrumb extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $navAttrs = ['aria-label' => 'breadcrumb'];
@@ -29,7 +39,6 @@ class Breadcrumb extends Component
             $divider = str_replace([';', "'"], ['', '\\27'], (string) $this->get('divider'));
             $navAttrs['style'] = "--bs-breadcrumb-divider: '" . $divider . "';";
         }
-
         $items = (array) $this->get('items', []);
         $last  = array_key_last($items);
 
@@ -41,7 +50,6 @@ class Breadcrumb extends Component
                 ? '<li class="breadcrumb-item active" aria-current="page">' . $this->e($item['text'] ?? '') . '</li>'
                 : '<li class="breadcrumb-item"><a href="' . $this->e($item['url']) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
         }
-
         return $html . '</ol></nav>';
     }
 }

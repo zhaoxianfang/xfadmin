@@ -26,6 +26,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class DashboardGrid extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,6 +40,11 @@ class DashboardGrid extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $stats  = (array) $this->get('stats', []);
@@ -51,7 +61,6 @@ class DashboardGrid extends Component
             }
             $html .= '</div>';
         }
-
         if (! empty($charts)) {
             $html .= '<div class="row g-3">';
             foreach ($charts as $c) {
@@ -65,16 +74,21 @@ class DashboardGrid extends Component
             }
             $html .= '</div>';
         }
-
         if ($bottom !== '' && $bottom !== null) {
             $html .= '<div class="mt-3">'
                 . '<div class="card"><div class="card-header"><h5 class="mb-0">' . $this->e($this->get('bottom_title', '综合看板')) . '</h5></div>'
                 . '<div class="card-body">' . $this->raw($bottom) . '</div></div></div>';
         }
-
         return $html;
     }
 
+    /**
+     * stat Card（private实例方法）
+     *
+     * @param array $s s
+     *
+     * @return string result
+     */
     private function statCard(array $s): string
     {
         $variant = $this->enum((string) ($s['variant'] ?? 'primary'),

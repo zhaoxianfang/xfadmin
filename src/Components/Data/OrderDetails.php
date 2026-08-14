@@ -23,11 +23,15 @@ use zxf\XfAdmin\XfAdmin;
  */
 class OrderDetails extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['order' => []];
     }
-
     private const STATUS = [
         'pending'    => 'warning',
         'processing' => 'info',
@@ -36,13 +40,17 @@ class OrderDetails extends Component
         'cancelled'  => 'danger',
     ];
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $o = (array) $this->get('order', []);
         if (empty($o)) {
             return '';
         }
-
         $status = $o['status'] ?? 'pending';
         $sCls   = self::STATUS[$status] ?? 'secondary';
 
@@ -117,12 +125,20 @@ class OrderDetails extends Component
         return $html . '</div>';
     }
 
+    /**
+     * amount Row（private实例方法）
+     *
+     * @param string $label label
+     * @param mixed $value value
+     * @param string $cls cls
+     *
+     * @return string result
+     */
     private function amountRow(string $label, $value, string $cls = ''): string
     {
         if ($value === '' || $value === null) {
             return '';
         }
-
         return '<div class="d-flex justify-content-between mb-2"><span class="text-muted">' . $this->e($label) . '</span><span class="' . $cls . '">' . $this->e($value) . '</span></div>';
     }
 }

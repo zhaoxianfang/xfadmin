@@ -187,7 +187,6 @@ class DataSet
         if (isset($params['xfs']) && empty($params['search'])) {
             $params['search'] = ['value' => self::str($params['xfs'])];
         }
-
         return $params;
     }
 
@@ -195,6 +194,16 @@ class DataSet
     // 数组数据管线
     // ------------------------------------------------------------------
 
+    /**
+     * from Array（protected静态方法）
+     *
+     * @param array $data data
+     * @param array $req req
+     * @param array $params params
+     * @param array $options options
+     *
+     * @return array result
+     */
     protected static function fromArray(array $data, array $req, array $params, array $options): array
     {
         $total = count($data);
@@ -273,7 +282,6 @@ class DataSet
             if ($value === '') {
                 continue;
             }
-
             if ($def instanceof Closure) {
                 $data = array_values(array_filter($data, fn ($row) => (bool) $def($row, $value)));
             } elseif (($opDef = self::normalizeOpDef($key, $def)) !== null) {
@@ -327,7 +335,6 @@ class DataSet
                 }
             }
         }
-
         return $fields;
     }
 
@@ -338,7 +345,6 @@ class DataSet
         if ($transform instanceof Closure) {
             $rows = array_map($transform, $rows);
         }
-
         return array_values(array_map(
             fn ($row) => is_object($row) && method_exists($row, 'toArray') ? $row->toArray() : $row,
             $rows
@@ -349,6 +355,16 @@ class DataSet
     // Laravel 查询构造器管线（鸭子类型，不强依赖 Laravel）
     // ------------------------------------------------------------------
 
+    /**
+     * from Builder（protected静态方法）
+     *
+     * @param object $query query
+     * @param array $req req
+     * @param array $params params
+     * @param array $options options
+     *
+     * @return array result
+     */
     protected static function fromBuilder(object $query, array $req, array $params, array $options): array
     {
         $total = (int) (clone $query)->count();
@@ -381,7 +397,6 @@ class DataSet
                 $query->where((string) $def, '=', $value);
             }
         }
-
         // 全局搜索
         $searchable = (array) ($options['searchable'] ?? []);
         if ($searchable === []) {
@@ -589,22 +604,34 @@ class DataSet
                     return null;
                 }
             }
-
             return $row;
         }
-
         return null;
     }
 
+    /**
+     * scalar（protected静态方法）
+     *
+     * @param mixed $value value
+     *
+     * @return string|int|float result
+     */
     protected static function scalar(mixed $value): string|int|float
     {
         if (is_scalar($value)) {
             return is_bool($value) ? (int) $value : $value;
         }
-
         return $value === null ? '' : (string) json_encode($value, JSON_UNESCAPED_UNICODE);
     }
 
+    /**
+     * contains（protected静态方法）
+     *
+     * @param mixed $value value
+     * @param string $lowerKeyword lower Keyword
+     *
+     * @return bool result
+     */
     protected static function contains(mixed $value, string $lowerKeyword): bool
     {
         $str = mb_strtolower((string) self::scalar($value));

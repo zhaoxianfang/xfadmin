@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ProfilePage extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class ProfilePage extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $cover = (string) $this->get('cover', '');
@@ -110,7 +120,6 @@ class ProfilePage extends Component
         } elseif ($this->get('content') !== null) {
             $html .= $this->raw($this->get('content'));
         }
-
         return $html . '</div>';
     }
 }

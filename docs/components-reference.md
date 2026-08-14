@@ -1,4 +1,4 @@
-# 组件详细参考（自动生成 · 全量 210 个组件 / 213 个别名）
+# 组件详细参考（自动生成 · 全量 214 个组件 / 225 个别名）
 
 > 本文档由 `tools/gen_docs.php` 扫描全部已注册组件自动生成，列出每个组件的别名、分类、类、描述、依赖资源、全部 `defaults()` 选项（含类型 / 默认值 / 行内说明）、链式方法与实际调用示例。
 > 调用统一形式：`XfAdmin::<alias>(array $options)`。所有组件均支持通用键 `id` / `class` / `attributes`。
@@ -15,11 +15,11 @@
   - [`footer`](#footer)
   - [`customizer`](#customizer)
   - [`authPage`](#authpage)
+  - [`lockScreen`](#lockscreen)
   - [`errorPage`](#errorpage)
   - [`comingSoon`](#comingsoon)
   - [`maintenance`](#maintenance)
   - [`emptyState`](#emptystate)
-  - [`lockScreen`](#lockscreen)
   - [`landing`](#landing)
   - [`accountSettingsPanel`](#accountsettingspanel)
 - **导航**（1）
@@ -27,7 +27,7 @@
 - **栅格**（2）
   - [`row`](#row)
   - [`col`](#col)
-- **UI 基础**（53）
+- **UI 基础**（55）
   - [`card`](#card)
   - [`statCard`](#statcard)
   - [`alert`](#alert)
@@ -75,13 +75,15 @@
   - [`toolbar`](#toolbar)
   - [`searchBox`](#searchbox)
   - [`colorPalette`](#colorpalette)
+  - [`typography`](#typography)
+  - [`utilities`](#utilities)
   - [`iconSet`](#iconset)
   - [`videoEmbed`](#videoembed)
   - [`commandPalette`](#commandpalette)
   - [`notificationCenter`](#notificationcenter)
   - [`dropzoneUpload`](#dropzoneupload)
   - [`invoicePrintButton`](#invoiceprintbutton)
-- **表单**（20）
+- **表单**（22）
   - [`form`](#form)
   - [`input`](#input)
   - [`textarea`](#textarea)
@@ -89,6 +91,7 @@
   - [`check`](#check)
   - [`slider`](#slider)
   - [`dateRange`](#daterange)
+  - [`datePicker`](#datepicker)
   - [`editor`](#editor)
   - [`upload`](#upload)
   - [`colorPicker`](#colorpicker)
@@ -96,6 +99,7 @@
   - [`maskedInput`](#maskedinput)
   - [`wizard`](#wizard)
   - [`passwordStrength`](#passwordstrength)
+  - [`captcha`](#captcha)
   - [`formElements`](#formelements)
   - [`formLayout`](#formlayout)
   - [`formOtherPlugin`](#formotherplugin)
@@ -607,10 +611,11 @@ echo XfAdmin::customizer([
 ```
 
 ## authPage
+_别名：_ `signIn`, `signUp`, `resetPass`, `newPass`, `twoFactor`, `deleteAccount`, `successMail`, `loginPin`
 
 > 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\AuthPage`
 
-认证页骨架（登录 / 注册 / 找回密码 / 锁屏等）
+认证页骨架（登录 / 注册 / 找回密码 / 重置密码 / 两步验证 / 锁屏 / 删除账号 / 成功邮件 / PIN 登录） 支持 9 种语义类型（type）与 3 种布局（layout=card|split|basic），复刻 INSPINIA 全部 27 个 auth-* 模板页。 每种类型内置对应表单字段与文案，且全部字段/文案/链接/按钮均可通过 options 覆盖或扩展。 可扩展插槽（满足「在任意表单下新增按钮/协议/链接/验证码/自定义组件」需求）：  - prepend   : 表单最顶部插入的任意内容（组件/HTML/闭包）  - append    : 表单最底部（提交按钮之前）插入的任意内容  - agreements: 协议勾选区（数组，每项 ['id','label','href','required']）  - links     : 表单下方附加链接区（数组，每项 ['text','href']）  - actions   : 提交按钮下方的额外操作按钮/链接（任意内容）  - extra     : 完全自定义的整块内容（字符串/组件/闭包），若设置将覆盖默认表单  - captcha   : 验证码组件（字符串或组件实例），自动插入到 append 区  - social    : 社交登录按钮区（数组，每项 ['icon','label','href','variant']）
 
 **依赖资源**：无
 
@@ -622,40 +627,30 @@ echo XfAdmin::customizer([
 | `title` | `''` | — |
 | `theme` | `[]` | — |
 | `brand` | `[]` | — |
+| `type` | `'sign-in'` | — |
 | `layout` | `'card'` | card | split | basic |
 | `heading` | `null` | — |
 | `subheading` | `null` | — |
-| `content` | `''` | — |
-| `card` | `true` | 内容是否包裹在卡片中（layout=split 时固定为卡片） |
-| `below` | `null` | — |
-| `copyright` | `null` | — |
+| `content` | `''` | 自定义卡片内容（与 type 表单二选一，若设置则覆盖默认表单） |
+| `card` | `true` | — |
 | `width` | `'col-xxl-4 col-md-6 col-sm-8'` | — |
 | `favicon` | `null` | — |
 | `head` | `null` | — |
 | `scripts` | `null` | — |
-
-<details><summary>查看 defaults() 源码字面量</summary>
-
-```php
-[
-            'lang'       => 'zh-CN',
-            'title'      => '',
-            'theme'      => [],
-            'brand'      => [],
-            'layout'     => 'card',    // card | split | basic
-            'heading'    => null,
-            'subheading' => null,
-            'content'    => '',
-            'card'       => true,     // 内容是否包裹在卡片中（layout=split 时固定为卡片）
-            'below'      => null,
-            'copyright'  => null,
-            'width'      => 'col-xxl-4 col-md-6 col-sm-8',
-            'favicon'    => null,
-            'head'       => null,
-            'scripts'    => null,
-        ]
-```
-</details>
+| `copyright` | `null` | — |
+| `prepend` | `null` | 表单顶部插入 |
+| `append` | `null` | 提交按钮之前插入 |
+| `agreements` | `[]` | 协议勾选 |
+| `links` | `[]` | 附加链接 |
+| `actions` | `null` | 额外操作按钮/链接 |
+| `extra` | `null` | 完全自定义整块 |
+| `captcha` | `null` | 验证码组件 |
+| `social` | `[]` | 社交登录 |
+| `fields` | `[]` | 覆盖/追加默认表单字段 |
+| `submit` | `null` | 提交按钮文案 |
+| `submitVariant` | `null` | 提交按钮样式 |
+| `formAttrs` | `[]` | 表单额外属性（action/method/id 等） |
+| `redirects` | `[]` | 链接覆盖（sign_in/sign_up/forgot/resend 等） |
 
 ### 示例
 
@@ -670,6 +665,8 @@ echo XfAdmin::authPage([
 
     'brand' => [],
 
+    'type' => 'sign-in',
+
     'layout' => 'card',
 
     'heading' => null,
@@ -680,7 +677,80 @@ echo XfAdmin::authPage([
 
     'card' => true,
 
+    // … 其余选项见上表 / 默认值（源码）
+]);
+```
+
+## lockScreen
+
+> 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\LockScreen`
+
+锁屏页（auth-lock-screen.html）—— 全屏锁定，输入密码解锁
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `lang` | `'zh-CN'` | — |
+| `title` | `null` | <title>，默认取 heading |
+| `theme` | `[]` | — |
+| `user` | `['name' => 'User', 'avatar' => '']` | — |
+| `action` | `…` | ', |
+| `heading` | `'屏幕已锁定'` | — |
+| `text` | `'请输入密码以继续'` | — |
+| `brand` | `'XfAdmin'` | — |
+| `below` | `null` | 卡片下方补充内容（如「切换账号」链接） |
+| `copyright` | `null` | — |
+| `favicon` | `null` | — |
+| `head` | `null` | — |
+| `scripts` | `null` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'lang'    => 'zh-CN',
+            'title'   => null,      // <title>，默认取 heading
+            'theme'   => [],
+            'user'    => ['name' => 'User', 'avatar' => ''],
+            'action'  => '#',
+            'heading' => '屏幕已锁定',
+            'text'    => '请输入密码以继续',
+            'brand'   => 'XfAdmin',
+            'below'   => null,      // 卡片下方补充内容（如「切换账号」链接）
+            'copyright' => null,
+            'favicon' => null,
+            'head'    => null,
+            'scripts' => null,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::lockScreen([
+
+    'lang' => 'zh-CN',
+
+    'title' => null,
+
+    'theme' => [],
+
+    'user' => ['name' => 'User', 'avatar' => ''],
+
+    'action' => …, // ',
+    'heading' => '屏幕已锁定',
+
+    'text' => '请输入密码以继续',
+
+    'brand' => 'XfAdmin',
+
     'below' => null,
+
+    'copyright' => null,
 
     // … 其余选项见上表 / 默认值（源码）
 ]);
@@ -810,81 +880,6 @@ echo XfAdmin::emptyState([
 
     'action' => null,
 
-]);
-```
-
-## lockScreen
-
-> 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\LockScreen`
-
-锁屏页（auth-lock-screen.html）—— 全屏锁定，输入密码解锁
-
-**依赖资源**：无
-
-### 选项（defaults）
-
-| 键 | 默认值 | 说明 |
-|----|--------|------|
-| `lang` | `'zh-CN'` | — |
-| `title` | `null` | <title>，默认取 heading |
-| `theme` | `[]` | — |
-| `user` | `['name' => 'User', 'avatar' => '']` | — |
-| `action` | `…` | ', |
-| `heading` | `'屏幕已锁定'` | — |
-| `text` | `'请输入密码以继续'` | — |
-| `brand` | `'XfAdmin'` | — |
-| `below` | `null` | 卡片下方补充内容（如「切换账号」链接） |
-| `copyright` | `null` | — |
-| `favicon` | `null` | — |
-| `head` | `null` | — |
-| `scripts` | `null` | — |
-
-<details><summary>查看 defaults() 源码字面量</summary>
-
-```php
-[
-            'lang'    => 'zh-CN',
-            'title'   => null,      // <title>，默认取 heading
-            'theme'   => [],
-            'user'    => ['name' => 'User', 'avatar' => ''],
-            'action'  => '#',
-            'heading' => '屏幕已锁定',
-            'text'    => '请输入密码以继续',
-            'brand'   => 'XfAdmin',
-            'below'   => null,      // 卡片下方补充内容（如「切换账号」链接）
-            'copyright' => null,
-            'favicon' => null,
-            'head'    => null,
-            'scripts' => null,
-        ]
-```
-</details>
-
-### 示例
-
-```php
-echo XfAdmin::lockScreen([
-
-    'lang' => 'zh-CN',
-
-    'title' => null,
-
-    'theme' => [],
-
-    'user' => ['name' => 'User', 'avatar' => ''],
-
-    'action' => …, // ',
-    'heading' => '屏幕已锁定',
-
-    'text' => '请输入密码以继续',
-
-    'brand' => 'XfAdmin',
-
-    'below' => null,
-
-    'copyright' => null,
-
-    // … 其余选项见上表 / 默认值（源码）
 ]);
 ```
 
@@ -1664,6 +1659,32 @@ echo XfAdmin::dateRange([
 ]);
 ```
 
+## datePicker
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\DatePicker`
+
+单日期 / 日期时间选择器（form-pickers.html） 独立于 DateRangePicker，专用于单个日期或日期时间字段。 基于 daterangepicker 的 singleDatePicker 模式。
+
+**依赖资源**：`daterangepicker`
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+
+```
+
+### 示例
+
+```php
+echo XfAdmin::datePicker([
+
+    // 内容 / 数据由描述与默认值（源码）决定，例如传入 'data' / 'content' / 'items' 等槽位
+
+]);
+```
+
 ## editor
 
 > 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\Editor`
@@ -1978,6 +1999,75 @@ echo XfAdmin::passwordStrength([
     'minScore' => 0,
 
     'hint' => '',
+
+]);
+```
+
+## captcha
+
+> 分类：**表单** · 类：`zxf\XfAdmin\Components\Form\Captcha`
+
+验证码组件（可插入任意表单的扩展插槽）。 支持多种模式：  - image  : 图片验证码（服务端需提供 /captcha 生成接口，src 可覆盖）  - math   : 算术题（如 3 + 7 = ?），纯前端展示，后端校验答案  - slide  : 滑块占位（仅 UI，需接入第三方或自定义校验逻辑）
+
+**依赖资源**：无
+
+### 选项（defaults）
+
+| 键 | 默认值 | 说明 |
+|----|--------|------|
+| `mode` | `'image'` | image | math | slide |
+| `label` | `'验证码'` | — |
+| `name` | `'captcha'` | — |
+| `id` | `null` | — |
+| `src` | `null` | image 模式图片地址（默认走 XfAdmin 通用 /captcha 约定） |
+| `question` | `null` | math 模式题目，默认随机生成 |
+| `placeholder` | `'请输入计算结果'` | — |
+| `refreshable` | `true` | image 模式点击刷新 |
+| `help` | `null` | — |
+| `required` | `true` | — |
+
+<details><summary>查看 defaults() 源码字面量</summary>
+
+```php
+[
+            'mode'     => 'image',        // image | math | slide
+            'label'    => '验证码',
+            'name'     => 'captcha',
+            'id'       => null,
+            'src'      => null,           // image 模式图片地址（默认走 XfAdmin 通用 /captcha 约定）
+            'question' => null,           // math 模式题目，默认随机生成
+            'placeholder' => '请输入计算结果',
+            'refreshable' => true,         // image 模式点击刷新
+            'help'     => null,
+            'required' => true,
+        ]
+```
+</details>
+
+### 示例
+
+```php
+echo XfAdmin::captcha([
+
+    'mode' => 'image',
+
+    'label' => '验证码',
+
+    'name' => 'captcha',
+
+    'id' => null,
+
+    'src' => null,
+
+    'question' => null,
+
+    'placeholder' => '请输入计算结果',
+
+    'refreshable' => true,
+
+    'help' => null,
+
+    'required' => true,
 
 ]);
 ```
@@ -4815,6 +4905,65 @@ _本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离�
 echo XfAdmin::colorPalette([
 
     'groups' => [],
+
+]);
+```
+
+## typography
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\Typography`
+
+排版展示组件（ui-typography.html） 封装 Bootstrap 排版示例区块，支持自定义扩展区块。常用于后台「排版 / 组件库」展示页。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'blocks' => [],          // 区块列表：字符串（built-in 键）或 ['title'=>..,'body'=>..]
+            'grid'   => true,        // 是否用 row/col 网格包裹
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::typography([
+
+    'blocks' => [],
+
+    'grid' => true,
+
+]);
+```
+
+## utilities
+
+> 分类：**UI 基础** · 类：`zxf\XfAdmin\Components\UI\Utilities`
+
+工具类展示组件（ui-utilities.html） 封装 Bootstrap 工具类（间距 / 弹性 / 文本 / 边框 / 阴影 / 圆角 / 尺寸 / 显示）示例区块。 用于后台「样式 / 组件库」展示页，支持自定义扩展区块。
+
+**依赖资源**：无
+
+_本组件的 `defaults()` 以示例数据 / 内容槽位为主，未暴露离散配置键；可用选项与结构见下方「默认值（源码）」，或直接传入通用 `id` / `class` / `attributes`。_
+
+### 默认值（源码）
+
+```php
+[
+            'blocks' => [],
+        ]
+```
+
+### 示例
+
+```php
+echo XfAdmin::utilities([
+
+    'blocks' => [],
 
 ]);
 ```

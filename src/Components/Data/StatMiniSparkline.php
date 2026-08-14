@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class StatMiniSparkline extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,6 +40,11 @@ class StatMiniSparkline extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $label   = $this->get('label');
@@ -55,7 +65,6 @@ class StatMiniSparkline extends Component
             $deltaHtml = '<span class="small ' . $cls . '"><i class="' . $icon . '"></i> '
                 . $this->e(abs((float) $delta)) . '%</span>';
         }
-
         $iconHtml = $icon ? '<span class="avatar-sm rounded-circle bg-' . $variant . '-subtle text-' . $variant
             . ' d-inline-flex align-items-center justify-content-center mb-2"><i class="' . $this->e($icon) . '"></i></span>' : '';
 
@@ -72,6 +81,15 @@ class StatMiniSparkline extends Component
             . '</div></div>';
     }
 
+    /**
+     * sparkline Svg（private实例方法）
+     *
+     * @param array $series series
+     * @param string $id id
+     * @param string $variant variant
+     *
+     * @return string result
+     */
     private function sparklineSvg(array $series, string $id, string $variant): string
     {
         if (count($series) < 2) {

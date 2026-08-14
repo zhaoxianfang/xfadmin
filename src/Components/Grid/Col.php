@@ -15,6 +15,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Col extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -25,6 +30,11 @@ class Col extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $classes = [];
@@ -39,14 +49,12 @@ class Col extends Component
         } else {
             $classes[] = 'col-' . $width;
         }
-
         foreach ((array) ($this->get('offset') ?? []) as $bp => $o) {
             $classes[] = is_int($bp) ? 'offset-' . $o : 'offset-' . $bp . '-' . $o;
         }
         foreach ((array) ($this->get('order') ?? []) as $bp => $o) {
             $classes[] = is_int($bp) ? 'order-' . $o : 'order-' . $bp . '-' . $o;
         }
-
         return '<div' . $this->attrs(['class' => Html::cls($classes)]) . '>' . $this->raw($this->get('content')) . '</div>';
     }
 }

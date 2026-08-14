@@ -22,6 +22,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Lightbox extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -33,11 +38,21 @@ class Lightbox extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return $this->get('masonry') ? ['glightbox', 'masonry'] : ['glightbox'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $cols   = max(1, (int) $this->get('columns'));
@@ -69,7 +84,6 @@ class Lightbox extends Component
                 . '<img src="' . $this->e($thumb) . '" alt="' . $this->e($image['title'] ?? '') . '" class="img-fluid rounded">'
                 . '</a></div>';
         }
-
         return $html . '</div>';
     }
 }

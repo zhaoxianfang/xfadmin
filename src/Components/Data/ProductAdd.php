@@ -112,7 +112,6 @@ class ProductAdd extends Component
             }
             $html .= '</div></div>';
         }
-
         $html .= '<div class="d-grid gap-2 mt-4">'
             . '<button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>' . $this->e($this->get('submit_text')) . '</button>'
             . '<button type="button" class="btn btn-soft-secondary">存为草稿</button>'
@@ -134,7 +133,6 @@ class ProductAdd extends Component
             $sel   = ((string) $opt === $current) ? ' selected' : '';
             $html .= '<option value="' . $this->e((string) $opt) . '"' . $sel . '>' . $this->e((string) $opt) . '</option>';
         }
-
         return $html . '</select></div>';
     }
 }

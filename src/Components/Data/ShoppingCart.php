@@ -25,6 +25,11 @@ use zxf\XfAdmin\XfAdmin;
 class ShoppingCart extends Component
 {
     use HasPriceFormat;
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class ShoppingCart extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
@@ -49,7 +59,6 @@ class ShoppingCart extends Component
                 . '<h5 class="text-muted">' . $this->e($this->get('emptyMessage')) . '</h5>'
                 . '<a href="javascript:void(0)" class="btn btn-primary mt-2">继续购物</a></div>';
         }
-
         $html = '<div class="row g-4"><div class="col-lg-8">';
         $html .= '<div class="card"><div class="card-body p-0">';
         $html .= '<div class="table-responsive"><table class="table table-borderless mb-0">';
@@ -97,7 +106,6 @@ class ShoppingCart extends Component
             $html .= '<td class="pe-3"><a href="javascript:void(0)" class="text-muted btn-cart-remove" title="移除"><i class="ti ti-x"></i></a></td>';
             $html .= '</tr>';
         }
-
         $html .= '</tbody></table></div></div></div>';
 
         // 继续购物

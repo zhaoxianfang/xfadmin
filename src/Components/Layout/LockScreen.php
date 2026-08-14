@@ -20,6 +20,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class LockScreen extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class LockScreen extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $assets = Assets::instance();
@@ -51,7 +61,6 @@ class LockScreen extends Component
         if (! empty($theme['mode']) && $theme['mode'] !== 'light') {
             $htmlAttrs['data-bs-theme'] = $theme['mode'];
         }
-
         $user = (array) $this->get('user');
         $name = $this->e($user['name'] ?? 'User');
         $avatar = $user['avatar'] ?? '';

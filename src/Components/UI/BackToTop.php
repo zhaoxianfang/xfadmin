@@ -16,6 +16,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class BackToTop extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -24,6 +29,11 @@ class BackToTop extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $cfg  = ['offset' => (int) $this->get('offset')];

@@ -16,6 +16,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Kbd extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -24,6 +29,11 @@ class Kbd extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $text = (string) $this->get('text');
@@ -36,7 +46,6 @@ class Kbd extends Component
             }
             $inner = implode('<span class="xf-kbd-plus">+</span>', $parts);
         }
-
         return '<span' . $this->attrs(['class' => 'xf-kbd']) . '>' . $inner . '</span>';
     }
 }

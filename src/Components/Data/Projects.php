@@ -26,11 +26,15 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Projects extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['title' => '', 'projects' => [], 'view' => 'grid'];
     }
-
     private const STATUS = [
         'active'   => ['success', '进行中'],
         'pending'  => ['warning', '待启动'],
@@ -38,13 +42,17 @@ class Projects extends Component
         'onhold'   => ['secondary', '已暂停'],
     ];
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $projects = (array) $this->get('projects', []);
         if (empty($projects)) {
             return '';
         }
-
         $title = $this->get('title') ? '<div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">' . $this->e($this->get('title')) . '</h5><button class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>新建项目</button></div>' : '';
         $html  = $title . '<div class="row g-3">';
 
@@ -80,7 +88,6 @@ class Projects extends Component
 
             $html .= '</div></div></div>';
         }
-
         return $html . '</div>';
     }
 }

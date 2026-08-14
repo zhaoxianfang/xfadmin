@@ -32,6 +32,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProjectTeamBoard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -41,6 +46,11 @@ class ProjectTeamBoard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $teams = (array) $this->get('teams', []);
@@ -91,7 +101,6 @@ class ProjectTeamBoard extends Component
             if (! empty($t['about'])) {
                 $html .= '<div class="mb-3"><h6 class="fs-base mb-2">About Team:</h6><p class="text-muted mb-0">' . $this->e($t['about']) . '</p></div>';
             }
-
             $html .= '<div class="row">';
             foreach ([['ti ti-layout-kanban', 'Projects', $t['projects'] ?? '0'], ['ti ti-award', 'Ranking', $t['ranking'] ?? '-'], ['ti ti-wallet', 'Budgets', $t['budgets'] ?? '-']] as [$icon, $label, $value]) {
                 $html .= '<div class="col-4"><div class="d-flex gap-2 mb-3 mb-xl-0"><div class="avatar-sm flex-shrink-0"><span class="avatar-title text-bg-light rounded-circle"><i class="' . $icon . ' fs-lg text-primary"></i></span></div>'

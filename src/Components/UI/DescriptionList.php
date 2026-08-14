@@ -23,6 +23,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class DescriptionList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -33,6 +38,11 @@ class DescriptionList extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $horizontal = (bool) $this->get('horizontal');
@@ -58,7 +68,6 @@ class DescriptionList extends Component
                 $html .= '<dt class="text-muted fw-normal">' . $this->e($label) . '</dt><dd class="mb-2">' . $valHtml . '</dd>';
             }
         }
-
         return $html . '</dl>';
     }
 }

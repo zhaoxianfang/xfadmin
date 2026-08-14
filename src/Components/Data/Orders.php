@@ -43,6 +43,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Orders extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -64,13 +69,17 @@ class Orders extends Component
         'cancelled'  => ['danger', '已取消'],
     ];
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $orders = (array) $this->get('orders', []);
         if (empty($orders)) {
             return '';
         }
-
         $id         = $this->resolveId('orders');
         $searchable = (bool) $this->get('searchable');
         $filterable = (bool) $this->get('filterable');
@@ -115,7 +124,6 @@ class Orders extends Component
             }
             $html .= '</div></div>';
         }
-
         /* ---------- 表格（模板同款类组合与表头样式） ---------- */
         $html .= '<div class="table-responsive"><table class="table table-custom table-select table-hover align-middle mb-0">'
             . '<thead class="bg-light bg-opacity-25 thead-sm"><tr class="text-uppercase fs-xxs">';
@@ -139,7 +147,6 @@ class Orders extends Component
             if ($selectable) {
                 $html .= '<td class="ps-3"><input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox"></td>';
             }
-
             // 订单号：模板同款 h5.fs-sm + link-reset
             $html .= '<td><h5 class="fs-sm mb-0 fw-medium"><a href="' . $this->e($o['url'] ?? '#') . '" class="link-reset">' . $this->e($o['id'] ?? '') . '</a></h5></td>';
 
@@ -191,7 +198,6 @@ class Orders extends Component
                 . '<div data-xftable-pagination></div>'
                 . '</div></div>';
         }
-
         return $html . '</div>';
     }
 }

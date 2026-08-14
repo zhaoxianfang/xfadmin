@@ -22,6 +22,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Pagination extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,11 +42,23 @@ class Pagination extends Component
         ];
     }
 
+    /**
+     * link（protected实例方法）
+     *
+     * @param int $page page
+     *
+     * @return string result
+     */
     protected function link(int $page): string
     {
         return str_replace('{page}', (string) $page, (string) $this->get('url'));
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $total   = (int) $this->get('total');
@@ -69,7 +86,6 @@ class Pagination extends Component
         if ($this->get('arrows')) {
             $html .= $item('<i class="ti ti-chevron-left"></i>', $current - 1, false, $current <= 1);
         }
-
         $start = max(1, $current - $window);
         $end   = min($pages, $current + $window);
         if ($start > 1) {
@@ -87,11 +103,9 @@ class Pagination extends Component
             }
             $html .= $item((string) $pages, $pages);
         }
-
         if ($this->get('arrows')) {
             $html .= $item('<i class="ti ti-chevron-right"></i>', $current + 1, false, $current >= $pages);
         }
-
         return $html . '</ul></nav>';
     }
 }

@@ -17,6 +17,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FormLayout extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -26,6 +31,11 @@ class FormLayout extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $fields = $this->get('fields');
@@ -35,6 +45,15 @@ class FormLayout extends Component
             : $this->renderBuiltin();
     }
 
+    /**
+     * render Custom Form（private实例方法）
+     *
+     * @param string $layout layout
+     * @param int $columns columns
+     * @param array $fields fields
+     *
+     * @return string result
+     */
     private function renderCustomForm(string $layout, int $columns, array $fields): string
     {
         $html = '<div class="card"><div class="card-body">';
@@ -82,12 +101,16 @@ class FormLayout extends Component
                 $html .= '<div class="col-12"><button class="btn btn-primary">提交</button></div></div>';
                 break;
         }
-
         $html .= '</div></div>';
 
         return $html;
     }
 
+    /**
+     * render Builtin（private实例方法）
+     *
+     * @return string result
+     */
     private function renderBuiltin(): string
     {
         $html = '';
@@ -125,6 +148,14 @@ class FormLayout extends Component
         return $html;
     }
 
+    /**
+     * render Input（private实例方法）
+     *
+     * @param array $field field
+     * @param bool $floating floating
+     *
+     * @return string result
+     */
     private function renderInput(array $field, bool $floating = false): string
     {
         $type = (string) ($field['type'] ?? 'text');
@@ -148,17 +179,14 @@ class FormLayout extends Component
 
             return $html;
         }
-
         if ($type === 'textarea') {
             return '<textarea class="form-control" name="' . $name . '" rows="3" placeholder="' . $placeholder . '"' . $required . $disabled . '>' . $value . '</textarea>';
         }
-
         $cls = 'form-control';
         // 浮动标签模式：预留扩展点，当前由父级 .form-floating 容器处理
         if ($floating) {
             $cls .= ' form-floating-input';
         }
-
         return '<input type="' . $this->e($type) . '" class="' . $cls . '" name="' . $name . '" value="' . $value . '" placeholder="' . $placeholder . '"' . $required . $disabled . '>';
     }
 }

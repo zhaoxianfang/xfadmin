@@ -21,6 +21,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class AvatarGroup extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class AvatarGroup extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $users = (array) $this->get('users', []);

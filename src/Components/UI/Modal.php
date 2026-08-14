@@ -24,6 +24,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Modal extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -41,6 +46,11 @@ class Modal extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id   = $this->resolveId('xf-modal');
@@ -50,7 +60,6 @@ class Modal extends Component
             $html .= '<button type="button" class="btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary') . '" data-bs-toggle="modal" data-bs-target="#' . $this->e($id) . '">'
                 . $this->e($this->get('trigger')) . '</button>';
         }
-
         $dialogClass = Html::cls('modal-dialog', [
             'modal-dialog-centered'   => $this->get('centered'),
             'modal-dialog-scrollable' => $this->get('scrollable'),
@@ -66,7 +75,6 @@ class Modal extends Component
             $attrs['data-bs-backdrop'] = 'static';
             $attrs['data-bs-keyboard'] = 'false';
         }
-
         $html .= '<div' . $this->attrs($attrs) . '><div class="' . $dialogClass . '"><div class="modal-content">';
         if ($this->get('title') !== null || $this->get('close')) {
             $html .= '<div class="modal-header">';

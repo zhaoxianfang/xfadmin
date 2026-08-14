@@ -22,6 +22,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Toggle extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class Toggle extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('xf-switch');
@@ -48,7 +58,6 @@ class Toggle extends Component
         if ($this->get('class') !== '') {
             $wrapClass .= ' ' . $this->get('class');
         }
-
         $input = '<input id="' . $this->e($id) . '" class="form-check-input xf-switch-input" type="checkbox" role="switch"'
             . ($this->get('name') !== '' ? ' name="' . $this->e($this->get('name')) . '"' : '')
             . ' value="' . $this->e((string) $this->get('value')) . '"'
@@ -62,7 +71,6 @@ class Toggle extends Component
                 . '<label class="form-check-label" for="' . $this->e($id) . '">' . $this->e($this->get('label')) . '</label>'
                 . '</div>';
         }
-
         return '<div' . $this->attrs(['class' => $wrapClass]) . '>' . $input . '</div>';
     }
 }

@@ -31,6 +31,11 @@ use zxf\XfAdmin\XfAdmin;
 class Checkout extends Component
 {
     use HasPriceFormat;
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -46,6 +51,11 @@ class Checkout extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $steps = (array) $this->get('steps', []);
@@ -61,7 +71,6 @@ class Checkout extends Component
                 ['label' => '完成', 'icon' => 'ti-check'],
             ];
         }
-
         $html = '<div class="row g-4"><div class="col-lg-8">';
 
         // 步骤指示器
@@ -77,7 +86,6 @@ class Checkout extends Component
                 $lineClass = $isDone ? ' bg-primary' : ' bg-light';
                 $html .= '<div class="flex-grow-1 mx-2" style="height:2px"><div class="h-100' . $lineClass . '"></div></div>';
             }
-
             $badgeClass = $isDone ? 'bg-primary' : ($isActive ? 'bg-primary' : 'bg-light text-muted');
             $textClass = $isActive ? 'fw-semibold text-dark' : ($isDone ? 'text-primary' : 'text-muted');
             $html .= '<div class="d-flex flex-column align-items-center"><div class="rounded-circle d-inline-flex align-items-center justify-content-center '
@@ -117,6 +125,14 @@ class Checkout extends Component
         return $html;
     }
 
+    /**
+     * render Order Summary（private实例方法）
+     *
+     * @param array $summary summary
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderOrderSummary(array $summary, string $currency): string
     {
         $subtotal = (float) ($summary['subtotal'] ?? 0);
@@ -139,7 +155,6 @@ class Checkout extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">小计</span><span>' . $this->formatPrice($subtotal, $currency) . '</span></div>';
         $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">运费</span><span>' . ($shipping > 0 ? $this->formatPrice($shipping, $currency) : '免运费') . '</span></div>';
         $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">税费</span><span>' . $this->formatPrice($tax, $currency) . '</span></div>';
@@ -154,5 +169,4 @@ class Checkout extends Component
 
         return $html;
     }
-
 }

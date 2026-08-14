@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Row extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class Row extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $classes = ['row'];
@@ -49,7 +59,6 @@ class Row extends Component
         if ($this->get('justify')) {
             $classes[] = 'justify-content-' . $this->get('justify');
         }
-
         $inner = '';
         foreach ((array) $this->get('cols', []) as $col) {
             if ($col instanceof Col) {

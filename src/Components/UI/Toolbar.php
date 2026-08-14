@@ -17,6 +17,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Toolbar extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -27,6 +32,11 @@ class Toolbar extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('xf-toolbar');
@@ -37,7 +47,6 @@ class Toolbar extends Component
         if ($left === '' && $right === '') {
             return '';
         }
-
         return '<div' . $this->attrs([
             'id'    => $id,
             'class' => 'xf-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2'

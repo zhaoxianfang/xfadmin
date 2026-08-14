@@ -30,6 +30,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ApexTree extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -42,12 +47,23 @@ class ApexTree extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['apextree'];
     }
 
-    /** 递归规范化节点：头像走包内图片解析，保证外链 / data URI / 相对路径均可用 */
+    /**
+     * normalize Node（protected实例方法）
+     *
+     * @param array $node node
+     *
+     * @return array result
+     */
     protected function normalizeNode(array $node): array
     {
         if (! empty($node['avatar'])) {
@@ -56,10 +72,14 @@ class ApexTree extends Component
         if (! empty($node['children']) && is_array($node['children'])) {
             $node['children'] = array_map(fn ($c) => $this->normalizeNode((array) $c), array_values($node['children']));
         }
-
         return $node;
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id  = $this->resolveId('xf-apextree');

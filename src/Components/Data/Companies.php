@@ -51,7 +51,6 @@ class Companies extends Component
         if (empty($items)) {
             return '';
         }
-
         $cols   = max(1, min(4, (int) $this->get('cols', 3)));
         $colCls = 'col-xl-' . intdiv(12, $cols) . ' col-md-6';
 
@@ -59,7 +58,6 @@ class Companies extends Component
         foreach ($items as $c) {
             $html .= '<div class="' . $colCls . '">' . $this->companyCard((array) $c) . '</div>';
         }
-
         return $html . '</div>';
     }
 
@@ -74,7 +72,6 @@ class Companies extends Component
                 . '<img src="' . $this->e($this->img($c['logo'])) . '" alt="" class="img-fluid rounded">'
                 . '</div>';
         }
-
         $html .= '<div class="flex-grow-1">';
 
         // 名称 / 官网 / 关注按钮
@@ -102,12 +99,10 @@ class Companies extends Component
             }
             $html .= '</div>';
         }
-
         // 简介
         if (! empty($c['desc'])) {
             $html .= '<p class="text-muted mb-3">' . $this->e($c['desc']) . '</p>';
         }
-
         // 员工 / 营收 / 评分
         $html .= '<div class="d-flex justify-content-between flex-wrap mt-2 gap-3">';
         if (isset($c['employees'])) {

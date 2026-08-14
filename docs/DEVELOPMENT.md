@@ -149,34 +149,12 @@ protected static function aliases(): array
 
 组件写完后，在包内做三道护栏（详见 [TESTING.md](TESTING.md)）：
 
-```bash
-php tools/selftest/build.php          # 渲染全部组件到 .build/，含你的新组件
-php tools/selftest/xss_audit.php       # 模糊注入审计，确认无未转义 XSS
-php tools/selftest/asset_check.php     # 校验 assets() 引用的 key 均已注册且文件存在
-```
-
-Playwright 端到端（需本地 node + playwright，外部请求会被拦截，离线可跑）：
-
-```bash
-cd tools/selftest && bash run.sh
-```
-
 ---
 
 ## 七、接入文档生成
 
-`tools/gen_category_docs.php` 与 `tools/gen_docs.php` 会扫描 `XfAdmin.php` 注册表自动生成文档，**无需手写**。你的组件只要：
-
 - 类有 PHPDoc（`@description` 或类注释首行会被提取为描述）
 - `defaults()` 返回带类型与说明的数组（注释 `// 说明` 会被提取）
-
-重新生成：
-
-```bash
-php tools/gen_category_docs.php
-php tools/gen_docs.php
-php tools/gen_category_docs.php >/dev/null && php tools/gen_docs.php >/dev/null && echo OK
-```
 
 ---
 

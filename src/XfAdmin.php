@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin;
 
+use Closure;
 use InvalidArgumentException;
 use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\Components\Component;
@@ -28,214 +29,227 @@ use zxf\XfAdmin\Components\Component;
  *   echo XfAdmin::scripts();  // </body> 前输出（自定义布局时）
  *   return XfAdmin::page([...]); // 或直接用整页组件（已含 head/scripts）
  *
- * @method static Components\Layout\Page       page(array $options = [])
- * @method static Components\Layout\Sidenav    sidenav(array $options = [])
- * @method static Components\Layout\Topbar     topbar(array $options = [])
- * @method static Components\Layout\TopNav     topNav(array $options = [])
- * @method static Components\Layout\PageTitle  pageTitle(array $options = [])
- * @method static Components\Layout\Footer     footer(array $options = [])
- * @method static Components\Layout\Customizer customizer(array $options = [])
- * @method static Components\Layout\AuthPage   authPage(array $options = [])
- * @method static Components\Layout\ErrorPage  errorPage(array $options = [])
- * @method static Components\Navigation\Menu   menu(array $options = [])
- * @method static Components\Grid\Row          row(array $options = [])
- * @method static Components\Grid\Col          col(array $options = [])
- * @method static Components\UI\Card           card(array $options = [])
- * @method static Components\UI\StatCard       statCard(array $options = [])
- * @method static Components\Table\Table       table(array $options = [])
- * @method static Components\Table\DataTable   dataTable(array $options = [])
- * @method static Components\Form\Form         form(array $options = [])
- * @method static Components\Form\Input        input(array $options = [])
- * @method static Components\Form\Textarea     textarea(array $options = [])
- * @method static Components\Form\Select       select(array $options = [])
- * @method static Components\Form\Check        check(array $options = [])
- * @method static Components\Form\Slider       slider(array $options = [])
- * @method static Components\Form\DateRangePicker dateRange(array $options = [])
- * @method static Components\Form\DateRangePicker dateRangePicker(array $options = [])
- * @method static Components\Form\Editor       editor(array $options = [])
- * @method static Components\Form\Upload       upload(array $options = [])
- * @method static Components\Form\ColorPicker  colorPicker(array $options = [])
- * @method static Components\Form\PasswordStrength passwordStrength(array $options = [])
- * @method static Components\Chart\ApexChart   apexChart(array $options = [])
- * @method static Components\Chart\ApexTree    apexTree(array $options = [])
- * @method static Components\Chart\ApexSankey  apexSankey(array $options = [])
- * @method static Components\Chart\EChart      echart(array $options = [])
- * @method static Components\Chart\VectorMap   vectorMap(array $options = [])
- * @method static Components\Chart\GoogleMap   googleMap(array $options = [])
- * @method static Components\Chart\LeafletMap   leafletMap(array $options = [])
- * @method static Components\UI\Alert          alert(array $options = [])
- * @method static Components\UI\Badge          badge(array $options = [])
- * @method static Components\UI\Button         button(array $options = [])
- * @method static Components\UI\Dropdown       dropdown(array $options = [])
- * @method static Components\UI\Modal          modal(array $options = [])
- * @method static Components\UI\Offcanvas      offcanvas(array $options = [])
- * @method static Components\UI\Tabs           tabs(array $options = [])
- * @method static Components\UI\Accordion      accordion(array $options = [])
- * @method static Components\UI\Progress       progress(array $options = [])
- * @method static Components\UI\Spinner        spinner(array $options = [])
- * @method static Components\UI\Pagination     pagination(array $options = [])
- * @method static Components\UI\ListGroup      listGroup(array $options = [])
- * @method static Components\UI\Avatar         avatar(array $options = [])
- * @method static Components\UI\AvatarGroup    avatarGroup(array $options = [])
- * @method static Components\UI\Callout        callout(array $options = [])
- * @method static Components\UI\Divider        divider(array $options = [])
- * @method static Components\UI\Kbd            kbd(array $options = [])
- * @method static Components\UI\Media          media(array $options = [])
- * @method static Components\UI\Skeleton       skeleton(array $options = [])
- * @method static Components\UI\Icon           icon(array $options = [])
- * @method static Components\UI\Toast          toast(array $options = [])
- * @method static Components\UI\Timeline       timeline(array $options = [])
- * @method static Components\UI\Carousel       carousel(array $options = [])
- * @method static Components\UI\Breadcrumb     breadcrumb(array $options = [])
- * @method static Components\Misc\Calendar     calendar(array $options = [])
- * @method static Components\Misc\TreeView     treeView(array $options = [])
- * @method static Components\Misc\Nestable     nestable(array $options = [])
- * @method static Components\Misc\Lightbox     lightbox(array $options = [])
- * @method static Components\Misc\Tour         tour(array $options = [])
- * @method static Components\Misc\ClipboardButton clipboard(array $options = [])
- * @method static Components\Misc\ClipboardButton clipboardButton(array $options = [])
- * @method static Components\Misc\SweetAlert   sweetAlert(array $options = [])
- * @method static Components\Misc\Raw          raw(array $options = [])
- * @method static Components\Misc\Tinycon      tinycon(array $options = [])
- * @method static Components\Misc\IdleTimer    idleTimer(array $options = [])
- * @method static Components\Misc\Animate      animate(array $options = [])
- * @method static Components\Misc\PdfViewer    pdfViewer(array $options = [])
- * @method static Components\Misc\TextDiff     textDiff(array $options = [])
- * @method static Components\Layout\ComingSoon  comingSoon(array $options = [])
- * @method static Components\Layout\Maintenance maintenance(array $options = [])
- * @method static Components\Layout\EmptyState  emptyState(array $options = [])
- * @method static Components\Layout\LockScreen  lockScreen(array $options = [])
- * @method static Components\Layout\AccountSettingsPanel accountSettingsPanel(array $options = [])
- * @method static Components\Form\Tags          tags(array $options = [])
- * @method static Components\Form\MaskedInput   maskedInput(array $options = [])
- * @method static Components\Form\Wizard        wizard(array $options = [])
- * @method static Components\UI\Tooltip         tooltip(array $options = [])
- * @method static Components\UI\Popover         popover(array $options = [])
- * @method static Components\UI\Placeholder     placeholder(array $options = [])
- * @method static Components\UI\Collapse        collapse(array $options = [])
- * @method static Components\UI\Scrollspy       scrollspy(array $options = [])
- * @method static Components\UI\Ratio           ratio(array $options = [])
- * @method static Components\UI\Rating          rating(array $options = [])
- * @method static Components\UI\Ribbon          ribbon(array $options = [])
- * @method static Components\UI\Chip            chip(array $options = [])
- * @method static Components\UI\Stepper         stepper(array $options = [])
- * @method static Components\UI\DescriptionList descriptionList(array $options = [])
- * @method static Components\UI\Toggle        switch(array $options = [])
- * @method static Components\UI\CodeBlock     codeBlock(array $options = [])
- * @method static Components\UI\EmptyState    empty(array $options = [])
- * @method static Components\UI\Toolbar       toolbar(array $options = [])
- * @method static Components\UI\SearchBox     searchBox(array $options = [])
- * @method static Components\UI\LoadingButton loadingButton(array $options = [])
- * @method static Components\UI\Countdown     countdown(array $options = [])
- * @method static Components\UI\CountUp       countUp(array $options = [])
- * @method static Components\UI\BackToTop     backToTop(array $options = [])
- * @method static Components\Data\PricingCard   pricingCard(array $options = [])
- * @method static Components\Data\Faq           faq(array $options = [])
- * @method static Components\Data\ProfileHeader profileHeader(array $options = [])
- * @method static Components\Data\ProductCard   productCard(array $options = [])
- * @method static Components\Data\Kanban        kanban(array $options = [])
- * @method static Components\Data\ChatBox       chatBox(array $options = [])
- * @method static Components\Data\InvoiceTable  invoiceTable(array $options = [])
- * @method static Components\Data\MailList      mailList(array $options = [])
- * @method static Components\Data\FileManager   fileManager(array $options = [])
- * @method static Components\Data\Widget        widget(array $options = [])
- * @method static Components\Data\ActivityFeed  activityFeed(array $options = [])
- * @method static Components\Data\Gallery       gallery(array $options = [])
- * @method static Components\Data\BlogList      blogList(array $options = [])
- * @method static Components\Data\InvoiceList   invoiceList(array $options = [])
- * @method static Components\Data\SearchResults  searchResults(array $options = [])
- * @method static Components\Data\PermissionMatrix permissionMatrix(array $options = [])
- * @method static Components\Data\ApiKeys       apiKeys(array $options = [])
- * @method static Components\Data\CommentThread commentThread(array $options = [])
- * @method static Components\Data\EmailCompose  emailCompose(array $options = [])
- * @method static Components\Data\Customers      customers(array $options = [])
- * @method static Components\Data\Orders         orders(array $options = [])
- * @method static Components\Data\TaskList        taskList(array $options = [])
- * @method static Components\Data\Deals           deals(array $options = [])
- * @method static Components\Data\OrderDetails   orderDetails(array $options = [])
- * @method static Components\Data\ProductDetails productDetails(array $options = [])
- * @method static Components\Data\Projects       projects(array $options = [])
- * @method static Components\Data\ProjectDetails projectDetails(array $options = [])
- * @method static Components\Data\Outlook        outlook(array $options = [])
- * @method static Components\Data\ForumThread    forumThread(array $options = [])
- * @method static Components\Data\BlogArticle    blogArticle(array $options = [])
- * @method static Components\Data\Roles          roles(array $options = [])
- * @method static Components\Data\InvoiceCreate  invoiceCreate(array $options = [])
- * @method static Components\Data\TeamMember     teamMember(array $options = [])
- * @method static Components\Data\Testimonial    testimonial(array $options = [])
- * @method static Components\Data\TodoList       todoList(array $options = [])
- * @method static Components\Data\IssueTracker   issueTracker(array $options = [])
- * @method static Components\Data\VoteList       voteList(array $options = [])
- * @method static Components\Data\MetricCard     metricCard(array $options = [])
- * @method static Components\Data\Terms          terms(array $options = [])
- * @method static Components\Data\ContactCard    contactCard(array $options = [])
- * @method static Components\Data\CompanyCard    companyCard(array $options = [])
- * @method static Components\Data\Clients         clients(array $options = [])
- * @method static Components\Data\Sellers         sellers(array $options = [])
- * @method static Components\Data\ReviewList      reviewList(array $options = [])
- * @method static Components\Data\ProjectTeamBoard projectTeamBoard(array $options = [])
- * @method static Components\Data\EmailApp       emailApp(array $options = [])
- * @method static Components\Data\ChatApp        chatApp(array $options = [])
- * @method static Components\Data\ProfilePage    profilePage(array $options = [])
- * @method static Components\Data\InvoiceDetail  invoiceDetail(array $options = [])
- * @method static Components\Data\Companies      companies(array $options = [])
- * @method static Components\Data\ProductCategories productCategories(array $options = [])
- * @method static Components\Data\ProductAdd     productAdd(array $options = [])
- * @method static Components\Data\SellerDetails  sellerDetails(array $options = [])
- * @method static Components\Data\Article        article(array $options = [])
- * @method static Components\Data\ProjectActivity projectActivity(array $options = [])
- * @method static Components\Data\ShoppingCart   shoppingCart(array $options = [])
- * @method static Components\Data\Checkout       checkout(array $options = [])
- * @method static Components\Data\Marketplace    marketplace(array $options = [])
- * @method static Components\Data\AccountSettings accountSettings(array $options = [])
- * @method static Components\Data\Sitemap        sitemap(array $options = [])
- * @method static Components\Data\PrivacyPolicy  privacyPolicy(array $options = [])
- * @method static Components\Data\AppManage      appManage(array $options = [])
- * @method static Components\Data\Warehouse      warehouse(array $options = [])
- * @method static Components\Data\Refunds        refunds(array $options = [])
- * @method static Components\Data\Sales           sales(array $options = [])
- * @method static Components\Data\PurchasedOrders purchasedOrders(array $options = [])
- * @method static Components\Data\Attributes     attributes(array $options = [])
- * @method static Components\Data\EcommerceSettings ecommerceSettings(array $options = [])
- * @method static Components\Data\ProductsGrid   productsGrid(array $options = [])
- * @method static Components\Data\ProductViews   productViews(array $options = [])
- * @method static Components\Data\AnalyticsDashboard analyticsDashboard(array $options = [])
- * @method static Components\UI\ColorPalette    colorPalette(array $options = [])
- * @method static Components\UI\IconSet         iconSet(array $options = [])
- * @method static Components\UI\VideoEmbed      videoEmbed(array $options = [])
- * @method static Components\Table\TablesCustom tablesCustom(array $options = [])
- * @method static Components\Misc\VideoPlayer    videoPlayer(array $options = [])
- * @method static Components\Misc\I18n          i18n(array $options = [])
- * @method static Components\Misc\PinBoard       pinBoard(array $options = [])
- * @method static Components\Misc\Masonry        masonry(array $options = [])
- * @method static Components\Layout\Landing      landing(array $options = [])
- * @method static Components\Data\EcommerceDashboard ecommerceDashboard(array $options = [])
- * @method static Components\Data\WidgetsDashboard widgetsDashboard(array $options = [])
- * @method static Components\Data\ModuleNav      moduleNav(array $options = [])
- * @method static Components\Data\ModuleGrid     moduleGrid(array $options = [])
- * @method static Components\Data\DashboardGrid   dashboardGrid(array $options = [])
- * @method static Components\Data\SettingsCenter  settingsCenter(array $options = [])
- * @method static Components\Data\ReportPage      reportPage(array $options = [])
- * @method static Components\Data\CartSummary      cartSummary(array $options = [])
- * @method static Components\Data\ChatConversationPanel chatConversationPanel(array $options = [])
- * @method static Components\Data\ChatMessageBubble chatMessageBubble(array $options = [])
- * @method static Components\Data\FeatureComparisonTable featureComparisonTable(array $options = [])
- * @method static Components\Data\FilterSidebar   filterSidebar(array $options = [])
- * @method static Components\Data\OrderTrackingTimeline orderTrackingTimeline(array $options = [])
- * @method static Components\Data\SearchResultsRich searchResultsRich(array $options = [])
- * @method static Components\Data\StatMiniSparkline statMiniSparkline(array $options = [])
- * @method static Components\Data\SocialFeed      socialFeed(array $options = [])
- * @method static Components\Data\FaqAccordion    faqAccordion(array $options = [])
- * @method static Components\Data\ContactList     contactList(array $options = [])
- * @method static Components\Data\UserProfile     userProfile(array $options = [])
- * @method static Components\Data\InvoiceView     invoiceView(array $options = [])
- * @method static Components\Form\FormElements   formElements(array $options = [])
- * @method static Components\Form\FormLayout     formLayout(array $options = [])
- * @method static Components\Form\FormOtherPlugin formOtherPlugin(array $options = [])
- * @method static Components\Form\FormValidation formValidation(array $options = [])
- * @method static Components\UI\CommandPalette     commandPalette(array $options = [])
- * @method static Components\UI\NotificationCenter notificationCenter(array $options = [])
- * @method static Components\UI\DropzoneUpload     dropzoneUpload(array $options = [])
+ * @method static Components\Layout\Page       page(array $options = [])  // 整页布局容器：组装 head/body/scripts，所有后台页面入口
+ * @method static Components\Layout\Sidenav    sidenav(array $options = [])  // 左侧导航菜单（支持多级子菜单与 Mega Menu）
+ * @method static Components\Layout\Topbar     topbar(array $options = [])  // 顶部导航栏（搜索/通知/用户菜单等）
+ * @method static Components\Layout\TopNav     topNav(array $options = [])  // 水平顶部导航（无限级子菜单 + Mega 面板）
+ * @method static Components\Layout\PageTitle  pageTitle(array $options = [])  // 页面标题区（标题 + 面包屑 + 操作按钮）
+ * @method static Components\Layout\Footer     footer(array $options = [])  // 页面底部版权/链接区
+ * @method static Components\Layout\Customizer customizer(array $options = [])  // 右侧主题定制面板（明暗/配色/布局切换）
+ * @method static Components\Layout\AuthPage   authPage(array $options = [])  // 认证页统一入口（type+layout 控制 9 种语义×3 种布局）
+ * @method static Components\Layout\AuthPage   signIn(array $options = [])  // 登录页（auth sign-in，支持 card/basic/split 布局）
+ * @method static Components\Layout\AuthPage   signUp(array $options = [])  // 注册页（auth sign-up，含密码强度与协议插槽）
+ * @method static Components\Layout\AuthPage   resetPass(array $options = [])  // 找回密码页（auth reset-pass，邮箱输入）
+ * @method static Components\Layout\AuthPage   newPass(array $options = [])  // 设置新密码页（auth new-pass，新密码+确认）
+ * @method static Components\Layout\AuthPage   twoFactor(array $options = [])  // 两步验证页（auth two-factor，验证码输入）
+ * @method static Components\Layout\AuthPage   lockScreen(array $options = [])  // 锁屏页（auth lock-screen，密码解锁）
+ * @method static Components\Layout\AuthPage   deleteAccount(array $options = [])  // 注销账户确认页（auth delete-account）
+ * @method static Components\Layout\AuthPage   successMail(array $options = [])  // 邮件发送成功页（auth success-mail）
+ * @method static Components\Layout\AuthPage   loginPin(array $options = [])  // PIN 码登录页（auth login-pin）
+ * @method static Components\Layout\ErrorPage  errorPage(array $options = [])  // 错误页（400/401/403/404/408/500 + maintenance）
+ * @method static Components\Navigation\Menu   menu(array $options = [])  // 菜单数据组件（导航菜单 DSL，供 sidenav/topnav 使用）
+ * @method static Components\Grid\Row          row(array $options = [])  // 栅格行容器（Bootstrap row 封装）
+ * @method static Components\Grid\Col          col(array $options = [])  // 栅格列（Bootstrap col 封装，支持响应式断点）
+ * @method static Components\UI\Card           card(array $options = [])  // 卡片容器（header/body/footer + 工具按钮 data-action）
+ * @method static Components\UI\StatCard       statCard(array $options = [])  // 指标卡（大数字 + 趋势 + 图标，对标 metrics/widgets）
+ * @method static Components\Table\Table       table(array $options = [])  // 静态表格（基础 HTML 表格封装）
+ * @method static Components\Table\DataTable   dataTable(array $options = [])  // 数据表格（DataTables：服务端/客户端、导出、固定列等）
+ * @method static Components\Form\Form         form(array $options = [])  // 表单容器（统一字段包装与提交处理）
+ * @method static Components\Form\Input        input(array $options = [])  // 文本输入框（含前后缀/帮助/校验态）
+ * @method static Components\Form\Textarea     textarea(array $options = [])  // 多行文本域
+ * @method static Components\Form\Select       select(array $options = [])  // 下拉选择框（原生/select2/tom-select）
+ * @method static Components\Form\Check        check(array $options = [])  // 多选/单选框（check/radio 统一封装）
+ * @method static Components\Form\Slider       slider(array $options = [])  // 滑块/范围选择器（ion-rangeSlider/noUiSlider）
+ * @method static Components\Form\DateRangePicker dateRange(array $options = [])  // 日期范围选择器（daterangepicker）
+ * @method static Components\Form\DateRangePicker dateRangePicker(array $options = [])  // 日期范围选择器（daterangepicker，别名）
+ * @method static Components\Form\DatePicker      datePicker(array $options = [])  // 单日期/日期时间选择器（singleDatePicker 模式）
+ * @method static Components\Form\Editor       editor(array $options = [])  // 富文本编辑器（TinyMCE/Quill 等）
+ * @method static Components\Form\Upload       upload(array $options = [])  // 文件上传（native/dropzone/filepond 驱动）
+ * @method static Components\Form\ColorPicker  colorPicker(array $options = [])  // 颜色选择器（pickr）
+ * @method static Components\Form\PasswordStrength passwordStrength(array $options = [])  // 密码强度计（实时弱/中/强提示）
+ * @method static Components\Form\Captcha      captcha(array $options = [])  // 验证码（image/math/slide 三种模式）
+ * @method static Components\Chart\ApexChart   apexChart(array $options = [])  // ApexCharts 图表（折线/柱/饼/雷达等）
+ * @method static Components\Chart\ApexTree    apexTree(array $options = [])  // ApexCharts 树形图
+ * @method static Components\Chart\ApexSankey  apexSankey(array $options = [])  // ApexCharts 桑基图（流量关系）
+ * @method static Components\Chart\EChart      echart(array $options = [])  // ECharts 图表（通用可视化）
+ * @method static Components\Chart\VectorMap   vectorMap(array $options = [])  // 矢量地图（jsVectorMap）
+ * @method static Components\Chart\GoogleMap   googleMap(array $options = [])  // Google 地图
+ * @method static Components\Chart\LeafletMap   leafletMap(array $options = [])  // Leaflet 地图（支持离线瓦片）
+ * @method static Components\UI\Alert          alert(array $options = [])  // 警告提示条（variant/可关闭/dismiss）
+ * @method static Components\UI\Badge          badge(array $options = [])  // 徽章标签（状态/数量标记）
+ * @method static Components\UI\Button         button(array $options = [])  // 按钮（variant/size/loading/icon）
+ * @method static Components\UI\Dropdown       dropdown(array $options = [])  // 下拉菜单（Bootstrap dropdown 封装）
+ * @method static Components\UI\Modal          modal(array $options = [])  // 模态框（居中/尺寸/ajax 加载）
+ * @method static Components\UI\Offcanvas      offcanvas(array $options = [])  // 抽屉面板（侧滑浮层）
+ * @method static Components\UI\Tabs           tabs(array $options = [])  // 选项卡（支持上下/左右布局）
+ * @method static Components\UI\Accordion      accordion(array $options = [])  // 手风琴折叠面板
+ * @method static Components\UI\Progress       progress(array $options = [])  // 进度条（variant/条纹/高度）
+ * @method static Components\UI\Spinner        spinner(array $options = [])  // 加载旋转指示器（border/grow 变体）
+ * @method static Components\UI\Pagination     pagination(array $options = [])  // 分页器（页码/上一页/下一页）
+ * @method static Components\UI\ListGroup      listGroup(array $options = [])  // 列表组（卡片式条目列表）
+ * @method static Components\UI\Avatar         avatar(array $options = [])  // 头像（图片/文字/图标/状态点）
+ * @method static Components\UI\AvatarGroup    avatarGroup(array $options = [])  // 头像组（重叠堆叠展示多人）
+ * @method static Components\UI\Callout        callout(array $options = [])  // 强调提示块（左侧色条，variant 语义）
+ * @method static Components\UI\Divider        divider(array $options = [])  // 分割线（文本/图标居中分割）
+ * @method static Components\UI\Kbd            kbd(array $options = [])  // 键盘按键标记（<kbd> 样式）
+ * @method static Components\UI\Media          media(array $options = [])  // 媒体对象（左图右文列表项）
+ * @method static Components\UI\Skeleton       skeleton(array $options = [])  // 骨架屏占位（加载占位动画）
+ * @method static Components\UI\Icon           icon(array $options = [])  // 图标（Tabler 字体图标封装）
+ * @method static Components\UI\Toast          toast(array $options = [])  // 轻提示（右上角自动消失吐司）
+ * @method static Components\UI\Timeline       timeline(array $options = [])  // 时间线（纵向/横向事件流）
+ * @method static Components\UI\Carousel       carousel(array $options = [])  // 轮播图（多图滑动，object-fit 封面）
+ * @method static Components\UI\Breadcrumb     breadcrumb(array $options = [])  // 面包屑导航
+ * @method static Components\Misc\Calendar     calendar(array $options = [])  // 日历（FullCalendar 事件视图）
+ * @method static Components\Misc\TreeView     treeView(array $options = [])  // 树形视图（可展开节点）
+ * @method static Components\Misc\Nestable     nestable(array $options = [])  // 可拖拽排序列表（嵌套 sortable）
+ * @method static Components\Misc\Lightbox     lightbox(array $options = [])  // 灯箱（点击图片放大预览）
+ * @method static Components\Misc\Tour         tour(array $options = [])  // 新手指引漫游（分步高亮引导）
+ * @method static Components\Misc\ClipboardButton clipboard(array $options = [])  // 剪贴板复制按钮（clipboard.js）
+ * @method static Components\Misc\ClipboardButton clipboardButton(array $options = [])  // 剪贴板复制按钮（别名）
+ * @method static Components\Misc\SweetAlert   sweetAlert(array $options = [])  // SweetAlert2 弹窗（confirm/toast 等）
+ * @method static Components\Misc\Raw          raw(array $options = [])  // 原生 HTML 透传（不包裹任何结构的原样输出组件）
+ * @method static Components\Misc\Tinycon      tinycon(array $options = [])  // 动态 favicon 角标（未读消息数）
+ * @method static Components\Misc\IdleTimer    idleTimer(array $options = [])  // 空闲计时器（用户无操作超时处理）
+ * @method static Components\Misc\Animate      animate(array $options = [])  // 入场动画（滚动触发元素动画）
+ * @method static Components\Misc\PdfViewer    pdfViewer(array $options = [])  // PDF 预览（pdf.js 内嵌查看）
+ * @method static Components\Misc\TextDiff     textDiff(array $options = [])  // 文本差异对比（merge-diff 高亮）
+ * @method static Components\Layout\ComingSoon  comingSoon(array $options = [])  // 即将上线页（倒计时 + 订阅）
+ * @method static Components\Layout\Maintenance maintenance(array $options = [])  // 系统维护页（503 风格）
+ * @method static Components\Layout\EmptyState  emptyState(array $options = [])  // 空状态页（无数据占位插画+文案）
+ * //method static Components\Layout\LockScreen  lockScreen(array $options = [])  // 锁屏页（auth lock-screen，密码解锁）
+ * @method static Components\Layout\AccountSettingsPanel accountSettingsPanel(array $options = [])  // 账户设置面板（头像/密码/通知等卡片组）
+ * @method static Components\Form\Tags          tags(array $options = [])  // 标签输入（Tagify 多标签）
+ * @method static Components\Form\MaskedInput   maskedInput(array $options = [])  // 输入掩码（电话/日期格式约束）
+ * @method static Components\Form\Wizard        wizard(array $options = [])  // 向导（多步表单分步导航）
+ * @method static Components\UI\Tooltip         tooltip(array $options = [])  // 文字提示气泡（hover 触发）
+ * @method static Components\UI\Popover         popover(array $options = [])  // 弹出框（hover/click 富内容）
+ * @method static Components\UI\Placeholder     placeholder(array $options = [])  // 占位符块（Bootstrap placeholder 闪烁）
+ * @method static Components\UI\Collapse        collapse(array $options = [])  // 折叠面板（单/多展开）
+ * @method static Components\UI\Scrollspy       scrollspy(array $options = [])  // 滚动监听（导航高亮当前区块）
+ * @method static Components\UI\Ratio           ratio(array $options = [])  // 固定宽高比容器（视频/嵌入比例）
+ * @method static Components\UI\Rating          rating(array $options = [])  // 评分（星星/点赞，只读/可交互）
+ * @method static Components\UI\Ribbon          ribbon(array $options = [])  // 缎带角标（卡片右上角标签）
+ * @method static Components\UI\Chip            chip(array $options = [])  // 筹码标签（可删除的紧凑标签）
+ * @method static Components\UI\Stepper         stepper(array $options = [])  // 步骤条（水平步骤指示器，向导导航）
+ * @method static Components\UI\DescriptionList descriptionList(array $options = [])  // 描述列表（术语/定义键值对）
+ * @method static Components\UI\Toggle        switch(array $options = [])  // 开关切换（Toggle，PHP 保留字故类名 Toggle）
+ * @method static Components\UI\CodeBlock     codeBlock(array $options = [])  // 代码块（语法高亮 + 复制按钮）
+ * @method static Components\UI\EmptyState    empty(array $options = [])  // 空状态组件（别名，对应 EmptyState）
+ * @method static Components\UI\Toolbar       toolbar(array $options = [])  // 工具栏容器（左右分栏操作区）
+ * @method static Components\UI\SearchBox     searchBox(array $options = [])  // 搜索框（输入+按钮/图标）
+ * @method static Components\UI\LoadingButton loadingButton(array $options = [])  // 加载按钮（点击后显示 spinner）
+ * @method static Components\UI\Countdown     countdown(array $options = [])  // 倒计时（数字翻牌到零）
+ * @method static Components\UI\CountUp       countUp(array $options = [])  // 数字滚动递增动画
+ * @method static Components\UI\BackToTop     backToTop(array $options = [])  // 回到顶部悬浮按钮
+ * @method static Components\Data\PricingCard   pricingCard(array $options = [])  // 价格方案卡（推荐标记/功能列表/按钮）
+ * @method static Components\Data\Faq           faq(array $options = [])  // 常见问题（问答卡片列表）
+ * @method static Components\Data\ProfileHeader profileHeader(array $options = [])  // 个人资料头部（封面+头像+统计）
+ * @method static Components\Data\ProductCard   productCard(array $options = [])  // 商品卡（图/标题/价格/角标）
+ * @method static Components\Data\Kanban        kanban(array $options = [])  // 看板（拖拽列/卡片，项目与工单管理）
+ * @method static Components\Data\ChatBox       chatBox(array $options = [])  // 聊天框（消息气泡容器）
+ * @method static Components\Data\InvoiceTable  invoiceTable(array $options = [])  // 发票明细表格
+ * @method static Components\Data\MailList      mailList(array $options = [])  // 邮件列表（收件箱条目）
+ * @method static Components\Data\FileManager   fileManager(array $options = [])  // 文件管理器（目录/文件网格）
+ * @method static Components\Data\Widget        widget(array $options = [])  // 通用小部件卡（标题+内容+数值）
+ * @method static Components\Data\ActivityFeed  activityFeed(array $options = [])  // 活动动态流（时间线式操作记录）
+ * @method static Components\Data\Gallery       gallery(array $options = [])  // 图片画廊（网格+灯箱）
+ * @method static Components\Data\BlogList      blogList(array $options = [])  // 博客列表（文章卡片流）
+ * @method static Components\Data\InvoiceList   invoiceList(array $options = [])  // 发票列表（列表+状态+金额）
+ * @method static Components\Data\SearchResults  searchResults(array $options = [])  // 搜索结果列表（标题+摘要+链接）
+ * @method static Components\Data\PermissionMatrix permissionMatrix(array $options = [])  // 权限矩阵（角色×权限勾选表）
+ * @method static Components\Data\ApiKeys       apiKeys(array $options = [])  // API 密钥管理（密钥列表+创建/撤销）
+ * @method static Components\Data\CommentThread commentThread(array $options = [])  // 评论线程（嵌套回复列表）
+ * @method static Components\Data\EmailCompose  emailCompose(array $options = [])  // 邮件撰写（收件人/主题/正文/附件）
+ * @method static Components\Data\Customers      customers(array $options = [])  // 客户列表（电商客户管理）
+ * @method static Components\Data\Orders         orders(array $options = [])  // 订单列表（电商订单管理）
+ * @method static Components\Data\TaskList        taskList(array $options = [])  // 任务清单（勾选/优先级）
+ * @method static Components\Data\Deals           deals(array $options = [])  // 交易/商机列表（CRM 看板式）
+ * @method static Components\Data\OrderDetails   orderDetails(array $options = [])  // 订单详情（商品/收货/金额）
+ * @method static Components\Data\ProductDetails productDetails(array $options = [])  // 商品详情（图集/规格/评价）
+ * @method static Components\Data\Projects       projects(array $options = [])  // 项目列表（卡片/列表视图）
+ * @method static Components\Data\ProjectDetails projectDetails(array $options = [])  // 项目详情（概览/进度/成员）
+ * @method static Components\Data\Outlook        outlook(array $options = [])  // Outlook 风格邮件客户端
+ * @method static Components\Data\ForumThread    forumThread(array $options = [])  // 论坛帖子（主题+回复线程）
+ * @method static Components\Data\BlogArticle    blogArticle(array $options = [])  // 博客文章详情（正文+作者+评论）
+ * @method static Components\Data\Roles          roles(array $options = [])  // 角色管理（角色列表+成员）
+ * @method static Components\Data\InvoiceCreate  invoiceCreate(array $options = [])  // 发票创建表单
+ * @method static Components\Data\TeamMember     teamMember(array $options = [])  // 团队成员卡（头像/职位/操作）
+ * @method static Components\Data\Testimonial    testimonial(array $options = [])  // 用户证言（头像+评语+星标）
+ * @method static Components\Data\TodoList       todoList(array $options = [])  // 待办列表（添加/完成）
+ * @method static Components\Data\IssueTracker   issueTracker(array $options = [])  // 问题追踪（看板式缺陷管理）
+ * @method static Components\Data\VoteList       voteList(array $options = [])  // 投票列表（选项+进度条）
+ * @method static Components\Data\MetricCard     metricCard(array $options = [])  // 迷你指标卡（数字+图标+同比）
+ * @method static Components\Data\Terms          terms(array $options = [])  // 服务条款页（长文本条款）
+ * @method static Components\Data\ContactCard    contactCard(array $options = [])  // 联系人卡（头像/电话/邮件）
+ * @method static Components\Data\CompanyCard    companyCard(array $options = [])  // 公司卡（logo/简介/链接）
+ * @method static Components\Data\Clients         clients(array $options = [])  // 客户/客户端列表（apps-clients）
+ * @method static Components\Data\Sellers         sellers(array $options = [])  // 卖家列表（电商卖家管理）
+ * @method static Components\Data\ReviewList      reviewList(array $options = [])  // 评价列表（星级+内容+晒图）
+ * @method static Components\Data\ProjectTeamBoard projectTeamBoard(array $options = [])  // 项目团队看板（成员任务分配）
+ * @method static Components\Data\EmailApp       emailApp(array $options = [])  // 邮件应用整页（列表+阅读+撰写）
+ * @method static Components\Data\ChatApp        chatApp(array $options = [])  // 聊天应用整页（会话+消息）
+ * @method static Components\Data\ProfilePage    profilePage(array $options = [])  // 个人资料页（头部+标签页+动态）
+ * @method static Components\Data\InvoiceDetail  invoiceDetail(array $options = [])  // 发票详情整页
+ * @method static Components\Data\Companies      companies(array $options = [])  // 公司列表（apps-companies）
+ * @method static Components\Data\ProductCategories productCategories(array $options = [])  // 商品分类管理（树形分类）
+ * @method static Components\Data\ProductAdd     productAdd(array $options = [])  // 商品添加表单
+ * @method static Components\Data\SellerDetails  sellerDetails(array $options = [])  // 卖家详情（店铺/商品/评价）
+ * @method static Components\Data\Article        article(array $options = [])  // 文章详情（通用内容页）
+ * @method static Components\Data\ProjectActivity projectActivity(array $options = [])  // 项目活动流（动态时间线）
+ * @method static Components\Data\ShoppingCart   shoppingCart(array $options = [])  // 购物车（商品+数量+合计）
+ * @method static Components\Data\Checkout       checkout(array $options = [])  // 结算页（地址/支付/提交）
+ * @method static Components\Data\Marketplace    marketplace(array $options = [])  // 应用市场（插件/模板网格）
+ * @method static Components\Data\AccountSettings accountSettings(array $options = [])  // 账户设置整页（tabs+表单）
+ * @method static Components\Data\Sitemap        sitemap(array $options = [])  // 站点地图（层级链接导航）
+ * @method static Components\Data\PrivacyPolicy  privacyPolicy(array $options = [])  // 隐私政策页（长文本）
+ * @method static Components\Data\AppManage      appManage(array $options = [])  // 应用管理列表（apps-manage）
+ * @method static Components\Data\Warehouse      warehouse(array $options = [])  // 仓库管理（库存/出入库）
+ * @method static Components\Data\Refunds        refunds(array $options = [])  // 退款管理（退款单列表）
+ * @method static Components\Data\Sales           sales(array $options = [])  // 销售数据（图表+列表）
+ * @method static Components\Data\PurchasedOrders purchasedOrders(array $options = [])  // 已购订单（买家视图）
+ * @method static Components\Data\Attributes     attributes(array $options = [])  // 商品属性管理（规格键值）
+ * @method static Components\Data\EcommerceSettings ecommerceSettings(array $options = [])  // 电商设置（通用配置表单）
+ * @method static Components\Data\ProductsGrid   productsGrid(array $options = [])  // 商品网格（卡片墙）
+ * @method static Components\Data\ProductViews   productViews(array $options = [])  // 商品浏览统计（热度图表）
+ * @method static Components\Data\AnalyticsDashboard analyticsDashboard(array $options = [])  // 数据分析仪表盘（多图表汇总）
+ * @method static Components\UI\ColorPalette    colorPalette(array $options = [])  // 配色方案展示（色块+HEX 值）
+ * @method static Components\UI\Typography       typography(array $options = [])  // 排版展示（display/标题/文本工具类示例）
+ * @method static Components\UI\Utilities        utilities(array $options = [])  // Bootstrap 工具类展示（间距/弹性/边框等）
+ * @method static Components\UI\IconSet         iconSet(array $options = [])  // 图标集展示（Tabler 图标网格）
+ * @method static Components\UI\VideoEmbed      videoEmbed(array $options = [])  // 视频嵌入（响应式比例容器）
+ * @method static Components\Table\TablesCustom tablesCustom(array $options = [])  // 自定义表格（可编辑/带控件的复杂表）
+ * @method static Components\Misc\VideoPlayer    videoPlayer(array $options = [])  // 视频播放器（plyr 等）
+ * @method static Components\Misc\I18n          i18n(array $options = [])  // 国际化（多语言切换演示）
+ * @method static Components\Misc\PinBoard       pinBoard(array $options = [])  // 钉板（瀑布流便签卡片）
+ * @method static Components\Misc\Masonry        masonry(array $options = [])  // 瀑布流布局（错落卡片墙）
+ * @method static Components\Layout\Landing      landing(array $options = [])  // 落地页/营销首页（英雄区+特性+CTA）
+ * @method static Components\Data\EcommerceDashboard ecommerceDashboard(array $options = [])  // 电商仪表盘（销售/订单/库存概览）
+ * @method static Components\Data\WidgetsDashboard widgetsDashboard(array $options = [])  // 小部件仪表盘（多 widget 汇总）
+ * @method static Components\Data\ModuleNav      moduleNav(array $options = [])  // 模块导航（企业级模块菜单）
+ * @method static Components\Data\ModuleGrid     moduleGrid(array $options = [])  // 模块网格（功能模块卡片墙）
+ * @method static Components\Data\DashboardGrid   dashboardGrid(array $options = [])  // 仪表盘网格（可拖拽 widget 布局）
+ * @method static Components\Data\SettingsCenter  settingsCenter(array $options = [])  // 设置中心（分组设置入口）
+ * @method static Components\Data\ReportPage      reportPage(array $options = [])  // 报表页（数据报表展示）
+ * @method static Components\Data\CartSummary      cartSummary(array $options = [])  // 购物车摘要（结算侧栏小计）
+ * @method static Components\Data\ChatConversationPanel chatConversationPanel(array $options = [])  // 聊天会话面板（单会话消息区）
+ * @method static Components\Data\ChatMessageBubble chatMessageBubble(array $options = [])  // 聊天气泡（单条消息）
+ * @method static Components\Data\FeatureComparisonTable featureComparisonTable(array $options = [])  // 功能对比表（方案×特性矩阵）
+ * @method static Components\Data\FilterSidebar   filterSidebar(array $options = [])  // 筛选侧栏（分类/价格/标签过滤）
+ * @method static Components\Data\OrderTrackingTimeline orderTrackingTimeline(array $options = [])  // 订单追踪时间线（物流状态流）
+ * @method static Components\Data\SearchResultsRich searchResultsRich(array $options = [])  // 富搜索结果（分组+缩略图）
+ * @method static Components\Data\StatMiniSparkline statMiniSparkline(array $options = [])  // 迷你指标+火花线（数字+趋势迷你图）
+ * @method static Components\Data\SocialFeed      socialFeed(array $options = [])  // 社交动态流（朋友圈式信息流）
+ * @method static Components\Data\FaqAccordion    faqAccordion(array $options = [])  // FAQ 手风琴（折叠问答）
+ * @method static Components\Data\ContactList     contactList(array $options = [])  // 联系人列表（通讯录）
+ * @method static Components\Data\UserProfile     userProfile(array $options = [])  // 用户资料卡（详情展示）
+ * @method static Components\Data\InvoiceView     invoiceView(array $options = [])  // 发票查看（打印友好视图）
+ * @method static Components\Form\FormElements   formElements(array $options = [])  // 表单元素集合（所有输入控件演示）
+ * @method static Components\Form\FormLayout     formLayout(array $options = [])  // 表单布局（水平/垂直/网格排布）
+ * @method static Components\Form\FormOtherPlugin formOtherPlugin(array $options = [])  // 其它表单插件（掩码/校验等组合）
+ * @method static Components\Form\FormValidation formValidation(array $options = [])  // 表单校验（实时反馈示例）
+ * @method static Components\UI\CommandPalette     commandPalette(array $options = [])  // 命令面板（⌘K 快捷命令）
+ * @method static Components\UI\NotificationCenter notificationCenter(array $options = [])  // 通知中心（消息抽屉）
+ * @method static Components\UI\DropzoneUpload     dropzoneUpload(array $options = [])  // 拖拽上传区（Dropzone 自定义版）
  */
 final class XfAdmin
 {
@@ -254,6 +268,16 @@ final class XfAdmin
         'footer'      => Components\Layout\Footer::class,
         'customizer'  => Components\Layout\Customizer::class,
         'authPage'    => Components\Layout\AuthPage::class,
+        // auth 系列语义便捷别名（均指向 AuthPage，按 type 区分）
+        'signIn'      => Components\Layout\AuthPage::class,
+        'signUp'      => Components\Layout\AuthPage::class,
+        'resetPass'   => Components\Layout\AuthPage::class,
+        'newPass'     => Components\Layout\AuthPage::class,
+        'twoFactor'   => Components\Layout\AuthPage::class,
+        // 'lockScreen'  => Components\Layout\AuthPage::class,
+        'deleteAccount' => Components\Layout\AuthPage::class,
+        'successMail' => Components\Layout\AuthPage::class,
+        'loginPin'    => Components\Layout\AuthPage::class,
         'errorPage'   => Components\Layout\ErrorPage::class,
         'comingSoon'  => Components\Layout\ComingSoon::class,
         'maintenance' => Components\Layout\Maintenance::class,
@@ -281,6 +305,7 @@ final class XfAdmin
         'slider'      => Components\Form\Slider::class,
         'dateRange'   => Components\Form\DateRangePicker::class,
         'dateRangePicker' => Components\Form\DateRangePicker::class,
+        'datePicker'  => Components\Form\DatePicker::class,
         'editor'      => Components\Form\Editor::class,
         'upload'      => Components\Form\Upload::class,
         'colorPicker' => Components\Form\ColorPicker::class,
@@ -288,6 +313,7 @@ final class XfAdmin
         'maskedInput' => Components\Form\MaskedInput::class,
         'wizard'      => Components\Form\Wizard::class,
         'passwordStrength' => Components\Form\PasswordStrength::class,
+        'captcha'     => Components\Form\Captcha::class,
         'formElements' => Components\Form\FormElements::class,
         'formLayout' => Components\Form\FormLayout::class,
         'formOtherPlugin' => Components\Form\FormOtherPlugin::class,
@@ -346,6 +372,8 @@ final class XfAdmin
         'toolbar'      => Components\UI\Toolbar::class,
         'searchBox'    => Components\UI\SearchBox::class,
         'colorPalette' => Components\UI\ColorPalette::class,
+        'typography'   => Components\UI\Typography::class,
+        'utilities'    => Components\UI\Utilities::class,
         'iconSet'      => Components\UI\IconSet::class,
         'videoEmbed'   => Components\UI\VideoEmbed::class,
         // 新增：对标 INSPINIA 缺失的业务组件
@@ -501,7 +529,6 @@ final class XfAdmin
                 Assets::instance()->setVersion($config['version'] ?: null);
             }
         }
-
         return self::$config;
     }
 
@@ -529,13 +556,25 @@ final class XfAdmin
      *
      * @return string
      */
-    private static ?\Closure $csrfResolver = null;
+    private static ?Closure $csrfResolver = null;
 
-    public static function setCsrfResolver(\Closure $resolver): void
+    /**
+     * set Csrf Resolver（public静态方法）
+     *
+     * @param Closure $resolver resolver
+     *
+     * @return void result
+     */
+    public static function setCsrfResolver(Closure $resolver): void
     {
         self::$csrfResolver = $resolver;
     }
 
+    /**
+     * csrf Token（public静态方法）
+     *
+     * @return string result
+     */
     public static function csrfToken(): string
     {
         if (self::$csrfResolver !== null) {
@@ -572,7 +611,6 @@ final class XfAdmin
         if ($class === null) {
             throw new InvalidArgumentException("XfAdmin: 未知组件 [{$alias}]，可用组件: " . implode(', ', array_keys(self::$components)));
         }
-
         return $class::make($options);
     }
 
@@ -755,8 +793,34 @@ final class XfAdmin
      *
      * @throws InvalidArgumentException 别名未注册时抛出
      */
+    /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
+    private const AUTH_TYPE_ALIASES = [
+        'signIn'       => 'sign-in',
+        'signUp'       => 'sign-up',
+        'resetPass'    => 'reset-pass',
+        'newPass'      => 'new-pass',
+        'twoFactor'    => 'two-factor',
+        'lockScreen'   => 'lock-screen',
+        'deleteAccount'=> 'delete-account',
+        'successMail'  => 'success-mail',
+        'loginPin'     => 'login-pin',
+    ];
+
+    /**
+     * call Static（public静态方法）
+     *
+     * @param string $name name
+     * @param array $arguments arguments
+     *
+     * @return Component result
+     */
     public static function __callStatic(string $name, array $arguments): Component
     {
-        return self::component($name, $arguments[0] ?? []);
+        $options = $arguments[0] ?? [];
+        // auth 语义便捷别名：未显式指定 type 时自动注入默认 type
+        if (isset(self::AUTH_TYPE_ALIASES[$name]) && ! isset($options['type'])) {
+            $options['type'] = self::AUTH_TYPE_ALIASES[$name];
+        }
+        return self::component($name, $options);
     }
 }

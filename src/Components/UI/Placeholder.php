@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Placeholder extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class Placeholder extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $wrapClass = Html::cls([
@@ -51,7 +61,6 @@ class Placeholder extends Component
                 $html .= '<p class="mb-2"><span class="placeholder col-' . $col . $sizeCls . $variantCls . '"></span></p>';
             }
         }
-
         return $html . '</div>';
     }
 }

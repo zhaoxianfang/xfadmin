@@ -18,6 +18,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Countdown extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,11 @@ class Countdown extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $target = $this->get('target');
@@ -42,7 +52,6 @@ class Countdown extends Component
         } else {
             $target = (string) $target;
         }
-
         $cfg = ['target' => $target, 'labels' => $labels, 'expired' => (string) $this->get('expired')];
 
         $html = '<div' . $this->attrs(['class' => 'xf-countdown']) . '>';

@@ -21,6 +21,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class SearchResultsRich extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class SearchResultsRich extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $query  = $this->get('query');
@@ -38,7 +48,6 @@ class SearchResultsRich extends Component
         foreach ($groups as $g) {
             $total += count((array) ($g['items'] ?? []));
         }
-
         $html = '<div class="xf-search-results">';
         $html .= '<h5 class="mb-3">“' . $this->e($query) . '” 的搜索结果 <span class="text-muted">(' . $total . ')</span></h5>';
 
@@ -46,7 +55,6 @@ class SearchResultsRich extends Component
             $html .= '<div class="text-center text-muted py-5"><i class="ti ti-search fs-1 d-block mb-2"></i>未找到与 “' . $this->e($query) . '” 相关的结果</div>';
             return $html . '</div>';
         }
-
         foreach ($groups as $g) {
             $g = (array) $g;
             $items = (array) ($g['items'] ?? []);

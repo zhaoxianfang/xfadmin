@@ -19,6 +19,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ComingSoon extends AuthPage
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return array_replace(parent::defaults(), [
@@ -31,6 +36,11 @@ class ComingSoon extends AuthPage
         ]);
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->uid('countdown');
@@ -52,7 +62,6 @@ class ComingSoon extends AuthPage
             }
             $content .= '</div>';
         }
-
         if ($this->get('subscribe')) {
             $content .= '<form class="d-flex gap-2 justify-content-center mt-3" style="max-width:420px;margin:0 auto;">'
                 . '<input type="email" class="form-control" placeholder="输入邮箱订阅上线通知">'
@@ -64,7 +73,6 @@ class ComingSoon extends AuthPage
         if (! $this->get('title')) {
             $this->set('title', $this->get('heading'));
         }
-
         return parent::html();
     }
 }

@@ -22,18 +22,27 @@ use zxf\XfAdmin\Components\Component;
  */
 class InvoiceCreate extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['invoice' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $inv = (array) $this->get('invoice', []);
         if (empty($inv)) {
             return '';
         }
-
         $html = '<div class="card"><div class="card-body">';
 
         // 头部
@@ -80,10 +89,16 @@ class InvoiceCreate extends Component
             $html .= '<div class="row g-3 mt-1"><div class="col-md-6"><label class="form-label small text-muted">备注</label><textarea class="form-control" rows="2">' . $this->e($inv['notes'] ?? '') . '</textarea></div>'
                 . '<div class="col-md-6"><label class="form-label small text-muted">条款</label><textarea class="form-control" rows="2">' . $this->e($inv['terms'] ?? '') . '</textarea></div></div>';
         }
-
         return $html . '</div></div>';
     }
 
+    /**
+     * money（private实例方法）
+     *
+     * @param float $v v
+     *
+     * @return string result
+     */
     private function money(float $v): string
     {
         return '¥' . number_format($v, 2);

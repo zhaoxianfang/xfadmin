@@ -14,6 +14,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Footer extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -22,6 +27,11 @@ class Footer extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $text  = $this->get('text') ?? XfAdmin::setting('footer.text');
@@ -31,7 +41,6 @@ class Footer extends Component
             $brand = XfAdmin::setting('brand.name', 'XfAdmin');
             $text  = '© ' . date('Y') . ' ' . $brand;
         }
-
         $html  = '<footer' . $this->attrs(['class' => 'footer']) . '><div class="container-fluid"><div class="row">';
         $html .= '<div class="col-md-6 text-center text-md-start">' . $this->raw($text) . '</div>';
         $html .= '<div class="col-md-6"><div class="text-md-end d-none d-md-block">' . $this->raw($right) . '</div></div>';

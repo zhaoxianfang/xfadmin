@@ -21,18 +21,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ForumThread extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['thread' => [], 'posts' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $thread = (array) $this->get('thread', []);
         if (empty($thread)) {
             return '';
         }
-
         $html = '<div class="card mb-3"><div class="card-body">';
         $html .= '<div class="mb-2"><a href="#" class="badge bg-primary-subtle text-primary">' . $this->e($thread['category'] ?? '') . '</a></div>';
         $html .= '<h3 class="mb-2">' . $this->e($thread['title'] ?? '') . '</h3>';
@@ -90,7 +99,6 @@ class ForumThread extends Component
                 $html .= '</div></div></div></div>';
             }
         }
-
         // 回复框
         $html .= '<div class="card"><div class="card-body"><h6 class="mb-2">发表回复</h6>'
             . '<textarea class="form-control mb-2" rows="3" placeholder="写下你的回答…"></textarea>'

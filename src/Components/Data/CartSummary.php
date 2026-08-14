@@ -22,6 +22,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class CartSummary extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,6 +39,11 @@ class CartSummary extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $cur     = $this->get('currency');
@@ -63,7 +73,6 @@ class CartSummary extends Component
                 . '<input type="text" class="form-control" name="promo_code" placeholder="优惠码">'
                 . '<button class="btn btn-outline-secondary" type="button">应用</button></div>';
         }
-
         $html .= '<button type="button" class="btn btn-' . $variant . ' w-100">' . $this->e($btn['text'] ?? '去结算') . '</button>';
         $html .= '</div></div>';
 

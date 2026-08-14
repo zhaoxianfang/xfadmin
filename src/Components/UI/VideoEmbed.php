@@ -18,6 +18,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class VideoEmbed extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -31,6 +36,11 @@ class VideoEmbed extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $src = (string) $this->get('src', '');

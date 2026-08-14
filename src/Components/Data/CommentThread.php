@@ -24,11 +24,21 @@ use zxf\XfAdmin\XfAdmin;
  */
 class CommentThread extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['items' => [], 'form' => true, 'maxDepth' => 4];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('comments');
@@ -40,7 +50,6 @@ class CommentThread extends Component
                 . '<div class="text-end mt-2"><button class="btn btn-primary btn-sm" type="submit">发表</button></div>'
                 . '</form>';
         }
-
         $html .= '<div class="list-unstyled mb-0">';
         foreach (array_values((array) $this->get('items')) as $c) {
             $html .= $this->renderItem((array) $c, 1);
@@ -78,6 +87,14 @@ class CommentThread extends Component
         return $html;
     }
 
+    /**
+     * render Item（private实例方法）
+     *
+     * @param array $c c
+     * @param int $depth depth
+     *
+     * @return string result
+     */
     private function renderItem(array $c, int $depth): string
     {
         $avatar = $c['avatar'] ?? '';

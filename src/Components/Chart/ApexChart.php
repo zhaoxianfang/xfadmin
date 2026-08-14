@@ -20,6 +20,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ApexChart extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,11 +39,21 @@ class ApexChart extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['apexcharts'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id   = $this->resolveId('xf-apex');
@@ -64,7 +79,6 @@ class ApexChart extends Component
         if ($this->get('colors') !== null) {
             $options['colors'] = $this->get('colors');
         }
-
         $options = array_replace_recursive($options, (array) $this->get('options', []));
 
         return '<div' . $this->attrs([

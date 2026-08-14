@@ -14,6 +14,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ClipboardButton extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -25,11 +30,21 @@ class ClipboardButton extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['clipboard'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $attrs = [
@@ -44,7 +59,6 @@ class ClipboardButton extends Component
         if ($this->get('target') !== null) {
             $attrs['data-clipboard-target'] = $this->get('target');
         }
-
         return '<button' . $this->attrs($attrs) . '><i class="ti ti-copy me-1"></i>' . $this->e($this->get('label')) . '</button>';
     }
 }

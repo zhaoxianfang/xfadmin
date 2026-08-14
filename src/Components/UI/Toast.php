@@ -15,6 +15,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Toast extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class Toast extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $variant = $this->get('variant') !== null ? $this->e($this->get('variant')) : null;

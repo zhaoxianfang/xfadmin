@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Attributes extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -27,6 +32,11 @@ class Attributes extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $attributes = (array) $this->get('attributes', []);
@@ -70,11 +80,9 @@ class Attributes extends Component
                 . '<button class="btn btn-outline-secondary"><i class="ti ti-pencil"></i></button>'
                 . '<button class="btn btn-outline-secondary"><i class="ti ti-trash"></i></button></div></td></tr>';
         }
-
         if (empty($attributes)) {
             $html .= '<tr><td colspan="6" class="text-center text-muted py-4">暂无属性数据</td></tr>';
         }
-
         $html .= '</tbody></table></div></div></div>';
 
         return $html;

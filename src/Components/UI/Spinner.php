@@ -15,6 +15,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Spinner extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -25,11 +30,21 @@ class Spinner extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return $this->get('spinkit') ? ['spinkit'] : [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         if ($this->get('spinkit')) {
@@ -42,10 +57,8 @@ class Spinner extends Component
                 $dotClass = $this->get('spinkit') === 'wave' ? 'sk-' . $name . '-rect' : 'sk-' . $name . '-dot';
                 $inner = str_repeat('<div class="' . $dotClass . '"></div>', $dots);
             }
-
             return '<div' . $this->attrs(['class' => 'sk-' . $name]) . '>' . $inner . '</div>';
         }
-
         $class = Html::cls(
             'spinner-' . $this->enum($this->get('type'), ['border', 'grow'], 'border'),
             'text-' . $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary'),

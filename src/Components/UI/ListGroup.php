@@ -23,6 +23,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class ListGroup extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -33,6 +38,11 @@ class ListGroup extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $class = Html::cls('list-group', [
@@ -48,7 +58,6 @@ class ListGroup extends Component
                 break;
             }
         }
-
         $tag  = $hasLinks ? 'div' : 'ul';
         $html = '<' . $tag . $this->attrs(['class' => $class]) . '>';
 
@@ -67,12 +76,10 @@ class ListGroup extends Component
                 $badge    = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
                 $content .= '<span class="badge ' . $this->e($badge['class'] ?? 'bg-primary') . ' rounded-pill">' . $this->e($badge['text'] ?? '') . '</span>';
             }
-
             $html .= isset($item['url'])
                 ? '<a href="' . $this->e($item['url']) . '" class="' . $cls . '">' . $content . '</a>'
                 : '<li class="' . $cls . '">' . $content . '</li>';
         }
-
         return $html . '</' . $tag . '>';
     }
 }

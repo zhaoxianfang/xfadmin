@@ -21,6 +21,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FaqAccordion extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class FaqAccordion extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
@@ -43,7 +53,6 @@ class FaqAccordion extends Component
 
             return $html;
         }
-
         $html .= '<div class="accordion" id="' . $this->e($id) . '">';
 
         foreach ($items as $i => $it) {
@@ -58,7 +67,6 @@ class FaqAccordion extends Component
             $html .= '<div id="' . $this->e($itemId) . '" class="accordion-collapse collapse' . ($expanded ? ' show' : '') . '" data-bs-parent="#' . $this->e($id) . '"><div class="accordion-body">' . $this->e($a) . '</div></div>';
             $html .= '</div>';
         }
-
         $html .= '</div></div></div>';
 
         return $html;

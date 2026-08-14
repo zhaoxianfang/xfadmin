@@ -21,6 +21,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class StatCard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class StatCard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         // variant 白名单，防止任意类注入

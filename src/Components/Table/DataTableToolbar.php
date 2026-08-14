@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class DataTableToolbar extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,6 +40,11 @@ class DataTableToolbar extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $search = $this->get('search');
@@ -51,7 +61,6 @@ class DataTableToolbar extends Component
                 . '<input type="search" class="form-control" placeholder="' . $this->e($ph) . '" data-xf="dt-search">'
                 . '<i class="ti ti-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i></div></div>';
         }
-
         if ($filters) {
             $html .= '<select class="form-select" style="width:auto" data-xf="dt-filter"><option value="">' . $this->e($filters[0]['label'] ?? '筛选') . '</option>';
             foreach ($filters as $f) {
@@ -59,7 +68,6 @@ class DataTableToolbar extends Component
             }
             $html .= '</select>';
         }
-
         if ($sizes) {
             $html .= '<select class="form-select" style="width:auto" data-xf="dt-pagesize"><option value="">每页</option>';
             foreach ($sizes as $s) {
@@ -67,7 +75,6 @@ class DataTableToolbar extends Component
             }
             $html .= '</select>';
         }
-
         if ($actions) {
             $html .= '<div class="btn-group" role="group">';
             foreach ($actions as $a) {
@@ -78,7 +85,6 @@ class DataTableToolbar extends Component
             }
             $html .= '</div>';
         }
-
         if ($views) {
             $html .= '<div class="btn-group" role="group" data-xf="dt-views">';
             foreach ($views as $v) {
@@ -88,7 +94,6 @@ class DataTableToolbar extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '</div>';
 
         return $html;

@@ -25,6 +25,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Customers extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,13 +40,17 @@ class Customers extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
         if (empty($items)) {
             return '';
         }
-
         $toolbar = '';
         if ($this->get('searchable')) {
             $toolbar = '<div class="row g-2 align-items-center mb-3">'
@@ -51,13 +60,19 @@ class Customers extends Component
                 . '<div class="col-md-6 text-md-end"><button class="btn btn-primary"><i class="ti ti-plus me-1"></i>新增客户</button></div>'
                 . '</div>';
         }
-
         $title = $this->get('title') ? '<h5 class="mb-3">' . $this->e($this->get('title')) . '</h5>' : '';
         $body  = $this->get('view') === 'list' ? $this->renderList($items) : $this->renderGrid($items);
 
         return $toolbar . $title . $body;
     }
 
+    /**
+     * render Grid（private实例方法）
+     *
+     * @param array $items items
+     *
+     * @return string result
+     */
     private function renderGrid(array $items): string
     {
         $html = '<div class="row g-3">';
@@ -76,7 +91,6 @@ class Customers extends Component
             foreach ((array) ($it['tags'] ?? []) as $t) {
                 $tags .= '<span class="badge bg-light text-dark me-1">' . $this->e($t) . '</span>';
             }
-
             $html .= '<div class="col-lg-4 col-md-6">';
             $html .= '<div class="card h-100">';
             $html .= '<div class="card-body">';
@@ -102,16 +116,21 @@ class Customers extends Component
             if ($tags) {
                 $html .= '<div class="mb-3">' . $tags . '</div>';
             }
-
             $html .= '<div class="d-flex justify-content-between align-items-center border-top pt-3">';
             $html .= '<div class="small"><span class="fw-semibold">' . $this->e($it['orders'] ?? 0) . '</span> 订单 · <span class="fw-semibold">' . $this->e($it['spent'] ?? '¥0') . '</span></div>';
             $html .= $this->rowActions();
             $html .= '</div></div></div></div>';
         }
-
         return $html . '</div>';
     }
 
+    /**
+     * render List（private实例方法）
+     *
+     * @param array $items items
+     *
+     * @return string result
+     */
     private function renderList(array $items): string
     {
         $html = '<div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr>'
@@ -134,10 +153,14 @@ class Customers extends Component
             $html .= '<td class="text-end">' . $this->rowActions() . '</td>';
             $html .= '</tr>';
         }
-
         return $html . '</tbody></table></div>';
     }
 
+    /**
+     * row Actions（private实例方法）
+     *
+     * @return string result
+     */
     private function rowActions(): string
     {
         return '<div class="dropdown"><button class="btn btn-sm btn-icon btn-light" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>'

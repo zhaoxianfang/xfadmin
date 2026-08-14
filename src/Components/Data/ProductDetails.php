@@ -25,18 +25,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProductDetails extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['product' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $p = (array) $this->get('product', []);
         if (empty($p)) {
             return '';
         }
-
         $images = (array) ($p['images'] ?? []);
         $main   = $images[0] ?? ($p['image'] ?? '');
         $mainUrl = $main ? \zxf\XfAdmin\XfAdmin::img((string) $main) : '';
@@ -69,7 +78,6 @@ class ProductDetails extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="d-flex align-items-baseline gap-2 mb-3">';
         $html .= '<span class="fs-3 fw-bold text-primary">' . $this->e($p['price'] ?? '') . '</span>';
         if (! empty($p['old_price'])) {
@@ -80,11 +88,9 @@ class ProductDetails extends Component
         if (! empty($p['stock'])) {
             $html .= '<div class="mb-3"><span class="badge bg-success-subtle text-success"><i class="ti ti-circle-check me-1"></i>' . $this->e($p['stock']) . '</span></div>';
         }
-
         if (! empty($p['description'])) {
             $html .= '<p class="text-muted">' . $this->e($p['description']) . '</p>';
         }
-
         // 变体
         foreach ((array) ($p['variants'] ?? []) as $label => $opts) {
             $opts  = (array) $opts;
@@ -99,7 +105,6 @@ class ProductDetails extends Component
             }
             $html .= '</div></div>';
         }
-
         $html .= '<div class="d-flex gap-2 align-items-center mb-3">';
         $html .= '<div class="input-group input-group-sm" style="width:120px"><button class="btn btn-outline-secondary" type="button">-</button><input type="text" class="form-control text-center" value="1"><button class="btn btn-outline-secondary" type="button">+</button></div>';
         $html .= '<button class="btn btn-primary"><i class="ti ti-shopping-cart me-1"></i>加入购物车</button>';
@@ -119,7 +124,6 @@ class ProductDetails extends Component
         if (! empty($p['tabs'])) {
             $html .= $this->tabs((array) $p['tabs']);
         }
-
         // 相关商品
         if (! empty($p['related'])) {
             $html .= '<div class="mt-2"><h5 class="mb-3">相关推荐</h5><div class="row g-3">';
@@ -130,10 +134,16 @@ class ProductDetails extends Component
             }
             $html .= '</div></div>';
         }
-
         return $html;
     }
 
+    /**
+     * stars（private实例方法）
+     *
+     * @param float $rating rating
+     *
+     * @return string result
+     */
     private function stars(float $rating): string
     {
         $html = '<span class="text-warning">';
@@ -146,10 +156,16 @@ class ProductDetails extends Component
                 $html .= '<i class="ti ti-star"></i>';
             }
         }
-
         return $html . '</span>';
     }
 
+    /**
+     * tabs（private实例方法）
+     *
+     * @param array $tabs tabs
+     *
+     * @return string result
+     */
     private function tabs(array $tabs): string
     {
         // 每个实例独立的 tab id 前缀，避免同页多实例互相切换
@@ -169,7 +185,6 @@ class ProductDetails extends Component
             $id   = $prefix . '-' . $i;
             $html .= '<div class="tab-pane fade' . $show . '" id="' . $this->e($id) . '" role="tabpanel">' . $this->raw($t['body'] ?? '') . '</div>';
         }
-
         return $html . '</div></div></div>';
     }
 }

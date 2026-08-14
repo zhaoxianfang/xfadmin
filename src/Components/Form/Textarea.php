@@ -17,6 +17,11 @@ class Textarea extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -25,6 +30,11 @@ class Textarea extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-textarea');

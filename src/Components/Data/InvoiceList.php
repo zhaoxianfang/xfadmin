@@ -28,6 +28,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class InvoiceList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,7 +42,6 @@ class InvoiceList extends Component
             'summary'  => [],       // 顶部统计卡片：['label'=>,'value'=>,'variant'=>]
         ];
     }
-
     protected static array $statusMap = [
         'paid'    => ['text' => '已付款', 'variant' => 'success'],
         'unpaid'  => ['text' => '未付款', 'variant' => 'danger'],
@@ -45,6 +49,11 @@ class InvoiceList extends Component
         'overdue' => ['text' => '已逾期', 'variant' => 'danger'],
     ];
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id    = $this->resolveId('invoice-list');
@@ -65,7 +74,6 @@ class InvoiceList extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="card border-0 shadow-sm"><div class="card-body p-0">';
         $html .= '<div class="table-responsive"><table class="table table-hover align-middle mb-0">';
         $html .= '<thead class="table-light"><tr>'
@@ -88,7 +96,6 @@ class InvoiceList extends Component
                 . '<td class="text-end">' . $this->raw($it['actions'] ?? '') . '</td>'
                 . '</tr>';
         }
-
         $html .= '</tbody></table></div></div></div>';
 
         return $html . '</div>';

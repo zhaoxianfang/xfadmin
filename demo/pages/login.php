@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 use zxf\XfAdmin\XfAdmin;
 
-echo XfAdmin::authPage([
+// 登录页（card 布局）+ 扩展插槽演示：协议、验证码、社交、自定义内容
+echo XfAdmin::signIn([
     'title'      => '登录 - XfAdmin Demo',
     'heading'    => '欢迎回来',
     'subheading' => '请输入账号密码登录后台',
-    'content'    => XfAdmin::form([
-        'action'     => '/login',
-        'validation' => true,
-        'fields'     => [
-            XfAdmin::input(['name' => 'username', 'label' => '账号', 'required' => true, 'placeholder' => '请输入账号']),
-            XfAdmin::input(['name' => 'password', 'type' => 'password', 'label' => '密码', 'required' => true, 'placeholder' => '请输入密码']),
-            XfAdmin::check(['name' => 'remember', 'label' => '记住我', 'checked' => true]),
-        ],
-        'buttons' => '<button type="submit" class="btn btn-primary w-100">登 录</button>',
-    ]),
-    'below' => '还没有账号？<a href="#" class="fw-semibold">立即注册</a> · <a href="/">返回首页</a>',
+    'layout'     => 'card',
+    'redirects'  => ['forgot' => '/forgot', 'sign_up' => '/register'],
+    'captcha'    => XfAdmin::captcha(['mode' => 'image', 'src' => 'data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="42"><rect width="120" height="42" fill="#eef2f7"/><text x="60" y="28" font-size="22" font-family="monospace" text-anchor="middle" fill="#3b5bdb">X7K9</text></svg>')]),
+    'social'     => [
+        ['icon' => 'ti ti-brand-google', 'label' => 'Google', 'href' => '#', 'variant' => 'soft-danger'],
+        ['icon' => 'ti ti-brand-github', 'label' => 'GitHub', 'href' => '#', 'variant' => 'soft-dark'],
+    ],
+    'extra' => null,
 ]);

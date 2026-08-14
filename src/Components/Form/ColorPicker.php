@@ -16,6 +16,11 @@ class ColorPicker extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -24,11 +29,21 @@ class ColorPicker extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['pickr'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id     = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-color');

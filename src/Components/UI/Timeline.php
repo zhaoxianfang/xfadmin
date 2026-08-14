@@ -18,6 +18,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Timeline extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -25,6 +30,11 @@ class Timeline extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => 'timeline']) . '>';
@@ -55,7 +65,6 @@ class Timeline extends Component
             }
             $html .= '</div></div>';
         }
-
         return $html . '</div>';
     }
 }

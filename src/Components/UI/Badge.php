@@ -15,6 +15,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Badge extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -27,6 +32,11 @@ class Badge extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $variant = $this->e($this->get('variant'));

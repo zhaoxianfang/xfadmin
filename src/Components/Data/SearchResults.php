@@ -29,6 +29,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class SearchResults extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -40,6 +45,11 @@ class SearchResults extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('search');
@@ -62,7 +72,6 @@ class SearchResults extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="list-group list-group-flush border rounded">';
         foreach ($items as $it) {
             $it = (array) $it;
@@ -93,17 +102,22 @@ class SearchResults extends Component
         if ($pg = $this->get('pagination')) {
             $html .= '<div class="mt-3">' . $this->raw($pg) . '</div>';
         }
-
         return $html . '</div>';
     }
 
+    /**
+     * tags（private实例方法）
+     *
+     * @param array $tags tags
+     *
+     * @return string result
+     */
     private function tags(array $tags): string
     {
         $out = '';
         foreach ($tags as $t) {
             $out .= '<span class="badge text-bg-light">' . $this->e($t) . '</span>';
         }
-
         return $out;
     }
 }

@@ -22,6 +22,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class TreeView extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,11 +37,21 @@ class TreeView extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['jstree'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $plugins = [];
@@ -46,7 +61,6 @@ class TreeView extends Component
         if ($this->get('dnd')) {
             $plugins[] = 'dnd';
         }
-
         $config = array_replace_recursive([
             'core'    => ['data' => array_values((array) $this->get('data', [])), 'check_callback' => (bool) $this->get('dnd')],
             'plugins' => $plugins,

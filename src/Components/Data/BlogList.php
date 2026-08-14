@@ -32,6 +32,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class BlogList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -42,6 +47,11 @@ class BlogList extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id    = $this->resolveId('blog');
@@ -53,19 +63,23 @@ class BlogList extends Component
             foreach ($items as $p) {
                 $html .= $this->row((array) $p);
             }
-
             return $html . '</div>';
         }
-
         $colCls = $this->colClass((int) $this->get('cols'));
         $html = '<div' . $this->attrs(['class' => 'xf-blog-grid row g-4', 'id' => $id]) . '>';
         foreach ($items as $p) {
             $html .= '<div class="' . $colCls . '">' . $this->card((array) $p) . '</div>';
         }
-
         return $html . '</div>';
     }
 
+    /**
+     * card（private实例方法）
+     *
+     * @param array $p p
+     *
+     * @return string result
+     */
     private function card(array $p): string
     {
         $image = $p['image'] ?? '';
@@ -88,6 +102,13 @@ class BlogList extends Component
         return $html;
     }
 
+    /**
+     * row（private实例方法）
+     *
+     * @param array $p p
+     *
+     * @return string result
+     */
     private function row(array $p): string
     {
         $image = $p['image'] ?? '';
@@ -111,6 +132,13 @@ class BlogList extends Component
         return $html;
     }
 
+    /**
+     * meta（private实例方法）
+     *
+     * @param array $p p
+     *
+     * @return string result
+     */
     private function meta(array $p): string
     {
         $html = '<div class="d-flex align-items-center gap-2 mt-2 small text-muted">';
@@ -134,20 +162,32 @@ class BlogList extends Component
         if (! empty($p['tags'])) {
             $html .= '<div class="mt-2 d-flex flex-wrap gap-1">' . $this->tags($p['tags']) . '</div>';
         }
-
         return $html;
     }
 
+    /**
+     * tags（private实例方法）
+     *
+     * @param array $tags tags
+     *
+     * @return string result
+     */
     private function tags(array $tags): string
     {
         $out = '';
         foreach ($tags as $t) {
             $out .= '<a href="#" class="badge text-bg-light text-decoration-none">' . $this->e($t) . '</a>';
         }
-
         return $out;
     }
 
+    /**
+     * col Class（private实例方法）
+     *
+     * @param int $cols cols
+     *
+     * @return string result
+     */
     private function colClass(int $cols): string
     {
         $map = [1 => 'col-12', 2 => 'col-md-6', 3 => 'col-md-4', 4 => 'col-md-3'];

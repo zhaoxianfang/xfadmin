@@ -18,6 +18,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class IconSet extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,11 @@ class IconSet extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $set = (string) $this->get('set', 'tabler');
@@ -46,14 +56,12 @@ class IconSet extends Component
             $html .= 'cards.forEach(function(c){c.style.display=q===\'\'||c.querySelector(\'.xf-icon-name\').textContent.toLowerCase().indexOf(q)>-1?\'\':\'none\'})';
             $html .= '"></div></div>';
         }
-
         $colClass = 'row-cols-sm-' . min(12, max(2, (int) (12 / max(1, min(6, $columns)))));
         $html .= '<div id="' . $this->e($prefixId) . '" class="row row-cols-2 ' . $colClass . ' row-cols-xl-' . (12 / max(1, min(4, (int)($columns / 2)))) . ' g-2">';
 
         if (empty($icons)) {
             $icons = $this->getDefaultTablerIcons();
         }
-
         foreach ($icons as $icon) {
             if (is_string($icon)) {
                 $name = $icon;
@@ -67,7 +75,6 @@ class IconSet extends Component
                 $name = (string) ($icon['name'] ?? '');
                 $cls = (string) ($icon['class'] ?? 'ti ti-' . $name);
             }
-
             $html .= '<div class="col"><div class="card xf-icon-card border"><div class="card-body text-center py-3">';
             $html .= '<i class="' . $this->e($cls) . ' fs-24 mb-2 d-block"></i>';
             $html .= '<small class="text-muted xf-icon-name d-block text-truncate" title="' . $this->e($name) . '">' . $this->e($name) . '</small>';
@@ -76,16 +83,19 @@ class IconSet extends Component
             }
             $html .= '</div></div></div>';
         }
-
         if (empty($icons)) {
             $html .= '<div class="col-12 text-center text-muted py-4">未指定图标列表</div>';
         }
-
         $html .= '</div>';
 
         return $html;
     }
 
+    /**
+     * get Default Tabler Icons（private实例方法）
+     *
+     * @return array result
+     */
     private function getDefaultTablerIcons(): array
     {
         return [

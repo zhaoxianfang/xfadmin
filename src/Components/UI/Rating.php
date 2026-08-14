@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Rating extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,6 +41,11 @@ class Rating extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $value   = (float) $this->get('value');
@@ -60,7 +70,6 @@ class Rating extends Component
         if ($this->get('count') !== null) {
             $html .= '<span class="ms-1 text-muted">(' . $this->e($this->get('count')) . ')</span>';
         }
-
         return $html . '</span>';
     }
 }

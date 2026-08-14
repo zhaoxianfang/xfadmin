@@ -25,6 +25,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ModuleGrid extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class ModuleGrid extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $sections = $this->get('sections');
@@ -69,7 +79,6 @@ class ModuleGrid extends Component
                 . '<div class="text-muted small mb-2">' . count($mods) . ' 个应用</div>';
             $body .= $head . '<div class="row g-3">' . $items . '</div>';
         }
-
         $header = '';
         if ($this->get('title') !== '') {
             $header .= '<div class="text-center py-4"><h2>' . $this->e($this->get('title')) . '</h2>';
@@ -78,7 +87,6 @@ class ModuleGrid extends Component
             }
             $header .= '</div>';
         }
-
         return '<div class="' . $this->e($this->get('class')) . '">' . $header . '<div class="row g-3">' . $body . '</div></div>';
     }
 }

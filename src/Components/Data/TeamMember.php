@@ -21,6 +21,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class TeamMember extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class TeamMember extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $members = (array) $this->get('members', []);
@@ -53,7 +63,6 @@ class TeamMember extends Component
                 // 首字母占位：与图片头像同尺寸（avatar-xxl），避免有图/无图两种卡片高度不一致
                 $html .= '<span class="avatar avatar-xxl mx-auto d-block mb-3"><span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-3">' . $this->e($ini) . '</span></span>';
             }
-
             $html .= '<h5 class="mb-1 fw-semibold">' . $this->e($m['name'] ?? '') . '</h5>';
             if (! empty($m['role'])) {
                 $html .= '<p class="text-primary mb-2 small fw-medium">' . $this->e($m['role']) . '</p>';
@@ -70,7 +79,6 @@ class TeamMember extends Component
             }
             $html .= '</div></div></div>';
         }
-
         return $html . '</div>';
     }
 }

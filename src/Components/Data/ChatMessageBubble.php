@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ChatMessageBubble extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,6 +40,11 @@ class ChatMessageBubble extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $out    = $this->get('side') === 'out';
@@ -53,7 +63,6 @@ class ChatMessageBubble extends Component
             $attachHtml = '<a href="' . $this->e($this->img($a['url'] ?? '')) . '" class="d-block mt-1">'
                 . '<i class="ti ti-paperclip"></i> ' . $this->e($a['name'] ?? '附件') . '</a>';
         }
-
         $avatarHtml = $avatar ? '<img src="' . $this->e($this->img($avatar)) . '" class="rounded-circle me-2" width="36" height="36" alt="">' : '';
 
         $html = '<div class="d-flex ' . $align . ' mb-3">';

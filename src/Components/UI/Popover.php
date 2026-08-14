@@ -24,6 +24,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Popover extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class Popover extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $tag  = preg_replace('/[^a-z0-9]/i', '', (string) $this->get('tag')) ?: 'button';
@@ -61,7 +71,6 @@ class Popover extends Component
             $attrs['tabindex'] = '0';
             $attrs['role']     = 'button';
         }
-
         return '<' . $tag . $this->attrs($attrs) . '>' . $this->raw($this->get('text')) . '</' . $tag . '>';
     }
 }

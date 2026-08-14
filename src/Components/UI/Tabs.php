@@ -26,6 +26,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Tabs extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class Tabs extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         // 键名容错：items / tabs 等价；每项 title / label / text 等价
@@ -60,7 +70,6 @@ class Tabs extends Component
         if ($items !== [] && ! array_filter($items, fn ($i) => ! empty($i['active']))) {
             $items[0]['active'] = true;
         }
-
         $navClass = Html::cls('nav', 'nav-' . $this->e($this->get('style')), [
             'nav-justified' => $this->get('justified'),
             'flex-column'   => $this->get('vertical'),
@@ -77,7 +86,6 @@ class Tabs extends Component
                 $b     = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
                 $badge = ' <span class="badge ' . $this->e($b['class'] ?? 'bg-danger-subtle text-danger') . '">' . $this->e($b['text'] ?? '') . '</span>';
             }
-
             $nav .= '<li class="nav-item" role="presentation">'
                 . '<a href="#' . $this->e($paneId) . '" data-bs-toggle="tab" role="tab" class="' . Html::cls('nav-link', ['active' => $active, 'disabled' => ! empty($item['disabled'])]) . '">'
                 . $icon . $this->e($item['title'] ?? '') . $badge . '</a></li>';
@@ -107,11 +115,9 @@ class Tabs extends Component
         } else {
             $body = $content . $footerHtml;
         }
-
         if ($this->get('vertical')) {
             return '<div' . $this->attrs(['class' => 'd-flex gap-3']) . '><div>' . $nav . '</div><div class="flex-grow-1">' . $body . '</div></div>';
         }
-
         return '<div' . $this->attrs() . '>' . $nav . $body . '</div>';
     }
 }

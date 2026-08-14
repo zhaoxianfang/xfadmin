@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class SearchBox extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -31,6 +36,11 @@ class SearchBox extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('xf-search');
@@ -42,7 +52,6 @@ class SearchBox extends Component
         if ($this->get('class') !== '') {
             $igClass .= ' ' . $this->get('class');
         }
-
         return '<div' . $this->attrs(['class' => $igClass]) . '>'
             . '<span class="input-group-text"><i class="ti ti-search"></i></span>'
             . '<input type="search" class="form-control" id="' . $this->e($id) . '"'

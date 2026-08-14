@@ -26,6 +26,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class InvoiceDetail extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -44,6 +49,11 @@ class InvoiceDetail extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $cur = (string) $this->get('currency', '¥');
@@ -80,7 +90,6 @@ class InvoiceDetail extends Component
             foreach ((array) ($p['lines'] ?? []) as $line) {
                 $s .= '<div class="text-muted small">' . $this->e($line) . '</div>';
             }
-
             return $s . '</div>';
         };
         $html .= '<div class="row g-3 mb-4">' . $party('开票方', (array) $this->get('from', []))
@@ -106,7 +115,6 @@ class InvoiceDetail extends Component
             }
             $html .= '</tbody></table></div>';
         }
-
         // ---- 汇总 ----
         $summary = (array) $this->get('summary', []);
         if ($summary) {
@@ -119,7 +127,6 @@ class InvoiceDetail extends Component
             }
             $html .= '</div></div>';
         }
-
         // ---- 备注 + 操作 ----
         if ($this->get('notes')) {
             $html .= '<div class="alert alert-light mt-4 mb-0"><i class="ti ti-info-circle me-1"></i>' . $this->e($this->get('notes')) . '</div>';
@@ -135,7 +142,6 @@ class InvoiceDetail extends Component
             }
             $html .= '</div>';
         }
-
         return $html . '</div></div>';
     }
 }

@@ -39,6 +39,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class TaskList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -49,13 +54,17 @@ class TaskList extends Component
             'add_url'    => 'javascript:void(0);',
         ];
     }
-
     private const PRIORITY = [
         'high'   => ['danger', '高'],
         'medium' => ['warning', '中'],
         'low'    => ['info', '低'],
     ];
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $tasks = (array) $this->get('tasks');
@@ -78,7 +87,6 @@ class TaskList extends Component
             }
             $head .= '</div></div>';
         }
-
         $list = '<div class="list-group list-group-flush xf-task-group">';
         if ($tasks === []) {
             $list .= '<div class="list-group-item text-muted text-center py-4">暂无任务</div>';

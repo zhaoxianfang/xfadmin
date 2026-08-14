@@ -30,6 +30,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Page extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -59,6 +64,11 @@ class Page extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $assets = Assets::instance();
@@ -108,7 +118,6 @@ class Page extends Component
         if (! empty($theme['sidenav_user'])) {
             $htmlAttrs['data-sidenav-user'] = 'true';
         }
-
         // 水平布局：对齐模板 layouts-horizontal.html 的 <html data-layout="topnav">
         $isHorizontal = in_array($layout, ['horizontal', 'topnav'], true)
             || ($this->get('topnav') !== null && $this->get('topnav') !== false);
@@ -117,7 +126,6 @@ class Page extends Component
             // 水平布局不存在侧栏，移除仅对垂直布局有意义的尺寸属性
             unset($htmlAttrs['data-sidenav-size'], $htmlAttrs['data-sidenav-user']);
         }
-
         // ---------- body 部件（先渲染，确保其资源注册先于 head 输出） ----------
         $body = '<div class="wrapper">';
 
@@ -140,14 +148,12 @@ class Page extends Component
                 $sidenavOpts['current_url'] ??= $this->get('current_url');
                 $body .= Sidenav::make($sidenavOpts)->render();
             }
-
             // 顶栏（可选）
             if ($this->get('topbar') !== false) {
                 $topbarOpts = (array) $this->get('topbar', []);
                 $body .= Topbar::make($topbarOpts)->render();
             }
         }
-
         // 内容区
         $body .= '<div class="content-page"><div class="' . $this->e($this->get('container')) . '">';
         $pageTitle = $this->get('page_title');
@@ -169,7 +175,6 @@ class Page extends Component
         if ($this->get('customizer')) {
             $body .= Customizer::make()->render();
         }
-
         // ---------- 组装文档 ----------
         $favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url('images/favicon.ico');
 
@@ -209,7 +214,6 @@ class Page extends Component
                 . '<div class="double-bounce1"></div><div class="double-bounce2"></div>'
                 . '</div></div></div>';
         }
-
         $doc .= $body . "\n";
         $doc .= $assets->scripts();
         $doc .= $this->raw($this->get('scripts'));

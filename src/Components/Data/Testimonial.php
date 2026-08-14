@@ -21,6 +21,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Testimonial extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,13 @@ class Testimonial extends Component
         ];
     }
 
+    /**
+     * card（protected实例方法）
+     *
+     * @param array $t t
+     *
+     * @return string result
+     */
     protected function card(array $t): string
     {
         $html = '<div class="card h-100 border-0 shadow-none bg-transparent">';
@@ -60,13 +72,17 @@ class Testimonial extends Component
         return $html;
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
         if (empty($items)) {
             return '';
         }
-
         if ($this->get('carousel')) {
             $id = $this->uid('xf-tes');
             $html = '<div id="' . $id . '" class="carousel slide" data-bs-ride="carousel"' . $this->attrs([]) . '>';
@@ -81,14 +97,12 @@ class Testimonial extends Component
 
             return $html;
         }
-
         $n = max(1, min(4, (int) $this->get('cols', 3)));
         $colCls = $n === 1 ? 'col-12' : 'col-12 col-md-' . (int) (12 / $n);
         $html = '<div' . $this->attrs(['class' => 'row g-3 xf-testimonial']) . '>';
         foreach ($items as $t) {
             $html .= '<div class="' . $colCls . '">' . $this->card($t) . '</div>';
         }
-
         return $html . '</div>';
     }
 }

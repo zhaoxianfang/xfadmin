@@ -29,6 +29,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Sales extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class Sales extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $stats = (array) $this->get('stats', []);
@@ -72,7 +82,6 @@ class Sales extends Component
             }
             $html .= '</div>';
         }
-
         // 最近订单 & 热销商品
         $html .= '<div class="row"><div class="col-lg-6">';
         $html .= '<div class="card"><div class="card-header"><h5 class="mb-0">最近订单</h5></div><div class="card-body p-0">';
@@ -93,11 +102,9 @@ class Sales extends Component
             $html .= '<td>' . $currency . number_format((float) ($order['amount'] ?? 0), 2) . '</td>';
             $html .= '<td>' . $this->e($order['date'] ?? '') . '</td><td>' . $statusBadge . '</td></tr>';
         }
-
         if (empty($recentOrders)) {
             $html .= '<tr><td colspan="5" class="text-center text-muted py-3">暂无近期订单</td></tr>';
         }
-
         $html .= '</tbody></table></div></div></div></div>';
 
         // 热销商品
@@ -117,11 +124,9 @@ class Sales extends Component
             $html .= '<td>' . $currency . number_format((float) ($p['revenue'] ?? 0), 2) . '</td>';
             $html .= '<td class="' . $growthClass . '"><i class="ti ti-arrow-' . ($growth >= 0 ? 'up' : 'down') . '-right"></i> ' . abs($growth) . '%</td></tr>';
         }
-
         if (empty($topProducts)) {
             $html .= '<tr><td colspan="5" class="text-center text-muted py-3">暂无数据</td></tr>';
         }
-
         $html .= '</tbody></table></div></div></div></div></div>';
 
         return $html;

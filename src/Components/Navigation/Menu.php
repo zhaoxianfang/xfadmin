@@ -25,6 +25,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Menu extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,6 +39,11 @@ class Menu extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = $this->normalizeItems((array) $this->get('items', []));
@@ -88,10 +98,16 @@ class Menu extends Component
                 return true;
             }
         }
-
         return false;
     }
 
+    /**
+     * badge（protected实例方法）
+     *
+     * @param array $item item
+     *
+     * @return string result
+     */
     protected function badge(array $item): string
     {
         if (empty($item['badge'])) {
@@ -103,7 +119,6 @@ class Menu extends Component
         if (($badge['pill'] ?? true) && ! str_contains($class, 'rounded')) {
             $class .= ' rounded-pill';
         }
-
         return '<span class="badge ' . $this->e($class) . '">' . $this->e($badge['text'] ?? '') . '</span>';
     }
 
@@ -111,6 +126,14 @@ class Menu extends Component
     // side 模式
     // ------------------------------------------------------------------
 
+    /**
+     * render Side Items（protected实例方法）
+     *
+     * @param array $items items
+     * @param int $level level
+     *
+     * @return string result
+     */
     protected function renderSideItems(array $items, int $level): string
     {
         $html = '';
@@ -120,7 +143,6 @@ class Menu extends Component
                 $html .= '<li class="side-nav-title">' . $this->e($item['title']) . '</li>';
                 continue;
             }
-
             $active   = $this->isActive($item);
             $disabled = ! empty($item['disabled']);
             $children = $item['children'] ?? [];
@@ -139,7 +161,6 @@ class Menu extends Component
                 $html .= '</div></li>';
                 continue;
             }
-
             $url    = $item['url'] ?? '#!';
             $target = isset($item['target']) ? ' target="' . $this->e($item['target']) . '"' : '';
             $html  .= '<li class="' . Html::cls('side-nav-item', ['active' => $active]) . '">'
@@ -147,8 +168,6 @@ class Menu extends Component
                 . ' class="' . Html::cls('side-nav-link', ['disabled' => $disabled, 'active' => $active]) . '">'
                 . $icon . $text . $this->badge($item) . '</a></li>';
         }
-
         return $html;
     }
-
 }

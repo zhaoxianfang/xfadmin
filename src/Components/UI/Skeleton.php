@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Skeleton extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -33,6 +38,11 @@ class Skeleton extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $type     = (string) $this->get('type');
@@ -44,14 +54,12 @@ class Skeleton extends Component
 
             return '<span' . $this->attrs(['class' => $cls . ' xf-skeleton-circle', 'style' => "width:{$d}px;height:{$d}px"]) . '></span>';
         }
-
         if ($type === 'rect') {
             $h = (int) $this->get('height');
             $w = $this->e($this->get('width'));
 
             return '<span' . $this->attrs(['class' => $cls . ' xf-skeleton-rect', 'style' => "width:{$w};height:{$h}px"]) . '></span>';
         }
-
         $n   = max(1, (int) $this->get('lines'));
         $w   = $this->e($this->get('width'));
         $out = '';
@@ -60,7 +68,6 @@ class Skeleton extends Component
             // 循环内只输出自身 class/style，根属性（id/class/data-*）由外层 wrap 承载，避免重复 id
             $out .= '<span' . Html::attrs(['class' => $cls . ' xf-skeleton-line', 'style' => "width:{$mw}"]) . '></span>';
         }
-
         return '<div' . $this->attrs(['class' => 'xf-skeleton-wrap']) . '>' . $out . '</div>';
     }
 }

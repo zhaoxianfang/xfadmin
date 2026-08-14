@@ -20,6 +20,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FormElements extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -27,6 +32,11 @@ class FormElements extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $sections = $this->get('sections');
@@ -34,7 +44,6 @@ class FormElements extends Component
         if ($sections !== null) {
             return $this->renderSections((array) $sections);
         }
-
         return $this->renderBuiltin();
     }
 
@@ -58,7 +67,6 @@ class FormElements extends Component
                 $colClass = 'col-md-' . (12 / min($cols, 4));
                 $html .= '<div class="' . $colClass . '">' . $this->renderFormItem($item) . '</div>';
             }
-
             $html .= '</div></div></div></div>';
         }
         $html .= '</div>';
@@ -146,7 +154,6 @@ class FormElements extends Component
         if ($help) {
             $html .= '<div class="form-text">' . $help . '</div>';
         }
-
         return $html;
     }
 

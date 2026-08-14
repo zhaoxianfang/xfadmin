@@ -15,6 +15,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Service extends BaseService
 {
+    /**
+     * register（public实例方法）
+     *
+     * @return void result
+     */
     public function register(): void
     {
         $this->app->bind('xfadmin', XfAdmin::class);
@@ -32,12 +37,16 @@ class Service extends BaseService
                 if ($component === null) {
                     return XfAdmin::class;
                 }
-
                 return XfAdmin::component($component, $options);
             }
         }
     }
 
+    /**
+     * boot（public实例方法）
+     *
+     * @return void result
+     */
     public function boot(): void
     {
         // 读取 config/xfadmin.php（ThinkPHP 会将 extra.think.config 复制到应用 config）

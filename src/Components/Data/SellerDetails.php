@@ -46,7 +46,6 @@ class SellerDetails extends Component
         if (empty($seller)) {
             return '';
         }
-
         $html = '<div' . $this->attrs(['class' => 'xf-seller-details']) . '>';
         $html .= $this->profileCard($seller);
         $html .= $this->statsRow((array) $this->get('stats', []));
@@ -63,7 +62,6 @@ class SellerDetails extends Component
         if (! empty($s['logo'])) {
             $html .= '<div class="avatar avatar-xxl flex-shrink-0"><img src="' . $this->e($this->img($s['logo'])) . '" alt="" class="img-fluid rounded"></div>';
         }
-
         $html .= '<div class="flex-grow-1">';
         $html .= '<h4 class="mb-1 fw-bold">' . $this->e($s['name'] ?? '');
         if (! empty($s['verified'])) {
@@ -81,11 +79,9 @@ class SellerDetails extends Component
             }
             $html .= ' <span class="text-muted fs-sm">' . $this->e((string) $rate) . '</span></div>';
         }
-
         if (! empty($s['desc'])) {
             $html .= '<p class="text-muted mb-2">' . $this->e($s['desc']) . '</p>';
         }
-
         // 元信息（地址 / 电话 / 邮箱等）
         $meta = (array) ($s['meta'] ?? []);
         if (! empty($meta)) {
@@ -123,7 +119,6 @@ class SellerDetails extends Component
         if (empty($stats)) {
             return '';
         }
-
         $col  = 'col-md-' . intdiv(12, max(1, min(4, count($stats))));
         $html = '<div class="row g-3 mb-3">';
         foreach ($stats as $st) {
@@ -136,7 +131,6 @@ class SellerDetails extends Component
                 . '<span class="text-muted fs-sm">' . $this->e($st['label'] ?? '') . '</span></div>'
                 . '</div></div></div>';
         }
-
         return $html . '</div>';
     }
 
@@ -146,7 +140,6 @@ class SellerDetails extends Component
         if (empty($products)) {
             return '';
         }
-
         $html = '<div class="card mb-0"><div class="card-header"><h5 class="card-title mb-0">在售商品</h5></div>'
             . '<div class="card-body p-0"><div class="table-responsive">'
             . '<table class="table table-custom table-centered table-hover w-100 mb-0">'
@@ -178,7 +171,6 @@ class SellerDetails extends Component
                 . '<a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>'
                 . '</div></td></tr>';
         }
-
         return $html . '</tbody></table></div></div></div>';
     }
 }

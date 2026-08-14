@@ -18,6 +18,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ErrorPage extends AuthPage
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return array_replace(parent::defaults(), [
@@ -31,6 +36,11 @@ class ErrorPage extends AuthPage
         ]);
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $code  = (string) $this->get('code');
@@ -42,14 +52,12 @@ class ErrorPage extends AuthPage
                 ? XfAdmin::assets()->url('images/svg/' . $code . '.svg')
                 : null;
         }
-
         if ($image) {
             $visual = '<img src="' . $this->e($image) . '" alt="' . $this->e($code) . '" class="img-fluid">';
         } else {
             // 无插画资源时降级为「大号状态码 + 图标」，避免破图
             $visual = '<div class="xf-error-code display-1 fw-bold text-primary">' . $this->e($code) . '</div>';
         }
-
         $content = '<div class="p-2 text-center">'
             . $visual
             . '<h3 class="fw-bold text-uppercase">' . $this->e($this->get('heading')) . '</h3>'
@@ -61,7 +69,6 @@ class ErrorPage extends AuthPage
         if (! $this->get('title')) {
             $this->set('title', $code . ' - ' . $this->get('heading'));
         }
-
         return parent::html();
     }
 }

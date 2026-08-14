@@ -29,6 +29,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Kanban extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class Kanban extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $columns  = (array) $this->get('columns', []);
@@ -80,7 +90,6 @@ class Kanban extends Component
 
             $boards .= '</div>'; // /.xf-kanban-col
         }
-
         $html = '<div class="xf-kanban ' . $this->e($this->get('class')) . '" id="' . $id . '" data-xf="kanban">';
         $html .= '<div class="card h-100 mb-0 flex-grow-1">';
         $html .= $header;
@@ -91,6 +100,13 @@ class Kanban extends Component
     }
 
     // 单张卡片（对齐 xfadmin .xf-kanban-card 体系，供 JS 拖拽/搜索挂载）
+    /**
+     * render Card（protected实例方法）
+     *
+     * @param array $c c
+     *
+     * @return string result
+     */
     protected function renderCard(array $c): string
     {
         $variant = $this->enum($c['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
@@ -123,7 +139,6 @@ class Kanban extends Component
         if (! empty($c['text'])) {
             $html .= '<p class="text-muted mb-2">' . $this->e($c['text']) . '</p>';
         }
-
         // 底部：成员头像组 + 截止日期 + 可选 评论/附件
         $meta = '';
         if (! empty($c['comments']) || ! empty($c['attachments'])) {
@@ -136,7 +151,6 @@ class Kanban extends Component
             }
             $meta .= '</div>';
         }
-
         $members = (array) ($c['members'] ?? []);
         $due     = (string) ($c['due'] ?? '');
         if ($members || $due || $meta) {
@@ -156,19 +170,22 @@ class Kanban extends Component
             $html .= '</div>';
             $html .= $meta;
         }
-
         // 进度条
         if (isset($c['progress']) && $c['progress'] !== '' && $c['progress'] !== null) {
             $p = (int) $c['progress'];
             $html .= '<div class="mt-3"><div class="d-flex justify-content-between mb-1"><span class="text-muted small">进度</span><span class="small fw-medium">' . $p . '%</span></div>'
                 . '<div class="progress" style="height:5px"><div class="progress-bar bg-' . $variant . '" style="width:' . $p . '%"></div></div></div>';
         }
-
         $html .= '</div></a>';
 
         return $html;
     }
 
+    /**
+     * assets（public实例方法）
+     *
+     * @return array result
+     */
     public function assets(): array
     {
         return ['sortablejs', 'simplebar'];

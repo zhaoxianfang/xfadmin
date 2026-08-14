@@ -38,14 +38,6 @@
 | [FAQ.md](FAQ.md) | 常见问题与排错 |
 | [CHANGELOG.md](CHANGELOG.md) | 更新日志 |
 
-## 组件参考如何生成 / 同步
-
-`components-reference.md` 由 `tools/gen_docs.php` 扫描 `src/XfAdmin.php` 的组件注册表并反射每个组件的 `defaults()` / `assets()` / 公开方法自动生成：
-
-```bash
-php tools/gen_docs.php
-```
-
 新增或调整组件后重新运行即可让文档与代码保持同步，无需手工维护。
 
 ## 文档约定

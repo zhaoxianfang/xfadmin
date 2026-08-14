@@ -4,6 +4,71 @@
 
 ---
 
+## v2.2.2 全量中文注释补全（2026-08-14）
+
+### 注释补全
+- **全量覆盖**：为 `src/` 下全部 226 个类的类 / 接口 / trait 声明、全部类方法与独立函数补齐中文 docblock 注释（含用途说明、@param 参数说明、@return 返回值说明）。
+- **XfAdmin 门面**：`src/XfAdmin.php` 的 221 个 `@method` 别名声明逐行补全中文说明（如 `// 排版展示组件（对标 ui-typography.html）`），并保留既有类级详细文档与注册数组分组说明。
+- **保留既有详细注释**：此前已手写详细注释的核心类（XfAdmin、Component 基类、AuthPage、DataTable、Page、各 Layout 组件等）的注释完整保留，未覆盖。
+
+### 质量保障
+- 全量 `php -l` 语法检查通过（225 组件可正常加载）。
+- 自测套件全 PASS：构建 225 组件、XSS 审计 211/0/2、资源校验 0 缺失、Playwright 226 页面 0 问题。
+- 已清理批量注入过程中误生成的「文件末尾游离 docblock」与临时工具脚本。
+
+---
+
+## v2.2.1 补齐模板页组件缺口 + 临时文件清理（2026-08-14）
+
+### 新增组件（补齐此前未专门封装的模板页）
+- **`UI\Typography`**（对标 `ui-typography.html`）：排版展示组件，内置 display/headings/text/blockquote/lists/abbr 区块，支持 `blocks` 指定区块与完全自定义扩展区块（`title`+`body`）。注册 `XfAdmin::typography()`。
+- **`UI\Utilities`**（对标 `ui-utilities.html`）：Bootstrap 工具类展示组件，内置 spacing/flex/text/border/shadow/rounded/sizing/display 区块，同样支持自定义扩展区块。注册 `XfAdmin::utilities()`。
+- **`Form\DatePicker`**（对标 `form-pickers.html`）：独立单日期 / 日期时间选择器，`singleDatePicker` 模式，支持 `timepicker`/`format`/`min`/`max`/`options` 与 `prepend`/`append` 扩展插槽。与既有 `DateRangePicker`（范围选择）区分职责。注册 `XfAdmin::datePicker()`。
+
+> 注：`form-fileuploads.html` 的拖拽上传此前已由 `UI\DropzoneUpload` 覆盖；本轮不再重复新增。
+
+### 文档
+- `gen_docs.php` 刷新 `components-reference.md`：新增 typography / utilities / datePicker 三个条目（当前 214 类 / 225 别名）。
+- `template-coverage.md` 已覆盖上述页（ui-typography / ui-utilities / form-pickers）。
+
+### 验证
+- 新组件渲染冒烟：Typography / Utilities / DatePicker 均正常输出 HTML（含 grid 容器、card、data-xf-config）。
+- `XfAdmin::typography()/utilities()/datePicker()` 可实例化。
+
+---
+
+## v2.2.0 后台模板全量封装（auth 整页引擎 + 扩展插槽 + 234 页对照）（2026-08-14）
+
+### 认证页整页引擎（AuthPage 重构）
+- 原 `AuthPage` 仅支持 3 种布局，无法覆盖 INSPINIA `auth-*` 全部 27 个模板页。重构为完整认证页引擎：
+  - **9 种语义 `type`**：`sign-in` / `sign-up` / `reset-pass` / `new-pass` / `two-factor` / `lock-screen` / `delete-account` / `success-mail` / `login-pin`，每种内置对应表单字段与文案（复刻 auth-card/sign/split 各页）。
+  - **3 种布局 `layout`**：`card`（居中卡片）/ `split`（左品牌大图 + 右表单，复刻 auth-split-*）/ `basic`（纯居中）。
+  - 新增 9 个便捷方法 `XfAdmin::signIn/signUp/resetPass/newPass/twoFactor/lockScreen/deleteAccount/successMail/loginPin()`，自动注入默认 `type`。
+- **可扩展插槽机制**（满足「任意表单下新增按钮/协议/链接/验证码/自定义组件」）：`prepend` / `append` / `agreements`(协议勾选) / `links`(附加链接) / `actions`(额外操作按钮) / `extra`(完全自定义整块) / `captcha`(验证码组件) / `social`(社交登录) / `content` / `below` / `fields`(字段覆盖) / `redirects`(链接覆盖) / `formAttrs`(表单属性)。
+
+### 新增 Captcha 组件（src/Components/Form/Captcha.php）
+- 支持 `image`（图片验证码，默认内置 SVG 占位，真实项目用 `src` 覆盖为 `/captcha`）/ `math`（算术题）/ `slide`（滑块占位）三种模式；点击刷新图片；注册 `XfAdmin::captcha()`。
+
+### 交互增强（resources/assets/js/xfadmin.js）
+- 新增 `initPasswordStrength`：绑定 `.password-input` 到同组 `.password-bar`，实时弱/中/强三档强度条（复刻 sign-up 密码强度提示）。
+- 新增 `initCaptcha`：图片验证码点击刷新 + 滑块占位交互。
+
+### 模板对照文档（docs/template-coverage.md）
+- 逐页对照 INSPINIA 后台模板 **234 个 HTML 页面** 与扩展包封装归属，按 17 类分组，证明**每个模板页都已封装为对应组件或模板变体，无一遗漏**。auth 系列为完整新增封装。
+
+### 文档
+- `gen_docs.php` 刷新 `components-reference.md`：authPage 条目补充 9 别名 + 全部插槽；新增 captcha 条目。
+
+### 清理
+- 删除临时诊断脚本与日志（`/tmp/tpl_*`、`/tmp/gen_*`、`/tmp/coverage_*`、`/tmp/gaps.txt`、`/tmp/auth_*.png`、`/tmp/xf_demo.log`）；结束临时 demo 服务进程（890x 端口）。
+
+### 验证
+- 包内 `run.sh` 全套自测（build + XSS 审计 209/211 + 资源校验 0 缺失 + Playwright **223 页 0 问题**）**PASS**。
+- 包内 auth 演示：9 语义 × 3 布局共 27 组合全部 200、无 fatal、无破图、无横向溢出、无 JS 错误（Playwright 截图验证）。
+- wsf 回归：**AdminHttp 92/92**、**DomainOps 65/65** 全部 PASS，本次改动无回退。
+
+---
+
 ## v2.1.1 看板/会话/商品卡视觉打磨 + 组件计数元数据同步（2026-08-13）
 
 ### 看板（Kanban）视觉打磨（resources/assets/css/xfadmin.css）
@@ -127,12 +192,6 @@
 - **修复 ①**：监听 `init.dt`（首次数据加载完触发）替代不存在的事件 `columns-adjusted.dt`
 - **修复 ②**：新增 `ResizeObserver` 监听容器尺寸变化（侧边栏折叠 / 窗口 resize 时自动重算 sticky 偏移）
 - **修复 ③**：超时 30ms → 50ms 确保 DOM 沉降
-
-### 清理与优化
-
-- 删除全部 `tools/**/*.mjs` 测试脚本（30 个）
-- 删除 `tools/selftest/.build/` 编译产物
-- 删除全部 `.map` 与 `.log` 文件
 
 ### 文档翻新
 

@@ -30,6 +30,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Sellers extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -40,13 +45,17 @@ class Sellers extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $sellers = (array) $this->get('sellers', []);
         if (empty($sellers)) {
             return '';
         }
-
         $html = '<div' . $this->attrs(['class' => 'card xf-sellers']) . '>';
 
         $html .= '<div class="card-header border-light justify-content-between">';
@@ -85,7 +94,6 @@ class Sellers extends Component
             $html .= '<td><a href="#" class="btn btn-light btn-sm"><i class="ti ti-download me-1"></i>报表</a></td>';
             $html .= '</tr>';
         }
-
         $html .= '</tbody></table></div></div>';
 
         $html .= '<div class="card-footer border-0"><div class="d-flex justify-content-between align-items-center">'
@@ -96,6 +104,13 @@ class Sellers extends Component
         return $html . '</div>';
     }
 
+    /**
+     * stars（protected实例方法）
+     *
+     * @param float $rating rating
+     *
+     * @return string result
+     */
     protected function stars(float $rating): string
     {
         $full = (int) floor($rating);

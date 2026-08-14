@@ -23,6 +23,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Landing extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class Landing extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $brand = $this->get('brand');
@@ -47,7 +57,6 @@ class Landing extends Component
             $n = (array) $n;
             $navHtml .= '<a href="' . $this->e($n['url'] ?? '#') . '" class="nav-link">' . $this->e($n['text'] ?? '') . '</a>';
         }
-
         $header = '<header class="landing-header"><nav class="container d-flex align-items-center py-3">'
             . '<a href="#" class="navbar-brand fw-bold fs-4 text-primary"><i class="ti ti-layout-dashboard me-1"></i>' . $this->e($brand) . '</a>'
             . '<div class="d-none d-md-flex gap-3 ms-4">' . $navHtml . '</div>'
@@ -76,6 +85,11 @@ class Landing extends Component
         ]);
     }
 
+    /**
+     * hero（private实例方法）
+     *
+     * @return string result
+     */
     private function hero(): string
     {
         $h = (array) $this->get('hero', []);
@@ -93,6 +107,11 @@ class Landing extends Component
             . '</div></div></section>';
     }
 
+    /**
+     * stats（private实例方法）
+     *
+     * @return string result
+     */
     private function stats(): string
     {
         $stats = (array) $this->get('stats', []);
@@ -104,10 +123,14 @@ class Landing extends Component
             $s = (array) $s;
             $html .= '<div class="col-6 col-md-3"><div class="display-6 fw-bold text-primary">' . $this->e($s['value'] ?? '') . '</div><div class="text-muted">' . $this->e($s['label'] ?? '') . '</div></div>';
         }
-
         return $html . '</div></div></section>';
     }
 
+    /**
+     * features（private实例方法）
+     *
+     * @return string result
+     */
     private function features(): string
     {
         $feats = (array) $this->get('features', []);
@@ -121,10 +144,14 @@ class Landing extends Component
                 . '<div class="avatar avatar-lg bg-primary-subtle text-primary mx-auto mb-3"><i class="' . $this->e($f['icon'] ?? 'ti ti-bolt') . ' fs-3"></i></div>'
                 . '<h5>' . $this->e($f['title'] ?? '') . '</h5><p class="text-muted mb-0">' . $this->e($f['text'] ?? '') . '</p></div></div></div>';
         }
-
         return $html . '</div></div></section>';
     }
 
+    /**
+     * pricing（private实例方法）
+     *
+     * @return string result
+     */
     private function pricing(): string
     {
         $plans = (array) $this->get('pricing', []);
@@ -150,10 +177,14 @@ class Landing extends Component
             $html .= '<a href="#" class="btn ' . ($highlight ? 'btn-primary' : 'btn-outline-primary') . ' w-100">' . $this->e($p['button'] ?? '选择') . '</a>';
             $html .= '</div></div></div>';
         }
-
         return $html . '</div></div></section>';
     }
 
+    /**
+     * testimonials（private实例方法）
+     *
+     * @return string result
+     */
     private function testimonials(): string
     {
         $ts = (array) $this->get('testimonials', []);
@@ -170,15 +201,24 @@ class Landing extends Component
                 . '<div class="d-flex align-items-center mt-3"><div class="avatar avatar-sm me-2"><img src="' . $this->e($av) . '" class="rounded-circle" alt=""></div><div><div class="fw-semibold small">' . $this->e($t['name'] ?? '') . '</div><small class="text-muted">' . $this->e($t['role'] ?? '') . '</small></div></div>'
                 . '</div></div></div>';
         }
-
         return $html . '</div></div></section>';
     }
 
+    /**
+     * cta（private实例方法）
+     *
+     * @return string result
+     */
     private function cta(): string
     {
         return '<section class="py-5 bg-primary text-white"><div class="container text-center"><h2 class="fw-bold mb-3">准备好开始了吗？</h2><p class="mb-4 opacity-75">立即创建你的后台，几分钟内上线。</p><a href="#" class="btn btn-light btn-lg">免费开始</a></div></section>';
     }
 
+    /**
+     * footer（private实例方法）
+     *
+     * @return string result
+     */
     private function footer(): string
     {
         $f = (array) $this->get('footer', []);
@@ -187,7 +227,6 @@ class Landing extends Component
             $l = (array) $l;
             $links .= '<a href="' . $this->e($l['url'] ?? '#') . '" class="text-white-50 me-3">' . $this->e($l['text'] ?? '') . '</a>';
         }
-
         return '<footer class="landing-footer py-4"><div class="container d-flex flex-wrap justify-content-between align-items-center">'
             . '<span class="text-white-50">' . $this->e($f['text'] ?? '© 2026 ' . $this->get('brand')) . '</span>'
             . '<div>' . $links . '</div></div></footer>';

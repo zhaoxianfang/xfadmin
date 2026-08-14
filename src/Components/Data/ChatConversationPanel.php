@@ -22,6 +22,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ChatConversationPanel extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class ChatConversationPanel extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $contacts = (array) $this->get('contacts', []);
@@ -61,7 +71,6 @@ class ChatConversationPanel extends Component
                 $msgHtml .= ChatMessageBubble::make((array) $m)->render();
             }
         }
-
         $panel = '<div class="d-flex flex-column h-100">';
         $panel .= '<div class="px-3 py-2 border-bottom fw-semibold d-flex align-items-center gap-2"><i class="ti ti-message-circle"></i>' . $this->e($title) . '</div>';
         $panel .= '<div class="flex-grow-1 overflow-auto p-3 xf-chat-messages">' . $msgHtml . '</div>';

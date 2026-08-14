@@ -31,6 +31,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class CompanyCard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class CompanyCard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $companies = (array) $this->get('companies', []);
@@ -60,7 +70,6 @@ class CompanyCard extends Component
                 // 首字母占位：尺寸类挂在 .avatar 包裹元素上（对齐 INSPINIA 规范）
                 $html .= '<span class="avatar avatar-lg me-3 flex-shrink-0"><span class="avatar-title bg-primary-subtle text-primary rounded fs-3">' . $this->e($ini) . '</span></span>';
             }
-
             $html .= '<div class="flex-grow-1">';
 
             // 名称 + 官网 + 关注
@@ -86,11 +95,9 @@ class CompanyCard extends Component
                 }
                 $html .= '</div>';
             }
-
             if (! empty($c['desc'])) {
                 $html .= '<p class="text-muted mb-3 small">' . $this->e($c['desc']) . '</p>';
             }
-
             // 统计 + 评分
             $stats = (array) ($c['stats'] ?? []);
             $rating = $c['rating'] ?? null;
@@ -109,10 +116,8 @@ class CompanyCard extends Component
                 }
                 $html .= '</div>';
             }
-
             $html .= '</div></div></div>';
         }
-
         return $html . '</div>';
     }
 }

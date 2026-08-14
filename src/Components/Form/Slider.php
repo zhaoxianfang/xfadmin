@@ -16,6 +16,11 @@ class Slider extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -28,11 +33,21 @@ class Slider extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['nouislider'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id    = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-slider');
@@ -58,7 +73,6 @@ class Slider extends Component
             $control .= '<input type="hidden" name="' . $this->e($this->get('name')) . '" value="'
                 . $this->e(is_array($value) ? implode(',', $value) : $value) . '">';
         }
-
         return $this->wrapField($control, $id);
     }
 }

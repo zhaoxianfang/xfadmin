@@ -25,6 +25,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class EcommerceSettings extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -33,6 +38,11 @@ class EcommerceSettings extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $store = (array) $this->get('store', []);
@@ -67,7 +77,6 @@ class EcommerceSettings extends Component
             $html .= '<hr class="my-4"><h5 class="mb-3">' . $this->e($section['title'] ?? '') . '</h5>';
             $html .= $this->raw($section['content'] ?? '');
         }
-
         $html .= '<hr class="my-4"><button class="btn btn-primary">保存设置</button>';
 
         $html .= '</div></div></div></div>';

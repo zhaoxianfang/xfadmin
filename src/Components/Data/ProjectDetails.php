@@ -23,18 +23,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProjectDetails extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['project' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $p = (array) $this->get('project', []);
         if (empty($p)) {
             return '';
         }
-
         $prog = (int) ($p['progress'] ?? 0);
         $html = '<div class="row g-3">';
 
@@ -64,7 +73,6 @@ class ProjectDetails extends Component
             }
             $html .= '</div></div></div>';
         }
-
         // 动态
         if (! empty($p['activity'])) {
             $html .= '<div class="card"><div class="card-header"><h6 class="mb-0">项目动态</h6></div><div class="card-body"><div class="timeline-x">';
@@ -97,7 +105,6 @@ class ProjectDetails extends Component
             }
             $html .= '</div></div></div>';
         }
-
         if (! empty($p['files'])) {
             $html .= '<div class="card"><div class="card-header"><h6 class="mb-0">附件</h6></div><div class="card-body"><div class="list-group list-group-flush">';
             foreach ((array) $p['files'] as $f) {
@@ -111,12 +118,19 @@ class ProjectDetails extends Component
         return $html . '</div>';
     }
 
+    /**
+     * kv（private实例方法）
+     *
+     * @param string $k k
+     * @param mixed $v v
+     *
+     * @return string result
+     */
     private function kv(string $k, $v): string
     {
         if ($v === '' || $v === null) {
             return '';
         }
-
         return '<div class="d-flex justify-content-between mb-2"><span class="text-muted">' . $this->e($k) . '</span><span class="fw-semibold">' . $this->e($v) . '</span></div>';
     }
 }

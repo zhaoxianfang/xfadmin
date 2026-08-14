@@ -30,6 +30,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Sitemap extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class Sitemap extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $columns = (array) $this->get('columns', []);
@@ -46,7 +56,6 @@ class Sitemap extends Component
         if (empty($columns)) {
             return '';
         }
-
         $html = '<div class="row">';
         foreach ($columns as $col) {
             $col = (array) $col;
@@ -71,6 +80,13 @@ class Sitemap extends Component
         return $html;
     }
 
+    /**
+     * render Link（private实例方法）
+     *
+     * @param array $link link
+     *
+     * @return string result
+     */
     private function renderLink(array $link): string
     {
         $link = (array) $link;
@@ -98,7 +114,6 @@ class Sitemap extends Component
             }
             $html .= '</ul>';
         }
-
         $html .= '</li>';
 
         return $html;

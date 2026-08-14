@@ -83,11 +83,6 @@ rsync -a --delete resources/ /Users/aha/www/wsf/vendor/zxf/xfadmin/resources/
 
 ```bash
 php -l src/XfAdmin.php                              # 语法
-php tools/selftest/build.php                       # 渲染全部组件
-php tools/selftest/xss_audit.php                   # XSS 审计
-php tools/selftest/asset_check.php                 # 资源依赖完整
-bash tools/selftest/run.sh                         # Playwright 端到端
-php tests/smoke.php && php tests/regression.php    # 包内 smoke/regression
 ```
 
 ---

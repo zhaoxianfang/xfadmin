@@ -24,11 +24,21 @@ class Tags extends Component
 {
     use FieldWrapper;
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['tagify'];
     }
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -43,6 +53,11 @@ class Tags extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $value = $this->get('value');
@@ -60,7 +75,6 @@ class Tags extends Component
         if ($this->get('placeholder')) {
             $attrs['placeholder'] = $this->get('placeholder');
         }
-
         $id = $this->get('id') ?? $this->uid('xf-tags');
         $attrs['id'] = $id;
         $custom = $this->attributes;

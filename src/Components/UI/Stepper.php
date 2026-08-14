@@ -22,6 +22,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Stepper extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -31,6 +36,11 @@ class Stepper extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $variant  = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
@@ -57,7 +67,6 @@ class Stepper extends Component
             }
             $html .= '</div></div>';
         }
-
         return $html . '</div>';
     }
 }

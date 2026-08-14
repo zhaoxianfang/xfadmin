@@ -21,18 +21,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Roles extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['title' => '', 'roles' => [], 'permissions' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $roles = (array) $this->get('roles', []);
         if (empty($roles)) {
             return '';
         }
-
         $title = $this->get('title') ? '<div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">' . $this->e($this->get('title')) . '</h5><button class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>新建角色</button></div>' : '';
 
         $html = $title . '<div class="row g-3">';
@@ -56,7 +65,6 @@ class Roles extends Component
         if ($perms) {
             $html .= (string) XfAdmin::permissionMatrix(['groups' => $perms]);
         }
-
         return $html;
     }
 }

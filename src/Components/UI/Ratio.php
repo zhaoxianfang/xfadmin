@@ -20,6 +20,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Ratio extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class Ratio extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         // 键名容错：embed / content / html 视作自定义内容（type=content）
@@ -48,7 +58,6 @@ class Ratio extends Component
             $this->options['body'] = $this->options['body']
                 ?? '<div class="d-flex align-items-center justify-content-center w-100 h-100 bg-body-tertiary text-muted"><i class="ti ti-photo fs-1 me-2"></i>媒体占位</div>';
         }
-
         $ratio = (string) $this->get('ratio');
         $isPreset = in_array($ratio, ['1x1', '4x3', '16x9', '21x9'], true);
 
@@ -56,7 +65,6 @@ class Ratio extends Component
         if (! $isPreset && is_numeric($ratio)) {
             $attrs['style'] = '--bs-aspect-ratio: ' . (float) $ratio . '%;';
         }
-
         $inner = '';
         switch ($this->get('type')) {
             case 'video':
@@ -71,7 +79,6 @@ class Ratio extends Component
                 $fs = $this->get('allowfullscreen') ? ' allowfullscreen' : '';
                 $inner = '<iframe src="' . $this->e($this->get('src')) . '" title="embed"' . $fs . '></iframe>';
         }
-
         return '<div' . $this->attrs($attrs) . '>' . $inner . '</div>';
     }
 }

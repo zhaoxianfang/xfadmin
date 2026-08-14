@@ -24,6 +24,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class CommandPalette extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,6 +41,11 @@ class CommandPalette extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id   = $this->e($this->get('id'));
@@ -52,7 +62,6 @@ class CommandPalette extends Component
                 . '<i class="' . $icon . '"></i><span class="flex-grow-1 text-start">' . $label . '</span>'
                 . ($hint ? '<kbd class="small">' . $hint . '</kbd>' : '') . '</button>';
         }
-
         $html = '<div class="modal fade xf-cmd-palette" id="' . $id . '" tabindex="-1" aria-hidden="true">'
             . '<div class="modal-dialog modal-dialog-centered modal-sm" style="max-width:520px">'
             . '<div class="modal-content border-0 shadow-lg">'

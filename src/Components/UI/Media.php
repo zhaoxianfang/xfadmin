@@ -20,6 +20,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Media extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class Media extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $img   = (string) $this->get('image');
@@ -64,7 +74,6 @@ class Media extends Component
         if ($href !== '') {
             return '<a' . $this->attrs(['href' => $href, 'class' => 'text-decoration-none text-reset']) . '>' . $inner . '</a>';
         }
-
         return $inner;
     }
 }

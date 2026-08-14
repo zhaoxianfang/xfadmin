@@ -19,18 +19,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class PinBoard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['notes' => [], 'addable' => true];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $notes = (array) $this->get('notes', []);
         if (empty($notes)) {
             return '';
         }
-
         $html = '<div class="pin-board">';
         foreach ($notes as $n) {
             $n     = (array) $n;
@@ -47,11 +56,9 @@ class PinBoard extends Component
             }
             $html .= '</div>';
         }
-
         if ($this->get('addable')) {
             $html .= '<div class="pin-note pin-add"><button class="btn btn-light w-100 h-100"><i class="ti ti-plus"></i> 添加便利贴</button></div>';
         }
-
         return $html . '</div>';
     }
 }

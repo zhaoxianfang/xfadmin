@@ -15,16 +15,31 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Tinycon extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['count' => 0, 'color' => '#e63757', 'background' => '#3e60d5'];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['tinycon'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('tinycon');

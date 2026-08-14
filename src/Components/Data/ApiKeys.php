@@ -19,16 +19,31 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ApiKeys extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['items' => [], 'reveal' => true, 'regenerate' => true];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('apikeys');
@@ -82,12 +97,18 @@ class ApiKeys extends Component
         return $html;
     }
 
+    /**
+     * mask（private实例方法）
+     *
+     * @param string $key key
+     *
+     * @return string result
+     */
     private function mask(string $key): string
     {
         if ($key === '') {
             return '';
         }
-
         return substr($key, 0, 4) . str_repeat('•', max(4, strlen($key) - 8)) . substr($key, -4);
     }
 }

@@ -27,6 +27,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Marketplace extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -40,6 +45,11 @@ class Marketplace extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '';
@@ -49,22 +59,26 @@ class Marketplace extends Component
         if (!empty($categories)) {
             $html .= $this->renderCategories($categories);
         }
-
         // 筛选器行
         $filters = (array) $this->get('filters', []);
         if (!empty($filters)) {
             $html .= $this->renderFilters($filters);
         }
-
         // 商品网格
         $products = (array) $this->get('products', []);
         if (!empty($products)) {
             $html .= $this->renderProducts($products);
         }
-
         return $html;
     }
 
+    /**
+     * render Categories（private实例方法）
+     *
+     * @param array $categories categories
+     *
+     * @return string result
+     */
     private function renderCategories(array $categories): string
     {
         $cols = (array) $this->get('columns', [4, 3, 2, 1]);
@@ -98,6 +112,13 @@ class Marketplace extends Component
         return $html;
     }
 
+    /**
+     * render Filters（private实例方法）
+     *
+     * @param array $filters filters
+     *
+     * @return string result
+     */
     private function renderFilters(array $filters): string
     {
         $subtitle = (string) $this->get('subtitle', '');
@@ -122,6 +143,13 @@ class Marketplace extends Component
         return $html;
     }
 
+    /**
+     * render Products（private实例方法）
+     *
+     * @param array $products products
+     *
+     * @return string result
+     */
     private function renderProducts(array $products): string
     {
         $cols = (array) $this->get('columns', [4, 3, 2, 1]);
@@ -141,6 +169,14 @@ class Marketplace extends Component
         return $html;
     }
 
+    /**
+     * render Product Card（private实例方法）
+     *
+     * @param array $p p
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderProductCard(array $p, string $currency): string
     {
         $title = (string) ($p['title'] ?? '');
@@ -159,7 +195,6 @@ class Marketplace extends Component
             $html .= '<div class="badge text-bg-' . $this->e($badgeColor) . ' badge-label fs-base rounded position-absolute top-0 start-0 m-3">'
                 . $this->e($badge) . '</div>';
         }
-
         $html .= '<div class="card-body">';
         if ($image) {
             $html .= '<div class="p-3"><img src="' . $this->e($image) . '" alt="' . $this->e($title) . '" class="img-fluid" /></div>';
@@ -178,7 +213,6 @@ class Marketplace extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '</div>';
 
         // 价格

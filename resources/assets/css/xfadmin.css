@@ -390,13 +390,18 @@ html[data-layout="topnav"] .app-topbar .logo-topbar img {
 .auth-box .card-body { padding: 1.75rem; }
 .auth-pass-inputgroup .btn { border-color: var(--bs-border-color); }
 .auth-footer-text { text-align: center; margin-top: 1rem; font-size: .875rem; color: var(--bs-secondary-color); }
-/* 左右分栏认证布局（复刻 inspinia auth-split-*） */
-.auth-split-wrapper { min-height: 100vh; }
-.auth-split-aside {
-    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
-    background-size: cover;
-}
-.auth-split-form { background: var(--bs-body-bg); }
+/* AuthPage 扩展插槽容器 */
+.xf-auth-prepend, .xf-auth-append, .xf-auth-actions { font-size: .9rem; }
+.xf-auth-prepend .form-text, .xf-auth-append .form-text { font-size: .8rem; }
+/* split 布局表单区视觉微调 */
+.auth-split-form .card { border: 0; }
+.auth-split-aside ul li i { color: rgba(255,255,255,.85); }
+/* 密码强度条（由 PasswordStrength 组件交互，这里给基础样式） */
+.password-bar { height: 4px; border-radius: 2px; background: var(--bs-border-color); overflow: hidden; }
+.password-bar::after { content: ""; display: block; height: 100%; width: 0; background: var(--bs-danger); transition: width .2s, background .2s; }
+.password-bar.weak::after { width: 33%; background: var(--bs-danger); }
+.password-bar.medium::after { width: 66%; background: var(--bs-warning); }
+.password-bar.strong::after { width: 100%; background: var(--bs-success); }
 
 /* 错误页 / 即将上线 / 维护：这些组件自带完整文档结构，这里做基础美化 */
 .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; }

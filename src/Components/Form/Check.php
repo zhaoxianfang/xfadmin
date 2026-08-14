@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Check extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,16 @@ class Check extends Component
         ];
     }
 
+    /**
+     * render One（protected实例方法）
+     *
+     * @param string|int $value value
+     * @param string $label label
+     * @param bool $checked checked
+     * @param ?string $id id
+     *
+     * @return string result
+     */
     protected function renderOne(string|int $value, string $label, bool $checked, ?string $id = null): string
     {
         $type     = $this->get('type');
@@ -63,6 +78,11 @@ class Check extends Component
             . '</div>';
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $options = (array) $this->get('options', []);
@@ -81,7 +101,6 @@ class Check extends Component
                 $html .= $this->renderOne($value, (string) $label, in_array((string) $value, $selected, true));
             }
         }
-
         $wrapper = $this->get('wrapper');
 
         return $wrapper ? '<div class="' . $this->e($wrapper) . '">' . $html . '</div>' : $html;

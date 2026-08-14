@@ -18,6 +18,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ColorPalette extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -25,6 +30,11 @@ class ColorPalette extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $groups = (array) $this->get('groups', []);
@@ -32,7 +42,6 @@ class ColorPalette extends Component
         if (empty($groups)) {
             $groups = $this->getDefaultGroups();
         }
-
         $html = '';
         foreach ($groups as $group) {
             $group = (array) $group;
@@ -53,10 +62,14 @@ class ColorPalette extends Component
             }
             $html .= '</div>';
         }
-
         return $html;
     }
 
+    /**
+     * get Default Groups（private实例方法）
+     *
+     * @return array result
+     */
     private function getDefaultGroups(): array
     {
         return [

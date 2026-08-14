@@ -20,6 +20,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class LoadingButton extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,11 +39,21 @@ class LoadingButton extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return $this->get('driver') === 'ladda' ? ['ladda'] : [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('lbtn');
@@ -59,7 +74,6 @@ class LoadingButton extends Component
         if ($this->get('value') !== null) {
             $attrs['value'] = $this->get('value');
         }
-
         $html = '<button' . $this->attrs($attrs) . '>';
         $html .= '<span class="xf-lbtn-label">' . $icon . $this->e($this->get('text')) . '</span>';
         $html .= '<span class="xf-lbtn-spinner spinner-border spinner-border-sm d-none" role="status"></span>';

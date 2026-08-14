@@ -26,6 +26,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProductCard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -42,6 +47,11 @@ class ProductCard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => 'card h-100']) . '>';
@@ -73,7 +83,6 @@ class ProductCard extends Component
                 'size'  => 'fs-6',
             ]))->render();
         }
-
         $html .= '<div class="d-flex align-items-center gap-2 mt-2">';
         if ($this->get('price') !== null) {
             $html .= '<h5 class="mb-0 text-primary">' . $this->raw($this->get('price')) . '</h5>';

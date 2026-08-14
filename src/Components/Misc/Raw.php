@@ -13,6 +13,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Raw extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -25,11 +30,21 @@ class Raw extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return (array) $this->get('plugins', []);
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $assets = \zxf\XfAdmin\Assets\Assets::instance();
@@ -39,7 +54,6 @@ class Raw extends Component
         if ($this->get('css') !== null) {
             $assets->inlineCss((string) $this->get('css'), $this->get('css_key'));
         }
-
         return $this->raw($this->get('html'));
     }
 }

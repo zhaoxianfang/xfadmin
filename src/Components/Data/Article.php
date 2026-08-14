@@ -41,18 +41,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Article extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['article' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $a = (array) $this->get('article', []);
         if (empty($a)) {
             return '';
         }
-
         $avatar = ! empty($a['author']['avatar'])
             ? \zxf\XfAdmin\XfAdmin::img((string) $a['author']['avatar'])
             : '';
@@ -86,7 +95,6 @@ class Article extends Component
         if ($cover) {
             $html .= '<img src="' . $this->e($cover) . '" class="rounded w-100 xf-article-cover mb-4" alt="' . $this->e($a['title'] ?? '') . '">';
         }
-
         // 作者信息块
         $html .= '<div class="d-flex align-items-center mb-4">';
         if ($avatar) {
@@ -102,12 +110,10 @@ class Article extends Component
         foreach ($body as $p) {
             $html .= '<p class="text-muted">' . $this->raw($p) . '</p>';
         }
-
         // 引用块
         if (! empty($a['quote'])) {
             $html .= '<blockquote class="border-start border-3 border-primary ps-3 my-4 fst-italic">' . $this->e($a['quote']) . '</blockquote>';
         }
-
         // 标签
         if ($tags) {
             $html .= '<div class="mt-3">';
@@ -116,7 +122,6 @@ class Article extends Component
             }
             $html .= '</div>';
         }
-
         // 相关文章网格
         if ($related) {
             $html .= '<hr class="my-4"><h5 class="mb-3">相关文章</h5><div class="row g-3">';
@@ -138,7 +143,6 @@ class Article extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '</article>';
 
         return $html;

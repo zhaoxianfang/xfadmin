@@ -19,6 +19,11 @@ class WidgetsDashboard extends Component
 {
     use HasPriceFormat;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -27,6 +32,11 @@ class WidgetsDashboard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $widgets = (array) $this->get('widgets', []);
@@ -62,6 +72,13 @@ class WidgetsDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Stats（private实例方法）
+     *
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderStats(string $currency): string
     {
         $stats = [
@@ -96,6 +113,11 @@ class WidgetsDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Charts（private实例方法）
+     *
+     * @return string result
+     */
     private function renderCharts(): string
     {
         // 声明式 ECharts：canvas 带 data-xf="echart" + data-xf-config，
@@ -129,6 +151,11 @@ class WidgetsDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Messages（private实例方法）
+     *
+     * @return string result
+     */
     private function renderMessages(): string
     {
         $msgs = [
@@ -157,12 +184,16 @@ class WidgetsDashboard extends Component
                 . ($badge ? '<span class="badge text-bg-danger rounded-pill ms-2">' . $this->e($badge) . '</span>' : '')
                 . '<small class="text-muted ms-2">' . $time . '</small></div></div>';
         }
-
         $html .= '</div><div class="card-footer text-center"><a href="#">查看所有消息</a></div></div>';
 
         return $html;
     }
 
+    /**
+     * render Tasks（private实例方法）
+     *
+     * @return string result
+     */
     private function renderTasks(): string
     {
         $tasks = [
@@ -191,7 +222,6 @@ class WidgetsDashboard extends Component
                 . '<span class="flex-grow-1' . $textClass . '">' . $this->e($t['text']) . '</span>'
                 . $priorityBadge . '</div></div>';
         }
-
         $html .= '</div><div class="card-footer"><div class="input-group input-group-sm">'
             . '<input type="text" class="form-control" placeholder="添加新任务...">'
             . '<button class="btn btn-primary"><i class="ti ti-plus"></i></button></div></div></div>';
@@ -199,6 +229,11 @@ class WidgetsDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Activity（private实例方法）
+     *
+     * @return string result
+     */
     private function renderActivity(): string
     {
         $activities = [
@@ -219,7 +254,6 @@ class WidgetsDashboard extends Component
                 . '<div class="flex-grow-1"><small>' . $this->e($a['text']) . '</small></div>'
                 . '<small class="text-muted">' . $this->e($a['time']) . '</small></div></div>';
         }
-
         $html .= '</div></div>';
 
         return $html;

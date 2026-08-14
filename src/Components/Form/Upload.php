@@ -19,6 +19,11 @@ class Upload extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -32,6 +37,11 @@ class Upload extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return match ($this->get('driver')) {
@@ -41,6 +51,11 @@ class Upload extends Component
         };
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id     = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-upload');
@@ -62,7 +77,6 @@ class Upload extends Component
 
             return $this->wrapField($control, $id);
         }
-
         if ($driver === 'filepond') {
             $config  = array_replace_recursive([
                 'allowMultiple' => (bool) $this->get('multiple'),
@@ -81,7 +95,6 @@ class Upload extends Component
 
             return $this->wrapField($control, $id);
         }
-
         $control = '<input' . Html::attrs([
             'type'     => 'file',
             'class'    => 'form-control',

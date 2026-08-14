@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class VideoPlayer extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,11 +43,21 @@ class VideoPlayer extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $src = (string) $this->get('src', '');
@@ -71,7 +86,6 @@ class VideoPlayer extends Component
         if ($title) {
             $html .= '<h5 class="mb-3">' . $this->e($title) . '</h5>';
         }
-
         if ($src) {
             $html .= '<div class="ratio ratio-16x9"><video id="' . $this->e($id) . '"' . $attrs . ' class="w-100 rounded">';
             $html .= '<source src="' . $this->e($src) . '" type="' . $this->e($type) . '">';
@@ -81,7 +95,6 @@ class VideoPlayer extends Component
             $html .= '<div class="text-center text-white"><i class="ti ti-video fs-48 mb-3 d-block"></i>';
             $html .= '<p>未提供视频源</p></div></div>';
         }
-
         $html .= '</div>';
 
         return $html;

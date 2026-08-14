@@ -32,6 +32,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class VoteList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -40,6 +45,11 @@ class VoteList extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
@@ -67,7 +77,6 @@ class VoteList extends Component
             if (! empty($it['desc'])) {
                 $html .= '<p class="text-muted mb-2">' . $this->e($it['desc']) . '</p>';
             }
-
             $html .= '<p class="d-flex flex-wrap gap-3 text-muted mb-1 align-items-center fs-base">';
             $author = $it['author'] ?? null;
             if (is_array($author)) {
@@ -99,7 +108,6 @@ class VoteList extends Component
             }
             $html .= '</p></div></div></div>';
         }
-
         return $html . '</div></div>';
     }
 }

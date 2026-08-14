@@ -18,6 +18,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Callout extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,11 @@ class Callout extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $v     = (string) $this->get('variant');

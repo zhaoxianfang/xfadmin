@@ -29,6 +29,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class AccountSettings extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class AccountSettings extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $tabs = (array) $this->get('tabs', []);
@@ -47,7 +57,6 @@ class AccountSettings extends Component
         if (empty($tabs)) {
             return '';
         }
-
         $prefix = $this->uid('xf-acc');
 
         $html = '<div class="row g-4"><div class="col-lg-3">';
@@ -105,6 +114,15 @@ class AccountSettings extends Component
         return $html;
     }
 
+    /**
+     * render Default Tab（private实例方法）
+     *
+     * @param int $idx idx
+     * @param array $tab tab
+     * @param array $user user
+     *
+     * @return string result
+     */
     private function renderDefaultTab(int $idx, array $tab, array $user): string
     {
         $title = (string) ($tab['title'] ?? '');
@@ -127,6 +145,13 @@ class AccountSettings extends Component
         }
     }
 
+    /**
+     * render General Tab（private实例方法）
+     *
+     * @param array $user user
+     *
+     * @return string result
+     */
     private function renderGeneralTab(array $user): string
     {
         $name = (string) ($user['name'] ?? '');
@@ -150,6 +175,13 @@ class AccountSettings extends Component
         return $html;
     }
 
+    /**
+     * render Password Tab（private实例方法）
+     *
+     * @param array $user user
+     *
+     * @return string result
+     */
     private function renderPasswordTab(array $user): string
     {
         $html = '<h5 class="mb-3">修改密码</h5>';
@@ -163,6 +195,13 @@ class AccountSettings extends Component
         return $html;
     }
 
+    /**
+     * render Notifications Tab（private实例方法）
+     *
+     * @param array $user user
+     *
+     * @return string result
+     */
     private function renderNotificationsTab(array $user): string
     {
         $items = [
@@ -185,6 +224,13 @@ class AccountSettings extends Component
         return $html;
     }
 
+    /**
+     * render Export Tab（private实例方法）
+     *
+     * @param array $user user
+     *
+     * @return string result
+     */
     private function renderExportTab(array $user): string
     {
         $html = '<h5 class="mb-3">导出数据</h5>';

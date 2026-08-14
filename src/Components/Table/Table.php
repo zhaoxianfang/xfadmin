@@ -27,6 +27,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Table extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -81,10 +86,17 @@ class Table extends Component
             $col['label'] ??= $col['key'];
             $columns[]      = $col;
         }
-
         return $columns;
     }
 
+    /**
+     * cell（protected实例方法）
+     *
+     * @param array $col col
+     * @param mixed $row row
+     *
+     * @return string result
+     */
     protected function cell(array $col, mixed $row): string
     {
         $format = $col['format'] ?? null;
@@ -93,12 +105,16 @@ class Table extends Component
 
             return ! empty($col['raw']) || ! is_scalar($value) ? $this->raw($value) : $this->e($value);
         }
-
         $value = is_array($row) ? Html::get($row, (string) $col['key']) : ($row->{$col['key']} ?? null);
 
         return ! empty($col['raw']) ? $this->raw($value) : $this->e($value);
     }
 
+    /**
+     * table Class（protected实例方法）
+     *
+     * @return string result
+     */
     protected function tableClass(): string
     {
         return Html::cls('table', [
@@ -114,6 +130,11 @@ class Table extends Component
         ], $this->get('variant') ? 'table-' . $this->enum($this->get('variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : '');
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $columns = $this->columns();
@@ -123,7 +144,6 @@ class Table extends Component
         if ($this->get('caption')) {
             $html .= '<caption>' . $this->e($this->get('caption')) . '</caption>';
         }
-
         $html .= '<thead' . ($this->get('head_variant') ? ' class="table-' . $this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') . '"' : '') . '><tr>';
         foreach ($columns as $col) {
             $attrs = ['class' => $col['class'] ?? null];
@@ -137,7 +157,6 @@ class Table extends Component
         if ($data === []) {
             $html .= '<tr><td colspan="' . count($columns) . '" class="text-center text-muted py-4">' . $this->e($this->get('empty')) . '</td></tr>';
         }
-
         $rowAttrs = $this->get('row_attrs');
         foreach ($data as $row) {
             $attrs = $rowAttrs instanceof Closure ? (array) $rowAttrs($row) : [];
@@ -152,7 +171,6 @@ class Table extends Component
         if ($this->get('responsive')) {
             $html = '<div class="table-responsive">' . $html . '</div>';
         }
-
         return $html;
     }
 }

@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Collapse extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,6 +39,11 @@ class Collapse extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id  = $this->resolveId('collapse');
@@ -53,7 +63,6 @@ class Collapse extends Component
             $triggerAttrs['type']            = 'button';
             $triggerAttrs['data-bs-target']  = '#' . $id;
         }
-
         $html  = '<' . $triggerTag . Html::attrs($triggerAttrs) . '>' . $this->raw($this->get('trigger')) . '</' . $triggerTag . '>';
 
         $collapseClass = Html::cls('collapse', [

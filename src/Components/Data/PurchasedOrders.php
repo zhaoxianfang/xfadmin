@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class PurchasedOrders extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,11 @@ class PurchasedOrders extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $orders = (array) $this->get('orders', []);
@@ -69,11 +79,9 @@ class PurchasedOrders extends Component
                 . '<button class="btn btn-outline-secondary"><i class="ti ti-eye"></i></button>'
                 . '<button class="btn btn-outline-secondary"><i class="ti ti-pencil"></i></button></div></td></tr>';
         }
-
         if (empty($orders)) {
             $html .= '<tr><td colspan="8" class="text-center text-muted py-4">暂无采购记录</td></tr>';
         }
-
         $html .= '</tbody></table></div></div></div>';
 
         return $html;

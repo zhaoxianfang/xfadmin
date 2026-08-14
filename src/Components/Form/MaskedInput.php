@@ -23,11 +23,21 @@ class MaskedInput extends Component
 {
     use FieldWrapper;
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['inputmask'];
     }
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -42,6 +52,11 @@ class MaskedInput extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $config = array_filter([
@@ -57,7 +72,6 @@ class MaskedInput extends Component
         if ($this->get('placeholder')) {
             $attrs['placeholder'] = $this->get('placeholder');
         }
-
         $id = $this->get('id') ?? $this->uid('xf-mask');
         $attrs['id'] = $id;
         $custom = $this->attributes;
@@ -65,7 +79,6 @@ class MaskedInput extends Component
         foreach ($custom as $k => $v) {
             $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'] ?? '', $v) : $v;
         }
-
         return $this->wrapField('<input' . Html::attrs($attrs) . '>', $id);
     }
 }

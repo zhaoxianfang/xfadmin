@@ -27,6 +27,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProfileHeader extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -42,6 +47,11 @@ class ProfileHeader extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => 'card overflow-hidden']) . '>';
@@ -52,7 +62,6 @@ class ProfileHeader extends Component
         } else {
             $html .= '<div class="profile-cover bg-primary" style="height:120px;"></div>';
         }
-
         $html .= '<div class="card-body">';
         $html .= '<div class="d-flex flex-wrap align-items-center gap-3" style="margin-top:-56px;">';
         // 个人主页大头像：INSPINIA 规范 .avatar 包裹（avatar-xxl=80px）+ 白色描边压在封面上
@@ -99,7 +108,6 @@ class ProfileHeader extends Component
             }
             $html .= '</ul>';
         }
-
         return $html . '</div>';
     }
 }

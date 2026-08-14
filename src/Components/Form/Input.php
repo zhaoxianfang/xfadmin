@@ -20,6 +20,11 @@ class Input extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -37,6 +42,11 @@ class Input extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         $assets = [];
@@ -46,10 +56,14 @@ class Input extends Component
         if ($this->get('tags')) {
             $assets[] = 'tagify';
         }
-
         return $assets;
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id    = $this->resolveId('xf-input');
@@ -76,14 +90,12 @@ class Input extends Component
         } elseif ($this->get('tags')) {
             $attrs['data-xf'] = 'tagify';
         }
-
         // 合并自定义属性（id 除外，已消费）
         $custom = $this->attributes;
         unset($custom['id']);
         foreach ($custom as $k => $v) {
             $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'], $v) : $v;
         }
-
         $control = '<input' . Html::attrs($attrs) . '>';
 
         if ($this->get('prepend') !== null || $this->get('append') !== null) {
@@ -93,7 +105,6 @@ class Input extends Component
                 . ($this->get('append') !== null ? '<span class="input-group-text">' . $this->raw($this->get('append')) . '</span>' : '')
                 . '</div>';
         }
-
         return $this->wrapField($control, $id);
     }
 }

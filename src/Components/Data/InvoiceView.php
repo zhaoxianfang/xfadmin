@@ -26,6 +26,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class InvoiceView extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -40,6 +45,11 @@ class InvoiceView extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $invoiceNo = (string) $this->get('invoice_no', '');
@@ -67,7 +77,6 @@ class InvoiceView extends Component
             if ($tax !== '') {
                 $h .= '<div class="text-muted small">税号：' . $this->e($tax) . '</div>';
             }
-
             return $h . '</div>';
         };
 
@@ -99,7 +108,6 @@ class InvoiceView extends Component
 
             $html .= '<tr><td>' . $this->e($desc) . '</td><td class="text-end">' . $qty . '</td><td class="text-end">' . $fmt($price) . '</td><td class="text-end">' . $fmt($amount) . '</td></tr>';
         }
-
         $tax = $subtotal * $taxRate;
         $html .= '</tbody><tfoot>';
         $html .= '<tr><td colspan="3" class="text-end fw-semibold">小计</td><td class="text-end">' . $fmt($subtotal) . '</td></tr>';

@@ -14,6 +14,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Alert extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -26,6 +31,11 @@ class Alert extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         // 键名容错：text / message / content 等价；heading / title 等价；variant / type 等价
@@ -41,7 +51,6 @@ class Alert extends Component
         if ($this->get('type') !== null && $this->get('variant') === 'primary') {
             $this->options['variant'] = $this->get('type');
         }
-
         $variant = $this->e($this->get('variant'));
         $class   = Html::cls('alert', [
             'alert-dismissible fade show' => $this->get('dismissible'),
@@ -60,7 +69,6 @@ class Alert extends Component
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
         }
-
         return $html . '</div>';
     }
 }

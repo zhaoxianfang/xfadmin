@@ -27,6 +27,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ChatBox extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -40,6 +45,11 @@ class ChatBox extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => 'card mb-0 chat-box']) . '>';
@@ -56,7 +66,6 @@ class ChatBox extends Component
             }
             $html .= '</div></div>';
         }
-
         $html .= '<div class="card-body overflow-auto" data-xf="chat-scroll" style="height:' . $this->e($this->get('height')) . ';">';
         foreach ((array) $this->get('messages', []) as $m) {
             $html .= $this->message((array) $m);
@@ -70,10 +79,16 @@ class ChatBox extends Component
             $html .= '<button type="submit" class="btn btn-primary btn-icon"><i class="ti ti-send"></i></button>';
             $html .= '</form></div>';
         }
-
         return $html . '</div>';
     }
 
+    /**
+     * message（private实例方法）
+     *
+     * @param array $m m
+     *
+     * @return string result
+     */
     private function message(array $m): string
     {
         $me   = ($m['from'] ?? 'them') === 'me';

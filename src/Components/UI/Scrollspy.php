@@ -21,6 +21,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Scrollspy extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class Scrollspy extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $navId  = $this->uid('ss-nav');

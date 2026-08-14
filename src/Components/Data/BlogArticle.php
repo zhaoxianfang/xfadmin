@@ -23,18 +23,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class BlogArticle extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['article' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $a = (array) $this->get('article', []);
         if (empty($a)) {
             return '';
         }
-
         $av   = ! empty($a['author']['avatar']) ? \zxf\XfAdmin\XfAdmin::img((string) $a['author']['avatar']) : '';
         $cover = ! empty($a['cover']) ? \zxf\XfAdmin\XfAdmin::img((string) $a['cover']) : '';
 
@@ -50,11 +59,9 @@ class BlogArticle extends Component
         if ($cover) {
             $html .= '<img src="' . $this->e($cover) . '" class="img-fluid rounded mb-4 w-100 object-fit-cover" style="max-height:420px" alt="">';
         }
-
         foreach ((array) ($a['body'] ?? []) as $para) {
             $html .= '<p class="text-muted" style="line-height:1.9">' . nl2br($this->e($para)) . '</p>';
         }
-
         if (! empty($a['tags'])) {
             $html .= '<div class="mt-4">';
             foreach ((array) $a['tags'] as $t) {
@@ -62,7 +69,6 @@ class BlogArticle extends Component
             }
             $html .= '</div>';
         }
-
         // 作者卡
         if (! empty($a['author'])) {
             $html .= '<div class="card mt-4 bg-light"><div class="card-body d-flex align-items-center gap-3">';
@@ -81,7 +87,6 @@ class BlogArticle extends Component
             }
             $html .= '</div>';
         }
-
         return $html;
     }
 }

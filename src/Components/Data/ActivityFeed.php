@@ -21,6 +21,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ActivityFeed extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,11 @@ class ActivityFeed extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => 'activity-feed']) . '>';
@@ -59,7 +69,6 @@ class ActivityFeed extends Component
             $html .= '<small class="text-muted">' . $this->e($it['time'] ?? '') . '</small>';
             $html .= '</div></div>';
         }
-
         return $html . '</div>';
     }
 }

@@ -24,6 +24,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Tooltip extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class Tooltip extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $tag  = preg_replace('/[^a-z0-9]/i', '', (string) $this->get('tag')) ?: 'button';

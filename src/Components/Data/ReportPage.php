@@ -24,6 +24,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ReportPage extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,6 +39,11 @@ class ReportPage extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $title   = $this->e($this->get('title', '报表'));
@@ -47,7 +57,6 @@ class ReportPage extends Component
         if ($filters !== '') {
             $html .= '<div class="card mb-3"><div class="card-body">' . $filters . '</div></div>';
         }
-
         if (! empty($charts)) {
             $html .= '<div class="row g-3">';
             foreach ($charts as $c) {
@@ -61,11 +70,9 @@ class ReportPage extends Component
             }
             $html .= '</div>';
         }
-
         if ($table !== '') {
             $html .= '<div class="mt-3">' . $table . '</div>';
         }
-
         return $html;
     }
 }

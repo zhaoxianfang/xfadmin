@@ -31,6 +31,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ApexSankey extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -44,12 +49,22 @@ class ApexSankey extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         // apexsankey 声明了 svgdotjs 依赖，Assets 会自动按序注入 svg.min.js
         return ['apexsankey'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('xf-apexsankey');
@@ -65,7 +80,6 @@ class ApexSankey extends Component
             $n['title'] = (string) ($n['title'] ?? $n['id'] ?? '');
             $nodes[]    = $n;
         }
-
         $cfg = array_filter([
             'nodes'     => $nodes,
             'edges'     => array_values((array) $this->get('edges', [])),

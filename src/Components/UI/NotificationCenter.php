@@ -26,6 +26,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class NotificationCenter extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class NotificationCenter extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id   = $this->e($this->get('id'));
@@ -65,7 +75,6 @@ class NotificationCenter extends Component
                 . ($unread ? '<span class="xf-notify-dot"></span>' : '')
                 . '</div></a>';
         }
-
         $footer = (array) $this->get('footer');
         $footHtml = '';
         if (! empty($footer['all']) || ! empty($footer['clear'])) {
@@ -78,7 +87,6 @@ class NotificationCenter extends Component
                 : '';
             $footHtml .= '</div>';
         }
-
         $html = '<div class="offcanvas offcanvas-end xf-notify-center" tabindex="-1" id="' . $id . '" aria-label="' . $this->e($this->get('title')) . '">'
             . '<div class="offcanvas-header"><h6 class="offcanvas-title mb-0">' . $this->e($this->get('title')) . '</h6>'
             . '<button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>'

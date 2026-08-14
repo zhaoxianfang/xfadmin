@@ -9,6 +9,11 @@ namespace zxf\XfAdmin\Components\Form\Concerns;
  */
 trait FieldWrapper
 {
+    /**
+     * field Defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function fieldDefaults(): array
     {
         return [
@@ -35,7 +40,6 @@ trait FieldWrapper
                 . ($this->get('required') ? ' <span class="text-danger">*</span>' : '')
                 . '</label>';
         }
-
         $extra = '';
         $feedback = (array) ($this->get('feedback') ?? []);
         if (isset($feedback['valid'])) {
@@ -47,14 +51,12 @@ trait FieldWrapper
         if ($this->get('help') !== null) {
             $extra .= '<div class="form-text">' . $this->raw($this->get('help')) . '</div>';
         }
-
         $inner = $label . $control . $extra;
 
         $wrapper = $this->get('wrapper');
         if ($wrapper === false || $wrapper === null) {
             return $inner;
         }
-
         return '<div class="' . $this->e($wrapper) . '">' . $inner . '</div>';
     }
 }

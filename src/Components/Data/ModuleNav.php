@@ -27,6 +27,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ModuleNav extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class ModuleNav extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $type  = $this->enum($this->get('type'), ['pills', 'tabs', 'underline'], 'pills');
@@ -52,19 +62,16 @@ class ModuleNav extends Component
         if (! is_array($sections)) {
             $sections = [];
         }
-
         // 若只给了一维 items，自动包成单个 section（无标题）
         if ($sections === [] && $items !== []) {
             $sections = [['title' => '', 'items' => $items]];
         }
-
         $navClass = 'nav nav-' . $type;
         if ($align === 'center') {
             $navClass .= ' justify-content-center';
         } elseif ($align === 'end') {
             $navClass .= ' justify-content-end';
         }
-
         $out = '';
         foreach ($sections as $sec) {
             $secItems = $sec['items'] ?? [];
@@ -80,7 +87,6 @@ class ModuleNav extends Component
             }
             $out .= '<ul class="' . $navClass . ' mb-3 ' . $this->e($this->get('class')) . '">' . $links . '</ul>';
         }
-
         return $out;
     }
 }

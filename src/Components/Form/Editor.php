@@ -16,6 +16,11 @@ class Editor extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -26,11 +31,21 @@ class Editor extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return $this->get('driver') === 'summernote' ? ['summernote'] : ['quill'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id     = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');
@@ -63,7 +78,6 @@ class Editor extends Component
                 $control .= '<input type="hidden" name="' . $this->e($this->get('name')) . '" value="' . $this->e($this->get('value')) . '">';
             }
         }
-
         return $this->wrapField($control, $id);
     }
 }

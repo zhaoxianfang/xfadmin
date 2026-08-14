@@ -32,6 +32,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Clients extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -43,13 +48,17 @@ class Clients extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $clients = (array) $this->get('clients', []);
         if (empty($clients)) {
             return '';
         }
-
         $html = '<div' . $this->attrs(['class' => 'card xf-clients']) . '>';
 
         // 头部工具栏
@@ -101,7 +110,6 @@ class Clients extends Component
                 . '<a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-pencil"></i></a></div></td>';
             $html .= '</tr>';
         }
-
         $html .= '</tbody></table></div></div>';
 
         // 页脚
@@ -113,6 +121,13 @@ class Clients extends Component
         return $html . '</div>';
     }
 
+    /**
+     * badge（protected实例方法）
+     *
+     * @param mixed $status status
+     *
+     * @return string result
+     */
     protected function badge(mixed $status): string
     {
         if (empty($status)) {

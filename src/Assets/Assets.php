@@ -165,10 +165,20 @@ final class Assets
         'diff'         => ['js' => ['plugins/diff/diff.min.js']],
     ];
 
+    /**
+     * construct（private实例方法）
+     *
+     * @return mixed 渲染结果 / 组件实例或配置
+     */
     private function __construct()
     {
     }
 
+    /**
+     * instance（public静态方法）
+     *
+     * @return self result
+     */
     public static function instance(): self
     {
         return self::$instance ??= new self();
@@ -183,7 +193,6 @@ final class Assets
             $new->baseUrl = $old->baseUrl;
             $new->version = $old->version;
         }
-
         return self::$instance = $new;
     }
 
@@ -208,6 +217,13 @@ final class Assets
         return $this;
     }
 
+    /**
+     * set Base Url（public实例方法）
+     *
+     * @param string $url url
+     *
+     * @return self result
+     */
     public function setBaseUrl(string $url): self
     {
         $this->baseUrl = rtrim($url, '/');
@@ -215,11 +231,23 @@ final class Assets
         return $this;
     }
 
+    /**
+     * base Url（public实例方法）
+     *
+     * @return string result
+     */
     public function baseUrl(): string
     {
         return $this->baseUrl;
     }
 
+    /**
+     * set Version（public实例方法）
+     *
+     * @param ?string $version version
+     *
+     * @return self result
+     */
     public function setVersion(?string $version): self
     {
         $this->version = $version;
@@ -275,10 +303,16 @@ final class Assets
                 $this->js($js);
             }
         }
-
         return $this;
     }
 
+    /**
+     * has Plugin（public实例方法）
+     *
+     * @param string $name name
+     *
+     * @return bool result
+     */
     public function hasPlugin(string $name): bool
     {
         return isset($this->plugins[$name]);
@@ -329,14 +363,12 @@ final class Assets
         foreach (array_keys($this->css) as $css) {
             $html .= '<link href="' . Html::e($this->url($css)) . '" rel="stylesheet" type="text/css">' . "\n";
         }
-
         $html .= '<link href="' . Html::e($this->url('css/app.min.css')) . '" rel="stylesheet" type="text/css">' . "\n";
         $html .= '<link href="' . Html::e($this->url('css/xfadmin.css')) . '" rel="stylesheet" type="text/css">' . "\n";
 
         foreach ($this->inlineCss as $css) {
             $html .= "<style>\n{$css}\n</style>\n";
         }
-
         // 记录 head() 已输出的 CSS，便于 scripts() 兜底补输出渲染期间新注册的 CSS
         $this->headCssEmitted = array_keys($this->css);
         $this->headInlineCssEmitted = array_keys($this->inlineCss);
@@ -358,7 +390,6 @@ final class Assets
         foreach (array_keys($this->js) as $js) {
             $html .= '<script src="' . Html::e($this->url($js)) . '"></script>' . "\n";
         }
-
         $html .= '<script src="' . Html::e($this->url('js/app.js')) . '"></script>' . "\n";
         $html .= '<script src="' . Html::e($this->url('js/xfadmin.js')) . '"></script>' . "\n";
 
@@ -373,11 +404,9 @@ final class Assets
                 $html .= "<style>\n{$css}\n</style>\n";
             }
         }
-
         foreach ($this->inlineJs as $js) {
             $html .= "<script>\n{$js}\n</script>\n";
         }
-
         return $html;
     }
 

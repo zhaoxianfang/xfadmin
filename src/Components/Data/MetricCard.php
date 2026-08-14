@@ -31,6 +31,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class MetricCard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -51,12 +56,22 @@ class MetricCard extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         // 迷你图基于 ECharts（包内已内置，离线可用）
         return $this->get('chart') ? ['echarts'] : [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id    = $this->resolveId('xf-metric');
@@ -78,7 +93,6 @@ class MetricCard extends Component
                 . '<i class="ti ti-arrow-' . ($up ? 'up' : 'down') . '-right"></i> ' . $this->e(abs((float) $trend)) . '%</span>'
                 . $this->e($this->get('trend_text', '')) . '</p>';
         }
-
         // ---------- 迷你图 ----------
         $chartHtml = '';
         if ($this->get('chart')) {
@@ -94,7 +108,6 @@ class MetricCard extends Component
             $chartHtml = '<div class="avatar-lg d-flex align-items-center justify-content-center rounded bg-primary-subtle">'
                 . '<i class="' . $this->e($this->get('icon')) . ' fs-2 text-primary"></i></div>';
         }
-
         $inner = '<div class="d-flex align-items-center justify-content-between gap-2">'
             . '<div class="flex-grow-1">'
             . '<h5 class="text-muted fs-13 text-uppercase mb-2">'
@@ -106,7 +119,6 @@ class MetricCard extends Component
         if ($this->get('footer') !== null) {
             $inner .= '<div class="mt-2 pt-2 border-top border-dashed">' . $this->raw($this->get('footer')) . '</div>';
         }
-
         $body = '<div class="card-body">' . $inner . '</div>';
         $card = $this->get('url')
             ? '<a href="' . $this->e($this->get('url')) . '" class="card xf-metric-card text-reset" id="' . $id . '">' . $body . '</a>'

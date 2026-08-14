@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class CodeBlock extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class CodeBlock extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('xf-code');
@@ -50,7 +60,6 @@ class CodeBlock extends Component
         } else {
             $header = '';
         }
-
         return '<div' . $this->attrs([
             'id'    => $id,
             'class' => 'xf-code-block xf-code-' . $this->e($this->get('theme'))

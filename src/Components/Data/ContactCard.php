@@ -29,6 +29,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ContactCard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class ContactCard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $contacts = (array) $this->get('contacts', []);
@@ -92,7 +102,6 @@ class ContactCard extends Component
 
             $html .= '</div></div></div>';
         }
-
         return $html . '</div>';
     }
 }

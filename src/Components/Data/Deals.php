@@ -33,6 +33,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Deals extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -46,6 +51,11 @@ class Deals extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $stages = (array) $this->get('stages');
@@ -63,7 +73,6 @@ class Deals extends Component
                 $grouped[$sk][] = $d;
             }
         }
-
         $html = '<div class="xf-deals"><div class="row g-3">';
         foreach ($stages as $key => $s) {
             $s    = (array) $s;

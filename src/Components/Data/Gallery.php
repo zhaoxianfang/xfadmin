@@ -37,6 +37,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Gallery extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -52,6 +57,11 @@ class Gallery extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         $assets = [];
@@ -61,10 +71,14 @@ class Gallery extends Component
         if ($this->get('lightbox')) {
             $assets[] = 'glightbox';
         }
-
         return $assets;
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id       = $this->resolveId('gallery');
@@ -103,11 +117,9 @@ class Gallery extends Component
             }
             $html .= '</div>';
         }
-
         if ($useCard) {
             $html .= '<div class="card-body">';
         }
-
         // 栅格：INSPINIA 同款 row-cols 响应式组合；masonry 模式由 JS 接管定位（保留原始图片比例）
         $wallCls = 'row g-2 ' . $this->rowColsClass((int) $this->get('cols'))
             . ($masonry ? ' xf-gallery-masonry' : ' xf-gallery-grid');
@@ -132,7 +144,6 @@ class Gallery extends Component
                 $badgeText = (string) ($filter[$group] ?? $group);
                 $html .= '<div class="badge text-bg-dark badge-label position-absolute top-0 start-0 m-2 z-1">' . $this->e($badgeText) . '</div>';
             }
-
             // 图片：card-img + rounded-2（模板同款）；标题/说明用悬停渐变浮层展示（增强，不破坏模板观感）
             $inner = '<img src="' . $this->e(XfAdmin::img($thumb)) . '" class="card-img rounded-2" loading="lazy" alt="' . $this->e($title) . '">';
             if ($title !== '' || $caption !== '') {
@@ -141,7 +152,6 @@ class Gallery extends Component
                     . ($caption !== '' ? '<small>' . $this->e($caption) . '</small>' : '')
                     . '</div></div>';
             }
-
             if ($lightbox && $src !== '') {
                 // 灯箱链接：image-popup 为模板类名（便于样式/行为对齐），glightbox 为 xfadmin 实际接线
                 $html .= '<a href="' . $this->e(XfAdmin::img($src)) . '" class="image-popup glightbox d-block position-relative" data-gallery="' . $id . '" data-title="' . $this->e($title) . '">' . $inner . '</a>';
@@ -188,7 +198,6 @@ class Gallery extends Component
             $js .= '});';
             XfAdmin::assets()->inlineJs($js, 'gallery-' . $id);
         }
-
         return $html;
     }
 

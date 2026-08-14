@@ -26,6 +26,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class AppManage extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,6 +41,11 @@ class AppManage extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $stats = (array) $this->get('stats', []);
@@ -47,7 +57,6 @@ class AppManage extends Component
         if (!empty($stats)) {
             $html .= $this->renderStats($stats);
         }
-
         // 工具栏
         $html .= $this->renderToolbar();
 
@@ -55,10 +64,16 @@ class AppManage extends Component
         if (!empty($apps)) {
             $html .= $this->renderAppGrid($apps);
         }
-
         return $html;
     }
 
+    /**
+     * render Stats（private实例方法）
+     *
+     * @param array $stats stats
+     *
+     * @return string result
+     */
     private function renderStats(array $stats): string
     {
         $colClass = 'col-md-' . (12 / max(1, min(4, count($stats)))) . ' mb-3';
@@ -90,6 +105,11 @@ class AppManage extends Component
         return $html;
     }
 
+    /**
+     * render Toolbar（private实例方法）
+     *
+     * @return string result
+     */
     private function renderToolbar(): string
     {
         $html = '<div class="d-flex justify-content-between align-items-center mb-3">';
@@ -106,6 +126,13 @@ class AppManage extends Component
         return $html;
     }
 
+    /**
+     * render App Grid（private实例方法）
+     *
+     * @param array $apps apps
+     *
+     * @return string result
+     */
     private function renderAppGrid(array $apps): string
     {
         $html = '<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-3">';
@@ -118,6 +145,13 @@ class AppManage extends Component
         return $html;
     }
 
+    /**
+     * render App Card（private实例方法）
+     *
+     * @param array $app app
+     *
+     * @return string result
+     */
     private function renderAppCard(array $app): string
     {
         $name = (string) ($app['name'] ?? '');
@@ -152,7 +186,6 @@ class AppManage extends Component
         if ($desc) {
             $html .= '<p class="text-muted small mb-3">' . $this->e($desc) . '</p>';
         }
-
         $html .= '<div class="d-flex align-items-center justify-content-between">';
         if ($users > 0) {
             $html .= '<span class="small text-muted"><i class="ti ti-users me-1"></i>' . number_format($users) . ' 用户</span>';
@@ -171,6 +204,13 @@ class AppManage extends Component
         return $html;
     }
 
+    /**
+     * get Change Color（private实例方法）
+     *
+     * @param string $change change
+     *
+     * @return string result
+     */
     private function getChangeColor(string $change): string
     {
         if (str_starts_with($change, '+')) {
@@ -179,7 +219,6 @@ class AppManage extends Component
         if (str_starts_with($change, '-')) {
             return 'danger';
         }
-
         return 'muted';
     }
 }

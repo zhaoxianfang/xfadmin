@@ -21,6 +21,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ContactList extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class ContactList extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $contacts = (array) $this->get('contacts', []);
@@ -41,7 +51,6 @@ class ContactList extends Component
 
             return $html;
         }
-
         foreach ($contacts as $c) {
             $c       = (array) $c;
             $avatar  = $this->img((string) ($c['avatar'] ?? ''));
@@ -58,7 +67,6 @@ class ContactList extends Component
             $html .= '<button class="btn btn-sm btn-outline-primary" type="button"><i class="ti ti-message-circle"></i></button>';
             $html .= '</li>';
         }
-
         $html .= '</ul></div></div>';
 
         return $html;

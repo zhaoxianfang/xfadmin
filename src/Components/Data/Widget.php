@@ -23,6 +23,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Widget extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class Widget extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $variant = $this->e($this->get('variant'));
@@ -63,17 +73,14 @@ class Widget extends Component
             $arrow = $up ? 'ti-arrow-up-right' : 'ti-arrow-down-right';
             $html .= '<p class="mb-0 mt-2"><span class="' . $cls . '"><i class="ti ' . $arrow . '"></i> ' . $this->e($t['value'] ?? '') . '</span> <span class="text-muted">' . $this->e($t['text'] ?? '') . '</span></p>';
         }
-
         // 进度条
         if ($this->get('style') === 'progress' && $this->get('progress') !== null) {
             $p = max(0, min(100, (int) $this->get('progress')));
             $html .= '<div class="progress mt-3" style="height:6px;"><div class="progress-bar bg-' . $variant . '" style="width:' . $p . '%"></div></div>';
         }
-
         if ($this->get('footer')) {
             $html .= '<div class="mt-2">' . $this->raw($this->get('footer')) . '</div>';
         }
-
         return $html . '</div></div>';
     }
 }

@@ -35,18 +35,27 @@ use zxf\XfAdmin\XfAdmin;
  */
 class ProjectActivity extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['title' => '项目动态', 'items' => []];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
         if (empty($items)) {
             return '';
         }
-
         $html = '<div class="card"><div class="card-body">';
         $html .= '<h4 class="card-title mb-3">' . $this->e($this->get('title', '项目动态')) . '</h4>';
         $html .= '<div class="timeline">';
@@ -79,7 +88,6 @@ class ProjectActivity extends Component
             }
             $html .= '</div></div>';
         }
-
         $html .= '</div></div></div>';
 
         return $html;

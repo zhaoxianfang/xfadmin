@@ -22,6 +22,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class TwoFactorInput extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,6 +39,11 @@ class TwoFactorInput extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $length   = max(4, min(8, (int) $this->get('length')));
@@ -61,7 +71,6 @@ class TwoFactorInput extends Component
         if ($mask !== null) {
             $html .= '<p class="text-center text-muted small mt-2 mb-0">验证码已发送至 <span class="fw-semibold">' . $this->e($mask) . '</span></p>';
         }
-
         return $html;
     }
 }

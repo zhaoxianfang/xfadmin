@@ -19,6 +19,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Ribbon extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class Ribbon extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $pos     = $this->get('position') === 'right' ? 'end' : 'start';

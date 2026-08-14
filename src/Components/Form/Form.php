@@ -25,6 +25,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Form extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -44,6 +49,11 @@ class Form extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $method     = strtoupper((string) $this->get('method', 'POST'));
@@ -71,7 +81,6 @@ class Form extends Component
             // 远程表单：交由前端 XFAdmin.bindRemoteForms 全局托管（拦截提交 -> AJAX -> 成功刷新/关闭、失败回填）
             $attrs['data-xf-remote'] = '';
         }
-
         $html = '<form' . $this->attrs($attrs) . '>';
 
         // 隐藏域（CSRF / 方法伪装）
@@ -88,7 +97,6 @@ class Form extends Component
         if (! in_array($method, ['GET', 'POST'], true)) {
             $html .= '<input type="hidden" name="_method" value="' . $this->e($method) . '">';
         }
-
         foreach ((array) $this->get('fields', []) as $field) {
             $html .= $this->raw($field);
         }
@@ -97,7 +105,6 @@ class Form extends Component
         if ($this->get('buttons') !== null) {
             $html .= '<div class="d-flex gap-2">' . $this->raw($this->get('buttons')) . '</div>';
         }
-
         return $html . '</form>';
     }
 }

@@ -17,6 +17,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FormOtherPlugin extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -24,6 +29,11 @@ class FormOtherPlugin extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $plugins = (array) $this->get('plugins', []);
@@ -31,7 +41,6 @@ class FormOtherPlugin extends Component
         if (empty($plugins)) {
             return '<div class="text-center text-muted py-4">未启用任何插件</div>';
         }
-
         $html = '';
 
         // 输入掩码
@@ -49,14 +58,12 @@ class FormOtherPlugin extends Component
                 . 'XFAdmin.register("fmMask","' . $uid . '_currency","$ 9,999.99");'
                 . 'XFAdmin.register("fmMask","' . $uid . '_ip","999.999.999.999")});</script>';
         }
-
         // 自适应高度
         if (in_array('autosize', $plugins, true)) {
             $html .= '<div class="card mb-3"><div class="card-header"><h5 class="card-title mb-0">自适应高度 Autosize</h5></div><div class="card-body">'
                 . '<div class="mb-3"><label class="form-label">自动调整高度的文本域</label>'
                 . '<textarea class="form-control autosize" rows="2" placeholder="输入内容，文本框自动变高..."></textarea></div></div></div>';
         }
-
         // 最大字符数
         if (in_array('maxlength', $plugins, true)) {
             $uid2 = 'maxl_' . $this->uid();
@@ -70,7 +77,6 @@ class FormOtherPlugin extends Component
                 . 'XFAdmin.register("fmMaxlength","' . $uid2 . '_1",{alwaysShow:true,warningClass:"badge text-bg-warning",limitReachedClass:"badge text-bg-danger"});'
                 . 'XFAdmin.register("fmMaxlength","' . $uid2 . '_2",{alwaysShow:true})});</script>';
         }
-
         // 数字微调
         if (in_array('touchspin', $plugins, true)) {
             $html .= '<div class="card"><div class="card-header"><h5 class="card-title mb-0">数字微调 TouchSpin</h5></div><div class="card-body"><div class="row g-3">'
@@ -79,7 +85,6 @@ class FormOtherPlugin extends Component
                 . '<div class="col-md-4"><label class="form-label">百分比</label><input type="number" class="form-control touchspin" value="50" min="0" max="100" step="5"></div>'
                 . '</div></div></div>';
         }
-
         return $html;
     }
 }

@@ -22,6 +22,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Card extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,6 +41,11 @@ class Card extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => Html::cls('card', $this->get('class'))]) . '>';
@@ -73,13 +83,11 @@ class Card extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="' . Html::cls('card-body', ['p-0' => ! $this->get('padding')]) . '">' . $this->raw($this->get('body')) . '</div>';
 
         if ($this->get('footer') !== null) {
             $html .= '<div class="card-footer">' . $this->raw($this->get('footer')) . '</div>';
         }
-
         return $html . '</div>';
     }
 }

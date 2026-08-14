@@ -36,6 +36,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class SocialFeed extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -44,6 +49,11 @@ class SocialFeed extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $posts = (array) $this->get('posts', []);
@@ -56,7 +66,6 @@ class SocialFeed extends Component
 
             return $html;
         }
-
         foreach ($posts as $p) {
             $p       = (array) $p;
             $avatar  = $this->img((string) ($p['avatar'] ?? ''));
@@ -88,7 +97,6 @@ class SocialFeed extends Component
             $html .= '<span><i class="ti ti-share me-1"></i>' . $shares . '</span>';
             $html .= '</div></div></div>';
         }
-
         $html .= '</div></div>';
 
         return $html;

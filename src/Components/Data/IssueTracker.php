@@ -33,6 +33,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class IssueTracker extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -43,6 +48,11 @@ class IssueTracker extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $issues = (array) $this->get('issues', []);
@@ -67,7 +77,6 @@ class IssueTracker extends Component
             }
             $html .= '</div>';
         }
-
         $html .= '<div class="card-body"><div class="table-responsive">'
             . '<table class="table table-custom table-centered table-hover w-100 mb-0"><tbody>';
 
@@ -131,7 +140,6 @@ class IssueTracker extends Component
 
             $html .= '</tr>';
         }
-
         return $html . '</tbody></table></div></div></div>';
     }
 }

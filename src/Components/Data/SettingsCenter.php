@@ -28,6 +28,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class SettingsCenter extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,13 +41,17 @@ class SettingsCenter extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $groups = (array) $this->get('groups', []);
         if (empty($groups)) {
             return '';
         }
-
         $title = $this->e($this->get('title', '设置'));
 
         $nav = '';
@@ -68,7 +77,6 @@ class SettingsCenter extends Component
 
             $first = false;
         }
-
         return '<div class="card"><div class="card-header"><h4 class="mb-0">' . $title . '</h4></div>'
             . '<div class="card-body"><div class="row"><div class="col-md-3">'
             . '<div class="list-group list-group-flush ' . $this->e($this->get('nav_class', 'settings-nav')) . '" role="tablist">' . $nav . '</div>'

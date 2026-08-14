@@ -70,7 +70,6 @@ class Avatar extends Component
                 . ' class="' . Html::cls('img-fluid', $rounded) . '">'
                 . '</span>';
         }
-
         // —— 文字缩写 / 图标头像 ——
         $variant = $this->enum($opts['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
         // soft：浅底深字（与后台模板 card 上的状态徽标观感一致）；否则实底白字
@@ -86,6 +85,11 @@ class Avatar extends Component
             . '</span>';
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $group = (array) $this->get('group', []);
@@ -98,10 +102,8 @@ class Avatar extends Component
                 $item = (array) $item + ['size' => $this->get('size')];
                 $html .= $this->one($item);
             }
-
             return $html . '</div>';
         }
-
         // 单头像：根级 class/id/style/data 挂到外层内联块容器，.avatar 在内部保持纯净结构
         return '<div' . $this->attrs(['class' => 'd-inline-block']) . '>' . $this->one($this->options) . '</div>';
     }

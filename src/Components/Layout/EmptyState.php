@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class EmptyState extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class EmptyState extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html = '<div' . $this->attrs(['class' => 'text-center py-5']) . '>';
@@ -45,7 +55,6 @@ class EmptyState extends Component
         if ($this->get('action')) {
             $html .= '<div class="mt-3">' . $this->raw($this->get('action')) . '</div>';
         }
-
         return $html . '</div>';
     }
 }

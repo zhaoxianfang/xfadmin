@@ -26,16 +26,31 @@ use zxf\XfAdmin\Components\Component;
  */
 class Nestable extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return ['items' => [], 'handle' => false, 'input' => null, 'options' => []];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['sortablejs'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $handle = (bool) $this->get('handle');
@@ -50,11 +65,18 @@ class Nestable extends Component
         if ($this->get('input')) {
             $html .= '<input type="hidden" name="' . $this->e($this->get('input')) . '" data-nestable-input>';
         }
-
         return $html;
     }
 
     // 递归渲染：list-group-item 内可嵌一个 list-group.nested-sortable（子级）
+    /**
+     * render Item（protected实例方法）
+     *
+     * @param mixed $item item
+     * @param bool $handle handle
+     *
+     * @return string result
+     */
     protected function renderItem($item, bool $handle): string
     {
         $item   = is_array($item) ? $item : ['content' => (string) $item];
@@ -70,7 +92,6 @@ class Nestable extends Component
             }
             $children .= '</div>';
         }
-
         return '<div class="list-group-item"' . ($id !== null ? ' data-id="' . $this->e((string) $id) . '"' : '') . '>'
             . $content . $children . '</div>';
     }

@@ -22,6 +22,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Faq extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class Faq extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id  = $this->resolveId('faq');
@@ -58,7 +68,6 @@ class Faq extends Component
             $html .= '<div class="accordion-body">' . $this->raw($item['a'] ?? '') . '</div>';
             $html .= '</div></div>';
         }
-
         return $html . '</div>';
     }
 }

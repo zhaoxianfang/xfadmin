@@ -26,6 +26,11 @@ class Select extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
@@ -38,6 +43,11 @@ class Select extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return match ($this->get('enhance')) {
@@ -47,6 +57,13 @@ class Select extends Component
         };
     }
 
+    /**
+     * render Options（protected实例方法）
+     *
+     * @param array $options options
+     *
+     * @return string result
+     */
     protected function renderOptions(array $options): string
     {
         $selected = (array) ($this->get('value') ?? []);
@@ -67,10 +84,14 @@ class Select extends Component
                 'disabled' => (bool) ($opt['disabled'] ?? false),
             ]) . '>' . $this->e($label) . '</option>';
         }
-
         return $html;
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-select');
@@ -97,12 +118,10 @@ class Select extends Component
                 JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             );
         }
-
         $inner = '';
         if ($this->get('placeholder') && ! $this->get('multiple')) {
             $inner .= '<option value="">' . $this->e($this->get('placeholder')) . '</option>';
         }
-
         $groups = (array) $this->get('groups', []);
         if ($groups !== []) {
             foreach ($groups as $groupLabel => $groupOptions) {
@@ -111,7 +130,6 @@ class Select extends Component
         } else {
             $inner .= $this->renderOptions((array) $this->get('options', []));
         }
-
         $control = '<select' . Html::attrs($attrs) . '>' . $inner . '</select>';
 
         return $this->wrapField($control, $id);

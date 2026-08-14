@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FeatureComparisonTable extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -32,6 +37,11 @@ class FeatureComparisonTable extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $plans    = (array) $this->get('plans', []);

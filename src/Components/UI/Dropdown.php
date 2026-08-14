@@ -26,6 +26,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class Dropdown extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -41,6 +46,11 @@ class Dropdown extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         // 键名容错：text / label 等价（按钮与菜单项同理），url / href 等价
@@ -89,7 +99,6 @@ class Dropdown extends Component
                 $html .= '<button type="button" class="' . $btnClass . ' dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">' . $this->e($this->get('text')) . '</button>';
             }
         }
-
         $menuClass = Html::cls('dropdown-menu', $this->get('align') === 'end' ? 'dropdown-menu-end' : '');
         $html     .= '<div class="' . $menuClass . '">';
         if ($this->get('menu') !== null) {

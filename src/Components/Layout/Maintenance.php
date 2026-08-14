@@ -18,6 +18,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Maintenance extends AuthPage
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return array_replace(parent::defaults(), [
@@ -29,6 +34,11 @@ class Maintenance extends AuthPage
         ]);
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $content = '<div class="text-center">';
@@ -48,7 +58,6 @@ class Maintenance extends AuthPage
         if (! $this->get('title')) {
             $this->set('title', $this->get('heading'));
         }
-
         return parent::html();
     }
 }

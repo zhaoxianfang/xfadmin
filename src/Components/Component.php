@@ -27,11 +27,25 @@ abstract class Component implements Stringable
 
     private static int $uidCounter = 0;
 
+    /**
+     * construct（public实例方法）
+     *
+     * @param array $options options
+     *
+     * @return mixed 渲染结果 / 组件实例或配置
+     */
     public function __construct(array $options = [])
     {
         $this->options = array_replace_recursive($this->defaults(), $options);
     }
 
+    /**
+     * make（public静态方法）
+     *
+     * @param array $options options
+     *
+     * @return static result
+     */
     public static function make(array $options = []): static
     {
         return new static($options);
@@ -56,6 +70,14 @@ abstract class Component implements Stringable
     // 配置
     // ------------------------------------------------------------------
 
+    /**
+     * set（public静态方法）
+     *
+     * @param string|array $key key
+     * @param mixed $value value
+     *
+     * @return static result
+     */
     public function set(string|array $key, mixed $value = null): static
     {
         if (is_array($key)) {
@@ -63,15 +85,27 @@ abstract class Component implements Stringable
         } else {
             Html::set($this->options, $key, $value);
         }
-
         return $this;
     }
 
+    /**
+     * get（public实例方法）
+     *
+     * @param string $key key
+     * @param mixed $default default
+     *
+     * @return mixed result
+     */
     public function get(string $key, mixed $default = null): mixed
     {
         return Html::get($this->options, $key, $default);
     }
 
+    /**
+     * options（public实例方法）
+     *
+     * @return array result
+     */
     public function options(): array
     {
         return $this->options;
@@ -81,6 +115,14 @@ abstract class Component implements Stringable
     // 属性 / class
     // ------------------------------------------------------------------
 
+    /**
+     * attr（public静态方法）
+     *
+     * @param string|array $name name
+     * @param mixed $value value
+     *
+     * @return static result
+     */
     public function attr(string|array $name, mixed $value = true): static
     {
         if (is_array($name)) {
@@ -88,10 +130,16 @@ abstract class Component implements Stringable
         } else {
             $this->attributes[$name] = $value;
         }
-
         return $this;
     }
 
+    /**
+     * add Class（public静态方法）
+     *
+     * @param string ... $classes classes
+     *
+     * @return static result
+     */
     public function addClass(string ...$classes): static
     {
         $this->attributes['class'] = Html::cls($this->attributes['class'] ?? '', $classes);
@@ -99,6 +147,13 @@ abstract class Component implements Stringable
         return $this;
     }
 
+    /**
+     * id（public静态方法）
+     *
+     * @param string $id id
+     *
+     * @return static result
+     */
     public function id(string $id): static
     {
         return $this->attr('id', $id);
@@ -115,7 +170,6 @@ abstract class Component implements Stringable
                 $merged[$name] = $value;
             }
         }
-
         return Html::attrs($merged);
     }
 
@@ -123,6 +177,13 @@ abstract class Component implements Stringable
     // 工具
     // ------------------------------------------------------------------
 
+    /**
+     * e（protected实例方法）
+     *
+     * @param mixed $value value
+     *
+     * @return string result
+     */
     protected function e(mixed $value): string
     {
         return Html::e($value);
@@ -152,7 +213,6 @@ abstract class Component implements Stringable
         if (is_array($value)) {
             return implode('', array_map(fn ($v) => $this->raw($v), $value));
         }
-
         return (string) $value;
     }
 
@@ -170,7 +230,6 @@ abstract class Component implements Stringable
         if (preg_match('#^(?:https?:)?//|^data:#i', $p)) {
             return $p;
         }
-
         return \zxf\XfAdmin\XfAdmin::asset('images/' . ltrim($p, '/'));
     }
 
@@ -189,7 +248,6 @@ abstract class Component implements Stringable
         if ($this->get('id')) {
             return (string) $this->get('id');
         }
-
         return $this->attributes['id'] = $this->uid($prefix);
     }
 
@@ -209,7 +267,6 @@ abstract class Component implements Stringable
                 | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             );
         }
-
         return $attrs;
     }
 
@@ -217,6 +274,11 @@ abstract class Component implements Stringable
     // 渲染
     // ------------------------------------------------------------------
 
+    /**
+     * render（public实例方法）
+     *
+     * @return string result
+     */
     public function render(): string
     {
         // 注册资源依赖（注册幂等、自动去重：同一插件被多个组件依赖或同一组件
@@ -225,13 +287,17 @@ abstract class Component implements Stringable
         if ($plugins !== []) {
             Assets::instance()->plugin(...$plugins);
         }
-
         // 说明：render 不做结果缓存——内联初始化 JS 按 key/内容去重已保证不重复输出；
         // 同一实例被多次渲染时各自生成独立 uid，互不干扰；且跨多个完整页面复用实例时
         // 能在资源状态重置后重新注册初始化脚本。
         return $this->html();
     }
 
+    /**
+     * to String（public实例方法）
+     *
+     * @return string result
+     */
     public function __toString(): string
     {
         return $this->render();

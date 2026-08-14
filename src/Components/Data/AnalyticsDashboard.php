@@ -25,6 +25,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class AnalyticsDashboard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -33,6 +38,11 @@ class AnalyticsDashboard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $stats = (array) $this->get('stats', []);
@@ -44,7 +54,6 @@ class AnalyticsDashboard extends Component
         if (!empty($stats)) {
             $html .= $this->renderStats($stats);
         }
-
         // 最近活动和图表占位
         $html .= '<div class="row g-4">';
         $html .= '<div class="col-lg-8">';
@@ -79,6 +88,13 @@ class AnalyticsDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Stats（private实例方法）
+     *
+     * @param array $stats stats
+     *
+     * @return string result
+     */
     private function renderStats(array $stats): string
     {
         $html = '<div class="row mb-4">';

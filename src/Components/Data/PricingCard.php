@@ -27,6 +27,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class PricingCard extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -42,6 +47,11 @@ class PricingCard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $cls  = Html::cls('card h-100', ['border-primary' => (bool) $this->get('featured')]);
@@ -54,7 +64,6 @@ class PricingCard extends Component
         if ($this->get('icon')) {
             $html .= '<div class="mb-3"><i class="' . $this->e($this->get('icon')) . ' fs-1 text-primary"></i></div>';
         }
-
         $html .= '<h4 class="fw-bold">' . $this->e($this->get('name')) . '</h4>';
         if ($this->get('desc')) {
             $html .= '<p class="text-muted">' . $this->e($this->get('desc')) . '</p>';

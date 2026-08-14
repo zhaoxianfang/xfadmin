@@ -22,6 +22,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class UserProfile extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,6 +40,11 @@ class UserProfile extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $avatar  = $this->img((string) $this->get('avatar', ''));
@@ -60,7 +70,6 @@ class UserProfile extends Component
         if ($bio !== '') {
             $html .= '<p class="mt-2 text-muted">' . $this->e($bio) . '</p>';
         }
-
         // 统计
         if (! empty($stats)) {
             $html .= '<div class="d-flex justify-content-center gap-4 my-3">';
@@ -70,7 +79,6 @@ class UserProfile extends Component
             }
             $html .= '</div>';
         }
-
         // 操作
         $html .= '<div class="d-flex justify-content-center gap-2">';
         if (! empty($actions['message'])) {

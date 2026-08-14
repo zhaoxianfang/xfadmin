@@ -30,6 +30,11 @@ class FileManager extends Component
         'file'   => ['ti ti-file', 'secondary'],
     ];
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class FileManager extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $colCls = $this->resolveColClass($this->get('cols'));
@@ -64,7 +74,6 @@ class FileManager extends Component
             $html .= '<div class="dropdown-menu dropdown-menu-end"><a class="dropdown-item" href="#">下载</a><a class="dropdown-item" href="#">重命名</a><a class="dropdown-item text-danger" href="#">删除</a></div></div>';
             $html .= '</div></div></div></div>';
         }
-
         return $html . '</div>';
     }
 
@@ -80,10 +89,8 @@ class FileManager extends Component
             foreach ($cols as $bp => $n) {
                 $cls .= ' col-' . $bp . '-' . (int) $n;
             }
-
             return $cls;
         }
-
         $n = (int) $cols;
         if ($n <= 1) {
             return 'col-12';
@@ -93,7 +100,6 @@ class FileManager extends Component
 
             return 'col-12 col-sm-6 col-md-' . $per;
         }
-
         // 不能整除 12（如 5 列）→ 回退到百分比栅格类（样式见 xfadmin.css）
         return 'col col-xf-' . $n;
     }

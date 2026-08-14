@@ -24,6 +24,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class ChatApp extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,6 +41,11 @@ class ChatApp extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $h = $this->e($this->get('height', '60vh'));

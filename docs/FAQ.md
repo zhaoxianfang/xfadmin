@@ -88,10 +88,6 @@
 ## 十一、组件数/文档计数不一致
 
 - 组件注册表在 `src/XfAdmin.php`，文档由 `tools/gen_*.php` 扫描生成，README/composer 计数需手动同步。
-- 新增组件后运行：
-  ```bash
-  php tools/gen_category_docs.php && php tools/gen_docs.php
-  ```
 - 并刷新 `README.md` / `composer.json` / `config/xfadmin.php` 的计数与版本。
 
 ---

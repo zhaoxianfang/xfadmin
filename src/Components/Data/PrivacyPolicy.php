@@ -23,6 +23,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class PrivacyPolicy extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -34,6 +39,11 @@ class PrivacyPolicy extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $title = (string) $this->get('title', 'Privacy Policy');
@@ -58,7 +68,6 @@ class PrivacyPolicy extends Component
         if ($intro) {
             $html .= '<p class="fst-italic fs-sm">' . $this->e($intro) . '</p>';
         }
-
         foreach ($sections as $i => $section) {
             $section = (array) $section;
             $sTitle = (string) ($section['title'] ?? '');
@@ -81,14 +90,12 @@ class PrivacyPolicy extends Component
                 $html .= '</ul>';
             }
         }
-
         if ($contactEmail) {
             $html .= '<h4 class="fw-bold mt-4">Contact Us</h4>';
             $html .= '<p>If you have any questions or concerns about this ' . $this->e($title)
                 . ', please contact us at <a href="mailto:' . $this->e($contactEmail) . '">'
                 . $this->e($contactEmail) . '</a>.</p>';
         }
-
         $html .= '</div></div>';
 
         // 最后更新
@@ -96,7 +103,6 @@ class PrivacyPolicy extends Component
             $html .= '<div class="text-center mt-4 mb-2"><small class="text-muted">Last updated: '
                 . $this->e($effectiveDate) . '</small></div>';
         }
-
         $html .= '</div></div>';
 
         return $html;

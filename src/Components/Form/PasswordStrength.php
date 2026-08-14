@@ -23,6 +23,11 @@ class PasswordStrength extends Component
 {
     use FieldWrapper;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -36,11 +41,21 @@ class PasswordStrength extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('pw');
@@ -59,12 +74,10 @@ class PasswordStrength extends Component
                 $attrs[$k] = $v;
             }
         }
-
         $html = '<input' . Html::attrs($attrs) . '>';
         if ($hint = $this->get('hint')) {
             $html .= '<div class="form-text">' . $this->e($hint) . '</div>';
         }
-
         $html .= '<div class="mt-2">'
             . '<div class="progress" style="height:6px;"><div class="progress-bar" role="progressbar" style="width:0%"></div></div>'
             . '<div class="small mt-1" data-role="label"></div>'
@@ -79,7 +92,6 @@ class PasswordStrength extends Component
                 . $this->rule('special', '包含特殊符号')
                 . '</ul>';
         }
-
         $js = 'XFAdmin.register("pw-strength",function(el){'
             . 'var bar=el.parentElement.querySelector(".progress-bar");'
             . 'var label=el.parentElement.querySelector("[data-role=label]");'
@@ -101,6 +113,14 @@ class PasswordStrength extends Component
         return $this->wrapField($html, $id);
     }
 
+    /**
+     * rule（private实例方法）
+     *
+     * @param string $key key
+     * @param string $text text
+     *
+     * @return string result
+     */
     private function rule(string $key, string $text): string
     {
         return '<li data-rule="' . $key . '"><i class="ti ti-circle-x me-1"></i>' . $this->e($text) . '</li>';

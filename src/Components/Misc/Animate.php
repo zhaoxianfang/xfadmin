@@ -29,6 +29,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Animate extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -43,11 +48,21 @@ class Animate extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return ['animate'];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $anim    = (string) $this->get('animation', 'bounce');
@@ -57,7 +72,6 @@ class Animate extends Component
         if (! in_array($tag, $allowedTags, true)) {
             $tag = 'div';
         }
-
         // 组装 animate.css 修饰类（无限循环 / 速度 / 延迟 / 重复次数）
         $mods = [];
         if ($this->get('infinite')) {
@@ -72,7 +86,6 @@ class Animate extends Component
         if ($this->get('repeat')) {
             $mods[] = 'animate__repeat-' . (int) $this->get('repeat');
         }
-
         $attrs = [
             'class'             => 'xf-animate' . ($mods !== [] ? ' ' . implode(' ', $mods) : ''),
             'data-xf'           => 'animate',
@@ -84,7 +97,6 @@ class Animate extends Component
         if ($trigger === 'load') {
             $attrs['class'] .= ' animate__animated animate__' . $anim;
         }
-
         return '<' . $tag . $this->attrs($attrs) . '>' . $this->raw($this->get('content')) . '</' . $tag . '>';
     }
 }

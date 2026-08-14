@@ -20,6 +20,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class FormValidation extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -29,6 +34,11 @@ class FormValidation extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $fields = $this->get('fields');
@@ -38,6 +48,11 @@ class FormValidation extends Component
             : $this->renderBuiltin();
     }
 
+    /**
+     * render Builtin（private实例方法）
+     *
+     * @return string result
+     */
     private function renderBuiltin(): string
     {
         $html = '';
@@ -77,6 +92,14 @@ class FormValidation extends Component
         return $html;
     }
 
+    /**
+     * render Custom Form（private实例方法）
+     *
+     * @param string $formId form Id
+     * @param array $fields fields
+     *
+     * @return string result
+     */
     private function renderCustomForm(string $formId, array $fields): string
     {
         $html = '<div class="card"><div class="card-body"><form id="' . $this->e($formId) . '" class="needs-validation" novalidate><div class="row g-3">';
@@ -97,7 +120,6 @@ class FormValidation extends Component
                 . '<input' . $email . ' class="form-control" name="' . $name . '" placeholder="' . $placeholder . '"' . $required . '>'
                 . '<div class="invalid-feedback">请填写有效的' . $label . '</div></div>';
         }
-
         $html .= '<div class="col-12"><button type="submit" class="btn btn-primary">提交</button></div></div></form></div></div>';
         $html .= '<script>document.addEventListener("DOMContentLoaded",function(){XFAdmin.register("formValidation","' . $this->e($formId) . '")});</script>';
 

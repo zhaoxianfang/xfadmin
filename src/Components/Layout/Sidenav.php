@@ -19,6 +19,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class Sidenav extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,6 +35,11 @@ class Sidenav extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $html  = '<div' . $this->attrs(['class' => 'sidenav-menu']) . '>';
@@ -45,6 +55,11 @@ class Sidenav extends Component
         return $html;
     }
 
+    /**
+     * render Brand（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderBrand(): string
     {
         $brand = (array) $this->get('brand', []);
@@ -68,6 +83,11 @@ class Sidenav extends Component
             . '</span></a>';
     }
 
+    /**
+     * render User（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderUser(): string
     {
         $user = $this->get('user');
@@ -93,7 +113,6 @@ class Sidenav extends Component
             }
             $dropdown .= '</div></div>';
         }
-
         return '<div class="sidenav-user"><div class="d-flex justify-content-between align-items-center"><div>'
             . '<a href="' . $this->e($user['url'] ?? '#!') . '" class="link-reset">'
             . '<img src="' . $this->e($avatar) . '" alt="user-image" class="rounded-circle mb-2 avatar-md">'
@@ -102,6 +121,11 @@ class Sidenav extends Component
             . '</a></div>' . $dropdown . '</div></div>';
     }
 
+    /**
+     * render Menu（protected实例方法）
+     *
+     * @return string result
+     */
     protected function renderMenu(): string
     {
         $menu = $this->get('menu');
@@ -115,7 +139,6 @@ class Sidenav extends Component
                 'current_url' => $this->get('current_url'),
             ])->render();
         }
-
         return $this->raw($menu);
     }
 }

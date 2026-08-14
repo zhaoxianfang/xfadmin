@@ -19,6 +19,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Refunds extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -28,6 +33,11 @@ class Refunds extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $refunds = (array) $this->get('refunds', []);
@@ -74,11 +84,9 @@ class Refunds extends Component
             }
             $html .= '<button class="btn btn-outline-secondary"><i class="ti ti-eye"></i></button></div></td></tr>';
         }
-
         if (empty($refunds)) {
             $html .= '<tr><td colspan="9" class="text-center text-muted py-4">暂无退款记录</td></tr>';
         }
-
         $html .= '</tbody></table></div></div></div>';
 
         return $html;

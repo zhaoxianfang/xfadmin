@@ -19,6 +19,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class EmailCompose extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -30,11 +35,21 @@ class EmailCompose extends Component
         ];
     }
 
+    /**
+     * assets（protected实例方法）
+     *
+     * @return array result
+     */
     protected function assets(): array
     {
         return $this->get('editor') === 'quill' ? ['quill'] : [];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id = $this->resolveId('mail-compose');
@@ -67,7 +82,6 @@ class EmailCompose extends Component
                 . 'q.on("text-change",function(){root.querySelector("input[name=body]").value=ed.querySelector(".ql-editor").innerHTML;});});';
             XfAdmin::assets()->inlineJs($js, 'xf-mail-quill-' . $id);
         }
-
         return $html;
     }
 }

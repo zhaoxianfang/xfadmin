@@ -25,6 +25,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class TablesCustom extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -39,6 +44,11 @@ class TablesCustom extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $columns = (array) $this->get('columns', []);
@@ -76,7 +86,6 @@ class TablesCustom extends Component
             }
             $html .= '</tr></thead>';
         }
-
         // 表体
         $html .= '<tbody>';
         foreach ($rows as $row) {
@@ -91,12 +100,10 @@ class TablesCustom extends Component
             }
             $html .= '</tr>';
         }
-
         if (empty($rows)) {
             $colspan = count($columns) ?: 1;
             $html .= '<tr><td colspan="' . $colspan . '" class="text-center text-muted py-4">暂无数据</td></tr>';
         }
-
         $html .= '</tbody>';
 
         // 表尾
@@ -116,7 +123,6 @@ class TablesCustom extends Component
             }
             $html .= '</tfoot>';
         }
-
         $html .= '</table></div></div></div>';
 
         return $html;

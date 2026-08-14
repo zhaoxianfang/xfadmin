@@ -107,6 +107,7 @@ match ($route) {
     'forms'   => require __DIR__ . '/pages/forms.php',
     'charts'  => require __DIR__ . '/pages/charts.php',
     'login'   => require __DIR__ . '/pages/login.php',
+    'auth'    => require __DIR__ . '/pages/auth.php',
     '404'     => require __DIR__ . '/pages/error404.php',
     default   => require __DIR__ . '/pages/error404.php',
 };

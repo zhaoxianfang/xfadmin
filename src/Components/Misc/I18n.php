@@ -26,6 +26,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class I18n extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -35,6 +40,11 @@ class I18n extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $currentLocale = (string) $this->get('currentLocale', 'zh-CN');
@@ -46,6 +56,14 @@ class I18n extends Component
             : $this->renderBuiltin($currentLocale, $locales);
     }
 
+    /**
+     * render Builtin（private实例方法）
+     *
+     * @param string $currentLocale current Locale
+     * @param array $locales locales
+     *
+     * @return string result
+     */
     private function renderBuiltin(string $currentLocale, array $locales): string
     {
         $defaultLocales = $locales ?: [
@@ -96,7 +114,6 @@ class I18n extends Component
             }
             $html .= $name . $check . '</div>';
         }
-
         $html .= '</div></div></div>';
 
         // 右侧：翻译键值对
@@ -112,7 +129,6 @@ class I18n extends Component
                 . '<td><input type="text" class="form-control form-control-sm" value="' . $this->e($value) . '"></td>'
                 . '<td><button class="btn btn-sm btn-ghost-danger"><i class="ti ti-trash"></i></button></td></tr>';
         }
-
         $html .= '</tbody></table></div><div class="card-footer text-end">'
             . '<button class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>保存翻译</button></div></div></div>';
 
@@ -121,6 +137,15 @@ class I18n extends Component
         return $html;
     }
 
+    /**
+     * render Custom（private实例方法）
+     *
+     * @param string $currentLocale current Locale
+     * @param array $locales locales
+     * @param array $demoKeys demo Keys
+     *
+     * @return string result
+     */
     private function renderCustom(string $currentLocale, array $locales, array $demoKeys): string
     {
         $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center">'
@@ -132,7 +157,6 @@ class I18n extends Component
             $active = $code === $currentLocale ? ' btn-primary' : ' btn-outline-secondary';
             $html .= '<button class="btn' . $active . '">' . $name . '</button>';
         }
-
         $html .= '</div></div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr>'
             . '<th>键</th><th>翻译值</th><th>状态</th></tr></thead><tbody>';
 
@@ -141,7 +165,6 @@ class I18n extends Component
                 . '<td><input type="text" class="form-control form-control-sm" value="' . $this->e((string) $value) . '"></td>'
                 . '<td><span class="badge text-bg-success">已翻译</span></td></tr>';
         }
-
         $html .= '</tbody></table></div><div class="card-footer text-end">'
             . '<button class="btn btn-primary">保存</button></div></div>';
 

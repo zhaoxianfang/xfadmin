@@ -34,6 +34,11 @@ class EcommerceDashboard extends Component
 {
     use HasPriceFormat;
 
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -46,6 +51,11 @@ class EcommerceDashboard extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $stats = (array) $this->get('stats', []);
@@ -65,12 +75,10 @@ class EcommerceDashboard extends Component
             }
             $html .= '</div>';
         }
-
         // 图表行
         if ($showChart) {
             $html .= $this->renderChartSection($currency);
         }
-
         // 底部双列：最近订单 + 热销商品
         $html .= '<div class="row g-3">';
         $html .= '<div class="col-lg-8">' . $this->renderRecentOrders($recentOrders, $currency) . '</div>';
@@ -80,6 +88,14 @@ class EcommerceDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Stat Card（private实例方法）
+     *
+     * @param array $stat stat
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderStatCard(array $stat, string $currency): string
     {
         $label = $this->e($stat['label'] ?? '');
@@ -95,7 +111,6 @@ class EcommerceDashboard extends Component
         } else {
             $displayValue = is_float($value) ? number_format($value, 2) : number_format((int) $value);
         }
-
         $trendClass = str_starts_with($trend, '+') ? 'text-success' : 'text-danger';
         $trendIcon = str_starts_with($trend, '+') ? 'ti-arrow-up' : 'ti-arrow-down';
 
@@ -124,7 +139,6 @@ class EcommerceDashboard extends Component
             $chartLabels = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
             $chartValues = [18420, 21350, 16980, 28730, 32410, 25160, 30280];
         }
-
         $chartId = 'ec_' . $this->uid();
         $safeCurrency = $this->e($currency);
 
@@ -167,6 +181,14 @@ class EcommerceDashboard extends Component
         return $html;
     }
 
+    /**
+     * render Recent Orders（private实例方法）
+     *
+     * @param array $orders orders
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderRecentOrders(array $orders, string $currency): string
     {
         $statusMap = [
@@ -203,12 +225,19 @@ class EcommerceDashboard extends Component
                     . '<td class="text-end text-muted small">' . $date . '</td></tr>';
             }
         }
-
         $html .= '</tbody></table></div></div>';
 
         return $html;
     }
 
+    /**
+     * render Top Products（private实例方法）
+     *
+     * @param array $products products
+     * @param string $currency currency
+     *
+     * @return string result
+     */
     private function renderTopProducts(array $products, string $currency): string
     {
         $html = '<div class="card"><div class="card-header"><h5 class="card-title mb-0">热销商品</h5></div>'
@@ -222,7 +251,6 @@ class EcommerceDashboard extends Component
                 $p = (array) $p;
                 $maxSales = max($maxSales, (int) ($p['sales'] ?? 0));
             }
-
             foreach ($products as $p) {
                 $p = (array) $p;
                 $name = $this->e($p['name'] ?? '');
@@ -244,7 +272,6 @@ class EcommerceDashboard extends Component
                     . '<div class="text-end ms-3"><span class="fw-medium">' . $revenue . '</span></div></div></div>';
             }
         }
-
         $html .= '</div></div>';
 
         return $html;

@@ -23,6 +23,11 @@ use zxf\XfAdmin\Support\Html;
  */
 class DropzoneUpload extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -37,6 +42,11 @@ class DropzoneUpload extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id   = $this->e($this->get('id'));
@@ -62,6 +72,13 @@ class DropzoneUpload extends Component
         return $html;
     }
 
+    /**
+     * render Initial（protected实例方法）
+     *
+     * @param string $json json
+     *
+     * @return string result
+     */
     protected function renderInitial(string $json): string
     {
         // initial 由 JS 渲染，PHP 仅占位（避免重复逻辑）

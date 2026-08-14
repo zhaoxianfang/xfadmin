@@ -22,6 +22,11 @@ use zxf\XfAdmin\XfAdmin;
  */
 class XfAdminServiceProvider extends ServiceProvider
 {
+    /**
+     * register（public实例方法）
+     *
+     * @return void result
+     */
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/xfadmin.php', 'xfadmin');
@@ -33,6 +38,11 @@ class XfAdminServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * boot（public实例方法）
+     *
+     * @return void result
+     */
     public function boot(): void
     {
         // 应用配置（未解析 singleton 时也生效）
@@ -47,7 +57,6 @@ class XfAdminServiceProvider extends ServiceProvider
                 __DIR__ . '/../../config/xfadmin.php' => config_path('xfadmin.php'),
             ], 'xfadmin-config');
         }
-
         // 资源自动托管：未发布（或未完全发布）资源时，把 `assets_url` 前缀下的请求直接映射到
         // 包内 resources/assets 流式返回，开箱即用（与 demo/index.php 行为一致）。
         // 发布到 public 后由 Web 服务器直接服务，本路由不会命中；缺失文件自动回退。
@@ -59,7 +68,6 @@ class XfAdminServiceProvider extends ServiceProvider
                 ->where('path', '(?i).*\.(css|js|mjs|map|json|svg|png|jpe?g|gif|ico|webp|avif|woff2?|ttf|eot|otf)$')
                 ->name('xfadmin.assets');
         }
-
         Blade::directive('xfHead', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::head(); ?>");
         Blade::directive('xfScripts', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::scripts(); ?>");
         Blade::directive('xf', fn ($expression) => "<?php echo \\zxf\XfAdmin\\XfAdmin::component({$expression}); ?>");

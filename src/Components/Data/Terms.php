@@ -26,6 +26,11 @@ use zxf\XfAdmin\Components\Component;
  */
 class Terms extends Component
 {
+    /**
+     * defaults（protected实例方法）
+     *
+     * @return array result
+     */
     protected function defaults(): array
     {
         return [
@@ -38,6 +43,11 @@ class Terms extends Component
         ];
     }
 
+    /**
+     * html（protected实例方法）
+     *
+     * @return string result
+     */
     protected function html(): string
     {
         $id       = $this->resolveId('xf-terms');
@@ -56,7 +66,6 @@ class Terms extends Component
             }
             $tocHtml .= '</nav></div></div>';
         }
-
         // ---------- 正文 ----------
         $body = '<div class="' . ($showToc ? 'col-lg-9' : 'col-12') . '"><div class="card"><div class="card-body p-4 xf-terms-body">';
         $body .= '<h3 class="mb-1">' . $this->e($this->get('title')) . '</h3>';
@@ -72,7 +81,6 @@ class Terms extends Component
                 . '<h5 class="mb-2">' . $this->e($sec['title'] ?? '') . '</h5>'
                 . '<div class="text-muted">' . $this->raw($sec['content'] ?? '') . '</div></section>';
         }
-
         // ---------- 底部「同意」按钮（可选） ----------
         $accept = $this->get('accept');
         if ($accept !== null) {
