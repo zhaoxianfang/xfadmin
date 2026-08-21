@@ -16,6 +16,17 @@ final class Html
             return '';
         }
 
+        if (is_array($value)) {
+            // 数组（如组件把数组配置误当文本传入）序列化为 JSON，避免 "Array to string conversion"
+            $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        } elseif (is_object($value)) {
+            if (method_exists($value, '__toString')) {
+                $value = (string) $value;
+            } else {
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+        }
+
         return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
     }
 

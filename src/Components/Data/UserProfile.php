@@ -52,6 +52,7 @@ class UserProfile extends Component
         $name    = (string) $this->get('name', '匿名用户');
         $title   = (string) $this->get('title', '');
         $bio     = (string) $this->get('bio', '');
+        $text    = (string) $this->get('text', '');
         $stats   = (array) $this->get('stats', []);
         $actions = (array) $this->get('actions', ['message' => true, 'follow' => true]);
 
@@ -62,7 +63,14 @@ class UserProfile extends Component
 
         // 头像 + 操作
         $html .= '<div class="card-body text-center">';
-        $html .= '<img src="' . $this->e($avatar) . '" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="' . $this->e($name) . '">';
+        // avatar 为空时用 text 首字母渲染文字头像（避免 src="" 破图）
+        if ($avatar !== '') {
+            $html .= '<img src="' . $this->e($avatar) . '" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="' . $this->e($name) . '">';
+        } elseif ($text !== '') {
+            $html .= '<div class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width:72px;height:72px;font-size:28px;">' . $this->e($text) . '</div>';
+        } else {
+            $html .= '<img src="" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="' . $this->e($name) . '">';
+        }
         $html .= '<h5 class="mt-2 mb-0">' . $this->e($name) . '</h5>';
         if ($title !== '') {
             $html .= '<small class="text-muted">' . $this->e($title) . '</small>';

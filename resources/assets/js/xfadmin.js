@@ -196,6 +196,96 @@
         });
     };
 
+    /* ------------------------------------------------------------------
+     * 表单响应规范化处理：统一 toast 提示 + url 跳转（3 秒等待）+ 500 异常。
+     * 用法：XFAdmin.handleFormResponse(res, { form, onSuccess, onError })
+     *  - res: { ok, status, data }（来自 XFAdmin.request / fetch 后的封装）
+     *  - res.data.message/msg：成功或失败提示文案（缺省用状态文案）
+     *  - res.data.url：存在时提示后等待 3 秒再跳转（页面级跳转；弹窗内提交请自行处理）
+     *  - 500/非 2xx 且 data 无 message 时，提示“请求异常(500)”等信息
+     * ------------------------------------------------------------------ */
+    XFAdmin.handleFormResponse = function (res, cfg) {
+        cfg = cfg || {};
+        res = res || {};
+        var data = res.data || {};
+        var msg = data.message || data.msg || '';
+        var form = cfg.form || null;
+
+        // 字段级校验错误回填（422 等）：把 errors 映射到对应 input 并展示 invalid-feedback
+        function fillFieldErrors(errors) {
+            if (!form || !errors) return '';
+            var firstErr = '';
+            Object.keys(errors).forEach(function (k) {
+                var input = form.querySelector('[name="' + idSafe(k) + '"]');
+                if (input) {
+                    input.classList.add('is-invalid');
+                    var m = Array.isArray(errors[k]) ? errors[k][0] : errors[k];
+                    firstErr = firstErr || m;
+                    var fb = document.createElement('div');
+                    fb.className = 'invalid-feedback xf-field-error';
+                    fb.textContent = m;
+                    input.parentNode.insertBefore(fb, input.nextSibling);
+                } else if (!firstErr) {
+                    firstErr = Array.isArray(errors[k]) ? errors[k][0] : errors[k];
+                }
+            });
+            return firstErr;
+        }
+        function clearFieldErrors() {
+            if (!form) return;
+            Array.prototype.forEach.call(form.querySelectorAll('.is-invalid'), function (el) { el.classList.remove('is-invalid'); });
+            Array.prototype.forEach.call(form.querySelectorAll('.invalid-feedback.xf-field-error'), function (el) { el.remove(); });
+        }
+
+        if (res.ok) {
+            clearFieldErrors();
+            var okMsg = msg || '保存成功';
+            XFAdmin.toast({ body: okMsg, variant: 'success' });
+            if (cfg.onSuccess) cfg.onSuccess(res);
+            if (data.url) {
+                // 响应携带跳转地址：提示后等待 3 秒再跳转（给查看提示留出时间）
+                setTimeout(function () { window.location.href = data.url; }, 3000);
+            } else if (form && form.getAttribute('data-xf-redirect')) {
+                // 前端兜底跳转地址（后端未返回 url 时生效）
+                var rd = form.getAttribute('data-xf-redirect');
+                setTimeout(function () { window.location.href = rd; }, 1200);
+            } else if (form && form.getAttribute('data-xf-reset') === '1') {
+                form.reset();
+            } else if (!cfg.noReload) {
+                // 无跳转地址：默认刷新当前页（可通过 noReload 关闭）
+                setTimeout(function () { window.location.reload(); }, 1200);
+            }
+            return true;
+        }
+        // 失败分支
+        if (res.errors) {
+            var ferr = fillFieldErrors(res.errors);
+            XFAdmin.toast({ body: ferr || msg || '表单校验失败', variant: 'danger' });
+            if (cfg.onError) cfg.onError(res);
+            return false;
+        }
+        var errMsg;
+        if (res.status === 500) {
+            errMsg = '请求异常(500)：' + (msg || '服务器内部错误');
+        } else if (res.status === 422) {
+            errMsg = msg || '表单校验失败';
+        } else if (res.status === 419) {
+            errMsg = msg || '页面已过期，请刷新后重试（CSRF 校验失败）';
+        } else if (res.status === 0) {
+            errMsg = msg || '网络错误，请稍后重试';
+        } else {
+            errMsg = msg || ('请求失败(' + (res.status || '未知') + ')');
+        }
+        XFAdmin.toast({ body: errMsg, variant: 'danger' });
+        if (cfg.onError) cfg.onError(res);
+        return false;
+    };
+
+    /* 纯表单（无 data-xf-remote）的 AJAX 提交已废弃：统一通过 data-xf-remote 走 bindRemoteForms。
+     * 这里保留 XFAdmin.register('form') 仅用于触发浏览器原生校验样式（需要 data-xf-remote 的表单
+     * 由 bindRemoteForms 接管 submit，不会二次触发此处）。若某表单既无 data-xf-remote 又想 AJAX，
+     * 请改用 data-xf-remote。 */
+
     /* 复制到剪贴板（navigator.clipboard 优先，textarea 兜底） */
     XFAdmin.copyText = function (text, tip) {
         function done() { XFAdmin.toast({ body: tip || '已复制！', variant: 'success', delay: 1500 }); }
@@ -1076,6 +1166,68 @@
         // 增量内容中的远程表单也一并托管（页面内静态 form[data-xf-remote] 由 initBootstrapExtras 处理）
         if (XFAdmin.bindRemoteForms) XFAdmin.bindRemoteForms(root);
     };
+
+    /**
+     * initAuthPage：认证页专属交互（分格验证码串联 + 密码强度条）。
+     * 认证页是独立 HTML 文档，不在后台模板内，需自行扫描这些元素。
+     */
+    XFAdmin.initAuthPage = function () {
+        // 分格验证码：自动跳格 / 退格 / 粘贴分发
+        document.querySelectorAll('[data-xf-pin-input]').forEach(function (group) {
+            if (group.__xfPin) return;
+            group.__xfPin = true;
+            var cells = group.querySelectorAll('[data-xf-pin-cell]');
+            cells.forEach(function (cell, i) {
+                cell.addEventListener('input', function () {
+                    cell.value = cell.value.replace(/\D/g, '').slice(0, 1);
+                    if (cell.value && i < cells.length - 1) cells[i + 1].focus();
+                });
+                cell.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !cell.value && i > 0) cells[i - 1].focus();
+                    if (e.key === 'ArrowLeft' && i > 0) cells[i - 1].focus();
+                    if (e.key === 'ArrowRight' && i < cells.length - 1) cells[i + 1].focus();
+                });
+                cell.addEventListener('paste', function (e) {
+                    var txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, cells.length);
+                    if (!txt) return;
+                    e.preventDefault();
+                    for (var k = 0; k < cells.length; k++) cells[k].value = txt[k] || '';
+                    (cells[txt.length] || cells[cells.length - 1]).focus();
+                });
+            });
+        });
+
+        // 密码强度条（[data-password="bar"] 内的 input 与相邻 .password-bar）
+        document.querySelectorAll('[data-password="bar"]').forEach(function (wrap) {
+            if (wrap.__xfPwd) return;
+            wrap.__xfPwd = true;
+            var input = wrap.querySelector('input[type="password"], input[type="text"]');
+            var bar = wrap.querySelector('.password-bar');
+            if (!input || !bar) return;
+            var score = function (v) {
+                var s = 0;
+                if (v.length >= 8) s++;
+                if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++;
+                if (/\d/.test(v)) s++;
+                if (/[^a-zA-Z0-9]/.test(v)) s++;
+                return s; // 0-4
+            };
+            input.addEventListener('input', function () {
+                bar.classList.remove('is-weak', 'is-medium', 'is-strong');
+                var s = score(input.value);
+                if (input.value === '') return;
+                if (s <= 1) bar.classList.add('is-weak');
+                else if (s <= 3) bar.classList.add('is-medium');
+                else bar.classList.add('is-strong');
+            });
+        });
+    };
+    // 认证页独立文档在 DOM 就绪后自行初始化（普通后台页也会调用但无副作用）
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { XFAdmin.initAuthPage(); });
+    } else {
+        XFAdmin.initAuthPage();
+    }
 
     /** 获取元素上的插件实例 */
     XFAdmin.get = function (el) {
@@ -2098,6 +2250,9 @@
             // 详情操作面板 / 看板卡片快捷操作 / 表格行按钮（data-xf-op 领域动作统一处理）
             var btn = e.target.closest('[data-xf-op]');
             if (! btn || btn.tagName === 'A' && btn.getAttribute('href')) return;
+            // 表格行内的 data-xf-op 按钮由表格行操作委托（act=ajax）处理：若此处再处理，
+            // confirm/prompt 会双重触发（原生 prompt 弹两次）、op 端点可能重复提交。
+            if (btn.closest('table')) return;
             e.preventDefault();
             var op = btn.getAttribute('data-xf-op');
             var confirmText = btn.getAttribute('data-xf-confirm');
@@ -3541,15 +3696,21 @@
             XFAdmin.request(action, { method: method, data: new FormData(form) }).then(function (res) {
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = savedHtml; }
                 if (res.ok) {
-                    XFAdmin.toast({ body: (res.data && (res.data.message || res.data.msg)) || '保存成功', variant: 'success' });
-                    // 标记本次弹窗为「已保存成功」，关闭时父页面据以决定是否刷新表格
-                    var rootModal = cfg.modal && cfg.modal._element;
-                    if (rootModal) rootModal.__xfSavedOk = true;
+                    // 弹窗模式：维持弹窗关闭 + 父表格刷新决策（不触发整页 url 跳转）
                     if (cfg.modal) {
-                        // 弹窗模式：交给定制关闭事件统一处理刷新决策（关闭弹窗即触发 xf:dialog-closed）
+                        XFAdmin.toast({ body: (res.data && (res.data.message || res.data.msg)) || '保存成功', variant: 'success' });
+                        var rootModal = cfg.modal._element;
+                        if (rootModal) rootModal.__xfSavedOk = true;
                         cfg.modal.hide();
-                    } else if (cfg.reload !== false && cfg.tableEl) {
-                        XFAdmin.reloadTable(cfg.tableEl);
+                    } else {
+                        // 整页模式：统一走规范化响应处理（message 提示 / url 跳转 3 秒 / 默认刷新）
+                        XFAdmin.handleFormResponse(res, {
+                            form: form,
+                            noReload: cfg.reload === false || !!cfg.tableEl,
+                            onSuccess: function (r) {
+                                if (cfg.tableEl) XFAdmin.reloadTable(cfg.tableEl);
+                            }
+                        });
                     }
                 } else if (res.errors) {
                     var firstErr = '';
@@ -4357,11 +4518,8 @@
             }).then(function (result) {
                 var type = result.ok ? 'xf.form.success' : 'xf.form.error';
                 form.dispatchEvent(new CustomEvent(type, { detail: result, bubbles: true }));
-                if (result.ok) {
-                    XFAdmin.toast({ body: (result.data && result.data.message) || '操作成功', variant: 'success' });
-                } else {
-                    XFAdmin.toast({ body: (result.data && result.data.message) || '请求失败(' + result.status + ')', variant: 'danger' });
-                }
+                // 统一走规范化响应处理（message 提示 / url 跳转 3 秒 / 500 异常）
+                XFAdmin.handleFormResponse(result, { form: form });
             }).catch(function (err) {
                 form.dispatchEvent(new CustomEvent('xf.form.error', { detail: err, bubbles: true }));
                 XFAdmin.toast({ body: '网络错误，请稍后重试', variant: 'danger' });

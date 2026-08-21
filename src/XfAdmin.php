@@ -274,7 +274,7 @@ final class XfAdmin
         'resetPass'   => Components\Layout\AuthPage::class,
         'newPass'     => Components\Layout\AuthPage::class,
         'twoFactor'   => Components\Layout\AuthPage::class,
-        // 'lockScreen'  => Components\Layout\AuthPage::class,
+        'lockScreen'  => Components\Layout\AuthPage::class,
         'deleteAccount' => Components\Layout\AuthPage::class,
         'successMail' => Components\Layout\AuthPage::class,
         'loginPin'    => Components\Layout\AuthPage::class,

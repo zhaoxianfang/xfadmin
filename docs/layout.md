@@ -138,18 +138,121 @@ echo '</body></html>';
 
 ## 认证页 / 错误页 / 特殊页
 
+认证页组件 `authPage` 把 INSPINIA 后台模板中 `auth-*` / `auth-card-*` / `auth-split-*` 全部页面封装为
+**3 套布局 × 7 种核心语义类型**（外加 3 种兼容类型），严格对齐模板的 DOM 结构与排版。
+
+### 三套布局 `layout`
+
+| 值 | 说明 | 对应模板 |
+|----|------|----------|
+| `base`（`basic` 别名） | 单卡片居中、无侧栏图 | auth-sign-in.html 等 |
+| `card` | 左右分栏：左表单卡片 + 右侧宣传图 | auth-card-sign-in.html 等 |
+| `split` | 左整幅背景图 + 右自动宽表单卡片 | auth-split-sign-in.html 等 |
+
+### 语义类型 `type`
+
+| 类型 | 说明 | 默认标题 |
+|------|------|----------|
+| `sign-in` | 登录 | 欢迎回来 |
+| `sign-up` | 注册 | 创建账号 |
+| `reset-pass` | 忘记密码（提交邮箱） | 找回密码 |
+| `new-pass` | 设置新密码 / 重置密码（含 6 位验证码分格 + 密码强度条 + 协议勾选） | 设置新密码 |
+| `lock-screen` | 锁屏解锁（用户头像 + 密码） | 屏幕已锁定 |
+| `login-pin` | PIN 登录 | PIN 登录 |
+| `two-factor` | 两步验证（6 位验证码分格） | 两步验证 |
+| `delete-account` | 注销账户确认（兼容） | 注销账户 |
+| `success-mail` | 邮件发送成功提示（兼容） | 邮件已发送 |
+
+> 也提供快捷方法：`XfAdmin::signIn()` / `signUp()` / `resetPass()` / `newPass()` / `lockScreen()` / `loginPin()` /
+> `twoFactor()` / `deleteAccount()` / `successMail()`，均自动注入 `type`。
+
+### 基础用法
+
 ```php
-// 登录页
+// 登录页（split 版，最常用）
 echo XfAdmin::authPage([
-    'title'   => '登录',
-    'content' => XfAdmin::form([
-        'fields' => [
-            XfAdmin::input(['name' => 'email', 'label' => '邮箱', 'type' => 'email']),
-            XfAdmin::input(['name' => 'password', 'label' => '密码', 'type' => 'password']),
-            XfAdmin::button(['label' => '登录', 'type' => 'submit', 'variant' => 'primary', 'class' => 'w-100']),
-        ],
-    ]),
+    'layout'     => 'split',
+    'type'       => 'sign-in',
+    'title'      => '登录 - 控制台',
+    'heading'    => '欢迎回来',
+    'subheading' => '请输入管理员账号登录后台',
+    'action'     => '/login',
+    'fields'     => [
+        'email'    => ['label' => '邮箱', 'placeholder' => '请输入邮箱', 'required' => true, 'autofocus' => true],
+        'password' => ['label' => '密码', 'placeholder' => '请输入密码', 'required' => true],
+    ],
+    'submit'     => '登 录',
+    'captcha'    => true,                       // bool=渲染占位；string=原样输出（如 SVG 验证码组件）
+    'socialButtons' => [                        // 社交登录
+        ['icon' => 'ti ti-brand-google', 'url' => '/oauth/google', 'label' => 'Google'],
+    ],
+    'sideTitle'  => '企业级后台模板组件化方案',
+    'sideText'   => '开箱即用 200+ 组件',
+    'sideList'   => [['icon' => 'ti ti-check', 'text' => '纯原生 JS，离线可用']],
+    'copyright'  => '© 2026 控制台',
 ]);
+```
+
+### 自定义表单 / 模板插槽（在任意位置插入开发者内容）
+
+所有插槽均原样输出（raw），可放入任意组件 HTML 或自定义标签：
+
+| 插槽 | 位置 |
+|------|------|
+| `beforeForm` / `afterForm` | `<form>` 标签之前 / `</form>` 之后 |
+| `prepend` / `append` | 卡片标题之后 / 卡片底部链接之前 |
+| `fields[*]['before']` / `fields[*]['after']` | 单个字段之前 / 之后 |
+| `content` | 直接接管整张卡片主体（其余表单自动跳过） |
+| `below` | 表单下方补充内容（或类型默认导航链接） |
+
+```php
+echo XfAdmin::authPage([
+    'layout'  => 'split',
+    'type'    => 'sign-up',
+    'beforeForm' => XfAdmin::alert(['variant' => 'warning', 'content' => '注册前提示']),
+    'append'     => XfAdmin::alert(['variant' => 'light', 'content' => '同意《用户协议》']),
+    'fields'  => [
+        'email' => ['label' => '邮箱', 'after' => '<div class="form-text">不会公开</div>'],
+    ],
+]);
+```
+
+### 锁屏 / PIN / 新密码 专用配置
+
+```php
+// 锁屏（user 头像 + 名称 + 邮箱徽标）
+echo XfAdmin::authPage(['layout' => 'split', 'type' => 'lock-screen',
+    'user' => ['name' => '管理员', 'avatar' => 'users/avatar-1.jpg', 'email' => 'admin@example.com']]);
+
+// 新密码（email 展示 + 6 位验证码分格 + 密码强度条 + 协议）
+echo XfAdmin::authPage(['layout' => 'split', 'type' => 'new-pass',
+    'email' => 'admin@example.com', 'message' => '密码至少 8 位']);
+
+// 关闭新密码的额外块：newPassShowEmail / newPassShowCode / newPassShowAgree 设为 false
+```
+
+### 完整配置项速查
+
+| 键 | 说明 |
+|----|------|
+| `layout` | base / card / split |
+| `type` | 上表 9 种语义类型 |
+| `brand` | `['name','url','logo']` 品牌区 |
+| `heading` / `subheading` | 主标题 / 副标题（`subtitle` 兼容） |
+| `title` | `<title>` |
+| `action` / `method` | 表单地址 / 方法（POST 默认） |
+| `fields` | 关联数组，key 即字段名（email/password/name/pin/code…） |
+| `submit` / `buttons` | 默认提交按钮文案 / 自定义按钮数组 |
+| `captcha` | bool=占位；string=原样输出 |
+| `socialButtons` | 社交登录数组 |
+| `links` | `[['text','href']]` 导航链接（覆盖类型默认） |
+| `loginRedirect` / `registerRedirect` | 顶部/底部默认导航地址 |
+| `footerLinks` | 底部固定链接列表 |
+| `sideImage` / `sideImageAlt` / `sideImageSize` / `sideImagePosition` / `sideOverlay` | 侧栏背景图设置（card/split 共用；`sideImage` 默认包内 `auth.jpg` 与后台模板一致，传 `''`/`false` 关闭回退纯色；`sideOverlay=false` 关闭暗角遮罩） |
+| `sideTitle` / `sideText` / `sideList` / `sideVariant` | 侧栏文案与强调色（card/split 共用；`sideVariant` 在无背景图时作为纯色渐变） |
+| `user` | 锁屏用户 `['name','avatar','email']` |
+| `copyright` | 底部版权 |
+| `beforeForm`/`afterForm`/`prepend`/`append`/`content`/`below` | 自定义插槽 |
 
 // 404
 echo XfAdmin::errorPage(['code' => '404', 'title' => '页面不存在', 'home_url' => '/']);

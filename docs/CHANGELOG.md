@@ -4,6 +4,215 @@
 
 ---
 
+## v2.2.12 AuthPage 输入框背景色对齐模板 + 背景图模糊 + 侧栏官方文案（2026-08-17）
+
+### 修复
+- **输入框背景色对齐 `auth-split-sign-in.html`**：`xfadmin.css` 亮色模式 `--ins-light-rgb` 由 `208, 208, 208 !important` 改为模板编译值 `238, 242, 247 !important`（`#eef2f7`）。此前 `.bg-light` 输入框背景解析为 `rgba(208,208,208,.4)` 偏灰，现与模板 `bg-light bg-opacity-40` 完全一致（`rgba(238,242,247,.4)`）。
+
+### 新增（侧栏视觉增强）
+- **背景图模糊效果**：新增规则，`.auth-layout-split .card-side-img::before` 与 `.auth-layout-card .auth-card-media-bg::before` 以伪元素继承背景图并 `filter: blur(9px) saturate(1.2)` + `scale(1.06)`（毛玻璃，溢出由容器 `overflow-hidden` 裁切）；`img` 标签承载方式（`.auth-split-img` / `.auth-card-media-img`）同样模糊。文字层（`auth-overlay` / `auth-card-media-overlay`，z-index:1）保持清晰。
+- **背景图半透明蒙版**：`.auth-overlay` 蒙版增强为「径向暗化 + 统一半透明深色蒙版」双层（`radial-gradient(...) + rgba(10,18,36,.28)`），背景图呈半透明压暗效果，白字更清晰。
+- **`.auth-side-content` 毛玻璃面板**：背景由纯色改为渐变半透明深底，`backdrop-filter` 增强为 `blur(14px) saturate(1.4)`，边框提亮、新增顶部高光内阴影与加深外阴影。
+- **侧栏官方文案**：`sideTitle` / `sideText` / `sideList` 默认值改为正式官方的「企业级后台管理平台」文案（覆盖业务运营、流程审批与数据分析等核心场景）；`demo/pages/auth.php` 同步更新。调用方未传时侧栏自动展示官方文案，可按需覆盖。
+
+### 兼容性
+- `AuthPage` 全部 API 与 HTML 结构不变，仅默认文案与 CSS 调整；`sideTitle`/`sideText`/`sideList` 显式传值仍完全覆盖默认文案。
+
+### 验证
+- 包内 `tests/smoke.php` + `tests/regression.php` 全 PASS。
+- split / card 布局渲染确认：背景 div（`card-side-img`）、遮罩（`auth-overlay`）、玻璃面板（`auth-side-content`）与官方文案均已输出；CSS 中 `238, 242, 247` 生效、`208, 208, 208` 无样式残留（仅注释说明）；模糊规则已加载。
+- 已 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.7 AuthPage 侧栏文案排版美化（2026-08-17）
+
+### 问题
+测试反馈登录 / 注册等 auth 页面的侧栏 `.auth-side-title`、`.auth-side-text`、`.auth-side-list` 展示位置、样式、排版不合理，既不美观也不协调。
+
+### 整改内容
+- **统一玻璃拟态容器**：原标题 / 文案 / 列表直接平铺在 overlay 中，无宽度限制且无分组感；现统一包入 `.auth-side-content` 容器，设置 `max-width`、半透明暗色背景 + `backdrop-filter: blur(10px)`、圆角、细边框与阴影，形成悬浮卡片效果。
+- **标题加大加间距**：`font-size: 1.75rem`（桌面端）、`font-weight: 700`、底部间距 `.75rem`，并加 `text-shadow` 提升在复杂背景图上的可读性。
+- **文案约束宽度**：`max-width` 继承容器、`line-height: 1.65`、颜色 `rgba(255,255,255,.82)`，底部间距 `1.25rem`。
+- **列表项卡片化**：每项使用独立圆角底块（`rgba(255,255,255,.1)` 背景 + 细边框），图标放入 28px 圆形底块（`rgba(255,255,255,.18)`），增大图标与文字间距；语义化拆分为 `.auth-side-list-icon` / `.auth-side-list-text`。
+- **位置与对齐**：内容块在 overlay 中水平居中、内部左对齐；split 大屏 `max-width: 420px`，card 右侧宣传区较窄，通过新增 `.auth-overlay-card` 收紧为 `340px`。
+- **响应式**：桌面 3rem / 平板 1.5rem / 手机 1rem 的内边距梯度，标题与列表项字号自适应。
+
+### 兼容性
+- `sideTitle` / `sideText` / `sideList` API 不变；仅 HTML 结构新增 `.auth-side-content` 容器与 `.auth-side-list-icon` / `.auth-side-list-text`。
+- 不传上述字段时仍不输出任何侧栏文案容器，与此前行为一致。
+
+### 验证
+- 包内 `tests/smoke.php` + `tests/regression.php` 全 PASS。
+- split / card 布局均输出 `.auth-side-content`，card 布局额外带 `.auth-overlay-card`。
+- 已 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`，wsf `/admin/login`、`/admin/register` 渲染出新结构。
+
+---
+
+## v2.2.8 AuthPage 侧栏文案居中展示 + 毛玻璃特效增强（2026-08-17）
+
+### 调整
+- **水平垂直居中**：split / card 两处 overlay 由 `d-flex align-items-end justify-content-center`（底部居中）改为 `d-flex align-items-center justify-content-center`，`.auth-side-title` / `.auth-side-text` / `.auth-side-list` 整体在 `.card-side-img` 元素内水平、垂直双向居中展示。
+- **毛玻璃特效增强**：`.auth-side-content` 背景改为半透明深蓝底（`rgba(15,23,42,.26)`），`backdrop-filter: blur(16px) saturate(150%)`，边框加亮（`rgba(255,255,255,.22)`，顶部高光 `.38`），内阴影高光 + 外投影，玻璃质感更明显。
+- **暗角协调**：`.auth-overlay` 由「顶部透明底部暗」的线性渐变改为均匀径向暗化（`radial-gradient(120% 100% at 50% 50%, rgba(0,0,0,.16) → .42)`），与居中排版协调，保证卡片四周图片可读性。
+
+### 兼容性
+- `sideTitle` / `sideText` / `sideList` API 与 HTML 结构均不变，仅 overlay 的 flex 对齐类与 CSS 样式调整。
+
+### 验证
+- 包内 `tests/smoke.php` + `tests/regression.php` 全 PASS。
+- split / card 布局均输出 `align-items-center`；wsf `/admin/login`、`/admin/register` 渲染确认居中类生效。
+- 已 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.10 AuthPage 表单直角化 + 输入框统一 .bg-light 背景（2026-08-17）
+
+### 调整
+- **取消所有圆角表单**：`xfadmin.css` 新增「auth 表单直角化」规则，`.auth-box` 内全部输入控件（`form-control` / `form-select` / `input-group-text` / `.btn`）`border-radius: 0 !important`，覆盖 Bootstrap `.input-group` 相邻元素衔接圆角，三种布局（base / card / split）输入框、图标、按钮全部直角风格。
+- **输入框背景统一 .bg-light**：对齐后台模板 `auth-split-sign-in.html` 的 `form-control py-2 px-3 bg-light bg-opacity-40 border-light`。`field()` / `passwordInput()` / `pinCodeGroup()` / `new-pass` 邮箱禁用框的输入框样式由「仅 card/split 加浅底」改为**无条件**附加 `bg-light bg-opacity-40 border-light`，base 布局输入框同样获得浅底背景。`$withBg` 参数仅保留控制 input-group 图标的职责。
+
+### 兼容性
+- `field` / `password` / `pinCode` / `formNewPass` API 与表单 HTML 结构不变，仅输入框 class 与 CSS 调整。
+
+### 验证
+- 包内 `tests/smoke.php` + `tests/regression.php` 全 PASS。
+- base / card / split 三种布局输入框均输出 `form-control form-control-lg bg-light bg-opacity-40 border-light`；CSS 直角化规则已加载。
+- 已 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.11 AuthPage 表单完全对齐后台模板 auth-split-sign-in.html（2026-08-17）
+
+### 调整（逐项对齐模板输入框 `form-control py-2 px-3 bg-light bg-opacity-40 border-light`）
+- **元素高度**：`field()` / `passwordInput()` / `new-pass` 邮箱禁用框由 `form-control-lg`（大号高输入框）改为普通 `form-control py-2 px-3`（模板同款高度与内边距）。
+- **背景色**：保持并统一 `bg-light bg-opacity-40 border-light`（模板同款半透明浅底 + 浅色边框）。
+- **圆角恢复**：移除上一轮「auth 表单直角化」CSS（`border-radius: 0 !important`）。模板输入框为 Bootstrap 默认圆角，完全参照模板即恢复默认圆角；`input-group` 图标衔接圆角同样由 Bootstrap 默认规则处理。
+- **复选框**：注册协议勾选由 `form-check-input` 对齐模板为 `form-check-input form-check-input-light fs-14`。
+- **提交按钮**：`fw-semibold` → `fw-bold`，对齐模板 sign-in 的 `btn btn-primary fw-bold py-2`（配合既有 `d-grid` 全宽布局）。
+- 保留：`$withBg` 仅控制 card/split 的 input-group 图标；PIN 分格框保持 `form-control form-control-lg text-center fs-3`（对齐模板 auth-split-login-pin.html，CSS 已定 `height:3rem`）。
+
+### 兼容性
+- `field` / `password` / `pinCode` / `formNewPass` / `buttons` API 与 HTML 结构不变，仅输入框 class 与 CSS 调整。
+
+### 验证
+- 包内 `tests/smoke.php` + `tests/regression.php` 全 PASS。
+- base / card / split 三种布局输入框均输出 `form-control py-2 px-3 bg-light bg-opacity-40 border-light`（与模板一致）；按钮输出 `btn btn-primary fw-bold py-2 w-100`；直角化规则已移除。
+- 已 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.9 AuthPage 侧栏文案整体半透明面板 + 背景暗角（2026-08-17）
+
+### 调整
+- **统一半透明面板**：`.auth-side-title` / `.auth-side-text` / `.auth-side-list` 三个元素统一承载于 `.auth-side-content` 容器内，面板使用整体半透明深蓝底（`rgba(13,20,38,.42)`）+ `backdrop-filter: blur(10px)` + 细边框 + 大圆角 + 深投影，形成整体半透明面板而非独立卡片。
+- **列表项融入面板**：`.auth-side-list li` 移除各自的背景底块 / 边框 / 圆角（仅保留图标圆形底块），列表项与标题、文案同属一个面板，观感统一。
+- **`.card-side-img` 整体效果**：新增 `::after` 边缘暗角（vignette，`radial-gradient` 中心透明 → 边缘 `rgba(0,0,0,.3)`，`pointer-events: none`，`z-index: 0` 位于 overlay 之下不影响文字），让居中的半透明面板自然突出。
+- **暗化平衡**：`.auth-overlay` 径向暗化强度由 `.16→.42` 调为 `.12→.34`，避免与 vignette 叠加后边缘过暗。
+
+### 兼容性
+- `sideTitle` / `sideText` / `sideList` API 与 HTML 结构不变；`.auth-side-content` 容器及类名均保持。
+
+### 验证
+- 包内 `tests/smoke.php` + `tests/regression.php` 全 PASS。
+- split / card 布局均渲染 `.auth-side-content` 包裹三元素结构；CSS 中 `.card-side-img::after` 与半透明面板样式已生效。
+- 已 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.6 AuthPage 侧栏背景图默认化 + 可自定义背景设置（2026-08-17）
+
+### 背景图默认化（对齐后台模板 auth-split-* / auth-card-*）
+- 此前 `sideImage` 默认 `null`，未传时 `.card-side-img` 无背景图（回退纯色渐变），与 INSPINIA `auth-split-sign-in.html` / `auth-split-sign-up.html` 等页（恒有 `assets/images/auth.jpg` 背景图）不一致。
+- 现默认值为包内 `images/auth.jpg`（与模板同名图）：登录 / 注册等 auth 页不传 `sideImage` 也自动带背景图；传 `''` / `false` / `null` 可显式关闭，回退 `sideVariant` 纯色渐变。
+
+### 新增侧栏背景设置（组件内自定义传入）
+| 配置 | 说明 | 默认 |
+|------|------|------|
+| `sideImage` | 背景图地址（http(s):/data:/包内 images/ 相对路径） | `auth.jpg` |
+| `sideImageAlt` | 背景图 alt（无障碍） | `''` |
+| `sideImageSize` | CSS `background-size`（cover/contain/100% 100%…） | `cover` |
+| `sideImagePosition` | CSS `background-position`（center/top left…） | `center` |
+| `sideOverlay` | 是否叠加底部渐变遮罩（保证白字可读）；`false` 时输出 `auth-overlay-plain` 无暗角 | `true` |
+
+### split / card 布局标记进一步对齐模板
+- **split**：左侧由 `col`（带类）改为模板同款「外层 `col` + 内层 `h-100 position-relative card-side-img rounded-0 overflow-hidden`」两段式；背景样式内联输出 `background-image` + `background-size` + `background-position`；右侧 `col-xl-auto` 修正为模板一致的 `col-md-auto`。
+- **card**：右侧宣传图由 `<img>` 标签改为模板同款 `card-side-img` + `background-image`（新增 `.auth-card-media-bg` 承载层），`sideImageSize` / `sideImagePosition` 同样生效；叠加层改为与模板一致的 `p-4 card-img-overlay rounded-4 rounded-start-0 auth-overlay d-flex align-items-end justify-content-center`。
+- CSS：合并重复的 `.card-side-img` 定义；补充 `.auth-split-media--primary/info/success/warning/danger/dark` 变体类（无图回退时 `sideVariant` 真正生效）与 `.auth-overlay-plain`。
+
+### 验证
+- 拆分 / 卡片 / 关闭 / 遮罩开关 / 自定义图+尺寸+定位 / variant 注入共 6 项渲染断言全部 PASS；`/zxf/xfadmin/images/auth.jpg` 200（163KB）。
+- 后续 `rsync -a --delete src/ resources/` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/` 后 wsf 登录 / 注册页即自动带背景图。
+
+---
+
+## v2.2.5 Admin 退出报错修复 + Auth split 逐字段对齐后台模板 + 系统设置补全（2026-08-15）
+
+### 问题修复
+- **Admin 退出报错**：登出按钮为 `<a href="/admin/logout">`（GET 导航），但 `Routes/web.php` 的 `admin/logout` 仅注册 `post`，导致 GET 访问 405。已改为 `Route::match(['get','post'], ...)`，退出后正确重定向到登录页。
+- **Auth split 布局与后台模板不一致**：原 `docSplit()` 左侧用 `<img>` + 自定义 `auth-split-img` 类、右侧用 `card-body p-4 p-md-5` + `mt-auto` 堆叠，与 INSPINIA `auth-split-*.html` 不符。重写后：
+  - 左侧：`col h-100 position-relative card-side-img rounded-0 overflow-hidden` + 内联 `background-image` 整幅铺满（缺图回退纯色渐变），叠加 `card-img-overlay auth-overlay` 文案层。
+  - 右侧：`col-xl-auto` + `card auth-box-form border-0 mb-0` + `card-body min-vh-100 d-flex flex-column justify-content-center`，品牌居中（`mb-0 text-center`），表单落 `mt-auto text-center` 区，末尾「返回登录」链接与 `mt-auto mb-0` 版权。
+  - 输入框统一 `form-control form-control-lg bg-light bg-opacity-40 border-light`；提交按钮 `btn btn-primary fw-semibold py-2`（非 `btn-lg w-100`）。
+  - PIN 登录（`login-pin`）改为 6 个分格密码框 `form-control form-control-lg text-center fs-3`（对齐 `auth-split-login-pin.html`）。
+  - 修复背景图 URL 双重前缀（`XfAdmin::img` 已补 `images/`，调用方传 `auth.jpg` 而非 `images/auth.jpg`）。
+- **「设置新密码」误含 PIN 分格框**：`formNewPass()` 默认注入了 6 位验证码分格框，而后台 `auth-split-new-pass.html` 仅含新密码 + 确认 + 强度条 + 协议。已将 `newPassShowCode` 默认值改为 `false`（仍需时显式传 `true`）。
+
+### 系统设置补全（wsf `SystemController::config()`）
+- 对齐 `system_info.md` §11.2：系统设置 Tabs 由 6 组扩展为 **系统配置 / 安全配置 / 消息通知 / 邮件配置 / 短信配置 / 上传配置 / 缓存配置 / 接口配置 / 新增配置**。
+- 新增「安全配置」Tab（密码最小长度 / 复杂度 / 登录失败锁定次数 / 会话超时 / 双因子 / 强制 HTTPS）与「消息通知」Tab（邮件 / 短信通知开关 / Webhook 地址 / 通知模板）。
+- 菜单管理 DataTable 新增「新增」按钮（`create_url` 联动），完善 CRUD。
+
+### 验证
+- xfadmin `php -l`（AuthPage.php / xfadmin.js）+ `tests/smoke.php` + `tests/regression.php` 全部 PASS。
+- wsf 端：6 个认证页 Playwright 真实浏览器验证全部 PASS（split 结构正确、无 pageerror / console / 破图 / 横向溢出、PIN 页 6 格、退出 GET→重定向登录）；`/admin/system/config|menus|permissions|logs|admins` 经 Console 引导渲染均 200 且无异常，config 含 4 类核心 Tab。
+- 已 `rsync -a --delete` src/ 与 resources/ 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.4 AuthPage 三套布局精确对齐后台模板 + 54 系统全量覆盖（2026-08-15）
+
+### AuthPage 三套布局精确对齐 INSPINIA 后台模板
+- **split 布局**（`auth-split-*`）：修正为「左整幅背景图 `auth-split-media` + 右 `col-md-auto` 自动宽表单卡片」，卡片加 `min-vh-100 d-flex flex-column` 垂直居中，品牌居中，表单落 `mt-auto` 区，与 `auth-split-sign-in.html` 等逐字段一致。
+- **card 布局**（`auth-card-*`）：修正为 `card rounded-4` 内 `row g-0`，左侧 `col-lg-6 card-body` 表单 + 右侧 `col-lg-6 d-none d-lg-block card-side-img` 宣传图，与 `auth-card-sign-in.html` 等结构一致。
+- **base 布局**（`auth-*`）：单卡片居中 `col-xxl-4`，品牌下方新增 `Welcome !` 标题 + 副标题 + `auth-line` 分隔线，对齐 `auth-sign-in.html`。
+- 三套布局均覆盖 7 个核心语义（登录 / 注册 / 忘记密码 / 重置密码 / 设置新密码 / 锁屏 / PIN 登录），并保留 `beforeForm`/`afterForm`/`prepend`/`append`/`content`/`below`/`fields[*][before|after]` 等任意位置自定义插槽。
+
+### 54 企业管理系统全量覆盖（wsf Admin 演示）
+- `EnterpriseCatalog` 新增 27 个模块（mes/plm/qms/lims/scada/aps/dt/itsm/devops/sfa/bpc/fssc/clm/grc/esign/cc/lms/oms/cem/datamid/portal/aipass/procmall/pos/archive/tax/treasury），与既有模块合计 **62 个模块 / 113 个页面**，完整映射 `system_info.md` 全部 54 系统。
+- `Routes/web.php` 新增动态兜底路由 `admin/app/{module}` 与 `admin/app/{module}/{page}` 指向 `EnterpriseController::show`，使所有新增模块自动可访问（无需逐条路由）。
+- 每个模块按业务域配置 `seq/pool/enum/money/percent/progress/phone/person/switch` 等字段 DSL，状态类字段均配 `options` + `colors`。
+
+### 验证
+- xfadmin `php -l` + `tests/smoke.php` + `tests/regression.php` 全部 PASS。
+- wsf 端：6 个认证页（`showLogin/showRegister/showForgot/showLock/showPin`）经 Console 引导渲染均输出 split 结构且无异常；113 个企业模块页面渲染无异常。
+- 已 `rsync -a --delete` src/ 与 resources/ 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
+## v2.2.3 Admin 后台登录 / 注册验证码集成 + AuthPage 健壮性优化（2026-08-15）
+
+### 问题修复
+- **登录 / 注册页排版异常**：修复 `AuthPage` 组件与 `AuthController` 之间的契约错位。旧版控制器使用已被废弃的 `content` + `buttons` 简写，导致表单字段与提交按钮无法正确渲染；新版统一采用 `fields` + `captcha` + `submit` + `links` 当前模式，登录 / 注册 / 找回密码 / 锁屏 / PIN 登录全部排版正常。
+- **`AuthPage::icon()` 图标失效**：移除对 `ti ` 前缀图标的错误短路返回，Tabler 图标（`ti ti-lock`、`ti ti-login` 等）现在正确渲染为 `<i class="..."></i>`。
+
+### AuthPage 组件增强
+- **`formSignIn()` 支持账号登录**：当 `fields['username']` 存在时优先使用账号字段，未配置时回退到默认 `email` 字段，兼容后台「账号 + 密码」场景。
+- **`buttonsRow()` 提交按钮增强**：`submit` 配置同时支持 `text` / `label` 键名，并新增 `icon` 前缀图标支持。
+
+### 后台验证码集成
+- **登录 / 注册页接入 `zxf/captcha`**：提交按钮上方注入 `xf-captcha::captcha` 组件，并随表单提交 `xf_captcha_token`。
+- **服务端校验**：`AuthController::login()` / `register()` 增加 `required|xfCaptcha` 校验规则；空验证码 / 错误验证码均会被拦截。
+- **系统设置开关**：`Admin → 系统设置 → 基础` 新增「登录 / 注册启用验证码」开关，通过 `demo_configs` 表持久化，并与登录控制器联动（默认开启，演示环境生效）。
+
+### 验证
+- 登录 / 注册 / 找回密码 / 锁屏 / PIN 登录页 Playwright 验证：无 JS 错误、无破图、无横向溢出、提交按钮文本正确。
+- 登录页空验证码提交返回 422 并被表单错误提示拦截。
+- xfadmin 包内 `php -l`、`tests/smoke.php`、`tests/regression.php` 全部 PASS。
+- 已同步 `rsync -a --delete` 到 `/Users/aha/www/wsf/vendor/zxf/xfadmin/`。
+
+---
+
 ## v2.2.2 全量中文注释补全（2026-08-14）
 
 ### 注释补全

@@ -37,8 +37,11 @@ class Form extends Component
             'method'      => 'POST',
             'enctype'     => null,
             'validation'  => false,
-            'ajax'        => false,
-            'remote'      => false,    // true：表单带 data-xf-remote，由前端全局托管 AJAX 提交 + 接收处理（与登录页一致）
+            'ajax'        => false,   // true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）
+            'remote'      => false,    // 兼容别名（= ajax），保留旧调用方式
+            'redirect'    => '',       // AJAX 成功且后端未返回 url 时前端兜底跳转地址（整页）
+            'reset'       => false,    // AJAX 成功后是否重置表单（默认 false；与 reload 二选一）
+            'reload'      => true,     // AJAX 成功且无 url/redirect 时是否刷新当前页（false=仅 toast）
             'inline'      => false,     // 兼容旧写法（等价 layout=inline）
             'layout'      => null,      // vertical | horizontal | inline（form-layouts.html）
             'label_width' => 180,       // horizontal 布局标签列宽（px）
@@ -80,6 +83,28 @@ class Form extends Component
         if ($this->get('ajax') || $this->get('remote')) {
             // 远程表单：交由前端 XFAdmin.bindRemoteForms 全局托管（拦截提交 -> AJAX -> 成功刷新/关闭、失败回填）
             $attrs['data-xf-remote'] = '';
+            // 成功行为契约：reload / reset / redirect 三选一（优先级 url > redirect > reload > reset）
+            $attrs['data-xf-reload'] = $this->get('reload') ? '1' : '0';
+            if ($redirect = (string) $this->get('redirect')) {
+                $attrs['data-xf-redirect'] = $redirect;
+            }
+            if ($this->get('reset')) {
+                $attrs['data-xf-reset'] = '1';
+            }
+            // 含文件上传时（或显式声明 file=true），自动切换为 multipart 编码，让前端用 FormData 收集文件
+            $hasFile = $this->get('file') || $this->get('enctype') === 'multipart/form-data';
+            if (! $hasFile) {
+                foreach ((array) $this->get('fields', []) as $field) {
+                    if (is_string($field) && stripos($field, 'type="file"') !== false) {
+                        $hasFile = true;
+                        break;
+                    }
+                }
+            }
+            if ($hasFile) {
+                $attrs['enctype'] = 'multipart/form-data';
+                $attrs['data-xf-has-file'] = '';
+            }
         }
         $html = '<form' . $this->attrs($attrs) . '>';
 

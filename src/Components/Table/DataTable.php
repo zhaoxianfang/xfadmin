@@ -491,31 +491,53 @@ use zxf\XfAdmin\Support\Html;
     }
 
     /**
-     * 渲染「新增」弹窗按钮（依赖前端 [data-xf-page-dialog] 声明式接线）
+     * 渲染「新增」按钮组：弹窗快速新增（page 键）+ 整页创建表单链接（url 键），可并存、向后兼容。
      *
-     * 'create' => '/admin/users/create'
+     * 'create' => '/admin/users/create'                      // 仅弹窗（等价 page）
      * 'create' => ['page' => '/admin/users/create', 'label' => '新增用户', 'title' => '新增用户',
      *              'size' => 'lg', 'frame' => false, 'icon' => 'ti ti-plus', 'class' => 'btn-primary']
+     * 'create' => ['url' => '/admin/users/create', 'label' => '新建']    // 仅整页表单
+     * 'create' => ['page' => '.../create', 'url' => '.../create',
+     *              'label' => '新建', 'urlLabel' => '完整创建', 'urlIcon' => 'ti ti-file-plus']
+     *
+     * 弹窗按钮依赖前端 [data-xf-page-dialog] 声明式接线；url 链接为普通 <a href>，实现页面级创建跳转闭环。
      */
     protected function renderCreateButton(string $tableId, array $cfg): string
     {
-        $page = (string) ($cfg['page'] ?? $cfg['url'] ?? '');
-        if ($page === '') {
+        $dialogPage = (string) ($cfg['page'] ?? '');
+        $pageUrl    = (string) ($cfg['url'] ?? '');
+        if ($dialogPage === '' && $pageUrl === '') {
             return '';
         }
         $label = (string) ($cfg['label'] ?? '新增');
         $icon  = (string) ($cfg['icon'] ?? 'ti ti-plus');
         $cls   = Html::cls('btn btn-sm', (string) ($cfg['class'] ?? 'btn-primary'));
 
-        return '<div class="xf-dt-create mb-2 d-flex">'
-            . '<button type="button" class="' . $this->e($cls) . '"'
-            . ' data-xf-page-dialog="' . $this->e($page) . '"'
-            . ' data-xf-title="' . $this->e((string) ($cfg['title'] ?? $label)) . '"'
-            . ' data-xf-size="' . $this->e((string) ($cfg['size'] ?? 'lg')) . '"'
-            . (! empty($cfg['frame']) ? ' data-xf-frame' : '')
-            . ' data-xf-table="#' . $this->e($tableId) . '">'
-            . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
-            . $this->e($label) . '</button></div>';
+        $btns = '';
+        // 弹窗快速新增
+        if ($dialogPage !== '') {
+            $btns .= '<button type="button" class="' . $this->e($cls) . '"'
+                . ' data-xf-page-dialog="' . $this->e($dialogPage) . '"'
+                . ' data-xf-title="' . $this->e((string) ($cfg['title'] ?? $label)) . '"'
+                . ' data-xf-size="' . $this->e((string) ($cfg['size'] ?? 'lg')) . '"'
+                . (! empty($cfg['frame']) ? ' data-xf-frame' : '')
+                . ' data-xf-table="#' . $this->e($tableId) . '">'
+                . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
+                . $this->e($label) . '</button>';
+        }
+        // 整页创建表单链接
+        if ($pageUrl !== '') {
+            $urlLabel = (string) ($cfg['urlLabel'] ?? $label);
+            $urlIcon  = (string) ($cfg['urlIcon'] ?? 'ti ti-file-plus');
+            $urlCls   = Html::cls('btn btn-sm', (string) ($cfg['urlClass'] ?? 'btn-outline-primary'));
+            $btns .= '<a href="' . $this->e($pageUrl) . '" class="' . $this->e($urlCls) . '"'
+                . (($cfg['target'] ?? '') !== '' ? ' target="' . $this->e((string) $cfg['target']) . '"' : '')
+                . '>'
+                . ($urlIcon !== '' ? '<i class="' . $this->e($urlIcon) . ' me-1"></i>' : '')
+                . $this->e($urlLabel) . '</a>';
+        }
+
+        return '<div class="xf-dt-create mb-2 d-flex gap-2 flex-wrap">' . $btns . '</div>';
     }
 
     /**

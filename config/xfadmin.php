@@ -11,7 +11,7 @@ return [
     'assets_url' => '/zxf/xfadmin',
 
     // 资源版本号（附加 ?v= 用于浏览器缓存刷新）
-    'version' => '2.0.0',
+    'version' => '2.1.0',
 
     // 主题默认外观（渲染到 <html> 的 data-* 属性，运行时可被浏览器端 config.js 持久化覆盖）
     //

@@ -397,6 +397,261 @@ html[data-layout="topnav"] .app-topbar .logo-topbar img {
 .auth-split-form .card { border: 0; }
 .auth-split-aside ul li i { color: rgba(255,255,255,.85); }
 /* 密码强度条（由 PasswordStrength 组件交互，这里给基础样式） */
+
+/* —— 三套布局通用排版（base / card / split）—— */
+/* 整页最小高度（base 用 col-xxl-4 居中，card/split 用整行） */
+.auth-layout-base .auth-box { min-height: 100vh; }
+.auth-layout-card .auth-box, .auth-layout-split .auth-box { min-height: 100vh; }
+
+/* 品牌区：logo 文字样式（无 logo 图片时） */
+.auth-brand { display: block; margin-bottom: 1.5rem; }
+.auth-brand-link { text-decoration: none; }
+.auth-brand-logo { height: 2rem; width: auto; }
+.auth-brand-text { font-size: 1.5rem; font-weight: 700; color: var(--bs-primary); letter-spacing: .02em; }
+
+/* 标题与副标题 */
+.auth-heading { font-weight: 700; color: var(--bs-heading-color, var(--bs-emphasis-color)); }
+.auth-subheading { font-size: .95rem; }
+.auth-copyright { font-size: .8125rem; color: var(--bs-secondary-color); }
+
+/* 底部链接（类型默认导航） */
+.auth-below { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; font-size: .9rem; }
+.auth-link { color: var(--bs-primary); text-decoration: none; }
+.auth-link:hover { text-decoration: underline; }
+
+/* 顶部 / 底部固定链接 */
+.auth-footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--bs-border-color); }
+.auth-footer-links { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+.auth-footer-link { font-size: .85rem; color: var(--bs-secondary-color); text-decoration: none; }
+.auth-footer-link:hover { color: var(--bs-primary); }
+
+/* 表单按钮行 */
+.auth-buttons .btn { font-weight: 600; }
+
+/* —— card 布局右侧宣传面板 —— */
+/* card 布局右侧宣传图（对齐后台 auth-card-* 的 .card-side-img） */
+.card-side-img { position: relative; min-height: 100%; border-top-right-radius: var(--bs-border-radius-lg); border-bottom-right-radius: var(--bs-border-radius-lg); background-size: cover; background-position: center; background-repeat: no-repeat; }
+/* .card-side-img 整体柔化效果：边缘暗角（vignette），让居中的半透明面板自然突出 */
+.card-side-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(115% 115% at 50% 42%, rgba(0,0,0,0) 58%, rgba(0,0,0,.3) 100%);
+}
+.auth-card-media { position: relative; min-height: 100%; overflow: hidden; background: linear-gradient(135deg, var(--bs-primary), #6f42c1); }
+.auth-card-media--info   { background: linear-gradient(135deg, var(--bs-info), #0d6efd); }
+.auth-card-media--success{ background: linear-gradient(135deg, var(--bs-success), #198754); }
+.auth-card-media--dark   { background: linear-gradient(135deg, #212529, #495057); }
+.auth-card-media-bg { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; }
+.auth-card-media-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.auth-card-media-overlay {
+    position: relative; z-index: 1; height: 100%; min-height: 480px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 2.5rem; color: #fff;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.45) 100%);
+}
+/* 侧栏文案容器：整体半透明面板（标题 / 文案 / 列表统一承载于一个面板内） */
+/* 侧栏文案玻璃面板：半透明深色底 + 背景模糊（毛玻璃），叠加顶部高光内阴影与悬浮外阴影 */
+.auth-side-content {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 2.5rem 2.25rem;
+    text-align: left;
+    color: #fff;
+    background:
+        linear-gradient(160deg, rgba(22, 34, 60, .58), rgba(9, 15, 30, .46)),
+        rgba(13, 20, 38, .30);
+    -webkit-backdrop-filter: blur(12px) saturate(1.35);
+    backdrop-filter: blur(12px) saturate(1.35);
+    border: 1px solid rgba(255,255,255,.16);
+    border-top: 1px solid rgba(255,255,255,.30);
+    border-radius: 1.35rem;
+    box-shadow:
+        0 24px 64px rgba(0,0,0,.45),
+        0 2px 8px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+.auth-side-title {
+    position: relative;
+    margin: 0 0 1rem;
+    padding-left: 1rem;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.7rem;
+    line-height: 1.3;
+    letter-spacing: .5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,.4);
+}
+/* 标题左侧主色竖条装饰，增强品牌/层级感 */
+.auth-side-title::before {
+    content: '';
+    position: absolute;
+    left: 0; top: .15em; bottom: .15em;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--bs-primary, #4e73df), #6f42c1);
+    box-shadow: 0 0 12px rgba(var(--bs-primary-rgb, 78, 115, 223), .6);
+}
+.auth-side-text {
+    margin: 0 0 1.5rem;
+    padding-left: 1rem;
+    color: rgba(255,255,255,.84);
+    font-size: .95rem;
+    line-height: 1.7;
+    text-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.auth-side-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+.auth-side-list li {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    padding: .625rem .85rem;
+    color: #fff;
+    font-size: .925rem;
+    line-height: 1.45;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: .75rem;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+}
+.auth-side-list li:hover {
+    background: rgba(255,255,255,.14);
+    border-color: rgba(255,255,255,.22);
+    transform: translateX(3px);
+}
+.auth-side-list-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: .9rem;
+    background: linear-gradient(140deg, var(--bs-primary, #4e73df), #6f42c1);
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(var(--bs-primary-rgb, 78, 115, 223), .35);
+}
+.auth-side-list-text { color: rgba(255,255,255,.96); }
+/* card 布局右侧宣传区宽度较窄，内容容器收紧并贴底 */
+.auth-overlay-card .auth-side-content {
+    max-width: 340px;
+    padding: 1.75rem 1.5rem;
+}
+@media (max-width: 991.98px) {
+    .auth-card-media-overlay,
+    .auth-overlay,
+    .auth-overlay-plain { padding: 1.5rem; }
+    .auth-side-content { padding: 1.5rem 1.25rem; max-width: 100%; }
+    .auth-side-title { font-size: 1.5rem; }
+}
+@media (max-width: 575.98px) {
+    .auth-side-content { padding: 1.25rem 1rem; border-radius: .85rem; }
+    .auth-side-title { font-size: 1.35rem; margin-bottom: .75rem; }
+    .auth-side-text { margin-bottom: 1.25rem; }
+    .auth-side-list li { padding: .5rem .7rem; }
+}
+
+/* —— split 布局左侧整幅背景（对齐 auth-split-*：外层 col + card-side-img rounded-0 overflow-hidden + background-image）—— */
+.auth-split-media { position: relative; min-height: 100vh; overflow: hidden; background: linear-gradient(135deg, var(--bs-primary), #6f42c1); }
+.auth-split-media--primary { background: linear-gradient(135deg, var(--bs-primary), #6f42c1); }
+.auth-split-media--info    { background: linear-gradient(135deg, var(--bs-info), #0d6efd); }
+.auth-split-media--success { background: linear-gradient(135deg, var(--bs-success), #198754); }
+.auth-split-media--warning { background: linear-gradient(135deg, var(--bs-warning), #f59f00); }
+.auth-split-media--danger  { background: linear-gradient(135deg, var(--bs-danger), #e03131); }
+.auth-split-media--dark    { background: linear-gradient(135deg, #212529, #495057); }
+.auth-split-media--solid   { background: linear-gradient(135deg, var(--bs-primary), #6f42c1); }
+.auth-split-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* 侧栏背景图模糊效果：::before 伪元素继承背景图并模糊放大（毛玻璃），
+ * 文字层（auth-overlay / auth-card-media-overlay，z-index:1）位于其上保持清晰。
+ * 模糊溢出由容器 overflow-hidden 裁切；div 背景图与 img 标签两种承载方式均覆盖。 */
+.auth-layout-split .card-side-img::before,
+.auth-layout-card .auth-card-media-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: inherit;
+    background-size: inherit;
+    background-position: inherit;
+    background-repeat: inherit;
+    filter: blur(4px) saturate(1.2);
+    transform: scale(1.03);
+}
+.auth-split-img,
+.auth-card-media-img {
+    filter: blur(4px) saturate(1.2);
+    transform: scale(1.03);
+}
+/* 左侧叠加文案层（card-img-overlay auth-overlay）：居中排版下使用均匀径向暗化 + 半透明深色蒙版，
+ * 使背景图呈「半透明压暗」效果并保证侧栏白字可读（对齐后台模板 auth-split-* 的 auth-overlay） */
+.auth-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    padding: 3rem; color: #fff;
+    background:
+        radial-gradient(120% 100% at 50% 50%, rgba(0,0,0,.18) 0%, rgba(0,0,0,.45) 100%),
+        rgba(10, 18, 36, .28);
+}
+/* sideOverlay=false 时无暗角遮罩（仍保留白字内容区） */
+.auth-overlay-plain { position: absolute; inset: 0; z-index: 1; padding: 3rem; color: #fff; }
+.auth-split-media[data-solid="1"] { background: linear-gradient(135deg, var(--bs-primary), #6f42c1); }
+/* split 布局右侧自动宽表单卡片（对齐 auth-split-*：card auth-box-form border-0 mb-0） */
+.auth-layout-split .card.auth-box-form { border: 0; box-shadow: 0 0 2rem rgba(0,0,0,.08); min-width: 380px; max-width: 480px; }
+@media (max-width: 767.98px) {
+    .auth-layout-split .card.auth-box-form { min-width: 0; max-width: 100%; width: 100%; }
+}
+/* 品牌居中（模板 auth-box-form 内品牌在 text-center 区） */
+.auth-box-form .auth-brand { text-align: center; margin-bottom: 1rem; }
+/* 登录 / 注册页 .form-label 左对齐（表单外层是 text-center 容器，label 会继承居中，
+ * 需显式重置为左对齐以对齐后台模板 auth-split-*：form-label 默认左对齐） */
+.auth-layout-split .auth-box-form .form-label,
+.auth-layout-base .auth-box .form-label,
+.auth-layout-card .auth-box .form-label { text-align: left; }
+/* split 分格密码框（6 格均匀分布） */
+.auth-box-form .two-factor, .two-factor { display: flex; gap: .5rem; }
+.auth-box-form .two-factor .form-control, .two-factor .form-control { flex: 1 1 0; min-width: 0; padding-left: 0; padding-right: 0; }
+/* 标题与副标题之间的分隔线（对齐 auth-sign-in.html 的 .auth-line） */
+.auth-line { width: 100%; height: 1px; background: var(--bs-border-color); margin: .25rem 0 0; }
+/* —— 锁屏用户徽标 —— */
+.auth-lock-user { padding: .5rem 0; }
+.auth-lock-avatar { width: 3.5rem; height: 3.5rem; object-fit: cover; border: 2px solid var(--bs-border-color); }
+.auth-lock-avatar--text { display: inline-flex; align-items: center; justify-content: center; background: var(--bs-primary); color: #fff; font-weight: 700; font-size: 1.4rem; }
+.auth-lock-name { font-size: 1rem; }
+.auth-lock-email { font-size: .8125rem; }
+
+/* —— 成功提示图标 —— */
+.auth-success-icon i { display: inline-block; }
+
+/* 社交登录 */
+.auth-social-divider { position: relative; font-size: .8125rem; }
+.auth-social-divider::before, .auth-social-divider::after {
+    content: ''; position: absolute; top: 50%; width: 35%; height: 1px; background: var(--bs-border-color);
+}
+.auth-social-divider::before { left: 0; }
+.auth-social-divider::after { right: 0; }
+.auth-social .btn { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
+/* 分格验证码输入（two-factor / new-pass 6 位 code） */
+.two-factor .form-control { width: 3rem; height: 3rem; font-size: 1.25rem; font-weight: 600; text-align: center; padding: 0; }
+.two-factor .form-control:focus { border-color: var(--bs-primary); box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .25); }
+
+/* 密码强度条 */
+.password-bar { height: 5px; border-radius: 3px; background: var(--bs-border-color); overflow: hidden; }
+.password-bar::before { content: ''; display: block; height: 100%; width: 0; background: var(--bs-danger); transition: width .2s, background .2s; }
+.password-bar.is-weak::before { width: 33%; background: var(--bs-danger); }
+.password-bar.is-medium::before { width: 66%; background: var(--bs-warning); }
+.password-bar.is-strong::before { width: 100%; background: var(--bs-success); }
 .password-bar { height: 4px; border-radius: 2px; background: var(--bs-border-color); overflow: hidden; }
 .password-bar::after { content: ""; display: block; height: 100%; width: 0; background: var(--bs-danger); transition: width .2s, background .2s; }
 .password-bar.weak::after { width: 33%; background: var(--bs-danger); }
@@ -2108,10 +2363,12 @@ table.dataTable > tbody > tr.selected *:not(.form-control) {
     background-color: #252630 !important;
 }
 
-/* 12) 亮色模式 light-rgb 变量 */
+/* 12) 亮色模式 light-rgb 变量
+   对齐后台模板 auth-split-sign-in.html：INSPINIA 编译值 --theme-light-rgb 为 238, 242, 247（#eef2f7）。
+   此前被固定为 208, 208, 208 导致 .bg-light 输入框背景偏灰，与模板不一致。 */
 :root,
 [data-bs-theme=light] {
-    --ins-light-rgb: 208, 208, 208 !important;
+    --ins-light-rgb: 238, 242, 247 !important;
 }
 
 /* 13) DataTables Select 扩展选中行样式（参照 app.css）
