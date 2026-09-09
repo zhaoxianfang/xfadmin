@@ -62,7 +62,7 @@ class ErrorPage extends AuthPage
             . $visual
             . '<h3 class="fw-bold text-uppercase">' . $this->e($this->get('heading')) . '</h3>'
             . '<p class="text-muted">' . $this->e($this->get('message')) . '</p>'
-            . '<a class="btn btn-primary mt-3 rounded-pill" href="' . $this->e($this->get('home_url')) . '">' . $this->e($this->get('home_text')) . '</a>'
+            . '<a class="btn btn-primary mt-3 rounded-pill" href="' . $this->e($this->safeUrl($this->get('home_url'))) . '">' . $this->e($this->get('home_text')) . '</a>'
             . '</div>';
 
         $this->set('content', $content);

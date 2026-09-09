@@ -66,7 +66,7 @@ class ChatBox extends Component
             }
             $html .= '</div></div>';
         }
-        $html .= '<div class="card-body overflow-auto" data-xf="chat-scroll" style="height:' . $this->e($this->get('height')) . ';">';
+        $html .= '<div class="card-body overflow-auto" data-xf="chat-scroll" style="height:' . $this->cssLen($this->get('height'), '460px') . ';">';
         foreach ((array) $this->get('messages', []) as $m) {
             $html .= $this->message((array) $m);
         }

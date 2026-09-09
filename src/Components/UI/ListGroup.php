@@ -77,7 +77,7 @@ class ListGroup extends Component
                 $content .= '<span class="badge ' . $this->e($badge['class'] ?? 'bg-primary') . ' rounded-pill">' . $this->e($badge['text'] ?? '') . '</span>';
             }
             $html .= isset($item['url'])
-                ? '<a href="' . $this->e($item['url']) . '" class="' . $cls . '">' . $content . '</a>'
+                ? '<a href="' . $this->e($this->safeUrl($item['url'])) . '" class="' . $cls . '">' . $content . '</a>'
                 : '<li class="' . $cls . '">' . $content . '</li>';
         }
         return $html . '</' . $tag . '>';

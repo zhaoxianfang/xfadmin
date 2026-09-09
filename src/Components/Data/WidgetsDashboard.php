@@ -99,14 +99,19 @@ class WidgetsDashboard extends Component
             $trend = $this->e($stat['trend']);
             $suffix = $this->e($stat['suffix'] ?? '');
             $trendClass = str_starts_with($trend, '+') ? 'text-success' : 'text-danger';
-            $displayValue = ! empty($stat['currency']) ? $this->formatPrice((float) $value, $currency) : number_format((int) $value);
+            // 非货币值需保留小数（如转化率 3.45），此前一律 (int) 会把 3.45 显示成 3
+            $displayValue = ! empty($stat['currency'])
+                ? $this->formatPrice((float) $value, $currency)
+                : (is_float($value) ? number_format($value, 2) : number_format((int) $value));
 
             $html .= '<div class="col-sm-6 col-xxl-3"><div class="card"><div class="card-body p-3"><div class="d-flex align-items-center">'
                 . '<div class="flex-shrink-0"><span class="badge bg-' . $color . '-subtle text-' . $color . ' rounded-3 p-2">'
                 . '<i class="ti ' . $icon . ' fs-20"></i></span></div>'
                 . '<div class="flex-grow-1 ms-3"><h6 class="text-muted mb-0 small">' . $label . '</h6>'
                 . '<h5 class="mb-0 mt-1">' . $displayValue . $suffix . '</h5>'
-                . '<small class="' . $trendClass . '">' . $trend . '</small></div></div></div></div>';
+                // 依次闭合：flex-grow-1 / d-flex / card-body / card / col（原少闭合 card 与 col，
+                // 导致后续小部件被错误嵌套进本卡片）
+                . '<small class="' . $trendClass . '">' . $trend . '</small></div></div></div></div></div>';
         }
         $html .= '</div>';
 
@@ -170,14 +175,15 @@ class WidgetsDashboard extends Component
             . '<div class="list-group list-group-flush">';
 
         foreach ($msgs as $m) {
-            $avatar = $this->e($m['avatar']) ?: '';
+            // 先解析 URL 再统一转义（顺序反了会把查询串 & 变成 &amp;，且外链可逃逸 src 属性）
+            $avatar = $m['avatar'] ? $this->e($this->img($m['avatar'])) : '';
             $name = $this->e($m['name']);
             $text = $this->e($m['text']);
             $time = $this->e($m['time']);
             $badge = $m['badge'] ?? '';
 
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
-                . ($avatar ? '<img src="' . $this->img($avatar) . '" class="rounded-circle me-3" width="36" height="36" alt="">'
+                . ($avatar ? '<img src="' . $avatar . '" class="rounded-circle me-3" width="36" height="36" alt="">'
                 : '<div class="rounded-circle bg-light me-3 d-flex align-items-center justify-content-center" style="width:36px;height:36px"><i class="ti ti-user text-muted"></i></div>')
                 . '<div class="flex-grow-1 min-w-0"><h6 class="mb-0 text-truncate">' . $name . '</h6>'
                 . '<small class="text-muted text-truncate d-block">' . $text . '</small></div>'

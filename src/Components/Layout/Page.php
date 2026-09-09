@@ -158,7 +158,8 @@ class Page extends Component
         $body .= '<div class="content-page"><div class="' . $this->e($this->get('container')) . '">';
         $pageTitle = $this->get('page_title');
         if ($pageTitle) {
-            $body .= is_array($pageTitle) ? PageTitle::make($pageTitle)->render() : $this->raw($pageTitle);
+            // 字符串形态的页面标题来自调用方数据 → 转义；仍允许直接传组件实例
+            $body .= is_array($pageTitle) ? PageTitle::make($pageTitle)->render() : $this->text($pageTitle);
         }
         $body .= $this->raw($this->get('content'));
         $body .= '</div>';

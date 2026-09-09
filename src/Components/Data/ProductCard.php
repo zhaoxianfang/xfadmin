@@ -63,7 +63,7 @@ class ProductCard extends Component
         $img = $this->get('image');
         if ($img) {
             $img = \zxf\XfAdmin\XfAdmin::img((string) $img);
-            $html .= '<a href="' . $this->e($this->get('href')) . '"><img src="' . $this->e($img) . '" class="card-img-top xf-product-img object-fit-cover" alt="' . $this->e($this->get('title')) . '"></a>';
+            $html .= '<a href="' . $this->e($this->safeUrl($this->get('href'))) . '"><img src="' . $this->e($img) . '" class="card-img-top xf-product-img object-fit-cover" alt="' . $this->e($this->get('title')) . '"></a>';
         } else {
             // 无图时渲染占位块，保持卡片高度与布局一致
             $html .= '<div class="xf-product-img bg-light d-flex align-items-center justify-content-center text-muted"><i class="ti ti-photo fs-1"></i></div>';
@@ -74,7 +74,7 @@ class ProductCard extends Component
         if ($this->get('category')) {
             $html .= '<small class="text-muted">' . $this->e($this->get('category')) . '</small>';
         }
-        $html .= '<h5 class="my-1"><a href="' . $this->e($this->get('href')) . '" class="text-body">' . $this->e($this->get('title')) . '</a></h5>';
+        $html .= '<h5 class="my-1"><a href="' . $this->e($this->safeUrl($this->get('href'))) . '" class="text-body">' . $this->e($this->get('title')) . '</a></h5>';
 
         if ($this->get('rating') !== null) {
             $html .= (new \zxf\XfAdmin\Components\UI\Rating([
@@ -85,10 +85,10 @@ class ProductCard extends Component
         }
         $html .= '<div class="d-flex align-items-center gap-2 mt-2">';
         if ($this->get('price') !== null) {
-            $html .= '<h5 class="mb-0 text-primary">' . $this->raw($this->get('price')) . '</h5>';
+            $html .= '<h5 class="mb-0 text-primary">' . $this->e($this->get('price')) . '</h5>';
         }
         if ($this->get('old_price') !== null) {
-            $html .= '<span class="text-muted text-decoration-line-through">' . $this->raw($this->get('old_price')) . '</span>';
+            $html .= '<span class="text-muted text-decoration-line-through">' . $this->e($this->get('old_price')) . '</span>';
         }
         $html .= '</div>';
 

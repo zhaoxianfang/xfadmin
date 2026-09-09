@@ -63,7 +63,8 @@ class Collapse extends Component
             $triggerAttrs['type']            = 'button';
             $triggerAttrs['data-bs-target']  = '#' . $id;
         }
-        $html  = '<' . $triggerTag . Html::attrs($triggerAttrs) . '>' . $this->raw($this->get('trigger')) . '</' . $triggerTag . '>';
+        // 触发按钮文案是纯文本语义（可传组件实例，传字符串时转义）
+        $html  = '<' . $triggerTag . Html::attrs($triggerAttrs) . '>' . $this->text($this->get('trigger')) . '</' . $triggerTag . '>';
 
         $collapseClass = Html::cls('collapse', [
             'show'                => $open,

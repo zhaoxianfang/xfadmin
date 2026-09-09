@@ -86,7 +86,7 @@ class PricingCard extends Component
 
         $btn = (array) $this->get('button');
         $variant = $this->enum($btn['variant'] ?? ($this->get('featured') ? 'primary' : 'outline-primary'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary');
-        $html .= '<a href="' . $this->e($btn['href'] ?? '#') . '" class="btn btn-' . $variant . ' w-100">' . $this->e($btn['label'] ?? '选择方案') . '</a>';
+        $html .= '<a href="' . $this->e($this->safeUrl($btn['href'] ?? '#')) . '" class="btn btn-' . $variant . ' w-100">' . $this->e($btn['label'] ?? '选择方案') . '</a>';
 
         $html .= '</div></div>';
 

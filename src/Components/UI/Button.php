@@ -96,7 +96,7 @@ class Button extends Component
         $label = $this->get('ladda') ? '<span class="ladda-label">' . $icon . $this->e($this->get('text')) . '</span>' : $icon . $this->e($this->get('text'));
 
         if ($this->get('href') !== null) {
-            $attrs['href'] = $this->get('href');
+            $attrs['href'] = $this->safeUrl($this->get('href'));
             $attrs['role'] = 'button';
 
             return '<a' . $this->attrs($attrs) . '>' . $label . '</a>';

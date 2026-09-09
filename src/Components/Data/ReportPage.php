@@ -47,6 +47,7 @@ class ReportPage extends Component
     protected function html(): string
     {
         $title   = $this->e($this->get('title', '报表'));
+        // filters / table 是 HTML 内容槽位（Form / DataTable 组件实例或开发者自定义 HTML），按 raw 原样输出
         $filters = $this->raw($this->get('filters', ''));
         $charts  = (array) $this->get('charts', []);
         $table   = $this->raw($this->get('table', ''));

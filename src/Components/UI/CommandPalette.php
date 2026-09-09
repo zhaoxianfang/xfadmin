@@ -52,10 +52,12 @@ class CommandPalette extends Component
         $cmds = (array) $this->get('commands');
         $list = '';
         foreach ($cmds as $c) {
+            // 标量容错：PHP 8 对字符串取下标会抛 TypeError（致命），与 Wizard/Tabs/Dropdown 等保持一致
+            $c = is_array($c) ? $c : ['label' => (string) $c];
             $label = $this->e($c['label'] ?? '');
             $icon  = $this->e($c['icon'] ?? 'ti ti-command');
             $hint  = $this->e($c['hint'] ?? '');
-            $url   = $this->e($c['url'] ?? '');
+            $url   = $this->e($this->safeUrl($c['url'] ?? ''));
             $action = $this->e($c['action'] ?? '');
             $attrs = 'data-cmd ' . ($url ? 'data-url="' . $url . '"' : '') . ($action ? 'data-action="' . $action . '"' : '');
             $list .= '<button type="button" class="list-group-item list-group-item-action d-flex align-items-center gap-2 xf-cmd-item" ' . $attrs . '>'

@@ -110,6 +110,7 @@ class AuthPage extends Component
             // —— 表单配置 ——
             'action'        => '',       // 表单提交地址（核心字段；formAttrs.action 兼容）
             'method'        => 'POST',
+            'ajax'          => true,     // 表单以 AJAX 方式提交（data-xf-remote，组件内置支持）
             'fields'        => [],       // 关联数组：['email' => [...], 'password' => [...]]
             'buttons'       => [],       // 按钮数组（label/variant/type/...）
             'submit'        => '提交',    // 默认提交按钮文案（未传 buttons 时使用）
@@ -363,7 +364,7 @@ class AuthPage extends Component
         $rootCls = 'auth-page auth-' . $this->e($this->get('type')) . ' auth-layout-' . $this->e($this->get('layout'));
         $extraCls = (string) $this->get('class');
         if ($extraCls !== '') {
-            $rootCls .= ' ' . $extraCls;
+            $rootCls .= ' ' . $this->e($extraCls);
         }
 
         // 复用 XfAdmin 共享资产（与 INSPINIA 后台模板共用 app.min.css / xfadmin.css）
@@ -404,11 +405,12 @@ class AuthPage extends Component
     {
         $brand = (array) $this->get('brand', []);
         $name  = $brand['name'] ?? 'XfAdmin';
-        $url   = $brand['url'] ?? '/';
+        $url   = $this->safeUrl($brand['url'] ?? '/');
         $logo  = $brand['logo'] ?? null;
 
         if ($logo) {
-            $mark = '<img src="' . $this->img($logo) . '" alt="' . $this->e($name) . '" class="auth-brand-logo">';
+            // img() 对外链/data: 原样返回，必须再转义一次，否则 logo 可闭合 src 属性
+            $mark = '<img src="' . $this->e($this->img($logo)) . '" alt="' . $this->e($name) . '" class="auth-brand-logo">';
         } else {
             $mark = '<span class="auth-brand-text">' . $this->e($name) . '</span>';
         }
@@ -474,7 +476,7 @@ class AuthPage extends Component
             $html = '';
             foreach ($links as $item) {
                 $item = (array) $item;
-                $href = (string) ($item['href'] ?? ($item['url'] ?? ''));
+                $href = (string) $this->safeUrl($item['href'] ?? ($item['url'] ?? ''));
                 $text = (string) ($item['text'] ?? '');
                 if ($text === '' || $href === '') {
                     continue;
@@ -489,7 +491,7 @@ class AuthPage extends Component
         if ($type === 'sign-in') {
             return '';
         }
-        $url = (string) $this->get('loginRedirect', '/login');
+        $url = $this->safeUrl($this->get('loginRedirect', '/login'));
         if ($url === '') {
             return '';
         }
@@ -514,7 +516,11 @@ class AuthPage extends Component
 
     /**
      * side Image Url（protected实例方法）
-     * 解析侧栏背景图（兼容 http(s):/包内 images/）
+     * 解析侧栏背景图，支持四种写法（自动识别）：
+     *  1. 包内图片名：'auth.jpg' / 'images/foo.jpg' → XfAdmin::asset('images/...')
+     *  2. 外部图片 URL：'https://example.com/bg.jpg' 或协议相对 '//cdn.com/bg.jpg'
+     *  3. data URI：'data:image/png;base64,...'
+     *  4. 本地公开路径：'/uploads/bg.jpg'（站点公开目录下的图片，原样返回）
      *
      * @return string|null result
      */
@@ -522,9 +528,14 @@ class AuthPage extends Component
     {
         $img = $this->get('sideImage');
         if (! $img) {
-            return null;
+            return null;                       // '' / false / null → 关闭背景图，回退纯色渐变
         }
-        return $this->img($img);
+        $img = (string) $img;
+        // 本地公开路径（以 / 开头）原样返回，避免被误当作包内 images/ 资源
+        if ($img !== '' && $img[0] === '/') {
+            return $img;
+        }
+        return $this->img($img);               // 外链 / data: / 包内图片统一走 img()
     }
 
     /**
@@ -858,7 +869,9 @@ class AuthPage extends Component
                 . '</div></div>';
         }
 
-        $html .= $this->buttonsRow()
+        // 提交按钮前插入验证码组件（登录/注册/忘记密码已统一处理，此处补全“设置新密码”）
+        $html .= $this->captchaField()
+            . $this->buttonsRow()
             . $this->formClose();
 
         return $html;
@@ -1054,6 +1067,7 @@ class AuthPage extends Component
         $pinGroup = $f['pin']['group'] ?? $this->get('pinGroup', 6);
         $html = $this->formOpen()
             . $this->pinCodeGroup($pinGroup, 'pin[]', $withBg)
+            . $this->captchaField()
             . $this->buttonsRow()
             . $this->formClose();
 
@@ -1112,12 +1126,15 @@ class AuthPage extends Component
         $class  = 'auth-form text-start ' . $this->e($this->get('bodyClass'));
         $id     = $this->get('id') ? ' id="' . $this->e($this->get('id')) . '"' : '';
 
+        $remote = $this->get('ajax') ? ' data-xf-remote' : '';
+
         return ' action="' . $this->e($action) . '"'
             . ' method="POST"'
             . ' class="' . trim($class) . '"'
             . $id
             . ' accept-charset="UTF-8"'
-            . ' novalidate';
+            . ' novalidate'
+            . $remote;
     }
 
     /**
@@ -1133,8 +1150,11 @@ class AuthPage extends Component
             $html = '';
             foreach ($buttons as $b) {
                 $b = (array) $b;
-                $html .= '<button type="' . ($b['type'] ?? 'submit') . '"'
-                    . ' class="btn btn-' . ($b['variant'] ?? 'primary') . ' ' . $this->e($b['class'] ?? '') . '"'
+                // type/variant 必须受限：type 进属性、variant 进 class，二者都可控时会逃逸引号
+                $btnType    = $this->enum($b['type'] ?? 'submit', ['submit', 'button', 'reset'], 'submit');
+                $btnVariant = $this->enum($b['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
+                $html .= '<button type="' . $btnType . '"'
+                    . ' class="btn btn-' . $btnVariant . ' ' . $this->e($b['class'] ?? '') . '"'
                     . (($b['name'] ?? '') !== '' ? ' name="' . $this->e($b['name']) . '"' : '')
                     . '>' . $this->e($b['label'] ?? '提交') . '</button>';
             }
@@ -1327,7 +1347,7 @@ class AuthPage extends Component
             $html = '';
             foreach ($links as $item) {
                 $item = (array) $item;
-                $href = (string) ($item['href'] ?? '');
+                $href = $this->safeUrl($item['href'] ?? '');
                 $text = (string) ($item['text'] ?? '');
                 if ($text === '' || $href === '') {
                     continue;
@@ -1344,7 +1364,7 @@ class AuthPage extends Component
             'registerRedirect' => '还没有账号？去注册',
         ];
         foreach ($map as $key) {
-            $url = (string) $this->get($key);
+            $url = $this->safeUrl($this->get($key));
             if ($url === '') {
                 continue;
             }

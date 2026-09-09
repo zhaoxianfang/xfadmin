@@ -124,7 +124,7 @@ class Gallery extends Component
         $wallCls = 'row g-2 ' . $this->rowColsClass((int) $this->get('cols'))
             . ($masonry ? ' xf-gallery-masonry' : ' xf-gallery-grid');
         // 非 masonry 时通过 CSS 变量控制缩略图裁切比例（如 4x3 → 4/3）
-        $ratioCss = $masonry ? '' : ' style="--xf-ratio:' . $this->e(str_replace('x', '/', (string) $this->get('ratio'))) . ';"';
+        $ratioCss = $masonry ? '' : ' style="--xf-ratio:' . $this->e($this->cssRatio($this->get('ratio'), '4/3')) . ';"';
         $html .= '<div class="' . $wallCls . '"' . $ratioCss . '>';
 
         foreach ($items as $it) {

@@ -116,7 +116,7 @@ class ProjectTeamBoard extends Component
 
             $html .= '<div class="d-flex justify-content-between align-items-center">'
                 . '<span class="text-muted fs-xs"><i class="ti ti-clock me-1"></i>Updated ' . $this->e($t['updated'] ?? '') . '</span>'
-                . '<a href="' . $this->e($t['url'] ?? '#') . '" class="btn btn-sm btn-primary rounded-pill">Details</a></div>';
+                . '<a href="' . $this->e($this->safeUrl($t['url'] ?? '#')) . '" class="btn btn-sm btn-primary rounded-pill">Details</a></div>';
 
             $html .= '</div></div></div>';
         }

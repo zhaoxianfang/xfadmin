@@ -201,6 +201,117 @@ abstract class Component implements Stringable
     protected const ENUM_SIZE = ['sm', 'lg'];
     protected const ENUM_PLACEMENT = ['top', 'bottom', 'left', 'right', 'start', 'end'];
 
+    /** Bootstrap 栅格断点白名单（响应式列宽的「键」必须受限，否则可逃逸出 class 属性） */
+    protected const ENUM_BREAKPOINT = ['sm', 'md', 'lg', 'xl', 'xxl'];
+
+    // ------------------------------------------------------------------
+    // CSS 值安全助手（style="..." 场景：e() 不转义 ; : ( ) / 等，无法阻止追加声明）
+    // ------------------------------------------------------------------
+
+    /**
+     * 安全 CSS 长度：仅接受 数字+单位（px/%/rem/em/vh/vw/pt/ch/fr），其余回退默认。
+     *
+     * 用于 height/width/max-height 等被拼进 style 属性的选项，杜绝
+     * `10px;position:fixed;inset:0` 这类「分号注入」造成的点击劫持/覆盖层。
+     */
+    protected function cssLen(mixed $value, string $default = ''): string
+    {
+        $v = trim((string) $value);
+        if ($v === '') {
+            return $default;
+        }
+
+        return preg_match('/^-?\d+(?:\.\d+)?(?:px|%|rem|em|vh|vw|pt|ch|fr)$/', $v) === 1 ? $v : $default;
+    }
+
+    /**
+     * 安全 CSS 宽高比（aspect-ratio）：仅接受 N/M 或纯数字，其余回退默认。
+     */
+    protected function cssRatio(mixed $value, string $default = '4/3'): string
+    {
+        $v = trim((string) str_replace(['x', 'X', ':', ' '], '/', (string) $value));
+        if (preg_match('/^\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)?$/', $v) === 1) {
+            return $v;
+        }
+
+        return $default;
+    }
+
+    /**
+     * 安全 CSS 颜色：接受 #hex / rgb() / rgba() / hsl() / hsla() / 具名色 / var(--x) / transparent。
+     * 拒绝 `;`、圆括号嵌套以外的自由文本，避免注入额外声明。
+     */
+    protected function cssColor(mixed $value, string $default = ''): string
+    {
+        $v = trim((string) $value);
+        if ($v === '') {
+            return $default;
+        }
+        $ok = preg_match('/^(?:#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,20}|var\(\s*--[A-Za-z0-9_-]+\s*(?:,[^()]+)?\))$/', $v) === 1
+            || preg_match('/^(?:rgb|rgba|hsl|hsla)\([^()]*\)$/', $v) === 1;
+
+        return $ok ? $v : $default;
+    }
+
+    /**
+     * 安全 CSS 背景：仅允许纯色、线性/径向渐变与 url()（协议限定 http/https/data:image），
+     * 其余回退默认。用于 cover/background 这类「半自由 CSS」选项。
+     */
+    protected function cssBackground(mixed $value, string $default = ''): string
+    {
+        $v = trim((string) $value);
+        if ($v === '') {
+            return $default;
+        }
+        if (preg_match('/^(?:linear|radial|conic)-gradient\([^()]*(?:\([^()]*\)[^()]*)*\)$/', $v) === 1) {
+            return $v;
+        }
+        if (preg_match('/^url\((?:"|\')?(https?:\/\/|\/|data:image\/)[^"\')]*(?:"|\')?\)$/', $v) === 1) {
+            return $v;
+        }
+
+        return $this->cssColor($v, $default);
+    }
+
+    /**
+     * 生成响应式栅格列 class（断点走白名单、列数夹紧 1~12），返回 '' 表示不需要包裹列。
+     *
+     * - 数组：['md' => 6, 'xl' => 3] → 'col-12 col-md-6 col-xl-3'（键非法则跳过该项）
+     * - 数字：N → 'col-12 col-md-{N} col-xl-{N}'，非数字/超范围回退 col-12
+     */
+    protected function gridCol(mixed $width): string
+    {
+        if ($width === null || $width === false || $width === '' || $width === true) {
+            return '';
+        }
+        if (is_array($width)) {
+            $cls = 'col-12';
+            foreach ($width as $bp => $cols) {
+                $bp = $this->enum($bp, self::ENUM_BREAKPOINT, '');
+                if ($bp === '') {
+                    continue;
+                }
+                $n = (int) $cols;
+                if ($n < 1 || $n > 12) {
+                    continue;
+                }
+                $cls .= ' col-' . $bp . '-' . $n;
+            }
+
+            return $cls;
+        }
+        if (is_numeric($width)) {
+            $n = (int) $width;
+            if ($n < 1 || $n > 12) {
+                return 'col-12';
+            }
+
+            return 'col-12 col-md-' . $n . ' col-xl-' . $n;
+        }
+
+        return 'col-12';
+    }
+
     /** 允许 HTML 的槽位：Component/Stringable 会被渲染，闭包会被调用（惰性内容），字符串原样输出 */
     protected function raw(mixed $value): string
     {
@@ -214,6 +325,25 @@ abstract class Component implements Stringable
             return implode('', array_map(fn ($v) => $this->raw($v), $value));
         }
         return (string) $value;
+    }
+
+    /**
+     * 「可传组件、但字符串必须转义」的槽位渲染。
+     *
+     * 与 raw() 的区别：raw() 对字符串原样输出（用于 body/content 等明确的内容槽位）；
+     * text() 用于标题、版权、按钮文案这类「语义上是纯文本、但允许传组件实例」的字段，
+     * 传字符串时一律 e() 转义，传 Component/Stringable/闭包/数组时按 raw() 渲染。
+     */
+    protected function text(mixed $value): string
+    {
+        if ($value instanceof \Stringable || $value instanceof \Closure) {
+            return $this->raw($value);
+        }
+        if (is_array($value)) {
+            return implode('', array_map(fn ($v) => $this->text($v), $value));
+        }
+
+        return $this->e($value);
     }
 
     /**
@@ -273,6 +403,37 @@ abstract class Component implements Stringable
     // ------------------------------------------------------------------
     // 渲染
     // ------------------------------------------------------------------
+
+    /**
+     * 安全 URL：拦截 javascript:/vbscript:/data:(非图片) 等可触发 XSS 的伪协议。
+     *
+     * 用于所有链接类选项（href/url/src），避免调用方传入 javascript:alert(1) 点击即 XSS。
+     * 放行：协议相对 //、http(s)://、mailto:/tel:、data:image/、锚点 #、根相对 /、无 scheme 的相对路径。
+     * javascript:void(0) 等「无操作」伪协议作为常见 no-op 白名单放行（非用户可控）。
+     */
+    protected function safeUrl(mixed $value, string $default = '#'): string
+    {
+        $v = trim((string) $value);
+        if ($v === '' || $v === '#') {
+            return $v;
+        }
+        // 常见无操作伪协议（设计性 no-op，非用户可控），放行：
+        // javascript:void(0) / javascript:void() / javascript:; / 裸 javascript:
+        if (preg_match('/^javascript:\s*(?:void\s*\(?\s*0*\s*\)?\s*;?|;?)$/i', $v)) {
+            return $v;
+        }
+        // 放行：协议相对 / 绝对 http(s) / 锚点 / 根相对 / mailto / tel / data:image / 无 scheme 的相对路径
+        if (preg_match('#^(?:https?:)?//#i', $v)
+            || str_starts_with($v, '/')
+            || str_starts_with($v, '#')
+            || preg_match('#^(?:mailto:|tel:)#i', $v)
+            || preg_match('#^data:image/#i', $v)
+            || ! preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $v)) {
+            return $v;
+        }
+        // 含非常规协议（javascript:/vbscript:/data: 非图片 等）→ 拦截
+        return $default;
+    }
 
     /**
      * render（public实例方法）

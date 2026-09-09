@@ -121,7 +121,7 @@ class MetricCard extends Component
         }
         $body = '<div class="card-body">' . $inner . '</div>';
         $card = $this->get('url')
-            ? '<a href="' . $this->e($this->get('url')) . '" class="card xf-metric-card text-reset" id="' . $id . '">' . $body . '</a>'
+            ? '<a href="' . $this->e($this->safeUrl($this->get('url'))) . '" class="card xf-metric-card text-reset" id="' . $id . '">' . $body . '</a>'
             : '<div' . $this->attrs(['class' => 'card xf-metric-card', 'id' => $id]) . '>' . $body . '</div>';
 
         return $card;

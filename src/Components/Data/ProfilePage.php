@@ -53,7 +53,8 @@ class ProfilePage extends Component
     {
         $cover = (string) $this->get('cover', '');
         $coverCss = str_starts_with($cover, 'gradient:')
-            ? 'background:' . $this->e(substr($cover, 9)) . ';'
+            // 渐变文本是半自由 CSS，走背景白名单，拒绝分号注入
+            ? 'background:' . $this->cssBackground(substr($cover, 9), 'linear-gradient(135deg,var(--bs-primary),#6f42c1)') . ';'
             : ($cover !== ''
                 ? 'background:url(' . $this->e($this->img($cover)) . ') center/cover no-repeat;'
                 : 'background:linear-gradient(135deg,var(--bs-primary),#6f42c1);');

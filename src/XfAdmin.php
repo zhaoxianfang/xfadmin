@@ -430,6 +430,7 @@ final class XfAdmin
         'chatApp'       => Components\Data\ChatApp::class,
         'profilePage'   => Components\Data\ProfilePage::class,
         'invoiceDetail' => Components\Data\InvoiceDetail::class,
+        'importExport'  => Components\Data\ImportExport::class,
         'companies'     => Components\Data\Companies::class,
         'productCategories' => Components\Data\ProductCategories::class,
         'productAdd'    => Components\Data\ProductAdd::class,

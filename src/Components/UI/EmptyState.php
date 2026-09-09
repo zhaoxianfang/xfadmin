@@ -47,7 +47,9 @@ class EmptyState extends Component
     {
         $id = $this->resolveId('xf-empty');
 
-        $iconSize = $this->get('size') !== '' ? ' xf-empty-icon-' . $this->get('size') : '';
+        // size 直接拼进 class，走白名单（非法值忽略，不产生 xf-empty-icon-<任意串>）
+        $sz = $this->enum($this->get('size'), self::ENUM_SIZE, '');
+        $iconSize = $sz !== '' ? ' xf-empty-icon-' . $sz : '';
 
         $action = $this->get('action') !== '' && $this->get('action') !== null ? '<div class="xf-empty-action mt-3">' . $this->raw($this->get('action')) . '</div>' : '';
 

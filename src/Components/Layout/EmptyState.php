@@ -50,7 +50,8 @@ class EmptyState extends Component
         }
         $html .= '<h4 class="mt-3">' . $this->e($this->get('title')) . '</h4>';
         if ($this->get('text')) {
-            $html .= '<p class="text-muted">' . $this->raw($this->get('text')) . '</p>';
+            // 与同库 UI/EmptyState 保持一致：text 是纯文本槽位（需要富文本请用 action）
+            $html .= '<p class="text-muted">' . $this->e($this->get('text')) . '</p>';
         }
         if ($this->get('action')) {
             $html .= '<div class="mt-3">' . $this->raw($this->get('action')) . '</div>';

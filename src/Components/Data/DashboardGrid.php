@@ -77,6 +77,7 @@ class DashboardGrid extends Component
         if ($bottom !== '' && $bottom !== null) {
             $html .= '<div class="mt-3">'
                 . '<div class="card"><div class="card-header"><h5 class="mb-0">' . $this->e($this->get('bottom_title', '综合看板')) . '</h5></div>'
+                // bottom 是 HTML 内容槽位（Tabs 等组件实例渲染出的字符串 / 开发者自定义 HTML），按 raw 原样输出
                 . '<div class="card-body">' . $this->raw($bottom) . '</div></div></div>';
         }
         return $html;

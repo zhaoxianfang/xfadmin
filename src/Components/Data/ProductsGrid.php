@@ -46,9 +46,11 @@ class ProductsGrid extends Component
         $currency = (string) $this->get('currency', '¥');
         $cols = (array) $this->get('columns', [4, 3, 2, 1]);
 
-        $colClass = 'row-cols-xxl-' . ($cols[0] ?? 4)
-            . ' row-cols-lg-' . ($cols[1] ?? 3)
-            . ' row-cols-md-' . ($cols[2] ?? 2)
+        // 列数一律夹紧到 1~6，避免任意字符串进入 class 属性
+        $colAt = static fn (int $i, int $default): int => max(1, min(6, (int) ($cols[$i] ?? $default)));
+        $colClass = 'row-cols-xxl-' . $colAt(0, 4)
+            . ' row-cols-lg-' . $colAt(1, 3)
+            . ' row-cols-md-' . $colAt(2, 2)
             . ' row-cols-1';
 
         // 工具栏
@@ -113,10 +115,11 @@ class ProductsGrid extends Component
         $html .= '<h6 class="card-title mt-1"><a href="javascript:void(0)" class="text-reset stretched-link">' . $this->e($title) . '</a></h6>';
 
         $html .= '<div class="mt-auto"><div class="d-flex align-items-center gap-2">';
+        $cur = $this->e($currency);
         if ($oldPrice > 0) {
-            $html .= '<span class="text-muted text-decoration-line-through small">' . $currency . number_format($oldPrice, 2) . '</span>';
+            $html .= '<span class="text-muted text-decoration-line-through small">' . $cur . number_format($oldPrice, 2) . '</span>';
         }
-        $html .= '<span class="fw-bold text-danger">' . $currency . number_format($price, 2) . '</span></div>';
+        $html .= '<span class="fw-bold text-danger">' . $cur . number_format($price, 2) . '</span></div>';
 
         if ($stock > 0) {
             $stockColor = $stock < 10 ? 'text-danger' : 'text-success';

@@ -74,8 +74,9 @@ class Carousel extends Component
             }
             $html .= '<div class="' . Html::cls('carousel-item', ['active' => $i === 0]) . '" data-bs-interval="' . $this->e($item['interval'] ?? $this->get('interval')) . '">';
             if (isset($item['image'])) {
-                $h = $this->get('height');
-                $style = $h !== '' && $h !== null ? 'height:' . $this->e((string) $h) . ';' : '';
+                // 高度值走长度白名单：e() 不转义分号，可被注入额外声明
+                $style = $this->cssLen($this->get('height'));
+                $style = $style !== '' ? 'height:' . $style . ';' : '';
                 $html .= '<img src="' . $this->e($this->img((string) $item['image'])) . '" class="d-block w-100 xf-carousel-img object-fit-cover"' . ($style !== '' ? ' style="' . $style . '"' : '') . ' alt="' . $this->e($item['alt'] ?? '') . '">';
             }
             if (isset($item['caption'])) {

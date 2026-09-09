@@ -104,13 +104,15 @@ class I18n extends Component
         foreach ($defaultLocales as $code => $info) {
             $info = (array) $info;
             $name = $this->e($info['name'] ?? $code);
-            $flag = $this->e($info['flag'] ?? '');
+            // 先解析 URL 再转义，避免 & 被实体化破坏查询串
+            $flagRaw = (string) ($info['flag'] ?? '');
+            $flag = $flagRaw !== '' ? $this->e($this->img($flagRaw)) : '';
             $active = $code === $currentLocale ? ' active' : '';
             $check = $code === $currentLocale ? ' <i class="ti ti-check text-success ms-auto"></i>' : '';
 
             $html .= '<div class="list-group-item list-group-item-action' . $active . ' d-flex align-items-center">';
             if ($flag) {
-                $html .= '<img src="' . $this->img($flag) . '" class="me-2" width="20" height="14" alt="">';
+                $html .= '<img src="' . $flag . '" class="me-2" width="20" height="14" alt="">';
             }
             $html .= $name . $check . '</div>';
         }

@@ -64,7 +64,8 @@ class FormElements extends Component
 
             foreach ($items as $item) {
                 $item = (array) $item;
-                $colClass = 'col-md-' . (12 / min($cols, 4));
+                // max(1,...) 兜底：cols=0/负数时 min(0,4)===0 会触发 DivisionByZeroError（致命）
+                $colClass = 'col-md-' . (int) (12 / max(1, min($cols, 4)));
                 $html .= '<div class="' . $colClass . '">' . $this->renderFormItem($item) . '</div>';
             }
             $html .= '</div></div></div></div>';

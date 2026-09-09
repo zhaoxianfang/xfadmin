@@ -154,10 +154,12 @@ class Marketplace extends Component
     {
         $cols = (array) $this->get('columns', [4, 3, 2, 1]);
         $currency = (string) $this->get('currency', '$');
-        $colClass = 'row-cols-xxl-' . ($cols[0] ?? 4)
-            . ' row-cols-lg-' . ($cols[1] ?? 3)
-            . ' row-cols-sm-' . ($cols[2] ?? 2)
-            . ' row-col-1';
+        // 列数夹紧 1~6（原 row-col-1 为笔误，Bootstrap 类名是 row-cols-1）
+        $colAt = static fn (int $i, int $default): int => max(1, min(6, (int) ($cols[$i] ?? $default)));
+        $colClass = 'row-cols-xxl-' . $colAt(0, 4)
+            . ' row-cols-lg-' . $colAt(1, 3)
+            . ' row-cols-sm-' . $colAt(2, 2)
+            . ' row-cols-1';
 
         $html = '<div class="row ' . $colClass . ' mt-3">';
         foreach ($products as $product) {
@@ -219,11 +221,12 @@ class Marketplace extends Component
         $html .= '<div class="card-footer bg-transparent d-flex justify-content-between border-dashed border-top">';
         $html .= '<div class="d-flex justify-content-start align-items-center gap-2">';
         $priceClass = $oldPrice > 0 ? 'text-danger' : 'text-success';
+        $cur        = $this->e($currency);
         $html .= '<h4 class="' . $priceClass . ' d-flex align-items-center gap-2 mb-0">';
         if ($oldPrice > 0) {
-            $html .= '<span class="text-muted text-decoration-line-through">' . $currency . number_format($oldPrice, 2) . '</span>';
+            $html .= '<span class="text-muted text-decoration-line-through">' . $cur . number_format($oldPrice, 2) . '</span>';
         }
-        $html .= $currency . number_format($price, 2) . '</h4></div>';
+        $html .= $cur . number_format($price, 2) . '</h4></div>';
         $html .= '<a class="btn btn-sm btn-icon btn-primary" href="javascript:void(0)"><i class="ti ti-basket fs-lg"></i></a>';
         $html .= '</div>';
 

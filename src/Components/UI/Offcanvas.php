@@ -65,7 +65,7 @@ class Offcanvas extends Component
             $attrs['data-bs-scroll'] = 'true';
         }
         $html .= '<div' . $this->attrs($attrs) . '>';
-        $html .= '<div class="offcanvas-header"><h5 class="offcanvas-title">' . $this->raw($this->get('title')) . '</h5>'
+        $html .= '<div class="offcanvas-header"><h5 class="offcanvas-title">' . $this->text($this->get('title')) . '</h5>'
             . '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>';
         $html .= '<div class="offcanvas-body">' . $this->raw($this->get('body')) . '</div>';
         $html .= '</div>';

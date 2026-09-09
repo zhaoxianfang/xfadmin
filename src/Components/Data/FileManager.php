@@ -87,7 +87,16 @@ class FileManager extends Component
         if (is_array($cols) && ! empty($cols)) {
             $cls = 'col';
             foreach ($cols as $bp => $n) {
-                $cls .= ' col-' . $bp . '-' . (int) $n;
+                // 断点键必须走白名单：数组键名是调用方可控字符串，直接拼接可逃逸出 class 属性
+                $bp = $this->enum($bp, self::ENUM_BREAKPOINT, '');
+                if ($bp === '') {
+                    continue;
+                }
+                $n = (int) $n;
+                if ($n < 1 || $n > 12) {
+                    continue;
+                }
+                $cls .= ' col-' . $bp . '-' . $n;
             }
             return $cls;
         }

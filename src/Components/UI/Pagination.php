@@ -51,7 +51,7 @@ class Pagination extends Component
      */
     protected function link(int $page): string
     {
-        return str_replace('{page}', (string) $page, (string) $this->get('url'));
+        return str_replace('{page}', (string) $page, (string) $this->safeUrl($this->get('url')));
     }
 
     /**
@@ -71,7 +71,7 @@ class Pagination extends Component
             'pagination-rounded' => $this->get('rounded'),
             'justify-content-center' => $this->get('align') === 'center',
             'justify-content-end'    => $this->get('align') === 'end',
-        ], $this->get('size') ? 'pagination-' . $this->get('size') : '');
+        ], ($this->get('size') && ($pz = $this->enum($this->get('size'), self::ENUM_SIZE, '')) !== '') ? 'pagination-' . $pz : '');
 
         $item = function (string $label, ?int $page, bool $active = false, bool $disabled = false): string {
             $li = '<li class="' . Html::cls('page-item', ['active' => $active, 'disabled' => $disabled]) . '">';

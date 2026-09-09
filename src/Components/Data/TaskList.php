@@ -83,7 +83,7 @@ class TaskList extends Component
                     . '</div>';
             }
             if ($this->get('addable')) {
-                $head .= '<a href="' . $this->e($this->get('add_url')) . '" class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>新建</a>';
+                $head .= '<a href="' . $this->e($this->safeUrl($this->get('add_url'))) . '" class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>新建</a>';
             }
             $head .= '</div></div>';
         }

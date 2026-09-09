@@ -55,7 +55,7 @@ class PageTitle extends Component
                     if ($active || empty($item['url'])) {
                         $html .= '<li class="breadcrumb-item' . ($active ? ' active' : '') . '">' . $this->e($item['text'] ?? '') . '</li>';
                     } else {
-                        $html .= '<li class="breadcrumb-item"><a href="' . $this->e($item['url']) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
+                        $html .= '<li class="breadcrumb-item"><a href="' . $this->e($this->safeUrl($item['url'])) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
                     }
                 }
                 $html .= '</ol>';

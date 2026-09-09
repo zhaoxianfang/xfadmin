@@ -48,7 +48,7 @@ class Breadcrumb extends Component
             $active = ($item['active'] ?? false) || $i === $last;
             $html  .= $active || empty($item['url'])
                 ? '<li class="breadcrumb-item active" aria-current="page">' . $this->e($item['text'] ?? '') . '</li>'
-                : '<li class="breadcrumb-item"><a href="' . $this->e($item['url']) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
+                : '<li class="breadcrumb-item"><a href="' . $this->e($this->safeUrl($item['url'])) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
         }
         return $html . '</ol></nav>';
     }

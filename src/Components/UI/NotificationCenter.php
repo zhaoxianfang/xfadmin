@@ -55,16 +55,19 @@ class NotificationCenter extends Component
         $badge = (int) $this->get('badge');
         $list = '';
         foreach ($items as $it) {
-            $avatar = $this->e($it['avatar'] ?? '');
+            // 先解析 URL 再统一转义（先 e() 再拼 URL 会把查询串里的 & 变成 &amp;，破坏地址）；
+            // 空值时保持空，避免 img() 的 1x1 占位图被误判为「有头像」
+            $avatarRaw = (string) ($it['avatar'] ?? '');
+            $avatar = $avatarRaw !== '' ? $this->e($this->img($avatarRaw)) : '';
             $icon   = $this->e($it['icon'] ?? 'ti ti-bell');
-            $variant = $this->e($it['variant'] ?? 'primary');
+            $variant = $this->enum($it['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
             $title  = $this->e($it['title'] ?? '');
             $text   = $this->e($it['text'] ?? '');
             $time   = $this->e($it['time'] ?? '');
             $unread = ! empty($it['unread']);
-            $url    = $this->e($it['url'] ?? '');
+            $url    = $this->e($this->safeUrl($it['url'] ?? ''));
             $media  = $avatar
-                ? '<img src="' . $this->img($avatar) . '" class="rounded-circle" width="38" height="38" alt="">'
+                ? '<img src="' . $avatar . '" class="rounded-circle" width="38" height="38" alt="">'
                 : '<span class="avatar-sm d-inline-flex align-items-center justify-content-center rounded-circle bg-soft-' . $variant . ' text-' . $variant . '"><i class="' . $icon . '"></i></span>';
             $list .= '<a href="' . ($url ?: '#') . '" class="list-group-item list-group-item-action xf-notify-item' . ($unread ? ' unread' : '') . '"'
                 . ' data-xf-notify' . ($url ? ' data-url="' . $url . '"' : '') . '>'

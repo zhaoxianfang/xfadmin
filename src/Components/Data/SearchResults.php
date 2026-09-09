@@ -77,7 +77,7 @@ class SearchResults extends Component
             $it = (array) $it;
             $thumb = $it['thumb'] ?? '';
             $icon = $it['icon'] ?? 'ti ti-file-text';
-            $html .= '<a href="' . $this->e($it['url'] ?? '#') . '" class="list-group-item list-group-item-action d-flex gap-3 py-3">';
+            $html .= '<a href="' . $this->e($this->safeUrl($it['url'] ?? '#')) . '" class="list-group-item list-group-item-action d-flex gap-3 py-3">';
             if ($thumb) {
                 $html .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img($thumb)) . '" class="avatar-xs rounded-circle" alt="">';
             } else {
@@ -100,6 +100,7 @@ class SearchResults extends Component
         $html .= '</div>';
 
         if ($pg = $this->get('pagination')) {
+            // pagination 是 HTML 内容槽位（Pagination 组件实例或开发者自定义 HTML），按 raw 原样输出
             $html .= '<div class="mt-3">' . $this->raw($pg) . '</div>';
         }
         return $html . '</div>';

@@ -189,7 +189,7 @@
 .btn-soft-success:hover { color: #fff; background: var(--bs-success); }
 .btn-soft-info      { color: var(--bs-info); background: rgba(var(--bs-info-rgb), .15); }
 .btn-soft-info:hover { color: #fff; background: var(--bs-info); }
-.btn-soft-warning   { color: #997404; background: rgba(var(--bs-warning-rgb), .15); }
+.btn-soft-warning   { color: var(--bs-warning-text-emphasis, #997404); background: rgba(var(--bs-warning-rgb), .15); }
 .btn-soft-warning:hover { color: #000; background: var(--bs-warning); }
 .btn-soft-danger    { color: var(--bs-danger); background: rgba(var(--bs-danger-rgb), .15); }
 .btn-soft-danger:hover { color: #fff; background: var(--bs-danger); }
@@ -452,97 +452,118 @@ html[data-layout="topnav"] .app-topbar .logo-topbar img {
     padding: 2.5rem; color: #fff;
     background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.45) 100%);
 }
-/* 侧栏文案容器：整体半透明面板（标题 / 文案 / 列表统一承载于一个面板内） */
-/* 侧栏文案玻璃面板：半透明深色底 + 背景模糊（毛玻璃），叠加顶部高光内阴影与悬浮外阴影 */
+/* 侧栏文案玻璃卡片（split / card 布局共用）
+ * 通透毛玻璃：浅色半透明表面 + 强模糊，让背后背景图透出；
+ * 圆角 / 投影与右侧白色表单卡片（rounded-4 + 柔和阴影）视觉语言保持一致。 */
 .auth-side-content {
+    position: relative;
     width: 100%;
-    max-width: 440px;
+    max-width: 460px;
     margin: 0 auto;
     padding: 2.5rem 2.25rem;
     text-align: left;
     color: #fff;
-    background:
-        linear-gradient(160deg, rgba(22, 34, 60, .58), rgba(9, 15, 30, .46)),
-        rgba(13, 20, 38, .30);
-    -webkit-backdrop-filter: blur(12px) saturate(1.35);
-    backdrop-filter: blur(12px) saturate(1.35);
-    border: 1px solid rgba(255,255,255,.16);
-    border-top: 1px solid rgba(255,255,255,.30);
-    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, .10);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    backdrop-filter: blur(18px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 1.25rem;
     box-shadow:
-        0 24px 64px rgba(0,0,0,.45),
-        0 2px 8px rgba(0,0,0,.25),
-        inset 0 1px 0 rgba(255,255,255,.22);
+        0 24px 60px -16px rgba(0, 0, 0, .55),
+        inset 0 1px 0 rgba(255, 255, 255, .35);
+    overflow: hidden;
+}
+/* 顶部柔光：玻璃高光，替代生硬的彩色条，更显通透 */
+.auth-side-content::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 45%;
+    background: radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, .18), transparent 70%);
+    pointer-events: none;
+}
+/* 右上角品牌色微光：强化层级，不喧宾夺主 */
+.auth-side-content::after {
+    content: '';
+    position: absolute;
+    top: -45%; right: -30%;
+    width: 75%; height: 85%;
+    background: radial-gradient(circle at center, rgba(var(--bs-primary-rgb, 78, 115, 223), .28), transparent 70%);
+    pointer-events: none;
 }
 .auth-side-title {
     position: relative;
+    z-index: 1;
     margin: 0 0 1rem;
     padding-left: 1rem;
     color: #fff;
     font-weight: 700;
-    font-size: 1.7rem;
-    line-height: 1.3;
-    letter-spacing: .5px;
-    text-shadow: 0 2px 10px rgba(0,0,0,.4);
+    font-size: 1.6rem;
+    line-height: 1.32;
+    letter-spacing: .2px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .4);
 }
-/* 标题左侧主色竖条装饰，增强品牌/层级感 */
+/* 标题左侧主色竖条装饰，增强品牌 / 层级感 */
 .auth-side-title::before {
     content: '';
     position: absolute;
-    left: 0; top: .15em; bottom: .15em;
+    left: 0; top: .25em; bottom: .25em;
     width: 4px;
     border-radius: 4px;
     background: linear-gradient(180deg, var(--bs-primary, #4e73df), #6f42c1);
     box-shadow: 0 0 12px rgba(var(--bs-primary-rgb, 78, 115, 223), .6);
 }
 .auth-side-text {
+    position: relative;
+    z-index: 1;
     margin: 0 0 1.5rem;
     padding-left: 1rem;
-    color: rgba(255,255,255,.84);
+    color: rgba(255, 255, 255, .88);
     font-size: .95rem;
     line-height: 1.7;
-    text-shadow: 0 1px 4px rgba(0,0,0,.25);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .3);
 }
 .auth-side-list {
+    position: relative;
+    z-index: 1;
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: .6rem;
 }
 .auth-side-list li {
     display: flex;
     align-items: center;
     gap: .85rem;
-    padding: .625rem .85rem;
+    padding: .7rem .9rem;
     color: #fff;
-    font-size: .925rem;
-    line-height: 1.45;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.10);
+    font-size: .92rem;
+    line-height: 1.4;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
     border-radius: .75rem;
     transition: background .2s ease, transform .2s ease, border-color .2s ease;
 }
 .auth-side-list li:hover {
-    background: rgba(255,255,255,.14);
-    border-color: rgba(255,255,255,.22);
-    transform: translateX(3px);
+    background: rgba(255, 255, 255, .14);
+    border-color: rgba(255, 255, 255, .26);
+    transform: translateX(4px);
 }
 .auth-side-list-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.9rem;
-    height: 1.9rem;
+    width: 1.9rem; height: 1.9rem;
     flex-shrink: 0;
     color: #fff;
     font-size: .9rem;
     background: linear-gradient(140deg, var(--bs-primary, #4e73df), #6f42c1);
-    border-radius: 50%;
+    border-radius: .55rem;
     box-shadow: 0 4px 10px rgba(var(--bs-primary-rgb, 78, 115, 223), .35);
 }
-.auth-side-list-text { color: rgba(255,255,255,.96); }
+.auth-side-list-text { color: rgba(255, 255, 255, .95); }
 /* card 布局右侧宣传区宽度较窄，内容容器收紧并贴底 */
 .auth-overlay-card .auth-side-content {
     max-width: 340px;
@@ -551,15 +572,15 @@ html[data-layout="topnav"] .app-topbar .logo-topbar img {
 @media (max-width: 991.98px) {
     .auth-card-media-overlay,
     .auth-overlay,
-    .auth-overlay-plain { padding: 1.5rem; }
-    .auth-side-content { padding: 1.5rem 1.25rem; max-width: 100%; }
-    .auth-side-title { font-size: 1.5rem; }
+    .auth-overlay-plain { padding: 2rem; }
+    .auth-side-content { padding: 2rem 1.75rem; max-width: 100%; }
+    .auth-side-title { font-size: 1.55rem; }
 }
 @media (max-width: 575.98px) {
-    .auth-side-content { padding: 1.25rem 1rem; border-radius: .85rem; }
-    .auth-side-title { font-size: 1.35rem; margin-bottom: .75rem; }
-    .auth-side-text { margin-bottom: 1.25rem; }
-    .auth-side-list li { padding: .5rem .7rem; }
+    .auth-side-content { padding: 1.5rem 1.25rem; border-radius: 1.1rem; }
+    .auth-side-title { font-size: 1.4rem; margin-bottom: .85rem; }
+    .auth-side-text { margin-bottom: 1.3rem; }
+    .auth-side-list li { padding: .6rem .8rem; }
 }
 
 /* —— split 布局左侧整幅背景（对齐 auth-split-*：外层 col + card-side-img rounded-0 overflow-hidden + background-image）—— */
@@ -599,9 +620,10 @@ html[data-layout="topnav"] .app-topbar .logo-topbar img {
 .auth-overlay {
     position: absolute; inset: 0; z-index: 1;
     padding: 3rem; color: #fff;
+    /* 适度暗化：保留背景图纹理供毛玻璃透出，同时压暗以保证浅色玻璃上的白字可读 */
     background:
-        radial-gradient(120% 100% at 50% 50%, rgba(0,0,0,.18) 0%, rgba(0,0,0,.45) 100%),
-        rgba(10, 18, 36, .28);
+        radial-gradient(120% 100% at 50% 50%, rgba(0,0,0,.12) 0%, rgba(0,0,0,.38) 100%),
+        rgba(10, 18, 36, .22);
 }
 /* sideOverlay=false 时无暗角遮罩（仍保留白字内容区） */
 .auth-overlay-plain { position: absolute; inset: 0; z-index: 1; padding: 3rem; color: #fff; }
@@ -1003,7 +1025,7 @@ img[width][height] { object-fit: cover; }
 
 /* 邮件中心（email）—— 对齐 INSPINIA email.html 的 table 式邮件行 */
 .email-table tbody tr { position: relative; }                 /* 支撑 stretched-link 整行可点 */
-.email-table tbody tr.unread td { background: #f6f7fb; }
+.email-table tbody tr.unread td { background: var(--bs-tertiary-bg, #f6f7fb); }
 .email-table tbody tr.unread .email-action-btn,
 .email-table .email-action-btn.active { color: var(--bs-warning); }
 .email-table tbody tr .form-check-input { cursor: pointer; }
@@ -1297,11 +1319,11 @@ body.layout-boxed .wrapper { max-width: 1320px; margin: 0 auto; box-shadow: var(
     width: 240px; min-height: 140px; border-radius: .75rem; padding: 1rem;
     box-shadow: var(--xf-shadow); border: 1px solid var(--bs-border-color); position: relative;
 }
-.pin-note.pin-warning { background: #fff8e6; }
-.pin-note.pin-info { background: #e7f3ff; }
-.pin-note.pin-success { background: #e9f9ef; }
-.pin-note.pin-danger { background: #fdecec; }
-.pin-note.pin-primary { background: #eef2ff; }
+.pin-note.pin-warning { background: var(--bs-warning-bg-subtle, #fff8e6); }
+.pin-note.pin-info { background: var(--bs-info-bg-subtle, #e7f3ff); }
+.pin-note.pin-success { background: var(--bs-success-bg-subtle, #e9f9ef); }
+.pin-note.pin-danger { background: var(--bs-danger-bg-subtle, #fdecec); }
+.pin-note.pin-primary { background: var(--bs-primary-bg-subtle, #eef2ff); }
 .pin-note-head { display: flex; align-items: center; gap: .5rem; color: var(--bs-secondary-color); margin-bottom: .5rem; }
 .pin-note-body { font-size: .9rem; white-space: pre-wrap; }
 .pin-note-foot { margin-top: .75rem; border-top: 1px dashed var(--bs-border-color); padding-top: .5rem; }
@@ -1741,7 +1763,9 @@ form[data-xf-filter-for] .select2-container--default .select2-selection--multipl
 }
 form[data-xf-filter-for] .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 1.9rem; }
 form[data-xf-filter-for] .select2-container--default .select2-selection--single .select2-selection__arrow { height: 1.9rem; }
-.select2-dropdown { border-color: var(--bs-border-color); background: var(--bs-body-bg); color: var(--bs-body-color); z-index: 1060; }
+/* 原 z-index:1060 高于 Bootstrap 模态框(1055)，下拉会穿越遮罩浮到弹窗之上；
+ * 降到 1049（低于 modal 1055、高于 dropdown 1000）。 */
+.select2-dropdown { border-color: var(--bs-border-color); background: var(--bs-body-bg); color: var(--bs-body-color); z-index: 1049; }
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable { background: var(--bs-primary); }
 .select2-search--dropdown .select2-search__field { border-color: var(--bs-border-color) !important; background: var(--bs-body-bg); color: var(--bs-body-color); }
 
@@ -1788,18 +1812,18 @@ form[data-xf-filter-for] .select2-container--default .select2-selection--single 
 .badge-soft-dark { --bs-badge-bg: rgba(33,37,41,.16); --bs-badge-color: #1c1f23; background: var(--bs-badge-bg); color: var(--bs-badge-color); }
 .xf-status-dot { width: .55rem; height: .55rem; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
 .xf-status-dot-primary { background: var(--xf-brand, #3e60d5); }
-.xf-status-dot-success { background: #198754; }
-.xf-status-dot-danger  { background: #dc3545; }
-.xf-status-dot-warning { background: #ffc107; }
-.xf-status-dot-info    { background: #0dcaf0; }
-.xf-status-dot-secondary { background: #6c757d; }
+.xf-status-dot-success { background: var(--bs-success, #198754); }
+.xf-status-dot-danger  { background: var(--bs-danger, #dc3545); }
+.xf-status-dot-warning { background: var(--bs-warning, #ffc107); }
+.xf-status-dot-info    { background: var(--bs-info, #0dcaf0); }
+.xf-status-dot-secondary { background: var(--bs-secondary, #6c757d); }
 .xf-dot { width: .5rem; height: .5rem; border-radius: 50%; display: inline-block; margin-right: .3rem; }
 .xf-dot-primary { background: var(--xf-brand, #3e60d5); }
-.xf-dot-success { background: #198754; }
-.xf-dot-danger  { background: #dc3545; }
-.xf-dot-warning { background: #ffc107; }
-.xf-dot-info    { background: #0dcaf0; }
-.xf-dot-secondary { background: #6c757d; }
+.xf-dot-success { background: var(--bs-success, #198754); }
+.xf-dot-danger  { background: var(--bs-danger, #dc3545); }
+.xf-dot-warning { background: var(--bs-warning, #ffc107); }
+.xf-dot-info    { background: var(--bs-info, #0dcaf0); }
+.xf-dot-secondary { background: var(--bs-secondary, #6c757d); }
 .xf-rate { display: inline-flex; align-items: center; gap: .15rem; }
 .xf-rate i { font-size: .9rem; line-height: 1; }
 .xf-duration { font-variant-numeric: tabular-nums; }
@@ -3009,7 +3033,9 @@ a.card:hover, .card.hoverable:hover {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: var(--bs-body-bg);
-    z-index: 99999;
+    /* 原为 99999，高于 modal(1055)/toast(1090)；一旦隐藏逻辑未执行成功，
+     * 整页会被不透明遮罩永久覆盖且无法操作。降到 1090 与 toast 同级即可满足首屏遮挡需求。 */
+    z-index: 1090;
 }
 #preloader #status {
     width: 200px; height: 200px;
@@ -3791,14 +3817,9 @@ table.dataTable td .btn-icon,
     .auth-split-aside { display: none !important; }
 }
 
-/* 认证页 split 布局（复刻 inspinia auth-split-*） */
-.auth-split-wrapper { min-height: 100vh; }
-.auth-split-aside {
-    background: linear-gradient(135deg, var(--bs-primary), #6f42c1);
-}
-.auth-split-form { background: var(--bs-body-bg, #fff); }
-[data-bs-theme="dark"] .auth-split-form { background: var(--bs-body-bg, #1a1d21); }
-.min-vh-100 { min-height: 100vh; }
+/* 说明：原此处重复了一份 .auth-split-* 定义（暗色兜底色与上一段不一致：#1a1d21 vs #0f1117），
+ * 已删除重复段，统一沿用上一段（含 .auth-split-aside img 滤镜与窄屏隐藏规则）。
+ * .min-vh-100 是 Bootstrap 内置工具类，此处不再重定义，避免固定死框架的 dvh 修正。 */
 
 /* ===================== 全量封装新增组件样式 ===================== */
 /* 两步验证 OTP 输入 */
@@ -3814,9 +3835,13 @@ table.dataTable td .btn-icon,
 /* 订单物流进度 */
 .xf-order-track-step .rounded-circle { position: relative; z-index: 2; }
 
-/* 发票打印 */
+/* 发票打印
+ * 作用域限定为 body.xf-printing（由 xfadmin.js 的打印按钮在调用 print() 前添加）。
+ * 早期版本直接写 `body *{visibility:hidden}`，导致所有页面 Ctrl+P 都得到空白页；
+ * 现在只有「点击打印按钮」才启用区域打印，普通整页打印不受影响。 */
 @media print {
-    body * { visibility: hidden; }
-    .xf-invoice-print-area, .xf-invoice-print-area * { visibility: visible; }
-    .xf-invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+    body.xf-printing * { visibility: hidden; }
+    body.xf-printing .xf-invoice-print-area,
+    body.xf-printing .xf-invoice-print-area * { visibility: visible; }
+    body.xf-printing .xf-invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; }
 }

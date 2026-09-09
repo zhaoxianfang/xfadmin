@@ -49,10 +49,8 @@ class StatCard extends Component
      */
     protected function html(): string
     {
-        // variant 白名单，防止任意类注入
-        $variant = in_array($this->get('variant'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'], true)
-            ? $this->get('variant')
-            : 'primary';
+        // variant 走基类白名单（含 link），防止任意类注入
+        $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
         $width   = $this->get('width');
 
         $counterCfg = json_encode([
@@ -85,20 +83,13 @@ class StatCard extends Component
         $html .= '</div>';
 
         if ($this->get('url')) {
-            $html .= '<a href="' . $this->e($this->get('url')) . '" class="link-secondary fs-24"><i class="ti ti-chevron-right"></i></a>';
+            $html .= '<a href="' . $this->e($this->safeUrl($this->get('url'))) . '" class="link-secondary fs-24"><i class="ti ti-chevron-right"></i></a>';
         }
         $html .= '</div></div></div>';
 
         if ($width) {
-            $colClass = 'col-12';
-            if (is_array($width)) {
-                foreach ($width as $bp => $cols) {
-                    $colClass .= ' col-' . $bp . '-' . (int) $cols;
-                }
-            } elseif (is_numeric($width)) {
-                $colClass .= ' col-md-' . (int) $width . ' col-xl-' . (int) $width;
-            }
-            return '<div class="' . $colClass . '">' . $html . '</div>';
+            // 断点键走白名单、列数夹紧 1~12，避免数组键名逃逸出 class 属性
+            return '<div class="' . $this->gridCol($width) . '">' . $html . '</div>';
         }
 
         return $html;

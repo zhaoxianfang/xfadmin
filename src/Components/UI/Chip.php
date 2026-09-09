@@ -55,7 +55,7 @@ class Chip extends Component
         $tag   = $this->get('href') ? 'a' : 'span';
         $attrs = ['class' => Html::cls('badge bg-' . $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary') . ' text-body d-inline-flex align-items-center gap-1 p-1 pe-2 rounded-pill')];
         if ($this->get('href')) {
-            $attrs['href'] = $this->get('href');
+            $attrs['href'] = $this->safeUrl($this->get('href'));
         }
         $html = '<' . $tag . $this->attrs($attrs) . '>';
         if ($this->get('avatar')) {

@@ -49,7 +49,9 @@ trait FieldWrapper
             $extra .= '<div class="invalid-feedback">' . $this->e($feedback['invalid']) . '</div>';
         }
         if ($this->get('help') !== null) {
-            $extra .= '<div class="form-text">' . $this->raw($this->get('help')) . '</div>';
+            // help 是「说明文本」槽位（与 feedback 同为纯文本语义），必须转义：
+            // 帮助文案常来自数据库/语言包，raw() 会形成存储型 XSS 汇点
+            $extra .= '<div class="form-text">' . $this->e($this->get('help')) . '</div>';
         }
         $inner = $label . $control . $extra;
 

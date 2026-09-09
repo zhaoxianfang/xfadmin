@@ -42,7 +42,9 @@ class Footer extends Component
             $text  = '© ' . date('Y') . ' ' . $brand;
         }
         $html  = '<footer' . $this->attrs(['class' => 'footer']) . '><div class="container-fluid"><div class="row">';
-        $html .= '<div class="col-md-6 text-center text-md-start">' . $this->raw($text) . '</div>';
+        // text 是版权/说明文本（默认 "© YYYY 品牌"），语义为纯文本 → 转义；
+        // right 常放链接等 HTML → 保持原样输出（调用方需保证可信）
+        $html .= '<div class="col-md-6 text-center text-md-start">' . $this->text($text) . '</div>';
         $html .= '<div class="col-md-6"><div class="text-md-end d-none d-md-block">' . $this->raw($right) . '</div></div>';
         $html .= '</div></div></footer>';
 

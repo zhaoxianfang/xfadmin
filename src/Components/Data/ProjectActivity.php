@@ -84,7 +84,8 @@ class ProjectActivity extends Component
                 $html .= '<div class="mb-1">' . $this->e($it['title']) . '</div>';
             }
             if (! empty($it['desc'])) {
-                $html .= '<div class="text-muted small">' . $this->raw($it['desc']) . '</div>';
+                // desc 与同块的 user/time/title 同为纯文本，保持一致的转义策略
+                $html .= '<div class="text-muted small">' . $this->e($it['desc']) . '</div>';
             }
             $html .= '</div></div>';
         }

@@ -13,10 +13,30 @@
     var XFAdmin = {
         version: '1.0.0',
         widgets: {},
-        instances: new WeakMap(),
+        destroyers: {},          // 组件名 => 销毁函数（见 XFAdmin.register 第三参）
+        instances: new WeakMap(), // el => 组件实例
+        _meta: new WeakMap(),     // el => { name }，销毁时用于定位 destroyer
         _loaded: {},
         _readyQueue: []
     };
+
+    /* preloader 兜底：必须在文件最前面独立注册。
+     * #preloader 是覆盖全屏的不透明遮罩（z-index 极高），若本文件后续任何顶层代码抛错
+     * 导致注册逻辑没有执行到，整页将永久不可用。这里用自包含 IIFE 提前兜底。 */
+    (function () {
+        function xfHidePreloader() {
+            var el = document.getElementById('preloader');
+            if (!el || el.dataset.xfHidden) return;
+            el.dataset.xfHidden = '1';
+            el.style.opacity = '0';
+            el.style.transition = 'opacity .35s ease';
+            setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 380);
+        }
+        if (document.getElementById('preloader')) {
+            global.addEventListener('load', xfHidePreloader);
+            setTimeout(xfHidePreloader, 3000);
+        }
+    })();
 
     /* 禁止框架（app.js）在"首次访问"时自动弹出主题定制面板：
      * openCustomizer 于 DOMContentLoaded 检查 __user_has_visited__，
@@ -90,8 +110,60 @@
     /* ------------------------------------------------------------------
      * 组件扫描与初始化
      * ---------------------------------------------------------------- */
-    XFAdmin.register = function (name, initFn) {
+    /* jQuery 依赖缺失告警：select2 / daterangepicker / summernote / jstree 四个插件依赖 jQuery，
+     * 未引入时此前直接 return 且无任何输出，排查困难。同一依赖全局只提示一次。 */
+    var __xfWarnedDep = {};
+    function xfWarnMissingDep(name) {
+        if (__xfWarnedDep[name]) return;
+        __xfWarnedDep[name] = 1;
+        console.warn('[XfAdmin] 组件 ' + name + ' 依赖 jQuery 及对应插件，当前未加载，已跳过初始化。'
+            + '如不需要该插件请从组件配置中移除，否则请引入 jquery 与该插件资源。');
+    }
+
+    /**
+     * 注册组件初始化器。
+     *
+     * @param {string}   name       组件名（对应 data-xf="name"）
+     * @param {Function} initFn     初始化函数 (el, cfg) => instance?
+     * @param {Function} [destroyFn] 销毁函数 (el, instance)；未提供时，
+     *                               若 initFn 返回的对象带 destroy() 则自动调用。
+     *                               带定时器/全局监听的组件务必提供，避免 SPA/AJAX 场景下泄漏。
+     */
+    XFAdmin.register = function (name, initFn, destroyFn) {
         XFAdmin.widgets[name] = initFn;
+        if (typeof destroyFn === 'function') {
+            XFAdmin.destroyers[name] = destroyFn;
+        }
+    };
+
+    /** 销毁单个已初始化组件：调用其 destroy 钩子并复位初始化标记 */
+    XFAdmin.destroy = function (el) {
+        if (!el) return;
+        var meta = XFAdmin._meta.get(el);
+        var name = meta && meta.name;
+        var inst = XFAdmin.instances.get(el);
+        var fn = (name && XFAdmin.destroyers[name]) || null;
+        try {
+            if (fn) fn(el, inst);
+            else if (inst && typeof inst.destroy === 'function') inst.destroy();
+            else if (typeof inst === 'function') inst();
+        } catch (e) {
+            console.warn('[XfAdmin] 销毁组件失败: ' + name, e);
+        }
+        XFAdmin.instances.delete(el);
+        XFAdmin._meta.delete(el);
+        el.__xfInited = false;
+    };
+
+    /** 销毁某子树内全部已初始化组件（AJAX 替换内容前调用，避免 setInterval / 全局监听泄漏） */
+    XFAdmin.destroyWithin = function (root) {
+        root = root || document;
+        if (root.nodeType === 1 && root.hasAttribute && root.hasAttribute('data-xf') && root.__xfInited) {
+            XFAdmin.destroy(root);
+        }
+        Array.prototype.forEach.call(root.querySelectorAll('[data-xf]'), function (el) {
+            if (el.__xfInited) XFAdmin.destroy(el);
+        });
     };
 
     function readConfig(el) {
@@ -1053,6 +1125,15 @@
                 if (item.action === 'view' && (item.view || item.viewTitle)) {
                     attrs += ' data-xf-view="' + escapeHtml(JSON.stringify(item.view || { title: item.viewTitle })) + '"';
                 }
+                // 行详情（弹窗加载远程页面）：action=modal 复用声明式 data-xf-page-dialog 触发器，
+                // 在模态框中加载 item.url 指向的「丰富齐全」详情页（如系统日志详情）。
+                if (item.action === 'modal' && item.url) {
+                    attrs += ' data-xf-page-dialog="' + escapeHtml(XFAdmin.tpl(item.url, row)) + '"';
+                    if (item.title) attrs += ' data-xf-title="' + escapeHtml(tplRaw(item.title, row)) + '"';
+                    if (item.size) attrs += ' data-xf-size="' + escapeHtml(item.size) + '"';
+                    if (item.maximizable) attrs += ' data-xf-maximizable="1"';
+                    return '<button type="button"' + attrs + '>' + inner + '</button>';
+                }
                 if (item.url) {
                     return '<a href="' + XFAdmin.tpl(item.url, row) + '"' + attrs + (item.target ? ' target="' + escapeHtml(item.target) + '"' : '') + '>' + inner + '</a>';
                 }
@@ -1154,17 +1235,24 @@
             var name = el.getAttribute('data-xf');
             var fn = XFAdmin.widgets[name];
             if (!fn) return;
-            el.__xfInited = true;
             try {
                 var instance = fn(el, readConfig(el));
+                // 仅在成功后置位：初始化失败（常见原因是插件 JS 尚未加载完）时
+                // 允许后续 scan() 重试，避免组件永久静默空白
+                el.__xfInited = true;
+                // 记录组件名，供 XFAdmin.destroy(el) 定位销毁钩子
+                XFAdmin._meta.set(el, { name: name });
                 if (instance) XFAdmin.instances.set(el, instance);
             } catch (e) {
+                el.__xfInited = false;
                 console.error('[XfAdmin] 初始化组件失败: ' + name, el, e);
             }
         });
         // 图标统一使用 Tabler(ti) 字体图标，无需 lucide 增量渲染
-        // 增量内容中的远程表单也一并托管（页面内静态 form[data-xf-remote] 由 initBootstrapExtras 处理）
-        if (XFAdmin.bindRemoteForms) XFAdmin.bindRemoteForms(root);
+        // 增量内容同样需要 Bootstrap 增强（tooltip/popover/表单校验）与远程表单托管：
+        // initBootstrapExtras 内部已调用 bindRemoteForms，仅在它缺失时单独兜底
+        if (XFAdmin.initBootstrapExtras) XFAdmin.initBootstrapExtras(root);
+        else if (XFAdmin.bindRemoteForms) XFAdmin.bindRemoteForms(root);
     };
 
     /**
@@ -1284,6 +1372,98 @@
             document.addEventListener('click', onDoc);
         }, 0);
     }
+
+    // ---------- 列表工具条（DataTableToolbar 组件的四个交互控件） ----------
+    /** 定位工具条关联的表格节点：优先 data-xf-table 指定的 id，其次同容器内最近的表格 */
+    function dtToolbarTable(el) {
+        var id = el.getAttribute('data-xf-table');
+        if (id) {
+            var n = document.getElementById(id);
+            if (n) return n.tagName === 'TABLE' ? n : (n.querySelector('table') || n);
+        }
+        var bar = el.closest('.xf-dt-toolbar') || el.parentNode;
+        var scope = (bar && bar.parentNode) ? bar.parentNode : document;
+        var t = scope.querySelector('table.dataTable');
+        if (t) return t;
+        // 退化：表单/卡片内第一个带 id 的表格
+        return scope.querySelector('table');
+    }
+
+    /** 取 DataTables API 实例（兼容 jQuery 插件形态与 DataTables 2 原生构造） */
+    function dtToolbarApi(el) {
+        var node = dtToolbarTable(el);
+        if (!node) return null;
+        try {
+            if (global.jQuery && global.jQuery.fn && global.jQuery.fn.DataTable) {
+                return global.jQuery(node).DataTable();
+            }
+            if (typeof global.DataTable === 'function') {
+                return new global.DataTable(node);
+            }
+        } catch (e) { /* 表格尚未初始化或重复初始化，交由调用方忽略 */ }
+        return null;
+    }
+
+    /* 关键字搜索：输入防抖后调用 api.search() */
+    XFAdmin.register('dt-search', function (el) {
+        var timer = null;
+        el.addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                var api = dtToolbarApi(el);
+                if (!api) return;
+                api.search(el.value || '').draw();
+            }, 300);
+        });
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); el.dispatchEvent(new Event('input')); }
+        });
+    });
+
+    /* 列筛选：data-field 指定列（索引或列名），为空时仅派发事件交由业务处理 */
+    XFAdmin.register('dt-filter', function (el) {
+        el.addEventListener('change', function () {
+            var api = dtToolbarApi(el);
+            var field = el.getAttribute('data-field');
+            var val = el.value || '';
+            if (api && field !== null && field !== '') {
+                var col = /^\d+$/.test(field) ? parseInt(field, 10) : field + ':name';
+                try {
+                    api.column(col).search(val).draw();
+                } catch (e) {
+                    console.warn('[XfAdmin] dt-filter 列定位失败: ' + field, e);
+                    api.search(val).draw();
+                }
+            }
+            el.dispatchEvent(new CustomEvent('xf.dtfilter.change', {
+                detail: { value: val, field: field, api: api }, bubbles: true
+            }));
+        });
+    });
+
+    /* 每页条数：api.page.len() */
+    XFAdmin.register('dt-pagesize', function (el) {
+        el.addEventListener('change', function () {
+            var n = parseInt(el.value, 10);
+            if (!n || n < 1) return;
+            var api = dtToolbarApi(el);
+            if (api) api.page.len(n).draw();
+        });
+    });
+
+    /* 视图切换：同步 active 态并派发 xf.dtview.change */
+    XFAdmin.register('dt-views', function (el) {
+        el.addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-view]');
+            if (!btn || !el.contains(btn)) return;
+            Array.prototype.forEach.call(el.querySelectorAll('button[data-view]'), function (b) {
+                b.classList.toggle('active', b === btn);
+            });
+            el.dispatchEvent(new CustomEvent('xf.dtview.change', {
+                detail: { view: btn.getAttribute('data-view'), button: btn, api: dtToolbarApi(el) }, bubbles: true
+            }));
+        });
+    });
 
     // ---------- DataTable（含模板列 / 徽章列 / 富渲染器 / 列筛选） ----------
     XFAdmin.register('datatable', function (el, config) {
@@ -1536,10 +1716,15 @@
                     var cur = data[gi] ? data[gi][rgField] : undefined;
                     var key = (cur == null || cur === '') ? rgEmpty : cur;
                     if (last === undefined || last !== key) {
-                        global.jQuery(rows).eq(gi).before(
-                            '<tr class="xf-dt-group-row"><td colspan="' + colN + '">' +
-                            '<span class="xf-dt-group-label">' + escapeHtml(String(key)) + '</span></td></tr>'
-                        );
+                        // 原生实现优先：DataTables 2 可脱离 jQuery 运行，此前无守卫时每次绘制都抛 TypeError
+                        var grpRow = '<tr class="xf-dt-group-row"><td colspan="' + colN + '">' +
+                            '<span class="xf-dt-group-label">' + escapeHtml(String(key)) + '</span></td></tr>';
+                        var rowNode = rows[gi];
+                        if (rowNode && rowNode.insertAdjacentHTML) {
+                            rowNode.insertAdjacentHTML('beforebegin', grpRow);
+                        } else if (global.jQuery) {
+                            global.jQuery(rows).eq(gi).before(grpRow);
+                        }
                         last = key;
                     }
                 }
@@ -1754,9 +1939,15 @@
             // DT 初始化后 .dt-container 已存在，延迟注册确保 wrapper DOM 就绪
             setTimeout(function () {
                 var container = el.closest('.dt-container');
-                if (container) {
-                    XFAdmin._dtResizeObserver.observe(container);
-                }
+                if (!container) return;
+                XFAdmin._dtResizeObserver.observe(container);
+                // 表格销毁时反注册，避免 Observer 长期持有已移除容器（内存泄漏 + 无谓回调）
+                el.addEventListener('destroy.dt', function () {
+                    try {
+                        XFAdmin._dtResizeObserver.unobserve(container);
+                        if (XFAdmin.destroyTableSticky) XFAdmin.destroyTableSticky(el);
+                    } catch (e) { /* noop */ }
+                });
             }, 50);
         }
 
@@ -2187,12 +2378,20 @@
         document.addEventListener('shown.bs.dropdown', function (e) {
             var menu = resolveMenu(e);
             if (!menu) return;
-            // 仅处理 DataTable 滚动容器 / 冻结列（xf-dt-sticky）/ 表格内场景
-            if (!menu.closest('.dt-scroll-body')
-                && !menu.closest('.dataTables_scrollBody')
-                && !menu.closest('.xf-dt-sticky')
-                && !menu.closest('.dataTable')) {
-                return;
+            // 仅处理 DataTable 滚动容器 / 冻结列（xf-dt-sticky）/ 表格内场景。
+            // 扩展触发条件：兼容「表格尚未初始化为 DataTables（无 .dataTable 类）」
+            // 或「操作按钮位于 .xf-row-actions 行操作栏」等边界场景，确保管理员列表等
+            // 页面的「更多」下拉也能被固定定位处理（避免被滚动容器/冻结列裁剪、飞出视口）。
+            var inDt = menu.closest('.dt-scroll-body')
+                || menu.closest('.dataTables_scrollBody')
+                || menu.closest('.xf-dt-sticky')
+                || menu.closest('.dataTable')
+                || menu.closest('.xf-row-actions');
+            if (!inDt) {
+                var _tbl = menu.closest('table');
+                if (!_tbl || _tbl.getAttribute('data-xf') !== 'datatable') {
+                    return;
+                }
             }
             var trigger = e.target;
             // ★ 延迟到下一帧：晚于 Bootstrap/Popper 的 shown 收尾，确保 fixed 不被覆盖
@@ -2298,7 +2497,7 @@
                                 }) + '" class="img-thumbnail" style="width:88px;height:88px;object-fit:cover" onerror="this.style.display=\'none\'" alt="回复图片">'
                                 + '<span class="text-muted small">附图片回复</span></div>' : '';
                             node.innerHTML = '<div class="timeline-icon bg-success-subtle text-success"><i class="ti ti-circle-check"></i></div>'
-                                + '<div class="timeline-content"><div class="d-flex justify-content-between"><span class="fw-medium">' + (btn.textContent.trim()) + ' 完成</span>'
+                                + '<div class="timeline-content"><div class="d-flex justify-content-between"><span class="fw-medium">' + escapeHtml(btn.textContent.trim()) + ' 完成</span>'
                                 + '<span class="text-muted small">今天 ' + hh + '</span></div>'
                                 + '<p class="text-muted mb-0 small">操作角色：当前管理员</p>'
                                 + imgHtml + '</div>';
@@ -2680,7 +2879,13 @@
             container: document.body,
             customClass: 'xf-popover-confirm-wrap'
         });
-        var clean = function () { try { pop && pop.dispose && pop.dispose(); } catch (e) {} };
+        // onDoc 的移除统一放进 clean()：此前只有「点卡片外」这条路径会解绑，
+        // 点确定/取消时监听器与其闭包（持有 card/anchor/pop）会永久泄漏在 document 上。
+        var onDoc = null;
+        var clean = function () {
+            if (onDoc) { document.removeEventListener('click', onDoc, true); onDoc = null; }
+            try { pop && pop.dispose && pop.dispose(); } catch (e) {}
+        };
         pop.show();
         // 绑定卡片内按钮
         card.querySelector('.xf-pop-cancel').addEventListener('click', function () { clean(); });
@@ -2691,11 +2896,10 @@
         });
         // 点击卡片外区域关闭
         setTimeout(function () {
-            var onDoc = function (e) {
+            onDoc = function (e) {
                 if (card.contains(e.target)) return;
                 if (anchor.contains(e.target)) return;
                 clean();
-                document.removeEventListener('click', onDoc, true);
             };
             document.addEventListener('click', onDoc, true);
         }, 0);
@@ -2818,12 +3022,13 @@
             for (var i = 0; i < fields.length; i++) {
                 var f = fields[i];
                 var inputId = 'xf-pf-' + i;
+                // 字段定义常由后端配置驱动，进入 Swal 的 html 上下文前必须转义（属性逃逸 → XSS）
                 html += '<div class="text-start mb-2">'
-                    + '<label class="form-label d-block mb-1" for="' + inputId + '">' + str(f.label || f.name || '') + '</label>';
+                    + '<label class="form-label d-block mb-1" for="' + inputId + '">' + escapeHtml(f.label || f.name || '') + '</label>';
                 if (f.type === 'textarea' || (f.name && (f.name.indexOf('comment') >= 0 || f.name.indexOf('content') >= 0 || f.name.indexOf('reason') >= 0))) {
-                    html += '<textarea id="' + inputId + '" class="form-control" rows="3" placeholder="' + str(f.placeholder || '') + '"></textarea>';
+                    html += '<textarea id="' + inputId + '" class="form-control" rows="3" placeholder="' + escapeHtml(f.placeholder || '') + '"></textarea>';
                 } else {
-                    html += '<input id="' + inputId + '" class="form-control" type="text" placeholder="' + str(f.placeholder || '') + '">';
+                    html += '<input id="' + inputId + '" class="form-control" type="text" placeholder="' + escapeHtml(f.placeholder || '') + '">';
                 }
                 html += '</div>';
             }
@@ -3406,8 +3611,7 @@
         if (!global.bootstrap || !global.bootstrap.Modal) return null;
         var fields = opts.fields || [];
         var values = opts.values || {};
-        var old = document.getElementById('xf-form-modal');
-        if (old) old.remove();
+        XFAdmin.disposeModal('xf-form-modal');
         var modalEl = document.createElement('div');
         modalEl.id = 'xf-form-modal';
         modalEl.className = 'modal fade';
@@ -3543,9 +3747,8 @@
     XFAdmin.pageDialog = function (url, opts) {
         opts = opts || {};
         if (!global.bootstrap || !global.bootstrap.Modal) return;
-        var modalEl = document.getElementById('xf-edit-modal');
-        if (modalEl) modalEl.remove();
-        modalEl = document.createElement('div');
+        XFAdmin.disposeModal('xf-edit-modal');
+        var modalEl = document.createElement('div');
         modalEl.id = 'xf-edit-modal';
         modalEl.className = 'modal fade';
         modalEl.tabIndex = -1;
@@ -3734,13 +3937,35 @@
         });
     };
 
+    /* 安全移除指定 id 的弹窗并清理残留遮罩。
+     * 直接 el.remove() 不会触发 hidden.bs.modal：Bootstrap 的 .modal-backdrop、
+     * body.modal-open / overflow:hidden 会永久残留，页面被灰色遮罩盖住且无法点击。 */
+    XFAdmin.disposeModal = function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (global.bootstrap && global.bootstrap.Modal) {
+            var inst = null;
+            try { inst = global.bootstrap.Modal.getInstance(el); } catch (e) { inst = null; }
+            if (inst) {
+                try { inst.dispose(); } catch (e) { /* noop */ }
+            }
+        }
+        el.remove();
+        // 已无正在显示的弹窗时，清掉可能残留的遮罩与 body 滚动锁定
+        if (!document.querySelector('.modal.show')) {
+            Array.prototype.forEach.call(document.querySelectorAll('.modal-backdrop'), function (b) { b.remove(); });
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+        }
+    };
+
     /* 通用弹窗 */
     XFAdmin.dialog = function (opts) {
         opts = opts || {};
         if (!global.bootstrap || !global.bootstrap.Modal) return;
-        var modalEl = document.getElementById('xf-dialog-modal');
-        if (modalEl) modalEl.remove();
-        modalEl = document.createElement('div');
+        XFAdmin.disposeModal('xf-dialog-modal');
+        var modalEl = document.createElement('div');
         modalEl.id = 'xf-dialog-modal';
         modalEl.className = 'modal fade';
         modalEl.tabIndex = -1;
@@ -4019,6 +4244,18 @@
     }
     window.__xfApplyChartTheme = function (mode) {
         mode = mode || xfCurrentThemeMode();
+        // 顺带剔除所在节点已被移除的实例：数组此前只 push 不清理，
+        // 长会话下会无限增长并对已销毁图表反复调用 updateOptions/dispose
+        if (Array.isArray(window.__xfApex)) {
+            window.__xfApex = window.__xfApex.filter(function (c) {
+                return !(c && c.el && c.el.isConnected === false);
+            });
+        }
+        if (Array.isArray(window.__xfEchartsMeta)) {
+            window.__xfEchartsMeta = window.__xfEchartsMeta.filter(function (m) {
+                return !(m && m.el && m.el.isConnected === false);
+            });
+        }
         // ApexCharts：updateOptions 热切换主题无需重建
         (window.__xfApex || []).forEach(function (c) {
             try { c.updateOptions({ theme: { mode: mode } }, false, false); } catch (e) {}
@@ -4057,7 +4294,12 @@
         options = options || {};
         // 未显式指定主题时，跟随当前 data-bs-theme
         if (!options.theme) {
-            options = JSON.parse(JSON.stringify(options));
+            // 深拷贝可能失败（含不可序列化值/循环引用），失败时退回浅拷贝，避免整个图表初始化中断
+            try {
+                options = JSON.parse(JSON.stringify(options));
+            } catch (e) {
+                options = Object.assign({}, options);
+            }
             options.theme = { mode: xfCurrentThemeMode() };
         }
         var chart = new global.ApexCharts(el, options);
@@ -4120,12 +4362,12 @@
     });
 
     XFAdmin.register('select2', function (el, config) {
-        if (!global.jQuery || !global.jQuery.fn.select2) return;
+        if (!global.jQuery || !global.jQuery.fn.select2) { xfWarnMissingDep('select2'); return; }
         return global.jQuery(el).select2(Object.assign({ width: '100%' }, config));
     });
 
     XFAdmin.register('daterangepicker', function (el, config) {
-        if (!global.jQuery || !global.jQuery.fn.daterangepicker) return;
+        if (!global.jQuery || !global.jQuery.fn.daterangepicker) { xfWarnMissingDep('daterangepicker'); return; }
         // 中文本地化（moment 存在时同步切换 zh-cn，周一为一周首日）
         if (global.moment && typeof global.moment.locale === 'function') {
             try { global.moment.locale('zh-cn'); } catch (e) { /* 语言包缺失时忽略 */ }
@@ -4199,7 +4441,7 @@
     });
 
     XFAdmin.register('summernote', function (el, config) {
-        if (!global.jQuery || !global.jQuery.fn.summernote) return;
+        if (!global.jQuery || !global.jQuery.fn.summernote) { xfWarnMissingDep('summernote'); return; }
         return global.jQuery(el).summernote(Object.assign({ height: config.height || 260 }, config.options || {}));
     });
 
@@ -4295,7 +4537,7 @@
     });
 
     XFAdmin.register('jstree', function (el, config) {
-        if (!global.jQuery || !global.jQuery.fn.jstree) return;
+        if (!global.jQuery || !global.jQuery.fn.jstree) { xfWarnMissingDep('jstree'); return; }
         return global.jQuery(el).jstree(config);
     });
 
@@ -4588,34 +4830,39 @@
         var cols = el.querySelectorAll('.xf-kanban-col[data-column]');
         var instances = [];
 
-        // 实时刷新每个看板列头计数（移动卡片后必须同步）
+        // 实时刷新每个看板列头计数（移动卡片后必须同步）。
+        // 保持与 PHP 服务端渲染一致的「(n)」格式，避免拖拽后计数样式突变、被误判为「未更新」。
         function updateCounts() {
             cols.forEach(function (col) {
                 var body = col.querySelector('.xf-kanban-body');
                 var n = body ? body.querySelectorAll(':scope > .xf-kanban-card').length : 0;
                 var cnt = col.querySelector('.xf-kanban-count');
-                if (cnt) cnt.textContent = String(n);
+                if (cnt) cnt.textContent = '(' + n + ')';
             });
         }
 
         // 持久化状态变更：若看板容器声明了 data-xf-update-url，则自动 PATCH 后端
         // 例：<div class="xf-kanban" data-xf="kanban" data-xf-update-url="/admin/api/kanban/move"
         //        data-xf-status-field="status"> ；卡片 data-item 含 {id, status}
-        function persistMove(detail) {
+        function persistMove(detail, card) {
             var url = el.getAttribute('data-xf-update-url');
             if (!url || !detail.item || !detail.item.id) return;
             var field = el.getAttribute('data-xf-status-field') || 'status';
             var dataset = el.getAttribute('data-xf-dataset');
-            var payload = { id: detail.item.id, [field]: detail.to, from: detail.from };
+            var payload = { id: detail.item.id, from: detail.from };
+            payload[field] = detail.to;
             if (dataset) payload.dataset = dataset;
             if (window.XFAdmin && typeof window.XFAdmin.request === 'function') {
-                window.XFAdmin.request(url, payload, { method: 'PATCH' })
+                // XFAdmin.request 签名是 (url, opts)，必须把 method/data 放进第二个参数
+                window.XFAdmin.request(url, { method: 'PATCH', data: payload })
                     .then(function (res) {
                         if (res && res.ok) {
                             try {
-                                var it = JSON.parse(card.getAttribute('data-item'));
-                                it[field] = detail.to;
-                                card.setAttribute('data-item', JSON.stringify(it));
+                                if (card && card.getAttribute('data-item')) {
+                                    var it = JSON.parse(card.getAttribute('data-item'));
+                                    it[field] = detail.to;
+                                    card.setAttribute('data-item', JSON.stringify(it));
+                                }
                             } catch (e) {}
                             if (window.XFAdmin.toast) window.XFAdmin.toast({ body: '状态已更新', variant: 'success' });
                         } else if (window.XFAdmin.toast) {
@@ -4642,7 +4889,8 @@
                 detail: { item: item, from: fromCol, to: toCol, fromIndex: fromIndex, toIndex: toIndex, card: card },
                 bubbles: true
             }));
-            if (fromCol !== toCol) persistMove({ item: item, from: fromCol, to: toCol });
+            // 第二个参数传入卡片节点：持久化成功后需要同步更新它的 data-item
+            if (fromCol !== toCol) persistMove({ item: item, from: fromCol, to: toCol }, card);
         }
 
         // 1) Sortable.js 路径
@@ -5119,7 +5367,16 @@
             btn.__xfCapBound = true;
             btn.addEventListener('click', function () {
                 var id = btn.getAttribute('data-xf-captcha-refresh');
-                var img = root.querySelector('img[data-xf-captcha="' + id + '"]');
+                // 属性值直接拼进选择器有注入/语法错误风险，统一转义（CSS.escape 缺失时按属性遍历兜底）
+                var img = null;
+                if (typeof CSS !== 'undefined' && CSS.escape) {
+                    img = root.querySelector('img[data-xf-captcha="' + CSS.escape(id) + '"]');
+                } else {
+                    Array.prototype.some.call(root.querySelectorAll('img[data-xf-captcha]'), function (n) {
+                        if (n.getAttribute('data-xf-captcha') === id) { img = n; return true; }
+                        return false;
+                    });
+                }
                 if (img) {
                     var base = img.getAttribute('src').split('?')[0];
                     img.setAttribute('src', base + '?t=' + Date.now());
@@ -5535,7 +5792,8 @@
         if (d.action === 'close' || d.action === 'reload-close') {
             if (d.action === 'reload-close') modalEl.__xfNeedReload = true;
             var inst = global.bootstrap && global.bootstrap.Modal && global.bootstrap.Modal.getInstance(modalEl);
-            if (inst) inst.hide(); else modalEl.remove();
+            // dispose 而非直接 remove：避免 backdrop / body.modal-open 残留
+            if (inst) inst.hide(); else XFAdmin.disposeModal('xf-edit-modal');
         }
     });
 
@@ -5836,11 +6094,13 @@
         var nums = {};
         el.querySelectorAll('.xf-cd-num').forEach(function (n) { nums[n.getAttribute('data-u')] = n; });
         function pad(n) { return (n < 10 ? '0' : '') + n; }
+        // expired 文案来自 PHP 配置（JSON.parse 后 < > 会还原为字面量），必须转义后再进 innerHTML
+        function expiredHtml() { return '<span class="text-muted">' + escapeHtml(expired) + '</span>'; }
         function tick() {
-            if (end == null) { el.innerHTML = '<span class="text-muted">' + expired + '</span>'; return; }
+            if (end == null) { el.innerHTML = expiredHtml(); return; }
             var diff = end - Date.now();
             if (diff <= 0) {
-                el.innerHTML = '<span class="text-muted">' + expired + '</span>';
+                el.innerHTML = expiredHtml();
                 clearInterval(timer);
                 return;
             }
@@ -5854,7 +6114,11 @@
             if (nums.s) nums.s.textContent = pad(s);
         }
         tick();
+        // 目标时间非法时不再注册定时器，避免每秒重复重写 DOM（此前该分支下定时器永不停止）
+        if (end == null) return { destroy: function () {} };
         var timer = setInterval(tick, 1000);
+        // 返回 destroy 钩子：元素被 AJAX 替换前可用 XFAdmin.destroy(el) / destroyWithin(root) 清理
+        return { destroy: function () { clearInterval(timer); } };
     });
 
     XFAdmin.register('countup', function (el, cfg) {
@@ -5865,6 +6129,7 @@
         function fmt(n) {
             return prefix + (decimals > 0 ? n.toFixed(decimals) : Math.round(n).toString()) + suffix;
         }
+        var rafId = null;
         function run() {
             var start = null;
             function step(ts) {
@@ -5872,19 +6137,26 @@
                 var p = Math.min(1, (ts - start) / duration);
                 var eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
                 el.textContent = fmt(value * eased);
-                if (p < 1) requestAnimationFrame(step);
+                if (p < 1) rafId = requestAnimationFrame(step);
                 else el.textContent = fmt(value);
             }
-            requestAnimationFrame(step);
+            rafId = requestAnimationFrame(step);
         }
+        var io = null;
         if ('IntersectionObserver' in global) {
-            var io = new IntersectionObserver(function (entries) {
+            io = new IntersectionObserver(function (entries) {
                 entries.forEach(function (en) {
                     if (en.isIntersecting) { run(); io.unobserve(en.target); }
                 });
             }, { threshold: 0.2 });
             io.observe(el);
         } else { run(); }
+        return {
+            destroy: function () {
+                if (rafId) cancelAnimationFrame(rafId);
+                if (io) io.disconnect();
+            }
+        };
     });
 
     XFAdmin.register('backtotop', function (el, cfg) {
@@ -5900,6 +6172,7 @@
         }
         global.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
+        return { destroy: function () { global.removeEventListener('scroll', onScroll); } };
     });
 
     XFAdmin.register('codeCopy', function (el) {
@@ -6033,16 +6306,33 @@
             if (btn.__xfBound) return;
             btn.__xfBound = true;
             btn.addEventListener('click', function () {
-                var t = btn.getAttribute('data-target');
+                // 目标选择器由 PHP 经 data-xf-config='{"target":"#id"}' 下发（组件本身没有 data-target 属性）；
+                // data-target 仅作为向后兼容的兜底读法。
+                var t = btn.getAttribute('data-target') || '';
+                if (!t) {
+                    try {
+                        var c = JSON.parse(btn.getAttribute('data-xf-config') || '{}');
+                        t = (c && c.target) || '';
+                    } catch (e) { t = ''; }
+                }
+                var node = null;
                 if (t) {
-                    var node = document.querySelector(t);
-                    if (node) node.classList.add('xf-invoice-print-area');
+                    try { node = document.querySelector(t); } catch (e) { node = null; }
+                }
+                function cleanup() {
+                    if (node) node.classList.remove('xf-invoice-print-area');
+                    document.body.classList.remove('xf-printing');
+                    global.removeEventListener('afterprint', cleanup);
+                }
+                if (node) {
+                    node.classList.add('xf-invoice-print-area');
+                    // 打印作用域标记：只有本按钮触发的打印才启用「仅打印目标区域」规则，
+                    // 避免用户直接 Ctrl+P 时整页被隐藏（见 xfadmin.css 的 @media print）
+                    document.body.classList.add('xf-printing');
+                    global.addEventListener('afterprint', cleanup);
+                    setTimeout(cleanup, 3000);
                 }
                 global.print();
-                if (t) {
-                    var node2 = document.querySelector(t);
-                    if (node2) setTimeout(function () { node2.classList.remove('xf-invoice-print-area'); }, 500);
-                }
             });
         });
     };

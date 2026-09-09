@@ -65,7 +65,7 @@ class Scrollspy extends Component
             'data-bs-smooth-scroll' => $this->get('smooth') ? 'true' : 'false',
             'tabindex'         => '0',
             'class'            => 'overflow-auto border rounded p-3',
-            'style'            => 'height:' . $this->e($this->get('height')) . ';',
+            'style'            => 'height:' . $this->cssLen($this->get('height'), '250px') . ';',
         ];
         $body = '<div id="' . $bodyId . '"' . Html::attrs($spyAttrs) . '>';
         foreach ($items as $i => $item) {

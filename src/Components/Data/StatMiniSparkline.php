@@ -61,8 +61,9 @@ class StatMiniSparkline extends Component
         if ($delta !== null) {
             $up   = (float) $delta >= 0;
             $cls  = $up ? 'text-success' : 'text-danger';
-            $icon = $up ? 'ti ti-arrow-up-right' : 'ti ti-arrow-down-right';
-            $deltaHtml = '<span class="small ' . $cls . '"><i class="' . $icon . '"></i> '
+            // 用独立变量承载涨跌箭头，避免顶掉调用方配置的 icon
+            $deltaIcon = $up ? 'ti ti-arrow-up-right' : 'ti ti-arrow-down-right';
+            $deltaHtml = '<span class="small ' . $cls . '"><i class="' . $deltaIcon . '"></i> '
                 . $this->e(abs((float) $delta)) . '%</span>';
         }
         $iconHtml = $icon ? '<span class="avatar-sm rounded-circle bg-' . $variant . '-subtle text-' . $variant

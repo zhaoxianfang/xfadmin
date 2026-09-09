@@ -48,7 +48,7 @@ class Media extends Component
         $title = (string) $this->get('title');
         $text  = (string) $this->get('text');
         $meta  = (string) $this->get('meta');
-        $href  = (string) $this->get('href');
+        $href  = $this->safeUrl($this->get('href'));
 
         $inner = '<div class="xf-media d-flex gap-3">';
         if ($img !== '') {

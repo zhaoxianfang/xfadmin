@@ -50,7 +50,7 @@ class DropzoneUpload extends Component
     protected function html(): string
     {
         $id   = $this->e($this->get('id'));
-        $url  = $this->e($this->get('url'));
+        $url  = $this->e($this->safeUrl($this->get('url')));
         $initial = json_encode((array) $this->get('value'), JSON_HEX_TAG | JSON_HEX_AMP);
 
         $html = '<div class="xf-dropzone border rounded-3 p-4 text-center" id="' . $id . '"'

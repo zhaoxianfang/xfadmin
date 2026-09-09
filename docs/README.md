@@ -1,47 +1,155 @@
-# xfadmin 文档中心
+# XfAdmin 文档中心
 
-本目录收录 xfadmin 扩展包的全部文档。所有组件与模板的详细参考已自动生成并保持同步。
+> **XfAdmin** —— 基于 INSPINIA v4.1.0 拆分的 PHP 组件化后台 UI 扩展包
+> **226 个组件别名 / 215 个组件类** · 纯原生 JS（不依赖 Node 构建）· 离线可用 ·
+> 支持 **Laravel 11/12** 与 **ThinkPHP 8+** · 要求 **PHP ≥ 8.2** · 当前版本 `2.1.0`
 
-## 快速导航
+`XfAdmin` 把后台模板的布局、导航、栅格、UI 基础、表单、图表地图、表格、业务组件与杂项
+全部拆分为可独立调用的 PHP 类。每个组件 `XfAdmin::card([...])` 即渲染一段语义化、可嵌套、
+**资源自管理** 的 HTML，让你在任意 PHP 项目中"一行代码"拼出完整后台界面。
+
+```php
+echo XfAdmin::page([
+    'title'   => '仪表盘',
+    'content' => XfAdmin::card(['title' => '欢迎', 'body' => 'Hello XfAdmin']),
+]);
+```
+
+---
+
+## 📖 文档地图
+
+### 一、快速开始
 
 | 文档 | 内容 |
-|------|------|
-| [components-reference.md](components-reference.md) | **组件详细参考（自动生成）**：全部 **210 个组件 / 213 个别名**，含分类、类路径、描述、依赖资源、全部 `defaults()` 选项（含默认值与行内说明）、链式方法与实际调用示例 |
-| [components.md](components.md) | 组件总览：设计理念、目录结构、命名约定、数据输入/输出与 `data-xf` 控件说明 |
-| [categories/ui.md](categories/ui.md) | 基础 UI 组件分类清单（53 个）：Alert / Avatar / Button / Card / Tabs / Timeline … |
-| [categories/data.md](categories/data.md) | 数据 / 业务组件分类清单（91 个）：PricingCard / Kanban / ProfilePage / ProductCard … |
-| [categories/navigation.md](categories/navigation.md) | 导航组件分类清单（1 个）：Sidenav / Topbar / Breadcrumb / Dropdown … |
-| [categories/layout.md](categories/layout.md) | 布局 / 页面模板分类清单（15 个） |
-| [categories/charts.md](categories/charts.md) | 图表组件分类清单（7 个）：ApexChart / EChart / LeafletMap … |
-| [categories/table.md](categories/table.md) | 表格组件分类清单（4 个）：DataTable / Table 等 |
-| [categories/form.md](categories/form.md) | 表单组件分类清单（20 个）：Form / Field / Check … |
-| [categories/grid.md](categories/grid.md) | 栅格 / 容器组件分类清单（2 个） |
-| [categories/misc.md](categories/misc.md) | 杂项 / 工具组件分类清单（17 个）：PdfViewer / Clipboard / Timer … |
-| [templates.md](templates.md) | **页面模板**：`page` / `authPage` / `lockScreen` / `errorPage` / `comingSoon` / `maintenance` / `emptyState` / `landing` / `profilePage` 用法 |
-| [layout.md](layout.md) | 布局系统：Page / Sidenav / Topbar / PageTitle 等整页骨架与定制 |
-| [forms.md](forms.md) | 表单：Form / Field / 各类输入控件、校验、提交与 AJAX |
-| [tables.md](tables.md) | 数据表格 DataTable：列渲染器（`user`/`avatar`/`badge`/`qr` 等）、服务端分页、批量操作、行明细、导出 |
-| [datatable-advanced.md](datatable-advanced.md) | DataTable 高级用法：行分组、状态保存、导出、行明细、响应式与批量操作 |
-| [DATATABLES_PROTOCOL.md](DATATABLES_PROTOCOL.md) | 服务端 compact 协议（`xfc`/`xfo`/`xfs`）与请求/响应字段说明 |
-| [charts.md](charts.md) | 图表与地图：ApexCharts / ECharts / Leaflet 等封装组件 |
-| [pages.md](pages.md) | 模板映射：INSPINIA 页面族 → 覆盖组件对照表 |
-| [assets.md](assets.md) | 资源管理：插件注册、按需加载、CSS/JS 资源清单 |
-| [extending.md](extending.md) | 扩展开发：如何新增组件、渲染器、JS 绑定 |
-| [i18n.md](i18n.md) | 多语言：翻译文件结构与前端 `XFAdmin.t()` 用法 |
-| [security.md](security.md) | 安全：CSRF、XSS 防护、资源加载策略 |
-| [thinkphp.md](thinkphp.md) | ThinkPHP 集成说明（兼容场景） |
-| [THEMING.md](THEMING.md) | 主题与定制：明暗模式、配色变量、布局定制 |
-| [STYLE_ALIGNMENT.md](STYLE_ALIGNMENT.md) | 样式对齐：与 INSPINIA 框架类冲突的处理约定 |
-| [DEVELOPMENT.md](DEVELOPMENT.md) | 开发指南：本地环境、调试、提交规范与发布流程 |
-| [DEPLOY.md](DEPLOY.md) | 部署指南：LNMP / 容器 / 生产环境配置要点 |
-| [UPGRADE.md](UPGRADE.md) | 升级指南：大版本迁移与破坏性变更说明 |
-| [FAQ.md](FAQ.md) | 常见问题与排错 |
-| [CHANGELOG.md](CHANGELOG.md) | 更新日志 |
+|---|---|
+| [01-安装与接入](01-快速开始/01-installation.md) | 环境要求、Composer 安装、Laravel / ThinkPHP / 原生 PHP 三种接入方式、静态资源发布与自托管 |
+| [02-五分钟上手](01-快速开始/02-quickstart.md) | 第一个页面、组件嵌套、数据表格、表单、图表的最小示例与演示环境运行 |
+| [03-核心概念](01-快速开始/03-concepts.md) | 组件、配置合并规则、渲染生命周期、资源去重、转义策略五大概念 |
+| [04-全局配置](01-快速开始/04-configuration.md) | `config/xfadmin.php` 全部配置项详解（资源、主题、品牌、页脚、CSRF） |
 
-新增或调整组件后重新运行即可让文档与代码保持同步，无需手工维护。
+### 二、核心架构
 
-## 文档约定
+| 文档 | 内容 |
+|---|---|
+| [01-架构总览](02-核心架构/01-architecture.md) | 目录结构、类关系、渲染管线、前后端协作机制 |
+| [02-组件基类](02-核心架构/02-component-base.md) | `Component` 抽象类全部方法、安全助手、枚举白名单、槽位语义 |
+| [03-资源与插件](02-核心架构/03-assets.md) | `Assets` 管理器、`PLUGINS` 全表、去重算法、head/scripts 输出、自定义插件注册 |
+| [04-安全与转义](02-核心架构/04-security.md) | XSS 防御体系、转义分级、CSS 值白名单、URL 协议白名单、审计工具 |
+| [05-服务端数据协议](02-核心架构/05-data-protocol.md) | `DataSet` 请求/响应、压缩协议 `xfc/xfo/xfs`、`filters` 与 `op` 全表 |
+| [06-门面与助手](02-核心架构/06-helpers.md) | `XfAdmin` 静态 API 全表、全局助手函数、Facade、Blade 指令 |
+| [07-扩展机制](02-核心架构/07-extending.md) | 自定义组件、覆盖内置组件、自定义单元格渲染器、自定义 JS widget |
 
-- 调用统一形式：`XfAdmin::<alias>(array $options)`。所有组件支持通用键 `id` / `class` / `attributes`。
-- 资源前缀统一为 `zxf/xfadmin`，无需发布即可在 `demo/` 中直接加载。
-- 每个组件的「默认值（源码）」均来自其真实 `defaults()` 方法，确保示例与代码一致。
+### 三、组件参考（226 个，100% 覆盖）
+
+| 文档 | 组件数 | 内容 |
+|---|---|---|
+| [00-组件总览](03-组件参考/00-总览.md) | 226 | 全组件速查表与命名约定 |
+| [01-布局·导航·栅格](03-组件参考/01-layout.md) | 27 | page / sidenav / topbar / topNav / authPage / errorPage / menu / row / col |
+| [02-UI 基础组件](03-组件参考/02-ui.md) | 55 | card / button / modal / tabs / avatar / timeline / stepper … |
+| [03-表单组件](03-组件参考/03-form.md) | 23 | form / input / select / editor / upload / wizard / captcha … |
+| [04-表格组件](03-组件参考/04-table.md) | 4 | table / dataTable / tablesCustom / dataTableToolbar |
+| [05-图表与地图](03-组件参考/05-chart.md) | 7 | apexChart / apexTree / apexSankey / echart / vectorMap / leafletMap / googleMap |
+| [06-电商·商品·订单·发票](03-组件参考/06-data-ecommerce.md) | 31 | productsGrid / cartSummary / checkout / orders / invoice* … |
+| [07-内容·社区·文件](03-组件参考/07-data-content.md) | 17 | article / blogList / commentThread / gallery / fileManager … |
+| [08-用户·组织·项目协作](03-组件参考/08-data-people.md) | 23 | clients / roles / permissionMatrix / projects / kanban … |
+| [09-沟通·邮件](03-组件参考/09-data-comm.md) | 8 | chatApp / chatBox / emailApp / mailList / outlook … |
+| [10-仪表盘·模块·通用](03-组件参考/10-data-dashboard.md) | 13 | dashboardGrid / widget / metricCard / settingsCenter … |
+| [11-杂项与交互增强](03-组件参考/11-misc.md) | 18 | calendar / treeView / lightbox / tour / pdfViewer / masonry … |
+
+> 组件参数表由 `php tools/gen_component_docs.php` 从源码反射自动生成，
+> 保证与代码 100% 同步（参数、默认值、依赖插件、用法示例均取自源码注释）。
+
+### 四、进阶指南
+
+| 文档 | 内容 |
+|---|---|
+| [01-页面与布局](04-进阶指南/01-page-layout.md) | Page 深度用法、主题 data-* 属性、定制面板、多布局切换 |
+| [02-导航系统](04-进阶指南/02-navigation.md) | 侧边栏多级菜单、水平导航、Mega Menu、菜单激活与权限 |
+| [03-数据表格全指南](04-进阶指南/03-datatable.md) | 列定义、52 种单元格渲染器、行操作、过滤栏、批量、导出、服务端对接 |
+| [04-表单全指南](04-进阶指南/04-forms.md) | 字段封装、校验、AJAX 提交、文件上传、向导、验证码、CSRF |
+| [05-图表全指南](04-进阶指南/05-charts.md) | ApexCharts / ECharts / 地图配置与主题联动 |
+| [06-前端 JS API](04-进阶指南/06-javascript-api.md) | `XFAdmin` 全局对象全部方法、data-* 契约、事件全表 |
+| [07-样式与主题](04-进阶指南/07-css-theming.md) | CSS 变量、命名规范、暗色模式、自定义皮肤 |
+| [08-认证与错误页](04-进阶指南/08-auth-pages.md) | 9 种认证页 × 3 种布局、错误页、维护页、锁屏 |
+| [09-模板页面映射](04-进阶指南/09-templates-pages.md) | INSPINIA 220+ 页面与本包组件的对应关系 |
+| [10-Laravel 集成](04-进阶指南/10-laravel.md) | 服务提供者、Facade、Blade 指令、资源路由 |
+| [11-ThinkPHP 集成](04-进阶指南/11-thinkphp.md) | 服务注册、助手函数、发布命令 |
+
+### 五、运维
+
+| 文档 | 内容 |
+|---|---|
+| [01-测试体系](05-运维/01-testing.md) | 包内测试、运行时自检、Playwright 视觉回归 |
+| [02-部署](05-运维/02-deploy.md) | 资源发布、CDN、缓存与版本刷新 |
+| [03-性能优化](05-运维/03-performance.md) | 资源加载、大数据量渲染、缓存策略 |
+| [04-问题排查](05-运维/04-troubleshooting.md) | 常见错误与全量陷阱清单 |
+
+### 六、附录
+
+| 文档 | 内容 |
+|---|---|
+| [01-组件索引](06-附录/01-component-index.md) | 226 个别名 → 类 → 分类 → 文档锚点速查 |
+| [02-参数字典](06-附录/02-option-index.md) | 跨组件高频参数统一说明 |
+| [03-插件资源索引](06-附录/03-plugin-index.md) | 内置 40+ 第三方插件清单与引用名 |
+| [04-常见问题](06-附录/04-faq.md) | FAQ |
+| [05-升级指南](06-附录/05-upgrade.md) | 版本升级注意事项 |
+| [06-更新日志](06-附录/06-changelog.md) | CHANGELOG |
+| [07-组件参考（自动生成）](06-附录/07-components-reference.md) | 单文件全组件参考（自动生成，便于检索） |
+
+---
+
+## 🎯 按场景快速定位
+
+| 我想… | 去看 |
+|---|---|
+| 10 分钟跑起来 | [02-五分钟上手](01-快速开始/02-quickstart.md) |
+| 写第一个后台页面 | [01-页面与布局](04-进阶指南/01-page-layout.md) |
+| 做数据列表 + 分页 + 搜索 | [03-数据表格全指南](04-进阶指南/03-datatable.md) |
+| 做增删改查表单 | [04-表单全指南](04-进阶指南/04-forms.md) |
+| 画图表 | [05-图表全指南](04-进阶指南/05-charts.md) |
+| 配菜单 / 多级导航 | [02-导航系统](04-进阶指南/02-navigation.md) |
+| 改主题 / 换肤 / 暗色 | [07-样式与主题](04-进阶指南/07-css-theming.md) |
+| 登录注册等认证页 | [08-认证与错误页](04-进阶指南/08-auth-pages.md) |
+| 写自己的组件 | [07-扩展机制](02-核心架构/07-extending.md) |
+| 前端二次开发 | [06-前端 JS API](04-进阶指南/06-javascript-api.md) |
+| 排查"组件没样式/JS 没生效" | [04-问题排查](05-运维/04-troubleshooting.md) |
+
+---
+
+## 📌 文档约定
+
+- **参数表** 中「默认值」为该组件 `defaults()` 中的实际默认值，`null` 表示不输出该特性。
+- **转义语义** 三档：
+  - `e()` / `text()` —— **纯文本**槽位，输出前 HTML 转义；
+  - `raw()` —— **内容**槽位，原样输出 HTML / 组件 / 闭包 / 数组；
+  - `enum()` / `cssLen()` 等 —— **受控**槽位，走白名单或格式校验。
+- 示例代码默认使用 `use zxf\XfAdmin\XfAdmin;`（Laravel 中可直接用 `\XfAdmin` 门面）。
+- 标记 ⚠️ 的段落为**易踩坑点**，务必阅读。
+
+## 🔧 文档维护
+
+组件参数文档由源码生成，修改组件后请重新生成：
+
+```bash
+php tools/gen_component_docs.php     # 重新生成 03-组件参考/*.md + 06-附录/01~03 索引
+php tools/gen_component_matrix.php   # 导出组件矩阵 JSON（参数统计用）
+```
+
+生成内容**均取自源码事实**：
+
+| 部分 | 来源 |
+|---|---|
+| 组件说明 | `src/XfAdmin.php` 的 `@method` 中文注释（回退类 docblock） |
+| 用法示例 | 类 docblock 中的 `XfAdmin::xxx([...])` 代码块 |
+| 参数表 | `defaults()` 的键、默认值、类型、行尾注释（缺失时查 `PARAM_DICT` 词典） |
+| 依赖插件 | `assets()` + 源码中出现的 `PLUGINS` 键 |
+
+各分类文档的**「本章导读」**（组合范式 + 约定与陷阱）写在生成器的 `$GROUPS[...]['intro']` 中，
+随生成一起输出 —— 修改导读请编辑 `tools/gen_component_docs.php` 后重新生成。
+
+## 📁 关于 `.legacy/`
+
+`docs/.legacy/` 存放本次文档重构前的旧文档（内容已全部吸收进新体系，仅作留档），
+不影响阅读，可随时删除。其中更新日志与单文件组件检索表已提升至
+`06-附录/06-changelog.md` 与 `06-附录/07-components-reference.md`。

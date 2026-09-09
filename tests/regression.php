@@ -547,5 +547,54 @@ foreach (($qcfg['dt']['columns'] ?? []) as $c) {
 }
 check('DataTable qr 列配置含 type=qr', $foundQr);
 
+/* 42. 报表 filter_bar 前后端约定（运营报表依赖）：daterange 控件名为 date 时
+   必须输出 data-filter="date_from"/"date_to"，后端 AdminData::query 已对所有数据集
+   全局挂载该日期过滤规则；select 控件输出对应 data-filter；form 绑定目标表 id。 */
+Assets::reset();
+$dtReport = (string) XfAdmin::datatable([
+    'id'    => 'dt-report-detail',
+    'ajax'  => '/admin/api/data/logs',
+    'filter_bar' => [
+        ['name' => 'date', 'label' => '时间范围', 'type' => 'daterange'],
+        ['name' => 'level', 'label' => '级别', 'type' => 'select', 'options' => ['ERROR' => 'ERROR']],
+    ],
+    'columns' => ['id' => 'ID', 'level' => '级别'],
+]);
+check('报表 filter_bar：daterange 输出 data-filter="date_from"', str_contains($dtReport, 'data-filter="date_from"'));
+check('报表 filter_bar：daterange 输出 data-filter="date_to"', str_contains($dtReport, 'data-filter="date_to"'));
+check('报表 filter_bar：select 输出 data-filter="level"', str_contains($dtReport, 'data-filter="level"'));
+check('报表 filter_bar：form[data-xf-filter-for="dt-report-detail"] 绑定目标表', str_contains($dtReport, 'data-xf-filter-for="dt-report-detail"'));
+
+/* 43. 新增组件 importExport（批量导入/导出）：导出下拉 + 导入模态框，及简写形态 */
+Assets::reset();
+$ieFull = (string) XfAdmin::importExport([
+    'exports' => [
+        ['label' => 'CSV', 'format' => 'csv', 'url' => '/x/export?fmt=csv'],
+        ['label' => 'Excel', 'format' => 'xlsx', 'url' => '/x/export?fmt=xlsx'],
+    ],
+    'import' => ['url' => '/x/import', 'accept' => '.csv,.xlsx', 'title' => '导入用户'],
+    'csrf'   => '<input type="hidden" name="_token" value="tok">',
+]);
+check('importExport：导出下拉 + 两项导出', str_contains($ieFull, 'dropdown-menu') && substr_count($ieFull, 'dropdown-item') === 2);
+check('importExport：导入模态框 + 文件域', str_contains($ieFull, 'modal fade') && str_contains($ieFull, 'type="file"') && str_contains($ieFull, 'name="file"'));
+check('importExport：导入表单 action 指向后端', str_contains($ieFull, 'action="/x/import"') && str_contains($ieFull, 'enctype="multipart/form-data"'));
+check('importExport：CSRF 隐藏域被注入', str_contains($ieFull, '_token') && str_contains($ieFull, 'tok'));
+
+Assets::reset();
+$ieShort = (string) XfAdmin::importExport([
+    'export_url' => '/x/export?fmt=',
+    'formats'    => ['csv', 'json'],
+]);
+check('importExport：export_url+formats 简写自动生成导出项', substr_count($ieShort, 'dropdown-item') === 2
+    && str_contains($ieShort, '/x/export?fmt=csv') && str_contains($ieShort, '/x/export?fmt=json'));
+
+Assets::reset();
+$ieImportOnly = (string) XfAdmin::importExport(['import' => ['url' => '/x/i']]);
+check('importExport：仅导入时不渲染导出下拉', str_contains($ieImportOnly, 'modal') && ! str_contains($ieImportOnly, 'dropdown-menu'));
+
+Assets::reset();
+$ieExportOnly = (string) XfAdmin::importExport(['exports' => [['label' => 'CSV', 'url' => '/x/csv']]]);
+check('importExport：仅导出时不渲染导入模态框', str_contains($ieExportOnly, 'dropdown-item') && ! str_contains($ieExportOnly, 'modal fade'));
+
 echo PHP_EOL . ($fail === 0 ? 'ALL REGRESSION PASSED' : "{$fail} FAILED") . PHP_EOL;
 exit($fail === 0 ? 0 : 1);

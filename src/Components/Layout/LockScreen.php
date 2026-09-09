@@ -93,7 +93,7 @@ class LockScreen extends Component
             $body .= '<div class="text-center mt-3">' . $this->raw($this->get('below')) . '</div>';
         }
         $copyright = $this->get('copyright') ?? ('© ' . date('Y') . ' ' . XfAdmin::setting('brand.name', 'XfAdmin'));
-        $body .= '<p class="text-center text-muted mt-4 mb-0">' . $this->raw($copyright) . '</p>';
+        $body .= '<p class="text-center text-muted mt-4 mb-0">' . $this->text($copyright) . '</p>';
         $body .= '</div></div></div></div>';
 
         $js = 'XFAdmin.register("pw-toggle",function(btn){btn.addEventListener("click",function(){'
