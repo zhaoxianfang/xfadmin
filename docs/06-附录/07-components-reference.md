@@ -2,7 +2,7 @@
 
 > 本文档由 `tools/gen_docs.php` 扫描全部已注册组件自动生成，列出每个组件的别名、分类、类、描述、依赖资源、全部 `defaults()` 选项（含类型 / 默认值 / 行内说明）、链式方法与实际调用示例。
 > 调用统一形式：`XfAdmin::<alias>(array $options)`。所有组件均支持通用键 `id` / `class` / `attributes`。
-> 资源前缀统一为 `zxf/xfadmin`，无需发布即可在 `demo/` 中直接加载。返回 → [组件总览](../.legacy/components.md)
+> 资源前缀统一为 `zxf/xfadmin`，无需发布即可在 `demo/` 中直接加载。返回 → [组件总览](../03-组件参考/00-总览.md)
 
 ## 分类索引
 
@@ -614,7 +614,7 @@ echo XfAdmin::customizer([
 _别名：_ `signIn`, `signUp`, `resetPass`, `newPass`, `twoFactor`, `deleteAccount`, `successMail`, `loginPin`
 
 > 分类：**布局 / 页面** · 类：`zxf\XfAdmin\Components\Layout\AuthPage`
-> 完整文档（布局 / 类型 / 全部选项 / `sideImage` 四种自定义写法 / 插槽 / AJAX / 示例）：**[docs/auth.md](../.legacy/auth.md)**
+> 完整文档（布局 / 类型 / 全部选项 / `sideImage` 四种自定义写法 / 插槽 / AJAX / 示例）：**[docs/auth.md](../04-进阶指南/08-auth-pages.md)**
 
 认证页骨架（登录 / 注册 / 找回密码 / 设置新密码 / 锁屏 / PIN 登录 / 两步验证 / 注销账户 / 邮件发送成功）。输出完整 HTML 文档，由调用方 `response()` 直接输出。
 
@@ -625,7 +625,7 @@ _别名：_ `signIn`, `signUp`, `resetPass`, `newPass`, `twoFactor`, `deleteAcco
 
 **依赖资源**：无
 
-### 常用选项（完整见 [docs/auth.md](../.legacy/auth.md)）
+### 常用选项（完整见 [docs/auth.md](../04-进阶指南/08-auth-pages.md)）
 
 | 键 | 默认值 | 说明 |
 |----|--------|------|

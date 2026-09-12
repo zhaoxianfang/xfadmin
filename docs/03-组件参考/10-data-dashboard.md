@@ -71,20 +71,39 @@ XfAdmin::widget([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::widget([
+    'style' => 'icon',
+    'title' => '',
+    'value' => '',
+    'icon' => null,
+    'variant' => 'primary',
+    'trend' => null,
+    'progress' => null,
+    'footer' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `card-body` `d-flex` `align-items-center` `justify-content-between` `text-muted` `progress` `mt-3` `mt-2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `style` | string | `'icon'` | 附加到根元素的内联样式 |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `value` | string | `''` | 当前值（表单控件值 / 展示数值） |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user` |
-| `variant` | string | `'primary'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束） |
-| `trend` | mixed | `null` | 趋势值（正/负） |
-| `progress` | mixed | `null` | 进度百分比（0-100） |
-| `footer` | mixed | `null` | 底部内容（原样输出） |
+| `style` | string | `'icon'` | 附加到根元素的内联样式；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `variant` | string | `'primary'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束）；**文本槽位**：输出前自动 HTML 转义 |
+| `trend` | mixed | `null` | 趋势值（正/负）；开关：非空 / 真值时启用对应区块 |
+| `progress` | mixed | `null` | 进度百分比（0-100）；为 `null` 时不渲染该区块 |
+| `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -117,26 +136,56 @@ XfAdmin::metricCard([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::metricCard([
+    'title' => '',
+    'value' => 0,
+    'prefix' => '',
+    'suffix' => '',
+    'decimals' => 0,
+    'trend' => null,
+    'trend_text' => '较上周',
+    'chart' => 'donut',
+    'data' => [],
+    'labels' => [],
+    'color' => '#3e60d5',
+    'icon' => null,
+    'footer' => null,
+    'url' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `data[]`：图表数值数组（配合 `chart` 类型：donut/pie/bar/line/area）
+- `labels[]`：与 `data` 一一对应的标签数组
+
+> **渲染骨架**：主要 class `xf-count` `xf-metric-chart` `avatar-lg` `d-flex` `align-items-center` `justify-content-center` `rounded` `bg-primary-subtle`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `value` | int | `0` | 当前值（表单控件值 / 展示数值） |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `value` | int | `0` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value');` |
 | `prefix` | string | `''` |  |
-| `suffix` | string | `''` |  |
-| `decimals` | int | `0` |  |
-| `trend` | mixed | `null` | 趋势值（正/负） |
-| `trend_text` | string | `'较上周'` |  |
-| `chart` | string | `'donut'` |  |
+| `suffix` | string | `''` | 后缀文本 |
+| `decimals` | int | `0` | 源码用法：`? '<span class="xf-count" data-xf-count="' . $this->e($value) . '" data-xf-decimals="…` |
+| `trend` | mixed | `null` | 趋势值（正/负）；源码用法：`$trend = $this->get('trend');` |
+| `trend_text` | string | `'较上周'` | 趋势说明文案（如「较上周」） |
+| `chart` | string | `'donut'` | 图表配置（类型 / 数据 / 颜色）；开关：非空 / 真值时启用对应区块 |
 | `data` | array | `[]` | 数据数组（行数据 / 图表数据） |
-| `labels` | array | `[]` |  |
-| `color` | string | `'#3e60d5'` | 颜色值（#hex / rgb() / 具名色） |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user` |
-| `footer` | mixed | `null` | 底部内容（原样输出） |
-| `url` | mixed | `null` | 链接地址（自动做安全协议校验） |
+| `labels` | array | `[]` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签） |
+| `color` | string | `'#3e60d5'` | 颜色值（#hex / rgb() / 具名色）；源码用法：`'color' => (string) $this->get('color'),` |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `url` | mixed | `null` | 链接地址（自动做安全协议校验）；URL：经协议白名单校验（拦截 `javascript:` 等） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -161,18 +210,35 @@ XfAdmin::statMiniSparkline([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::statMiniSparkline([
+    'label' => '',
+    'value' => '',
+    'delta' => null,
+    'series' => [],
+    'variant' => 'primary',
+    'icon' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `card` `border-0` `shadow-sm` `h-100` `card-body` `d-flex` `align-items-end` `justify-content-between`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `label` | string | `''` | 标签文案（表单字段标签 / 按钮文案） |
-| `value` | string | `''` | 当前值（表单控件值 / 展示数值） |
-| `delta` | mixed | `null` |  |
-| `series` | array | `[]` |  |
-| `variant` | string | `'primary'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束） |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user` |
+| `label` | string | `''` | 标签文案（表单字段标签 / 按钮文案）；源码用法：`$label = $this->get('label');` |
+| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value');` |
+| `delta` | mixed | `null` | 源码用法：`$delta = $this->get('delta');` |
+| `series` | array | `[]` | 图表数据系列 |
+| `variant` | string | `'primary'` | 可选值：`primary` |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；源码用法：`$icon = $this->get('icon');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -193,14 +259,38 @@ XfAdmin::widgetsDashboard([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::widgetsDashboard([
+    // widgets
+    'widgets' => [
+        'stats',
+        'charts',
+        'messages',
+        'activity',
+        'tasks',
+    ],
+    'currency' => '¥',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `widgets[]`：`title`、`content`（组件或 HTML）、`width`（栅格宽度）
+
+> **渲染骨架**：主要 class `row` `g-3` `col-lg-4` `col-lg-8`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `widgets` | array | `['stats', 'charts', 'messages', 'activity', 'tasks']` | 数组结构（见组件用法示例） |
+| `widgets` | array | `['stats', 'charts', 'messages', 'activity', 'tasks']` | 数组结构（见「全参数示例」） |
 | `currency` | string | `'¥'` | 货币符号 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -229,14 +319,32 @@ XfAdmin::analyticsDashboard([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::analyticsDashboard([
+    'stats' => [],
+    'recentActivity' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `stats[]` 元素键：`color`（默认 `primary`）、`icon`（默认 `ti-trending-up`）、`change`、`title`、`value`
+- `recentActivity[]` 元素键：`color`（默认 `primary`）、`icon`（默认 `ti-activity`）、`user`、`action`、`target`、`time`
+
+> **渲染骨架**：主要 class `row` `g-4` `col-lg-8` `card` `card-header` `card-body` `text-center` `py-5`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `stats` | array | `[]` |  |
-| `recentActivity` | array | `[]` |  |
+| `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
+| `recentActivity` | array | `[]` | 最近活动列表 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -264,15 +372,34 @@ XfAdmin::dashboardGrid([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::dashboardGrid([
+    'stats' => [],
+    'charts' => [],
+    'bottom' => '',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `stats[]` 元素键：`variant`（默认 `primary`）、`icon`（默认 `ti-chart-line`）、`trend`、`title`、`value`
+- `charts[]` 元素键：`width`、`body`、`title`
+
+> **渲染骨架**：主要 class `row` `g-3` `mb-3` `card` `h-100` `card-header` `card-body` `mt-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `stats` | array | `[]` |  |
-| `charts` | array | `[]` |  |
-| `bottom` | string | `''` |  |
+| `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
+| `charts` | array | `[]` | 多个图表配置数组 |
+| `bottom` | string | `''` | 底部内容 / 底部间距 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -303,14 +430,31 @@ XfAdmin::settingsCenter([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::settingsCenter([
+    'title' => '设置',
+    'groups' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `groups[]` 元素键：`id`、`label`、`icon`（默认 `ti-circle`）、`title`、`desc`、`body`
+
+> **渲染骨架**：主要 class `d-flex` `justify-content-between` `align-items-center` `mb-3` `card` `card-header` `card-body` `row`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `title` | string | `'设置'` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `groups` | array | `[]` |  |
+| `groups` | array | `[]` | 分组数据（下拉分组 / 权限分组 / 设置分组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -337,16 +481,35 @@ XfAdmin::reportPage([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::reportPage([
+    'title' => '报表',
+    'filters' => '',
+    'charts' => [],
+    'table' => '',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `charts[]` 元素键：`width`、`body`、`title`
+
+> **渲染骨架**：主要 class `d-flex` `justify-content-between` `align-items-center` `mb-3` `card` `card-body` `row` `g-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `title` | string | `'报表'` | 标题文本（部分组件为弹窗/tooltip 标题） |
 | `filters` | string | `''` | 过滤条件定义 |
-| `charts` | array | `[]` |  |
-| `table` | string | `''` |  |
+| `charts` | array | `[]` | 多个图表配置数组 |
+| `table` | string | `''` | 关联表格 id 或表格配置 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -372,18 +535,39 @@ XfAdmin::moduleNav([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::moduleNav([
+    'items' => [],
+    'sections' => [],
+    'type' => 'pills',    // pills | tabs | underline
+    'align' => 'start',    // start | center | end
+    'class' => 'xf-module-subnav',
+    'id' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `sections[]` 元素键：`items`、`title`
+
+> **渲染骨架**：主要 class `text-muted` `small` `fw-semibold` `mb-1`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `sections` | array | `[]` | 分区数组 |
-| `type` | string | `'pills'` | pills \| tabs \| underline |
-| `align` | string | `'start'` | start \| center \| end |
-| `class` | string | `'xf-module-subnav'` | 附加到根元素的自定义 class |
+| `items` | array | `[]` | 条目数组（结构见各组件说明）；源码用法：`$items = $this->get('items');` |
+| `sections` | array | `[]` | 分区数组；源码用法：`$sections = $this->get('sections');` |
+| `type` | string | `'pills'` | 枚举白名单 `'pills', 'tabs', 'underline'` |
+| `align` | string | `'start'` | 枚举白名单 `'start', 'center', 'end'` |
+| `class` | string | `'xf-module-subnav'` | 附加到根元素的自定义 class；**文本槽位**：输出前自动 HTML 转义 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -410,18 +594,35 @@ XfAdmin::moduleGrid([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::moduleGrid([
+    'sections' => [],
+    'columns' => 4,    // 桌面列数
+    'title' => '',
+    'subtitle' => '',
+    'class' => '',
+    'id' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `card` `border` `h-100` `hover-shadow` `card-body` `d-flex` `align-items-center` `mb-2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `sections` | array | `[]` | 分区数组 |
+| `sections` | array | `[]` | 分区数组；源码用法：`$sections = $this->get('sections');` |
 | `columns` | int | `4` | 桌面列数 |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `subtitle` | string | `''` | 副标题文本 |
-| `class` | string | `''` | 附加到根元素的自定义 class |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `subtitle` | string | `''` | 副标题文本；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `class` | string | `''` | 附加到根元素的自定义 class；**文本槽位**：输出前自动 HTML 转义 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -443,15 +644,33 @@ XfAdmin::apiKeys([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::apiKeys([
+    'items' => [],    // 条目数组（结构见各组件说明）
+    'reveal' => true,
+    'regenerate' => true,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`key`、`name`、`created`、`last_used`
+
+> **渲染骨架**：主要 class `table-responsive` `table` `table-nowrap` `align-middle` `mb-0`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `reveal` | bool | `true` |  |
-| `regenerate` | bool | `true` |  |
+| `items` | array | `[]` | 条目数组（结构见各组件说明）；源码用法：`$items = array_values((array) $this->get('items'));` |
+| `reveal` | bool | `true` | 源码用法：`$reveal = $this->get('reveal');` |
+| `regenerate` | bool | `true` | 源码用法：`$regen = $this->get('regenerate');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -481,16 +700,34 @@ XfAdmin::appManage([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::appManage([
+    'stats' => [],
+    'apps' => [],
+    'maxApps' => 10,
+    'search' => '',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `stats[]` 元素键：`color`（默认 `primary`）、`icon`（默认 `ti-apps`）、`title`、`value`、`change`
+- `apps[]` 元素键：`name`、`icon`（默认 `ti-brand-slack`）、`color`（默认 `primary`）、`status`（默认 `active`）、`description`、`users`、`rating`、`image`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `stats` | array | `[]` |  |
-| `apps` | array | `[]` |  |
-| `maxApps` | int | `10` |  |
+| `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
+| `apps` | array | `[]` | 应用列表（应用启动器） |
+| `maxApps` | int | `10` | 最多显示的应用数量 |
 | `search` | string | `''` | 是否启用搜索 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -522,6 +759,30 @@ XfAdmin::importExport([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::importExport([
+    'exports' => [],    // [['label','format','url']]
+    'export_url' => '',    // 简写基址
+    'formats' => [],    // 简写格式列表（默认空；使用 export_url 简写时必须显式传 formats）
+    'import' => null,    // null | ['url','accept','title']
+    'export_label' => '导出',
+    'import_label' => '导入',
+    'csrf' => '',    // 宿主注入的隐藏域 HTML（如 csrf_field()）
+    'class' => '',
+    'id' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `exports[]` 元素键：`url`、`format`、`label`
+
+> **渲染骨架**：主要 class `dropdown-item` `btn-group` `dropdown-menu` `modal` `fade` `modal-dialog` `modal-content` `modal-header`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -530,11 +791,11 @@ XfAdmin::importExport([
 | `export_url` | string | `''` | 简写基址 |
 | `formats` | array | `[]` | 简写格式列表（默认空；使用 export_url 简写时必须显式传 formats） |
 | `import` | mixed | `null` | null \| ['url','accept','title'] |
-| `export_label` | string | `'导出'` |  |
-| `import_label` | string | `'导入'` |  |
+| `export_label` | string | `'导出'` | **文本槽位**：输出前自动 HTML 转义 |
+| `import_label` | string | `'导入'` | **文本槽位**：输出前自动 HTML 转义 |
 | `csrf` | string | `''` | 宿主注入的隐藏域 HTML（如 csrf_field()） |
-| `class` | string | `''` | 附加到根元素的自定义 class |
+| `class` | string | `''` | 附加到根元素的自定义 class；为 `null` 时不渲染该区块 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

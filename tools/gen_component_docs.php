@@ -652,6 +652,311 @@ function dumpDefault(mixed $v): string
 }
 
 /**
+ * 别名条目的专属示例（语义别名 / 同类别名）
+ * 这些别名在文档中折叠为简短条目，此处为它们补齐可直接运行的最小示例
+ */
+/**
+ * 手工补充的「数组元素结构」说明
+ * 用于自动解析（foreach / 方法委托）无法覆盖的参数，内容均取自源码实际用法。
+ * 格式：别名 => [参数名 => 说明文本]
+ */
+$STRUCT_NOTES = [
+    'carousel' => [
+        'items' => '`image`（图片地址）、`alt`、`caption`（标题）、`content`（内容）、`interval`（停留毫秒）',
+    ],
+    'avatarGroup' => [
+        'items' => '字符串（图片 URL）或数组：`src`（图片）、`name`（名称，用于 title 与首字母回退）',
+    ],
+    'permissionMatrix' => [
+        'roles'  => '`id`、`name`（角色名），也可直接传 `[\'admin\' => \'管理员\']` 键值形式',
+        'groups' => '`name`（权限组名）、`permissions`（该组权限数组，元素为 `id`+`name` 或键=>文案）',
+        'values' => '已勾选矩阵：`[角色id => [权限id => true]]`，用于回填',
+    ],
+    'metricCard' => [
+        'data'   => '图表数值数组（配合 `chart` 类型：donut/pie/bar/line/area）',
+        'labels' => '与 `data` 一一对应的标签数组',
+        'trend'  => '趋势值（正数为上升、负数为下降）',
+    ],
+    'moduleGrid' => [
+        'modules' => '`name`（模块名）、`icon`、`url`、`desc`（描述）',
+    ],
+    'treeView' => [
+        'data'    => '`id`、`text`（节点文案）、`children`（子节点数组，递归）、`icon`、`disabled`',
+        'options' => '透传 jsTree 原生配置',
+    ],
+    'dropzoneUpload' => [
+        'value' => '已上传文件的地址列表（用于回显）',
+    ],
+    'countdown' => [
+        'labels' => '四个单位文案，顺序为 `[\'天\',\'时\',\'分\',\'秒\']`',
+    ],
+    'tags' => [
+        'whitelist' => '候选词字符串数组（Tagify 建议列表）',
+    ],
+    'check' => [
+        'options' => '`值 => 文案` 键值数组；为空时进入「单控件模式」',
+    ],
+    'slider' => [
+        'options' => '透传 noUiSlider 原生配置（递归合并，优先级最高）',
+    ],
+    'editor' => [
+        'options' => '透传编辑器原生配置（quill 可传 `modules`，summernote 直接传选项）',
+    ],
+    'upload' => [
+        'options' => '透传 dropzone / filepond 原生配置',
+    ],
+    'colorPicker' => [
+        'options' => '透传 Pickr 原生配置',
+    ],
+    'dateRange' => [
+        'options' => '透传 daterangepicker 原生配置（递归合并，优先级最高）',
+    ],
+    'dateRangePicker' => [
+        'options' => '同 `dateRange`：透传 daterangepicker 原生配置',
+    ],
+    'datePicker' => [
+        'options' => '透传 daterangepicker 原生配置（singleDatePicker 恒为 true）',
+    ],
+    'select' => [
+        'options'          => '`值 => 文案` 或 `[[\'value\'=>..,\'label\'=>..,\'disabled\'=>..]]`',
+        'groups'           => '`组名 => [值 => 文案]`；非空时忽略 `options`',
+        'enhance_options'  => '透传 choices / select2 原生配置',
+    ],
+    'apexTree' => [
+        'data'    => '`id`、`name`、`role`、`avatar`、`color`、`children`（子节点数组）',
+        'options' => '透传 ApexTree 原生配置',
+    ],
+    'echart' => [
+        'options' => 'ECharts 原生 option（`series`、`xAxis`、`yAxis`、`tooltip`…）',
+    ],
+    'vectorMap' => [
+        'options' => 'jsVectorMap 原生配置（`map`、`markers`、`series`、`backgroundColor`…）',
+    ],
+    'leafletMap' => [
+        'markers' => '`lat`、`lng`、`popup`（气泡内容）、`title`',
+        'options' => '透传 Leaflet 原生配置',
+    ],
+    'googleMap' => [
+        'markers' => '`lat`、`lng`、`title`、`info`',
+        'options' => '透传 Google Maps 原生配置',
+    ],
+    'dataTable' => [
+        'columns'    => '`key`/`data`（字段名）、`label`/`title`（表头）、`width`、`minWidth`、`class`、`sortable`、`searchable`、`visible`、`render`、`badges`、`template`、`actions`',
+        'data'       => '本地行数据（每行字段与列 `key` 对应）',
+        'filter_bar' => '`name`、`label`、`type`、`options`、`width`、`placeholder`、`min`/`max`/`step`、`html`',
+        'buttons'    => '`copy`/`csv`/`excel`/`pdf`/`print`/`colvis`/`refresh`/`fullscreen`/`density`，或原生按钮配置数组',
+        'order'      => '`[[列索引, \'asc\'|\'desc\']]`（启用 bulk/row_detail 后索引会被辅助列顶偏）',
+        'options'    => '透传 DataTables 原生配置（递归合并，优先级最高）',
+    ],
+    'table' => [
+        'columns' => '`键名 => 标题` 或 `[[\'key\'=>..,\'label\'=>..,\'class\'=>..,\'format\'=>闭包,\'raw\'=>bool]]`',
+        'data'    => '行数据数组（数组或对象均可）',
+    ],
+    'tablesCustom' => [
+        'columns' => '字符串（直接作表头）或 `[\'label\'=>..,\'class\'=>..]`',
+        'rows'    => '按**位置顺序**输出单元格：字符串（转义）或 `[\'class\'=>..,\'html\'=>..]`（原样）',
+        'footable'=> '表尾行，规则同 `rows`',
+    ],
+    'form' => [
+        'fields' => '组件实例 / HTML 字符串 / 数组的混合列表（逐个原样输出）',
+    ],
+    'wizard' => [
+        'steps' => '`title`（导航标题）、`icon`、`content`（面板内容，原样输出）',
+    ],
+    'formOtherPlugin' => [
+        'plugins' => '启用哪些插件段：`mask`、`autosize`、`maxlength`、`touchspin`',
+    ],
+    'placeholder' => [
+        'items' => '`width`（列宽，如 col-6）、`lines`（行数数组，每项可为 `class`/`width`）',
+    ],
+    'kbd' => [
+        'items' => '按键文本数组，如 `[\'Ctrl\', \'K\']`',
+    ],
+    'widgetsDashboard' => [
+        'widgets' => '`title`、`content`（组件或 HTML）、`width`（栅格宽度）',
+    ],
+    'dashboardGrid' => [
+        'widgets' => '`id`、`title`、`content`、`width`（1-12）、`height`',
+    ],
+];
+
+/**
+ * 主条目的补充用法示例
+ * 仅用于「源码 docblock 中没有示例」的组件（生成器自动检测），内容取自真实用法。
+ */
+$USAGE_EXAMPLES = [
+    'dataTable' => [
+        "// ① 客户端模式（本地数据）",
+        'echo XfAdmin::dataTable([',
+        "    'id'      => 'user-table',",
+        "    'columns' => [",
+        "        ['key' => 'id',    'label' => 'ID', 'width' => '70px'],",
+        "        ['key' => 'name',  'label' => '姓名'],",
+        "        ['key' => 'status','label' => '状态', 'badges' => ['1' => 'success', '0' => 'secondary']],",
+        "        ['key' => 'created_at', 'label' => '注册时间', 'render' => ['type' => 'datetime', 'ago' => true]],",
+        "        ['key' => '', 'label' => '操作', 'actions' => [",
+        "            ['label' => '编辑', 'icon' => 'ti ti-pencil', 'action' => 'edit', 'ajax' => '/admin/users/{id}'],",
+        "            ['label' => '删除', 'icon' => 'ti ti-trash', 'action' => 'ajax', 'class' => 'btn-soft-danger',",
+        "             'ajax' => '/admin/users/{id}', 'method' => 'DELETE', 'confirm' => '确认删除？'],",
+        '        ]],',
+        '    ],',
+        "    'data'    => \$rows,",
+        ']);',
+        '',
+        "// ② 服务端模式（配合 XfAdmin::dataResponse()）",
+        'echo XfAdmin::dataTable([',
+        "    'id'          => 'user-table',",
+        "    'ajax'        => '/admin/api/users',",
+        "    'server_side' => true,",
+        "    'method'      => 'POST',",
+        "    'columns'     => [ /* 同上 */ ],",
+        "    'filter_bar'  => [",
+        "        ['name' => 'keyword', 'label' => '关键词', 'type' => 'text'],",
+        "        ['name' => 'status',  'label' => '状态',   'type' => 'select', 'options' => ['1' => '正常', '0' => '禁用']],",
+        "        ['name' => 'date',    'label' => '注册时间', 'type' => 'daterange'],",
+        '    ],',
+        "    'create' => ['page' => '/admin/users/create', 'label' => '新增用户'],",
+        "    'bulk'   => ['actions' => [",
+        "        ['label' => '批量删除', 'url' => '/admin/users/batch-delete', 'method' => 'DELETE', 'confirm' => '确认？'],",
+        '    ]],',
+        "    'export' => ['copy', 'excel', 'csv'],",
+        ']);',
+    ],
+    'customizer' => [
+        "// 主题定制面板：默认由 Page 自动渲染，也可单独使用",
+        'echo XfAdmin::customizer([',
+        "    'title'    => '界面定制',",
+        "    'subtitle' => '快速配置布局、皮肤与偏好',",
+        ']);',
+        '',
+        "// 关闭定制面板：XfAdmin::page(['customizer' => false, …])",
+        "// 面板内的 radio name 与 <html data-*> 属性一一对应：",
+        "//   data-skin / data-bs-theme / data-topbar-color / data-menu-color / data-sidenav-size / data-layout-position",
+        "//   配置持久化在 sessionStorage['__INSPINIA_CONFIG__']（由 config.js 管理）",
+    ],
+];
+
+// 注意：不能用 const —— 示例中含 `$menu` 等变量占位（const 表达式不允许变量）
+$ALIAS_EXAMPLES = [
+    // —— auth 语义别名（均指向 AuthPage，自动注入 type）——
+    'signIn' => [
+        "echo XfAdmin::signIn([                       // 等价 authPage(['type' => 'sign-in'])",
+        "    'layout'  => 'split',                    // base | card | split",
+        "    'action'  => '/admin/login',",
+        "    'ajax'    => true,",
+        "    'heading' => '欢迎回来',",
+        "    'fields'  => [",
+        "        'username' => ['label' => '账号', 'required' => true, 'autofocus' => true],",
+        "        'password' => ['label' => '密码', 'type' => 'password', 'required' => true],",
+        '    ],',
+        "    'submit'  => ['text' => '登录', 'icon' => 'ti ti-login'],",
+        "    'captcha' => (string) XfAdmin::captcha(['mode' => 'image', 'src' => '/captcha.png']),",
+        ']);',
+    ],
+    'signUp' => [
+        "echo XfAdmin::signUp([                       // 等价 authPage(['type' => 'sign-up'])",
+        "    'layout' => 'card',",
+        "    'action' => '/admin/register',",
+        "    'ajax'   => true,",
+        "    'fields' => [",
+        "        'name'     => ['label' => '姓名', 'required' => true],",
+        "        'email'    => ['label' => '邮箱', 'type' => 'email', 'required' => true],",
+        "        'password' => ['label' => '密码', 'type' => 'password', 'required' => true],",
+        "        'password_confirmation' => ['label' => '确认密码', 'type' => 'password', 'required' => true],",
+        '    ],',
+        "    'append' => '<div class=\"form-check mb-3\"><input class=\"form-check-input\" type=\"checkbox\" name=\"agree\" id=\"agree\">'",
+        "             . '<label class=\"form-check-label\" for=\"agree\">我已阅读并同意服务条款</label></div>',",
+        "    'loginRedirect' => '/admin/login',",
+        ']);',
+    ],
+    'resetPass' => [
+        "echo XfAdmin::resetPass([                    // 等价 authPage(['type' => 'reset-pass'])",
+        "    'layout' => 'base',",
+        "    'action' => '/admin/password/email',",
+        "    'ajax'   => true,",
+        "    'fields' => ['email' => ['label' => '注册邮箱', 'type' => 'email', 'required' => true, 'autofocus' => true]],",
+        "    'submit' => ['text' => '发送重置链接'],",
+        ']);',
+    ],
+    'newPass' => [
+        "echo XfAdmin::newPass([                      // 等价 authPage(['type' => 'new-pass'])",
+        "    'layout' => 'base',",
+        "    'action' => '/admin/password/new',",
+        "    'ajax'   => true,",
+        "    'email'  => 'user@example.com',           // 展示（disabled）",
+        "    'newPassShowCode' => false,               // 是否显示 6 位验证码分格输入",
+        "    'newPassShowAgree' => true,",
+        "    'fields' => [",
+        "        'password'              => ['label' => '新密码', 'type' => 'password', 'required' => true],",
+        "        'password_confirmation' => ['label' => '确认新密码', 'type' => 'password', 'required' => true],",
+        '    ],',
+        ']);',
+    ],
+    'twoFactor' => [
+        "echo XfAdmin::twoFactor([                    // 等价 authPage(['type' => 'two-factor'])",
+        "    'layout' => 'base',",
+        "    'action' => '/admin/2fa',",
+        "    'ajax'   => true,",
+        "    'mask'   => 'u***@example.com',           // 提示验证码发送目标（可省略）",
+        "    'submit' => ['text' => '验证'],",
+        ']);',
+        '// 组件内部渲染 6 个分格输入（name=\"code[]\"），由前端自动拼接为单个值提交',
+    ],
+    'loginPin' => [
+        "echo XfAdmin::loginPin([                     // 等价 authPage(['type' => 'login-pin'])",
+        "    'layout'   => 'base',",
+        "    'action'   => '/admin/pin-login',",
+        "    'ajax'     => true,",
+        "    'pinGroup' => 6,                         // PIN 位数，也可写 fields['pin']['group']",
+        "    'submit'   => ['text' => '登录'],",
+        ']);',
+    ],
+    'deleteAccount' => [
+        "echo XfAdmin::deleteAccount([                // 等价 authPage(['type' => 'delete-account'])",
+        "    'layout' => 'base',",
+        "    'action' => '/admin/account/delete',",
+        "    'ajax'   => true,",
+        "    'message' => '注销后数据不可恢复，请谨慎操作。',",
+        "    'fields' => ['password' => ['label' => '请输入密码确认', 'type' => 'password', 'required' => true, 'autofocus' => true]],",
+        "    'submit' => ['text' => '确认注销', 'variant' => 'danger'],",
+        ']);',
+    ],
+    'successMail' => [
+        "echo XfAdmin::successMail([                  // 等价 authPage(['type' => 'success-mail'])",
+        "    'layout' => 'base',",
+        "    'status' => '重置链接已发送，请查收邮箱。',",
+        "    'loginRedirect' => '/admin/login',",
+        ']);',
+        '// 该语义页无表单，仅展示成功图标 + 提示 + 返回链接',
+    ],
+    // —— 同类别名 ——
+    'topnav' => [
+        "echo XfAdmin::page([",
+        "    'layout' => 'horizontal',                 // 或 'topnav'",
+        "    'topnav' => ['menu' => \$menu, 'search' => true],",
+        ']);',
+        '// 单独使用等价写法：',
+        "echo XfAdmin::topnav(['menu' => \$menu, 'current_url' => '/admin']);",
+    ],
+    'dateRangePicker' => [
+        "echo XfAdmin::dateRangePicker([              // 等价 XfAdmin::dateRange()",
+        "    'name'     => 'range',",
+        "    'label'    => '下单时间',",
+        "    'ranges'   => true,                      // 今天/昨天/最近7天/最近30天/本月/上月",
+        "    'timepicker' => false,",
+        "    'format'   => 'YYYY-MM-DD',",
+        ']);',
+    ],
+    'clipboardButton' => [
+        "echo XfAdmin::clipboardButton([              // 等价 XfAdmin::clipboard()",
+        "    'text'  => 'https://example.com/invite/abc123',",
+        "    'label' => '复制邀请链接',",
+        "    'icon'  => 'ti ti-copy',",
+        ']);',
+    ],
+];
+
+/**
  * 高频参数词典：键名 => 中文说明
  * 用于为 defaults() 中没有行尾注释的参数补齐说明（按 XfAdmin 全组件的语义归纳）
  */
@@ -672,7 +977,7 @@ const PARAM_DICT = [
     'value' => '当前值（表单控件值 / 展示数值）',
     'url' => '链接地址（自动做安全协议校验）',
     'href' => '链接地址（同 url）',
-    'target' => '链接打开方式，如 _blank',
+    'target' => '目标（组件语义不同：链接打开方式 `_blank` / 倒计时目标时间 / 数值目标）',
     'icon' => 'Tabler 图标 class，如 `ti ti-user`',
     'image' => '图片地址（支持外链 / data URI / 包内 images 相对路径）',
     'src' => '资源地址（图片 / iframe / 文件）',
@@ -693,6 +998,231 @@ const PARAM_DICT = [
     'align' => '对齐方式：start | center | end',
     'placement' => '弹出方位：top | bottom | left | right | start | end',
     'trigger' => '触发方式（hover / click / focus），或触发按钮文案',
+    'trigger_variant' => '触发按钮的语义变体（primary/secondary/…）',
+    'icon_bg' => '图标背景色（语义色名）',
+    'subtitle' => '副标题文本',
+    'initial' => '初始值（编辑器 / 上传组件的已有内容）',
+    'deadline' => '截止时间（倒计时目标，任意可被 strtotime 解析的字符串）',
+    'subscribe' => '是否显示订阅表单',
+    'contact' => '联系信息（渲染为 mailto 链接）',
+    'sideImage' => '侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径）',
+    'sideTitle' => '侧栏主标题',
+    'sideText' => '侧栏说明文本',
+    'sideList' => '侧栏要点列表 `[\'icon\'=>..,\'text\'=>..]`',
+    'sideVariant' => '侧栏语义变体（primary/info/success/…）',
+    'socialButtons' => '社交登录按钮 `[\'icon\'=>..,\'url\'=>..,\'label\'=>..]`',
+    'loginRedirect' => '「去登录」链接地址',
+    'registerRedirect' => '「去注册」链接地址',
+    'footerLinks' => '页脚链接 `[[\'url\'=>..,\'text\'=>..]]`',
+    'preloader' => '是否显示首屏加载动画',
+    'container' => '内容区容器 class（默认 container-fluid）',
+    'customizer' => '是否渲染主题定制面板',
+    'page_title' => '页面标题区（数组则渲染 PageTitle 组件）',
+    'current_url' => '当前 URL（用于菜单自动高亮）',
+    'dataset' => '数据集标识（批量操作 / 领域动作提交给后端）',
+    'enhance_options' => '透传给增强插件（choices/select2）的原生配置',
+    'enhance' => '下拉增强：null（原生）| choices | select2',
+    'whitelist' => '标签输入候选词数组',
+    'ranges' => '日期快捷区间（今天/昨天/最近7天/最近30天/本月/上月）',
+    'timepicker' => '是否带时间选择',
+    'single' => '单日期模式（singleDatePicker）',
+    'question' => '验证码题目（math 模式）',
+    'refreshable' => '验证码可刷新（换一张）',
+    'mask' => '输入掩码表达式，如 `999-9999-9999`',
+    'alias' => '掩码别名（部分驱动支持）',
+    'tooltips' => '滑块是否显示数值气泡',
+    'connect' => 'noUiSlider connect 配置（数组自动为 true）',
+    'showRules' => '是否展示密码规则清单',
+    'minScore' => '最低分数要求（低于则禁用提交按钮）',
+    'hint' => '输入框下方提示文本',
+    'length' => '长度 / 位数（如 OTP 格数 4-8）',
+    'signature' => '个性签名（两行截断）',
+    'labels' => '标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签）',
+    'progress_' => '进度',
+    'footer_' => '页脚',
+    // —— 业务数据键（各业务组件特有的数据数组 / 字段）——
+    'activeTab' => '默认激活的选项卡 id',
+    'add_text' => '「添加」按钮文案',
+    'align_middle' => '单元格垂直居中',
+    'allow' => '允许的行为（如允许的文件类型 / 操作）',
+    'alt' => '图片替代文本',
+    'apps' => '应用列表（应用启动器）',
+    'article' => '文章数据（标题 / 正文 / 作者 / 封面等）',
+    'attributes' => '属性列表（商品规格键值对）',
+    'bars' => '柱状数据数组',
+    'bio' => '个人简介',
+    'blocks' => '内容区块数组',
+    'bottom' => '底部内容 / 底部间距',
+    'brands' => '品牌列表',
+    'chart' => '图表配置（类型 / 数据 / 颜色）',
+    'charts' => '多个图表配置数组',
+    'clients' => '客户端 / 客户列表',
+    'col' => '列宽（栅格列数 1-12）',
+    'colClass' => '列 class（栅格）',
+    'collapsible' => '是否可折叠',
+    'compact' => '紧凑模式',
+    'companies' => '公司数据数组',
+    'contactEmail' => '联系邮箱',
+    'controls' => '控件配置（播放器 / 轮播控件等）',
+    'conversations' => '会话列表（聊天）',
+    'cover' => '封面图地址',
+    'csrf' => '是否注入 CSRF 隐藏域（`true` 注入；`[]`/`false` 不注入；数组为自定义隐藏域）',
+    'currentLocale' => '当前语言',
+    'currentStep' => '当前步骤索引（向导 / 步骤条）',
+    'discount' => '折扣（金额或百分比）',
+    'due_at' => '到期时间',
+    'edges' => '边（桑基图 / 关系图的连线数据）',
+    'effectiveDate' => '生效日期',
+    'events' => '事件数组（日历 / 时间线）',
+    'externalEvents' => '外部可拖拽事件（日历）',
+    'features' => '特性 / 功能列表',
+    'files' => '文件列表',
+    'folders' => '文件夹列表（文件管理器）',
+    'footable' => '表尾行数据',
+    'from' => '起始值 / 来源地址',
+    'headerBg' => '表头背景语义色（如 `primary`）',
+    'icons' => '图标列表',
+    'intro' => '导语 / 简介文本',
+    'invoice' => '发票数据（单号 / 金额 / 状态等）',
+    'invoice_no' => '发票号',
+    'issued_at' => '签发时间',
+    'issues' => '问题 / 工单列表',
+    'keys' => '键名数组',
+    'locales' => '语言 / 区域列表',
+    'maxApps' => '最多显示的应用数量',
+    'me' => '当前用户（聊天气泡定位自己）',
+    'members' => '成员列表',
+    'muted' => '次要 / 弱化显示',
+    'nav' => '导航项数组',
+    'node_height' => '节点高度（树图，px）',
+    'node_width' => '节点宽度（树图，px）',
+    'nodes' => '节点数据（桑基图 / 关系图）',
+    'notes' => '备注',
+    'peer' => '对方（会话对象）信息',
+    'permissions' => '权限列表',
+    'plans' => '方案 / 计划列表',
+    'plugins' => '启用的插件列表',
+    'poster' => '视频封面图',
+    'posts' => '文章 / 帖子列表',
+    'pricing' => '价格方案配置',
+    'product' => '商品数据',
+    'project' => '项目数据',
+    'projects' => '项目列表',
+    'provider' => '服务提供者 / 地图瓦片源',
+    'ratio' => '宽高比（如 `16/9`）',
+    'recentActivity' => '最近活动列表',
+    'recentOrders' => '最近订单列表',
+    'refunds' => '退款单列表',
+    'reviews' => '评价列表',
+    'roles' => '角色列表（`id`+`name` 或键值形式）',
+    'row_attrs' => '行属性回调 `fn($row): array`，返回 `<tr>` 属性',
+    'seller' => '卖家信息',
+    'sellers' => '卖家列表',
+    'set' => '集合 / 预设值',
+    'showBuiltin' => '是否显示内置区块',
+    'soft' => '柔和（浅色底）样式',
+    'store' => '店铺数据',
+    'sub_categories' => '子分类列表',
+    'subtitle_desc' => '副标题描述',
+    'tax' => '税费',
+    'tax_rate' => '税率',
+    'teams' => '团队列表',
+    'testimonials' => '用户证言列表',
+    'thread' => '会话 / 主题贴数据',
+    'toc' => '目录（Table of Contents）列表',
+    'totalCapacity' => '总容量',
+    'totalInventory' => '总库存',
+    'totalUnique' => '独立访客总数',
+    'totalViews' => '浏览总数',
+    'tour' => '引导漫游配置（步骤数组）',
+    'treeView' => '树形视图数据',
+    'trend_text' => '趋势说明文案（如「较上周」）',
+    'type_filter' => '类型筛选条件',
+    'users' => '用户列表',
+    'views' => '浏览量数据',
+    'warehouses' => '仓库列表',
+    // 演示型 / 杂项组件开关
+    'calendar' => '日历配置 / 是否启用日历',
+    'clipboard' => '剪贴板配置 / 是否启用复制',
+    'lightbox' => '灯箱配置 / 是否启用灯箱',
+    'nestable' => '可拖拽排序配置 / 是否启用',
+    'pdfViewer' => 'PDF 预览配置',
+    'sweetAlert' => 'SweetAlert 弹窗配置',
+    'textDiff' => '文本差异对比配置',
+    'tinycon' => 'favicon 角标配置',
+    'dataTable' => '内嵌数据表格配置',
+    'dataTableToolbar' => '内嵌表格工具条配置',
+    'tablesCustom' => '内嵌自定义表格配置',
+    'table' => '内嵌表格配置 / 关联表格 id',
+    // —— 布局 / 认证页 / 业务组件补充 ——
+    'wrapper' => '外层包裹容器 class（`false`/`null` 时不包裹）',
+    'stats' => '统计指标数组（如 `[[\'value\'=>..,\'label\'=>..]]`）',
+    'feedback' => '校验反馈文案 `[\'valid\'=>..,\'invalid\'=>..]`',
+    'messages' => '消息列表（聊天/通知/消息中心条目）',
+    'groups' => '分组数据（下拉分组 / 权限分组 / 设置分组）',
+    'card' => '是否以卡片容器呈现（部分组件为遗留键）',
+    'showBackToTop' => '是否显示「回到顶部」按钮',
+    'products' => '商品数据数组',
+    'prepend' => '前缀内容（原样输出，如输入组文本/图标）',
+    'append' => '后缀内容（原样输出，常用于协议说明）',
+    'copyright' => '版权文案',
+    'view' => '详情视图配置（viewRow 引擎，见数据表格文档）',
+    'tag' => '标签 / 渲染标签名',
+    'submit' => '提交按钮配置（字符串或数组：text/class/variant/icon）',
+    'subheading' => '副标题（回退历史字段 subtitle）',
+    'sideOverlay' => '侧栏是否显示渐变遮罩',
+    'sideImageSize' => '侧栏背景 background-size',
+    'sideImagePosition' => '侧栏背景 background-position',
+    'sideImageAlt' => '侧栏背景图无障碍文本',
+    'horizontal' => '是否水平排列',
+    'flush' => '是否无边框（list-group-flush）',
+    'contacts' => '联系人列表',
+    'categories' => '分类列表',
+    'captcha' => '验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位',
+    'bodyClass' => '追加到 <form> 的 class',
+    'below' => '表单下方补充内容（原样输出）',
+    'beforeForm' => '插入到 <form> 之前的内容（原样输出）',
+    'afterForm' => '插入到 </form> 之后的内容（原样输出）',
+    'backLink' => '返回链接配置（保留兼容）',
+    'zoom' => '地图缩放级别',
+    'values' => '数值集合（图表/表单默认值/矩阵勾选值）',
+    'topProducts' => '热销商品列表',
+    'to' => '结束值 / 目标地址',
+    'table' => '关联表格 id 或表格配置',
+    'suffix' => '后缀文本',
+    'subtotal' => '小计金额',
+    'shipping' => '运费',
+    'series' => '图表数据系列',
+    'selected' => '是否选中 / 选中值',
+    'center' => '地图/图表中心坐标',
+    'tiles' => '地图瓦片地址（null 时离线空白底图）',
+    'markers' => '地图标记点数组',
+    'map' => '地图名称（如 world）',
+    'options_' => '配置项',
+    'head' => '</head> 前附加内容（原样输出）',
+    'scripts' => '</body> 前附加内容（原样输出）',
+    'filter_auto' => '过滤条件变更即自动查询',
+    'column_filters' => '表头追加列筛选输入行',
+    'fixed_header' => '表头固定',
+    'defer_render' => '延迟渲染（本地数据 ≥100 行自动开启）',
+    'show_custom_search' => '启用自定义搜索占位',
+    'created_row' => '行创建回调（全局 JS 函数名）',
+    'draw_callback' => '绘制完成回调（全局 JS 函数名）',
+    'head_class' => '追加到 thead 的 class',
+    'scroll_x' => '横向滚动',
+    'scroll_y' => '纵向滚动高度',
+    'server_side' => '服务端分页模式',
+    'row_id' => '行 DOM id 字段',
+    'auto_width' => '自动列宽（false 会影响 scrollX 判定）',
+    'length_menu' => '每页条数选项',
+    'info' => '是否显示分页信息',
+    'processing' => '是否显示加载遮罩',
+    'filter_bar' => '过滤工具条控件定义数组',
+    'create' => '「新增」按钮配置',
+    'bulk' => '批量操作配置',
+    'row_detail' => '行明细展开（true 或 `[\'columns\'=>[..]]`）',
+    'row_group' => '行分组字段名或 `[\'data\'=>..,\'empty\'=>..]`',
+    'state_save' => '保存表格状态（分页/排序/搜索）',
     'count' => '数量 / 计数徽标数字',
     'badge' => '徽标文本或 `[\'text\'=>..,\'class\'=>..]`',
     'color' => '颜色值（#hex / rgb() / 具名色）',
@@ -836,6 +1366,367 @@ const PARAM_DICT = [
     'quantity' => '数量',
 ];
 
+/**
+ * 从组件源码（html() 及全文）分析某个参数的真实用法语义
+ *
+ * 返回可直接写入文档「说明」列的提示数组，来源全部是源码事实：
+ *   - enum() → 白名单常量名 / 字面数组 + 回退默认值
+ *   - match() → 分支取值
+ *   - raw() / e() / text() → 槽位语义（内容槽位 vs 文本槽位）
+ *   - cssLen/cssColor/cssBackground/safeUrl/img/gridCol → 安全校验类型
+ *   - if (get(...)) → 开关语义
+ */
+function paramHints(string $src, string $key, string $methodSrc, bool $withUsage = false): array
+{
+    $hints = [];
+    // $this->get('key') 的各种书写形式
+    $get = "\\\\?\\\$this->get\(\s*'" . preg_quote($key, '#') . "'\s*\)";
+    $get = "\\\$\s*this\s*->\s*get\s*\(\s*'" . preg_quote($key, '#') . "'\s*\)";
+
+    // enum 白名单：enum($this->get('x'), self::ENUM_X | [...], 'default')
+    if (preg_match("#enum\(\s*{$get}\s*,\s*(self::(\w+)|\[([^\]]*)\])\s*,\s*'([^']*)'#", $methodSrc, $m)) {
+        $fallback = $m[5] ?? '';
+        if (! empty($m[3])) {
+            $hints[] = '枚举白名单 `' . $m[3] . '`'
+                . ($fallback !== '' ? '，非法值回退 `' . $fallback . '`' : '');
+        } else {
+            $vals = array_filter(array_map('trim', explode(',', (string) $m[4])),
+                fn ($v) => $v !== '' && $v !== "'" );
+            $vals = array_map(fn ($v) => trim($v, "'\" "), $vals);
+            if ($vals !== []) {
+                $hints[] = '可选值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', array_slice($vals, 0, 12)))
+                    . ($fallback !== '' ? '，其它值回退 `' . $fallback . '`' : '');
+            }
+        }
+    }
+
+    // match 分支
+    if (preg_match("#match\s*\(\s*{$get}\s*\)\s*\{(.*?)\n\s{0,20}\}#s", $methodSrc, $mm)) {
+        if (preg_match_all("#^\s*'([^']+)'\s*=>#m", $mm[1], $cases)) {
+            $cases = array_values(array_unique($cases[1]));
+            if ($cases !== []) {
+                $hints[] = '分支取值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', array_slice($cases, 0, 12)));
+            }
+        }
+    }
+
+    // 槽位语义
+    if (preg_match("#\\\$\s*this\s*->\s*raw\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = '**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）';
+    }
+    if (preg_match("#\\\$\s*this\s*->\s*(?:e|text)\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = '**文本槽位**：输出前自动 HTML 转义';
+    }
+
+    // 安全校验
+    if (preg_match("#cssLen\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = 'CSS 长度：仅接受 `数字+单位`（px/%/rem/em/vh/vw/pt/ch/fr）';
+    }
+    if (preg_match("#cssColor\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = 'CSS 颜色：`#hex` / `rgb()` / `hsl()` / 具名色 / `var(--x)`';
+    }
+    if (preg_match("#cssBackground\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = 'CSS 背景：纯色 / `linear-gradient()` / `url()`';
+    }
+    if (preg_match("#cssRatio\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = 'CSS 比例：`N/M` 或纯数字';
+    }
+    if (preg_match("#safeUrl\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = 'URL：经协议白名单校验（拦截 `javascript:` 等）';
+    }
+    if (preg_match("#->\s*img\s*\(\s*{$get}#", $methodSrc) || preg_match("#img\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = '图片路径：外链 / `data:` URI 原样，其余解析为包内 `images/`';
+    }
+    if (preg_match("#gridCol\s*\(\s*{$get}#", $methodSrc)) {
+        $hints[] = '栅格宽度：数字（1-12）或 `[\'md\'=>6]`（断点白名单 sm/md/lg/xl/xxl）';
+    }
+
+    // 开关语义
+    if (preg_match("#if\s*\(\s*!?\s*\\\$\s*this\s*->\s*get\s*\(\s*'" . preg_quote($key, '#') . "'\s*\)#", $methodSrc)) {
+        $hints[] = '开关：非空 / 真值时启用对应区块';
+    }
+    if (preg_match("#\\\$\s*this\s*->\s*get\s*\(\s*'" . preg_quote($key, '#') . "'\s*\)\s*!==\s*(?:null|''|\w+)#", $methodSrc)) {
+        $hints[] = '为 `null` 时不渲染该区块';
+    }
+    // 参与属性输出
+    if (preg_match("#'(?:class|style|width|height|id|href|src|type|name|value|title|alt|target|role|data-[\w-]*)'\s*=>\s*{$get}#", $methodSrc, $am)) {
+        $hints[] = '输出到 `' . $am[1] . '` 属性';
+    }
+
+    // 兜底：无任何语义命中时，给出源码中的实际用法行（压缩空白后截断，全文搜索）
+    if ($withUsage && $hints === []) {
+        if (preg_match_all('#^.*?\$this->get\(\s*\'' . preg_quote($key, '#') . '\'\s*\).*$#m', $src, $ln)) {
+            $snippet = trim((string) preg_replace('#\s+#', ' ', $ln[0][0]));
+            if ($snippet !== '') {
+                if (mb_strlen($snippet) > 88) {
+                    $snippet = mb_substr($snippet, 0, 85) . '…';
+                }
+                $hints[] = '源码用法：`' . $snippet . '`';
+            }
+        }
+    }
+
+    return array_values(array_unique($hints));
+}
+
+/** 提取组件的 html() 方法源码（用于参数语义分析） */
+function methodSource(string $file, string $method = 'html'): string
+{
+    $src = (string) (is_file($file) ? file_get_contents($file) : '');
+    if ($src === '') {
+        return '';
+    }
+    if (! preg_match('/function\s+' . $method . '\s*\([^)]*\)\s*(?::\s*\w+\s*)?\{/', $src, $m, PREG_OFFSET_CAPTURE)) {
+        return $src;
+    }
+    $start = $m[0][1] + strlen($m[0][0]);
+    $depth = 1;
+    $i     = $start;
+    $len   = strlen($src);
+    while ($i < $len && $depth > 0) {
+        if ($src[$i] === '{') {
+            $depth++;
+        } elseif ($src[$i] === '}') {
+            $depth--;
+        }
+        $i++;
+    }
+    return substr($src, $start, $i - $start);
+}
+
+/**
+ * 解析「数组型参数」的元素结构：从源码的 foreach 循环体中抽取子键
+ *
+ * 例：'items' => []，源码 foreach ($items as $it) { $it['title'] … $it['image'] }
+ *     → 返回 ['title' => '', 'image' => '']（值为该子键的默认值/兜底，未发现则空串）
+ *
+ * 支持两种循环来源：
+ *   ① foreach ($this->get('KEY') as $v)
+ *   ② $var = $this->get('KEY'); foreach ($var as $v)
+ * 并识别 `$v['k'] ?? '默认'`、`$v['k'] ?: '默认'`、`Html::get($v,'k')`
+ */
+function arrayItemKeys(string $src, string $optionKey): array
+{
+    $qk = preg_quote($optionKey, '#');
+
+    // ① 收集「循环变量」（即 foreach … as $v 中的 $v）
+    //    注意 get() 可能有第二参数（默认值），也可能被 (array)/array_values() 包裹
+    $loopVars = [];
+
+    // A. 直接遍历：foreach (... $this->get('KEY') ... as [$k =>] $v)
+    if (preg_match_all('#foreach\s*\(.*?\$this->get\(\s*\'' . $qk . '\'\s*[,)].*?as\s*(?:\$\w+\s*=>\s*)?(\$\w+)\s*\)#',
+        $src, $m)) {
+        $loopVars = $m[1];
+    }
+
+    // B. 先赋值再遍历：$x = ... $this->get('KEY') ...;  foreach ($x as [$k =>] $v)
+    if (preg_match_all('#\$(\w+)\s*=[^;\n]*\$this->get\(\s*\'' . $qk . '\'\s*[,)]#', $src, $m2)) {
+        foreach (array_unique($m2[1]) as $name) {
+            if (preg_match_all('#foreach\s*\(\s*\$' . preg_quote($name, '#') . '\s+as\s*(?:\$\w+\s*=>\s*)?(\$\w+)\s*\)#',
+                $src, $fm)) {
+                $loopVars = array_merge($loopVars, $fm[1]);
+            }
+            // 变量本身也可能直接被下标访问（$x['k']）
+            $loopVars[] = '$' . $name;
+        }
+    }
+    if ($loopVars === []) {
+        return [];
+    }
+    $loopVars = array_values(array_unique($loopVars));
+
+    $sub = [];
+    foreach ($loopVars as $loopVar) {
+        $body = loopBody($src, $loopVar);
+        // 变量本身不是循环变量时（B 中的直接下标访问），退化为全文搜索
+        if ($body === '') {
+            $body = $src;
+        }
+        $lv = preg_quote($loopVar, '#');
+        // $v['key'] ?? '默认'
+        if (preg_match_all('#' . $lv . '\[\s*\'([^\']+)\'\s*\]\s*(?:\?\?|\?\?)?\s*(?:\'([^\']*)\')?#',
+            $body, $sm, PREG_SET_ORDER)) {
+            foreach ($sm as $s) {
+                $sub[$s[1]] = $s[2] ?? ($sub[$s[1]] ?? '');
+            }
+        }
+        // Html::get($v, 'key')
+        if (preg_match_all('#Html::get\(\s*' . $lv . '\s*,\s*\'([^\']+)\'#', $body, $gm)) {
+            foreach ($gm[1] as $g) {
+                $sub[$g] = $sub[$g] ?? '';
+            }
+        }
+        // $v->key（对象属性）
+        if (preg_match_all('#' . $lv . '->(\w+)#', $body, $om)) {
+            foreach ($om[1] as $o) {
+                if (! in_array($o, ['count', 'length'], true)) {
+                    $sub[$o] = $sub[$o] ?? '';
+                }
+            }
+        }
+        // 委托渲染：$this->card($v) / $this->row((array) $v) —— 元素结构在私有方法里
+        if (preg_match_all('#\$this->(\w+)\(\s*(?:\(array\)\s*)?' . $lv . '\s*[,)]#', $body, $dm)) {
+            foreach (array_unique($dm[1]) as $method) {
+                if (! preg_match('#function\s+' . preg_quote($method, '#') . '\s*\(\s*(?:array\s+)?(\$\w+)#',
+                    $src, $pdef)) {
+                    continue;
+                }
+                $mb = functionBody($src, $method);
+                if ($mb === '') {
+                    continue;
+                }
+                $pv = preg_quote($pdef[1], '#');
+                if (preg_match_all('#' . $pv . '\[\s*\'([^\']+)\'\s*\]\s*(?:\?\?)?\s*(?:\'([^\']*)\')?#',
+                    $mb, $pm, PREG_SET_ORDER)) {
+                    foreach ($pm as $p) {
+                        $sub[$p[1]] = $p[2] ?? ($sub[$p[1]] ?? '');
+                    }
+                }
+                if (preg_match_all('#' . $pv . '->(\w+)#', $mb, $po)) {
+                    foreach ($po[1] as $o) {
+                        $sub[$o] = $sub[$o] ?? '';
+                    }
+                }
+            }
+        }
+    }
+    // 去掉明显不是数据键的噪音
+    unset($sub['_xf'], $sub['class']);
+    return $sub;
+}
+
+/** 取某个方法的方法体（按括号配对） */
+function functionBody(string $src, string $method): string
+{
+    if (! preg_match('#function\s+' . preg_quote($method, '#') . '\s*\(#', $src, $m, PREG_OFFSET_CAPTURE)) {
+        return '';
+    }
+    $i    = $m[0][1] + strlen($m[0][0]);
+    $len  = strlen($src);
+    $depth = 1;
+    while ($i < $len && $depth > 0) {
+        if ($src[$i] === '(') {
+            $depth++;
+        } elseif ($src[$i] === ')') {
+            $depth--;
+        }
+        $i++;
+    }
+    while ($i < $len && $src[$i] !== '{') {
+        $i++;
+    }
+    $start = $i + 1;
+    $depth = 1;
+    $i     = $start;
+    while ($i < $len && $depth > 0) {
+        if ($src[$i] === '{') {
+            $depth++;
+        } elseif ($src[$i] === '}') {
+            $depth--;
+        }
+        $i++;
+    }
+    return substr($src, $start, max(0, $i - $start - 1));
+}
+
+/** 取 foreach 循环体（按大括号配对） */
+function loopBody(string $src, string $loopVar): string
+{
+    // 注意：foreach 头部可能自带 `)`（如 foreach ((array) $this->get('x', []) as $v)），
+    // 因此不能用 [^)]*，改用非贪婪 .*?（不匹配换行，安全）
+    if (! preg_match('#foreach\s*\(.*?as\s*(?:\$\w+\s*=>\s*)?' . preg_quote($loopVar, '#') . '\s*\)\s*(?::|{)#',
+        $src, $m, PREG_OFFSET_CAPTURE)) {
+        return '';
+    }
+    $pos = $m[0][1] + strlen($m[0][0]);
+    if (substr($m[0][0], -1) === '{') {
+        $depth = 1;
+        $i     = $pos;
+        $len   = strlen($src);
+        while ($i < $len && $depth > 0) {
+            if ($src[$i] === '{') {
+                $depth++;
+            } elseif ($src[$i] === '}') {
+                $depth--;
+            }
+            $i++;
+        }
+        return substr($src, $pos, $i - $pos - 1);
+    }
+    // foreach(…): … endforeach;
+    if (preg_match('#endforeach#', $src, $em, PREG_OFFSET_CAPTURE, $pos)) {
+        return substr($src, $pos, $em[0][1] - $pos);
+    }
+    return '';
+}
+
+/** 提取组件渲染的外层 class（用于「渲染骨架」提示） */
+function domClasses(string $methodSrc): array
+{
+    $cls = [];
+    if (preg_match_all('#<\s*(?:div|ul|table|section|header|footer|span|a|form)\s+[^>]*class="([^"\$]*)"#', $methodSrc, $m)) {
+        foreach ($m[1] as $c) {
+            foreach (explode(' ', $c) as $one) {
+                $one = trim($one);
+                if ($one !== '' && preg_match('/^[a-z][\w-]*$/i', $one)) {
+                    $cls[$one] = true;
+                }
+            }
+        }
+    }
+    if (preg_match_all("#Html::cls\(\s*'([^']+)'#", $methodSrc, $m2)) {
+        foreach ($m2[1] as $c) {
+            foreach (explode(' ', $c) as $one) {
+                $one = trim($one);
+                if ($one !== '') {
+                    $cls[$one] = true;
+                }
+            }
+        }
+    }
+    return array_slice(array_keys($cls), 0, 8);
+}
+
+/** 把默认值转成 PHP 字面量（用于生成可直接复制的示例） */
+function phpLiteral(mixed $v, int $level = 0): string
+{
+    if ($v === null) {
+        return 'null';
+    }
+    if (is_bool($v)) {
+        return $v ? 'true' : 'false';
+    }
+    if (is_int($v) || is_float($v)) {
+        return (string) $v;
+    }
+    if (is_string($v)) {
+        if (strlen($v) > 60) {
+            return "'" . str_replace(["\\", "'"], ["\\\\", "\\'"], substr($v, 0, 57)) . "…'";
+        }
+        return "'" . str_replace(["\\", "'"], ["\\\\", "\\'"], $v) . "'";
+    }
+    if (is_array($v)) {
+        if ($v === []) {
+            return '[]';
+        }
+        if ($level >= 2) {
+            return '[/* … */]';
+        }
+        $pad  = str_repeat('    ', $level + 1);
+        $out  = "[\n";
+        $n    = 0;
+        foreach ($v as $k => $vv) {
+            if ($n++ >= 10) {
+                $out .= $pad . "// …\n";
+                break;
+            }
+            $out .= $pad . (is_int($k) ? '' : phpLiteral((string) $k) . ' => ') . phpLiteral($vv, $level + 1) . ",\n";
+        }
+        return $out . str_repeat('    ', $level) . ']';
+    }
+    return 'null';
+}
+
 /** markdown 表格单元格转义 */
 function cell(string $s): string
 {
@@ -871,7 +1762,18 @@ foreach ($GROUPS as $file => $group) {
     $md[] = '';
     $toc = [];
 
-    foreach ($group['aliases'] as $alias) {
+    // 去重：同一别名在同一分类里只输出一次（避免重复章节）
+    $aliases = [];
+    foreach ($group['aliases'] as $a) {
+        if (! isset($aliases[$a])) {
+            $aliases[$a] = true;
+        }
+    }
+    foreach (array_keys($aliases) as $alias) {
+        // 已被其它分类输出过的别名不再重复输出
+        if (isset($assigned[$alias])) {
+            continue;
+        }
         $class = $list[$alias] ?? null;
         if ($class === null) {
             continue;
@@ -890,6 +1792,16 @@ foreach ($GROUPS as $file => $group) {
             $md[]  = '';
             $md[]  = '`' . $alias . '` 是 `' . $printedClasses[$class] . '` 的别名，指向同一个组件类 `' . ltrim($class, '\\') . '`，参数与用法完全一致。';
             $md[]  = '';
+            if (isset($ALIAS_EXAMPLES[$alias])) {
+                $md[] = '**用法示例**（该别名的典型写法）';
+                $md[] = '';
+                $md[] = '```php';
+                foreach ($ALIAS_EXAMPLES[$alias] as $line) {
+                    $md[] = $line;
+                }
+                $md[] = '```';
+                $md[] = '';
+            }
             $stats[$file] = ($stats[$file] ?? 0) + 1;
             $assigned[$alias] = true;
             continue;
@@ -950,8 +1862,14 @@ foreach ($GROUPS as $file => $group) {
         $md[] = '> **依赖插件**：' . ($allAssets === [] ? '无' : implode('、', array_map(fn ($a) => '`' . $a . '`', $allAssets)));
         $md[] = '';
 
-        // 示例
+        $methodSrc = methodSource((string) $rc->getFileName(), 'html');
+        $fullSrc   = (string) (is_file((string) $rc->getFileName()) ? file_get_contents((string) $rc->getFileName()) : '');
+
+        // ① 用法示例（源码 docblock，无则用手写补充示例）
         $examples = classExamples($class);
+        if ($examples === [] && isset($USAGE_EXAMPLES[$alias])) {
+            $examples = $USAGE_EXAMPLES[$alias];
+        }
         if ($examples !== []) {
             $md[] = '**用法示例**';
             $md[] = '';
@@ -963,7 +1881,76 @@ foreach ($GROUPS as $file => $group) {
             $md[] = '';
         }
 
-        // 参数表
+        // ② 全参数示例（枚举式，必输出；值取 defaults 默认，可直接复制运行）
+        if ($options !== []) {
+            $md[] = '<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>';
+            $md[] = '';
+            $md[] = '```php';
+            $md[] = "echo XfAdmin::{$alias}([";
+            foreach ($options as $k => $v) {
+                $line = phpLiteral($v, 1);
+                $note = $defaultsRows[$k]['comment'] ?? (PARAM_DICT[$k] ?? '');
+                if ($note !== '') {
+                    $note = explode('。', $note)[0];
+                }
+                if (str_contains($line, "\n")) {
+                    // 多行数组：注释写在键前
+                    $md[] = '    // ' . $k . ($note !== '' ? '：' . $note : '');
+                    $md[] = '    ' . "'" . $k . "' => " . $line . ',';
+                } else {
+                    $md[] = "    '" . $k . "' => " . $line . ','
+                        . ($note !== '' ? '    // ' . $note : '');
+                }
+            }
+            $md[] = ']);';
+            $md[] = '```';
+            $md[] = '';
+            $md[] = '</details>';
+            $md[] = '';
+        }
+
+        // ②b 数据结构（数组型参数的元素键，来自源码 foreach 解析）
+        $structLines = [];
+        foreach ($options as $k => $v) {
+            if (! is_array($v)) {
+                continue;
+            }
+            $sub  = arrayItemKeys($fullSrc, $k);
+            $note = $STRUCT_NOTES[$alias][$k] ?? '';
+            if ($sub === [] && $note === '') {
+                continue;
+            }
+            if ($sub !== []) {
+                $parts = [];
+                foreach ($sub as $sk => $sv) {
+                    $parts[] = '`' . $sk . '`' . ($sv !== '' ? '（默认 `' . $sv . '`）' : '');
+                }
+                $line = '- `' . $k . '[]` 元素键：' . implode('、', array_slice($parts, 0, 24));
+                if ($note !== '') {
+                    $line .= '；补充：' . $note;
+                }
+                $structLines[] = $line;
+            } else {
+                $structLines[] = '- `' . $k . '[]`：' . $note;
+            }
+        }
+        if ($structLines !== []) {
+            $md[] = '**数据结构**（数组元素可用键，由源码 `foreach` 解析）';
+            $md[] = '';
+            foreach ($structLines as $l) {
+                $md[] = $l;
+            }
+            $md[] = '';
+        }
+
+        // ②c 渲染骨架（外层 class，便于自定义样式）
+        $domCls = domClasses($methodSrc);
+        if ($domCls !== []) {
+            $md[] = '> **渲染骨架**：主要 class `' . implode('` `', $domCls) . '`';
+            $md[] = '';
+        }
+
+        // ③ 参数表（含源码语义提示）
         if ($options !== []) {
             $md[] = '**配置参数**';
             $md[] = '';
@@ -980,13 +1967,30 @@ foreach ($GROUPS as $file => $group) {
                     $comment = PARAM_DICT[$k] ?? '';
                 }
                 if ($comment === '' && is_array($v) && $v !== []) {
-                    $comment = '数组结构（见组件用法示例）';
+                    $comment = '数组结构（见「全参数示例」）';
+                }
+                // 源码语义提示（枚举白名单 / 槽位 / 安全校验 / 开关）
+                // 当源码给出精确枚举时，以源码为准（比通用词典更准确）
+                // 说明来自「通用词典」或为空时，追加源码真实用法，避免词典语义与组件不符
+                $fromDict = $comment !== '' && ($defaultsRows[$k]['comment'] ?? '') === '';
+                $hints    = paramHints($fullSrc, $k, $methodSrc, $comment === '' || $fromDict);
+                $strong = false;
+                foreach ($hints as $h) {
+                    if (str_contains($h, '枚举白名单') || str_contains($h, '可选值') || str_contains($h, '分支取值')) {
+                        $strong = true;
+                        break;
+                    }
+                }
+                if ($hints !== []) {
+                    $comment = $strong
+                        ? implode('；', $hints)
+                        : trim(($comment !== '' ? $comment . '；' : '') . implode('；', $hints), '；');
                 }
                 $md[] = '| `' . $k . '` | ' . guessType($v) . ' | `' . cell($defTxt) . '` | ' . cell($comment) . ' |';
             }
             $md[] = '';
-            // 参数类型提示
-            $md[] = '> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。';
+            $md[] = '> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）'
+                . '见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。';
             $md[] = '';
         }
 

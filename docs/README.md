@@ -17,6 +17,21 @@ echo XfAdmin::page([
 
 ---
 
+## 🔍 不知道用什么组件？
+
+先查 **[快速查找索引（INDEX.md）](INDEX.md)** —— 提供决策树、按场景速查、
+按关键词速查、模板速查四种检索方式，30 秒定位所需组件或模板。
+
+| 检索方式 | 入口 |
+|---|---|
+| 按场景（"我要做列表页/表单/看板…"） | [INDEX.md §2](INDEX.md#2-按场景速查) |
+| 按关键词（"上传/图表/权限…"） | [INDEX.md §3](INDEX.md#3-按关键词速查) |
+| 按分类（226 组件分类浏览） | [03-组件参考/00-总览.md](03-组件参考/00-总览.md) |
+| 按字母（A-Z 全表，Ctrl+F） | [06-附录/01-component-index.md](06-附录/01-component-index.md) |
+| 按模板（整页配方） | [03-组件参考/12-页面模板.md](03-组件参考/12-页面模板.md) |
+
+---
+
 ## 📖 文档地图
 
 ### 一、快速开始
@@ -56,6 +71,7 @@ echo XfAdmin::page([
 | [09-沟通·邮件](03-组件参考/09-data-comm.md) | 8 | chatApp / chatBox / emailApp / mailList / outlook … |
 | [10-仪表盘·模块·通用](03-组件参考/10-data-dashboard.md) | 13 | dashboardGrid / widget / metricCard / settingsCenter … |
 | [11-杂项与交互增强](03-组件参考/11-misc.md) | 18 | calendar / treeView / lightbox / tour / pdfViewer / masonry … |
+| [12-页面模板](03-组件参考/12-页面模板.md) | — | 整页级组件清单 + 7 个页面配方 + 演示站 11 个模板 |
 
 > 组件参数表由 `php tools/gen_component_docs.php` 从源码反射自动生成，
 > 保证与代码 100% 同步（参数、默认值、依赖插件、用法示例均取自源码注释）。
@@ -75,6 +91,8 @@ echo XfAdmin::page([
 | [09-模板页面映射](04-进阶指南/09-templates-pages.md) | INSPINIA 220+ 页面与本包组件的对应关系 |
 | [10-Laravel 集成](04-进阶指南/10-laravel.md) | 服务提供者、Facade、Blade 指令、资源路由 |
 | [11-ThinkPHP 集成](04-进阶指南/11-thinkphp.md) | 服务注册、助手函数、发布命令 |
+| [12-常见任务手册 Cookbook](04-进阶指南/12-cookbook.md) | 22 个高频任务（分页/过滤/行内编辑/批量/导入导出/弹窗/上传…）的完整方案 |
+| [13-单元格渲染器手册](04-进阶指南/13-cell-renderers.md) | 56 个渲染器逐个示例：列配置、cfg 参数、事件与自定义 |
 
 ### 五、运维
 
@@ -134,6 +152,29 @@ echo XfAdmin::page([
 ```bash
 php tools/gen_component_docs.php     # 重新生成 03-组件参考/*.md + 06-附录/01~03 索引
 php tools/gen_component_matrix.php   # 导出组件矩阵 JSON（参数统计用）
+php tools/audit_docs_coverage.php    # 文档覆盖审计：断言每个别名都有条目 + 参数表 + 示例
+php tools/check_docs_links.php       # 文档内部链接检查（667 个链接全有效）
+```
+
+生成器为每个组件产出四段内容：
+
+| 段落 | 来源 |
+|---|---|
+| 用法示例 | 类 docblock 中的 `XfAdmin::xxx([...])`；无则用手写补充示例（`$USAGE_EXAMPLES`） |
+| 全参数示例 | 由 `defaults()` 生成，列出全部参数与默认值（可复制运行） |
+| 数据结构 | 从源码 `foreach` / 私有渲染方法解析出数组元素可用键；无则用手写补充（`$STRUCT_NOTES`） |
+| 渲染骨架 | 从 `html()` 提取组件主要 DOM class |
+| 参数表 | `defaults()` 注释 → 参数词典 → **源码语义**（枚举白名单 / 槽位 / 安全校验 / 开关 / 真实用法） |
+
+覆盖审计输出（当前基线）：
+
+```
+注册别名总数: 226
+文档章节总数: 226
+无文档条目: 0
+无参数表: 0
+无示例: 0
+唯一组件类: 215
 ```
 
 生成内容**均取自源码事实**：
@@ -148,8 +189,11 @@ php tools/gen_component_matrix.php   # 导出组件矩阵 JSON（参数统计用
 各分类文档的**「本章导读」**（组合范式 + 约定与陷阱）写在生成器的 `$GROUPS[...]['intro']` 中，
 随生成一起输出 —— 修改导读请编辑 `tools/gen_component_docs.php` 后重新生成。
 
-## 📁 关于 `.legacy/`
+## 🧹 目录说明
 
-`docs/.legacy/` 存放本次文档重构前的旧文档（内容已全部吸收进新体系，仅作留档），
-不影响阅读，可随时删除。其中更新日志与单文件组件检索表已提升至
-`06-附录/06-changelog.md` 与 `06-附录/07-components-reference.md`。
+- `docs/` 下仅保留本套文档体系（6 个编号目录 + `README.md` + `INDEX.md`），
+  旧版零散文档与自检产物已清理；
+- `06-附录/06-changelog.md`（更新日志）与 `06-附录/07-components-reference.md`
+  （单文件全组件检索表）由旧文档提升保留；
+- `tools/selftest/.build/` 为浏览器自检产物，已加入 `.gitignore`，
+  运行 `bash tools/selftest/run.sh` 会重新生成。

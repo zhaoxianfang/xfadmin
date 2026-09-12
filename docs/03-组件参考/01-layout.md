@@ -91,35 +91,73 @@ XfAdmin::page([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::page([
+    'lang' => 'zh-CN',
+    'title' => '',
+    'description' => null,
+    'keywords' => null,
+    'author' => null,
+    'favicon' => null,
+    'layout' => 'vertical',
+    'theme' => [],
+    'menu' => [],
+    'current_url' => null,
+    'sidenav' => [],
+    'topbar' => [],
+    'topnav' => null,    // 水平布局顶部导航（layout=horizontal 时启用）
+    'page_title' => null,
+    'content' => '',
+    'container' => 'container-fluid',
+    'footer' => [],
+    'customizer' => true,
+    'preloader' => false,    // 页面加载动画（true = 启用）
+    'head' => null,    // <head> 附加内容
+    'scripts' => null,    // </body> 前附加内容
+    'body_class' => null,
+    'csrf' => null,    // CSRF Token（Laravel 下自动注入 csrf_token()）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `sidenav[]` 元素键：`menu`、`current_url`
+
+> **渲染骨架**：主要 class `wrapper` `content-page` `spinner` `double-bounce1` `double-bounce2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `lang` | string | `'zh-CN'` |  |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `description` | mixed | `null` | 描述文本 |
-| `keywords` | mixed | `null` |  |
-| `author` | mixed | `null` | 作者信息 |
-| `favicon` | mixed | `null` |  |
+| `lang` | string | `'zh-CN'` | 源码用法：`$htmlAttrs = ['lang' => $this->get('lang')];` |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `description` | mixed | `null` | 描述文本；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `keywords` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `author` | mixed | `null` | 作者信息；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `favicon` | mixed | `null` | 源码用法：`$favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url…` |
 | `layout` | string | `'vertical'` | 布局模式（各组件不同，如 vertical/horizontal） |
 | `theme` | array | `[]` | 主题（light / dark / 图表主题名） |
 | `menu` | array | `[]` | 菜单数据数组 |
-| `current_url` | mixed | `null` |  |
-| `sidenav` | array | `[]` |  |
-| `topbar` | array | `[]` |  |
-| `topnav` | mixed | `null` | 水平布局顶部导航（layout=horizontal 时启用） |
-| `page_title` | mixed | `null` |  |
-| `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组） |
-| `container` | string | `'container-fluid'` |  |
-| `footer` | array | `[]` | 底部内容（原样输出） |
-| `customizer` | bool | `true` |  |
-| `preloader` | bool | `false` | 页面加载动画（true = 启用） |
-| `head` | mixed | `null` | <head> 附加内容 |
-| `scripts` | mixed | `null` | </body> 前附加内容 |
-| `body_class` | mixed | `null` |  |
+| `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮）；源码用法：`$topnavOpts['current_url'] ??= $this->get('current_url');` |
+| `sidenav` | array | `[]` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `topbar` | array | `[]` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `topnav` | mixed | `null` | 水平布局顶部导航（layout=horizontal 时启用）；为 `null` 时不渲染该区块 |
+| `page_title` | mixed | `null` | 页面标题区（数组则渲染 PageTitle 组件）；源码用法：`$pageTitle = $this->get('page_title');` |
+| `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `container` | string | `'container-fluid'` | 内容区容器 class（默认 container-fluid）；**文本槽位**：输出前自动 HTML 转义 |
+| `footer` | array | `[]` | 底部内容（原样输出）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `customizer` | bool | `true` | 是否渲染主题定制面板；开关：非空 / 真值时启用对应区块 |
+| `preloader` | bool | `false` | 页面加载动画（true = 启用）；开关：非空 / 真值时启用对应区块 |
+| `head` | mixed | `null` | <head> 附加内容；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `scripts` | mixed | `null` | </body> 前附加内容；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `body_class` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义 |
 | `csrf` | mixed | `null` | CSRF Token（Laravel 下自动注入 csrf_token()） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -141,17 +179,38 @@ XfAdmin::sidenav([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::sidenav([
+    'brand' => [],
+    'user' => false,
+    'menu' => [],
+    'current_url' => null,
+    'append' => null,    // 菜单下方附加内容
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `brand[]` 元素键：`url`、`home_url`（默认 `/`）、`name`（默认 `XfAdmin`）、`logo`、`logo_dark`、`logo_sm`
+- `menu[]` 元素键：`render`
+
+> **渲染骨架**：主要 class `scrollbar`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `brand` | array | `[]` | 品牌信息（name/logo/url） |
-| `user` | bool | `false` | 用户信息（name/avatar/email/role 等） |
-| `menu` | array | `[]` | 菜单数据数组 |
-| `current_url` | mixed | `null` |  |
-| `append` | mixed | `null` | 菜单下方附加内容 |
+| `user` | bool | `false` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = $this->get('user');` |
+| `menu` | array | `[]` | 菜单数据数组；源码用法：`$menu = $this->get('menu');` |
+| `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮）；源码用法：`'current_url' => $this->get('current_url'),` |
+| `append` | mixed | `null` | 菜单下方附加内容；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -183,26 +242,55 @@ XfAdmin::topbar([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::topbar([
+    'brand' => true,
+    'search' => true,
+    'search_placeholder' => 'Search...',
+    'search_modal' => false,    // 点击搜索图标弹出全屏模态（替代内联搜索框）
+    'left' => null,
+    'theme_toggle' => true,
+    'fullscreen' => true,
+    'customizer' => true,
+    'languages' => [],
+    'notifications' => false,
+    'messages' => false,
+    'apps' => false,
+    'user' => false,
+    'right' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `languages[]` 元素键：`active`
+
+> **渲染骨架**：主要 class `container-fluid` `topbar-menu` `d-flex` `align-items-center` `gap-2` `topbar-item` `d-none` `d-xl-flex`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `brand` | bool | `true` | 品牌信息（name/logo/url） |
-| `search` | bool | `true` | 是否启用搜索 |
-| `search_placeholder` | string | `'Search...'` |  |
-| `search_modal` | bool | `false` | 点击搜索图标弹出全屏模态（替代内联搜索框） |
-| `left` | mixed | `null` |  |
-| `theme_toggle` | bool | `true` |  |
-| `fullscreen` | bool | `true` |  |
-| `customizer` | bool | `true` |  |
+| `brand` | bool | `true` | 品牌信息（name/logo/url）；源码用法：`if (! $this->get('brand')) {` |
+| `search` | bool | `true` | 是否启用搜索；开关：非空 / 真值时启用对应区块 |
+| `search_placeholder` | string | `'Search...'` | **文本槽位**：输出前自动 HTML 转义 |
+| `search_modal` | bool | `false` | 点击搜索图标弹出全屏模态（替代内联搜索框）；开关：非空 / 真值时启用对应区块 |
+| `left` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `theme_toggle` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `fullscreen` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `customizer` | bool | `true` | 是否渲染主题定制面板；开关：非空 / 真值时启用对应区块 |
 | `languages` | array | `[]` |  |
-| `notifications` | bool | `false` |  |
-| `messages` | bool | `false` |  |
-| `apps` | bool | `false` |  |
-| `user` | bool | `false` | 用户信息（name/avatar/email/role 等） |
-| `right` | mixed | `null` |  |
+| `notifications` | bool | `false` | 源码用法：`$conf = $this->get('notifications');` |
+| `messages` | bool | `false` | 消息列表（聊天/通知/消息中心条目）；源码用法：`$conf = $this->get('messages');` |
+| `apps` | bool | `false` | 应用列表（应用启动器）；源码用法：`$conf = $this->get('apps');` |
+| `user` | bool | `false` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = $this->get('user');` |
+| `right` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -233,33 +321,77 @@ XfAdmin::topNav([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::topNav([
+    'brand' => true,
+    'sidenav_toggle' => false,    // 纯水平布局默认不显示侧栏切换按钮
+    'menu' => [],
+    'current_url' => null,
+    'search' => false,
+    'search_placeholder' => 'Search for something...',
+    'mega' => false,
+    'left' => null,
+    'languages' => [],
+    'messages' => false,
+    'notifications' => false,
+    'theme_toggle' => true,
+    'fullscreen' => true,
+    'customizer' => true,
+    'user' => false,
+    'apps' => false,    // 应用启动器（圆形九宫格 #apps-dropdown-rounded）
+    'right' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `menu[]` 元素键：`children`、`mega`、`icon`、`text`、`url`、`divider`、`title`、`disabled`、`badge`、`active`
+- `languages[]` 元素键：`active`
+
+> **渲染骨架**：主要 class `container-fluid` `topbar-menu` `d-flex` `align-items-center` `gap-2` `app-search` `topnav-search` `d-none`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `brand` | bool | `true` | 品牌信息（name/logo/url） |
-| `sidenav_toggle` | bool | `false` | 纯水平布局默认不显示侧栏切换按钮 |
+| `brand` | bool | `true` | 品牌信息（name/logo/url）；源码用法：`if (! $this->get('brand')) {` |
+| `sidenav_toggle` | bool | `false` | 纯水平布局默认不显示侧栏切换按钮；开关：非空 / 真值时启用对应区块 |
 | `menu` | array | `[]` | 菜单数据数组 |
-| `current_url` | mixed | `null` |  |
-| `search` | bool | `false` | 是否启用搜索 |
-| `search_placeholder` | string | `'Search for something...'` |  |
-| `mega` | bool | `false` |  |
-| `left` | mixed | `null` |  |
+| `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮） |
+| `search` | bool | `false` | 是否启用搜索；开关：非空 / 真值时启用对应区块 |
+| `search_placeholder` | string | `'Search for something...'` | **文本槽位**：输出前自动 HTML 转义 |
+| `mega` | bool | `false` | 源码用法：`$mega = $this->get('mega');` |
+| `left` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `languages` | array | `[]` |  |
-| `messages` | bool | `false` |  |
-| `notifications` | bool | `false` |  |
-| `theme_toggle` | bool | `true` |  |
-| `fullscreen` | bool | `true` |  |
-| `customizer` | bool | `true` |  |
-| `user` | bool | `false` | 用户信息（name/avatar/email/role 等） |
+| `messages` | bool | `false` | 消息列表（聊天/通知/消息中心条目）；源码用法：`$conf = $this->get('messages');` |
+| `notifications` | bool | `false` | 源码用法：`$conf = $this->get('notifications');` |
+| `theme_toggle` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `fullscreen` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `customizer` | bool | `true` | 是否渲染主题定制面板；开关：非空 / 真值时启用对应区块 |
+| `user` | bool | `false` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = $this->get('user');` |
 | `apps` | bool | `false` | 应用启动器（圆形九宫格 #apps-dropdown-rounded） |
-| `right` | mixed | `null` |  |
+| `right` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ### `topnav`
 
 `topnav` 是 `topNav` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\TopNav`，参数与用法完全一致。
+
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::page([
+    'layout' => 'horizontal',                 // 或 'topnav'
+    'topnav' => ['menu' => $menu, 'search' => true],
+]);
+// 单独使用等价写法：
+echo XfAdmin::topnav(['menu' => $menu, 'current_url' => '/admin']);
+```
 
 ---
 
@@ -281,15 +413,33 @@ XfAdmin::pageTitle([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::pageTitle([
+    'title' => '',
+    'breadcrumb' => [],
+    'actions' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `breadcrumb[]` 元素键：`active`、`url`、`text`
+
+> **渲染骨架**：主要 class `flex-grow-1` `text-end`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
 | `breadcrumb` | array | `[]` |  |
-| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义） |
+| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -307,14 +457,27 @@ XfAdmin::pageTitle([
 XfAdmin::footer(['text' => '© 2026 XX公司', 'right' => '<a href="#">帮助</a>']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::footer([
+    'text' => null,
+    'right' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `container-fluid` `row` `col-md-6` `text-center` `text-md-start` `text-md-end` `d-none` `d-md-block`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义） |
-| `right` | mixed | `null` |  |
+| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`$text = $this->get('text') ?? XfAdmin::setting('footer.text');` |
+| `right` | mixed | `null` | 源码用法：`$right = $this->get('right') ?? XfAdmin::setting('footer.right');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -326,14 +489,42 @@ XfAdmin::footer(['text' => '© 2026 XX公司', 'right' => '<a href="#">帮助</a
 > **文件**：`src/Components/Layout/Customizer.php`（107 行）
 > **依赖插件**：无
 
+**用法示例**
+
+```php
+// 主题定制面板：默认由 Page 自动渲染，也可单独使用
+echo XfAdmin::customizer([
+    'title'    => '界面定制',
+    'subtitle' => '快速配置布局、皮肤与偏好',
+]);
+
+// 关闭定制面板：XfAdmin::page(['customizer' => false, …])
+// 面板内的 radio name 与 <html data-*> 属性一一对应：
+//   data-skin / data-bs-theme / data-topbar-color / data-menu-color / data-sidenav-size / data-layout-position
+//   配置持久化在 sessionStorage['__INSPINIA_CONFIG__']（由 config.js 管理）
+```
+
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::customizer([
+    'title' => 'Admin Customizer',
+    'subtitle' => '快速配置后台界面的布局、皮肤与偏好',
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `row` `g-3` `form-check` `card-radio` `p-3` `border-bottom` `offcanvas` `offcanvas-end`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'Admin Customizer'` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `subtitle` | string | `'快速配置后台界面的布局、皮肤与偏好'` | 副标题文本 |
+| `title` | string | `'Admin Customizer'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `subtitle` | string | `'快速配置后台界面的布局、皮肤与偏好'` | 副标题文本；**文本槽位**：输出前自动 HTML 转义 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -352,11 +543,83 @@ XfAdmin::authPage(['type' => 'sign-in', 'layout' => 'split', ...]);
 XfAdmin::signIn();
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::authPage([
+    'layout' => 'base',    // base | card | split（basic 视为 base）
+    'class' => '',    // 附加到根容器 class
+    'id' => '',    // 根容器 id
+    'bodyClass' => '',    // 卡片 / 主体区域附加 class
+    'theme' => 'light',    // light | dark（split/card 侧栏风格）
+    // brand
+    'brand' => [
+        'name' => 'XfAdmin',
+        'url' => '/',
+        'logo' => null,
+    ],
+    'title' => '',    // <title>
+    'heading' => '',    // 主标题
+    'subheading' => '',    // 副标题（历史字段名 subtitle 兼容）
+    'copyright' => '',    // 底部版权
+    'status' => '',    // 顶部状态提示（绿，通常由控制器 with('status') 注入）
+    'message' => '',    // 说明性文本（如 new-pass 的提示语）
+    'action' => '',    // 表单提交地址（核心字段；formAttrs.action 兼容）
+    'method' => 'POST',
+    'ajax' => true,    // 表单以 AJAX 方式提交（data-xf-remote，组件内置支持）
+    'fields' => [],    // 关联数组：['email' => [...], 'password' => [...]]
+    'buttons' => [],    // 按钮数组（label/variant/type/...）
+    'submit' => '提交',    // 默认提交按钮文案（未传 buttons 时使用）
+    'content' => '',    // 自定义主体内容（raw，覆盖默认表单）
+    'below' => '',    // 表单下方补充内容（raw，如提示文案 / 链接）
+    'beforeForm' => '',    // 插入到 <form> 之前
+    'afterForm' => '',    // 插入到 </form> 之后
+    'prepend' => '',    // 插入到卡片标题之后（表单之前）
+    'append' => '',    // 插入到卡片底部（links 之前）
+    'links' => [],    // 顶部 / 底部导航链接（[['text'=>..., 'href'=>...], ...]）
+    'loginRedirect' => '/login',    // “已有账号？去登录” 链接
+    'registerRedirect' => '/register',    // “还没有账号？去注册” 链接
+    'backLink' => null,    // 返回链接（['url'=>..., 'text'=>...] 或 null 隐藏）
+    'footerLinks' => [],    // 底部链接列表（[['url'=>..., 'text'=>...], ...]）
+    'socialButtons' => [],    // [['icon'=>..., 'url'=>..., 'label'=>...], ...]
+    'sideImage' => 'auth.jpg',
+    'sideImageAlt' => '',    // 背景图 alt
+    'sideImageSize' => 'cover',    // 背景尺寸（CSS background-size：cover/contain/100% 100%...）
+    'sideImagePosition' => 'center',    // 背景定位（CSS background-position：center/top left...）
+    'sideOverlay' => true,    // 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角）
+    'sideTitle' => '企业级后台管理平台',    // 侧栏标题（默认官方文案，可按需覆盖）
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
+    // sideList
+    'sideList' => [
+        [/* … */],
+        [/* … */],
+        [/* … */],
+    ],
+    'sideVariant' => 'primary',    // 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变）
+    'user' => [],    // ['name'=>..., 'avatar'=>..., 'email'=>...]
+    'showBackToTop' => false,
+    'captcha' => false,    // bool=渲染占位；string=原样输出（如 web component HTML）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `brand[]` 元素键：`name`（默认 `XfAdmin`）、`url`（默认 `/`）、`logo`
+- `fields[]` 元素键：`name`
+- `buttons[]` 元素键：`type`（默认 `submit`）、`variant`（默认 `primary`）、`name`、`label`（默认 `提交`）
+- `links[]` 元素键：`url`（默认 `#`）、`text`
+- `footerLinks[]` 元素键：`url`（默认 `#`）、`text`
+- `socialButtons[]` 元素键：`url`（默认 `#`）、`text`
+- `sideList[]` 元素键：`url`（默认 `#`）、`text`
+- `user[]` 元素键：`name`（默认 `?`）、`avatar`、`email`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `layout` | string | `'base'` | base \| card \| split（basic 视为 base） |
+| `layout` | string | `'base'` | 可选值：`base` |
 | `class` | string | `''` | 附加到根容器 class |
 | `id` | string | `''` | 根容器 id |
 | `bodyClass` | string | `''` | 卡片 / 主体区域附加 class |
@@ -369,7 +632,7 @@ XfAdmin::signIn();
 | `status` | string | `''` | 顶部状态提示（绿，通常由控制器 with('status') 注入） |
 | `message` | string | `''` | 说明性文本（如 new-pass 的提示语） |
 | `action` | string | `''` | 表单提交地址（核心字段；formAttrs.action 兼容） |
-| `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
+| `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE）；源码用法：`if (($this->get('method') === 'POST') && isset($formAttrs['method'])) {` |
 | `ajax` | bool | `true` | 表单以 AJAX 方式提交（data-xf-remote，组件内置支持） |
 | `fields` | array | `[]` | 关联数组：['email' => [...], 'password' => [...]] |
 | `buttons` | array | `[]` | 按钮数组（label/variant/type/...） |
@@ -386,40 +649,118 @@ XfAdmin::signIn();
 | `backLink` | mixed | `null` | 返回链接（['url'=>..., 'text'=>...] 或 null 隐藏） |
 | `footerLinks` | array | `[]` | 底部链接列表（[['url'=>..., 'text'=>...], ...]） |
 | `socialButtons` | array | `[]` | [['icon'=>..., 'url'=>..., 'label'=>...], ...] |
-| `sideImage` | string | `'auth.jpg'` |  |
+| `sideImage` | string | `'auth.jpg'` | 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径）；源码用法：`$img = $this->get('sideImage');` |
 | `sideImageAlt` | string | `''` | 背景图 alt |
 | `sideImageSize` | string | `'cover'` | 背景尺寸（CSS background-size：cover/contain/100% 100%...） |
 | `sideImagePosition` | string | `'center'` | 背景定位（CSS background-position：center/top left...） |
 | `sideOverlay` | bool | `true` | 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角） |
 | `sideTitle` | string | `'企业级后台管理平台'` | 侧栏标题（默认官方文案，可按需覆盖） |
 | `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏文案 |
-| `sideList` | array | `[{…}, {…}, {…}]` | 数组结构（见组件用法示例） |
+| `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]`；源码用法：`$list = $this->get('sideList');` |
 | `sideVariant` | string | `'primary'` | 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变） |
 | `user` | array | `[]` | ['name'=>..., 'avatar'=>..., 'email'=>...] |
-| `showBackToTop` | bool | `false` |  |
+| `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮；源码用法：`. ($this->get('showBackToTop') ? '<a href="#" class="back-to-top"><i class="ti ti-che…` |
 | `captcha` | bool | `false` | bool=渲染占位；string=原样输出（如 web component HTML） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ### `signIn`
 
 `signIn` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
 
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::signIn([                       // 等价 authPage(['type' => 'sign-in'])
+    'layout'  => 'split',                    // base | card | split
+    'action'  => '/admin/login',
+    'ajax'    => true,
+    'heading' => '欢迎回来',
+    'fields'  => [
+        'username' => ['label' => '账号', 'required' => true, 'autofocus' => true],
+        'password' => ['label' => '密码', 'type' => 'password', 'required' => true],
+    ],
+    'submit'  => ['text' => '登录', 'icon' => 'ti ti-login'],
+    'captcha' => (string) XfAdmin::captcha(['mode' => 'image', 'src' => '/captcha.png']),
+]);
+```
+
 ### `signUp`
 
 `signUp` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
+
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::signUp([                       // 等价 authPage(['type' => 'sign-up'])
+    'layout' => 'card',
+    'action' => '/admin/register',
+    'ajax'   => true,
+    'fields' => [
+        'name'     => ['label' => '姓名', 'required' => true],
+        'email'    => ['label' => '邮箱', 'type' => 'email', 'required' => true],
+        'password' => ['label' => '密码', 'type' => 'password', 'required' => true],
+        'password_confirmation' => ['label' => '确认密码', 'type' => 'password', 'required' => true],
+    ],
+    'append' => '<div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="agree" id="agree">'
+             . '<label class="form-check-label" for="agree">我已阅读并同意服务条款</label></div>',
+    'loginRedirect' => '/admin/login',
+]);
+```
 
 ### `resetPass`
 
 `resetPass` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
 
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::resetPass([                    // 等价 authPage(['type' => 'reset-pass'])
+    'layout' => 'base',
+    'action' => '/admin/password/email',
+    'ajax'   => true,
+    'fields' => ['email' => ['label' => '注册邮箱', 'type' => 'email', 'required' => true, 'autofocus' => true]],
+    'submit' => ['text' => '发送重置链接'],
+]);
+```
+
 ### `newPass`
 
 `newPass` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
 
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::newPass([                      // 等价 authPage(['type' => 'new-pass'])
+    'layout' => 'base',
+    'action' => '/admin/password/new',
+    'ajax'   => true,
+    'email'  => 'user@example.com',           // 展示（disabled）
+    'newPassShowCode' => false,               // 是否显示 6 位验证码分格输入
+    'newPassShowAgree' => true,
+    'fields' => [
+        'password'              => ['label' => '新密码', 'type' => 'password', 'required' => true],
+        'password_confirmation' => ['label' => '确认新密码', 'type' => 'password', 'required' => true],
+    ],
+]);
+```
+
 ### `twoFactor`
 
 `twoFactor` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
+
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::twoFactor([                    // 等价 authPage(['type' => 'two-factor'])
+    'layout' => 'base',
+    'action' => '/admin/2fa',
+    'ajax'   => true,
+    'mask'   => 'u***@example.com',           // 提示验证码发送目标（可省略）
+    'submit' => ['text' => '验证'],
+]);
+// 组件内部渲染 6 个分格输入（name=\"code[]\"），由前端自动拼接为单个值提交
+```
 
 ---
 
@@ -441,37 +782,106 @@ XfAdmin::lockScreen([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::lockScreen([
+    'lang' => 'zh-CN',
+    'title' => null,    // <title>，默认取 heading
+    'theme' => [],
+    // user
+    'user' => [
+        'name' => 'User',
+        'avatar' => '',
+    ],
+    'action' => '#',
+    'heading' => '屏幕已锁定',
+    'text' => '请输入密码以继续',
+    'brand' => 'XfAdmin',
+    'below' => null,    // 卡片下方补充内容（如「切换账号」链接）
+    'copyright' => null,
+    'favicon' => null,
+    'head' => null,
+    'scripts' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `theme[]` 元素键：`skin`、`mode`
+- `user[]` 元素键：`name`（默认 `User`）、`avatar`
+
+> **渲染骨架**：主要 class `auth-box` `overflow-hidden` `align-items-center` `d-flex` `container` `row` `justify-content-center` `col-xxl-4`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `lang` | string | `'zh-CN'` |  |
+| `lang` | string | `'zh-CN'` | 源码用法：`$htmlAttrs = ['lang' => $this->get('lang')];` |
 | `title` | mixed | `null` | <title>，默认取 heading |
 | `theme` | array | `[]` | 主题（light / dark / 图表主题名） |
-| `user` | array | `['name'=>'User', 'avatar'=>'']` | 用户信息（name/avatar/email/role 等） |
-| `action` | string | `'#'` | 表单提交地址 / 动作类型 |
-| `heading` | string | `'屏幕已锁定'` |  |
-| `text` | string | `'请输入密码以继续'` | 正文/按钮文案（纯文本语义，输出时转义） |
-| `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url） |
-| `below` | mixed | `null` | 卡片下方补充内容（如「切换账号」链接） |
-| `copyright` | mixed | `null` |  |
-| `favicon` | mixed | `null` |  |
-| `head` | mixed | `null` |  |
-| `scripts` | mixed | `null` |  |
+| `user` | array | `['name'=>'User', 'avatar'=>'']` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = (array) $this->get('user');` |
+| `action` | string | `'#'` | 表单提交地址 / 动作类型；**文本槽位**：输出前自动 HTML 转义 |
+| `heading` | string | `'屏幕已锁定'` | **文本槽位**：输出前自动 HTML 转义 |
+| `text` | string | `'请输入密码以继续'` | 正文/按钮文案（纯文本语义，输出时转义）；**文本槽位**：输出前自动 HTML 转义 |
+| `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；**文本槽位**：输出前自动 HTML 转义 |
+| `below` | mixed | `null` | 卡片下方补充内容（如「切换账号」链接）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `copyright` | mixed | `null` | 版权文案；源码用法：`$copyright = $this->get('copyright') ?? ('© ' . date('Y') . ' ' . XfAdmin::setting('b…` |
+| `favicon` | mixed | `null` | 源码用法：`$favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url…` |
+| `head` | mixed | `null` | </head> 前附加内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `scripts` | mixed | `null` | </body> 前附加内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ### `deleteAccount`
 
 `deleteAccount` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
 
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::deleteAccount([                // 等价 authPage(['type' => 'delete-account'])
+    'layout' => 'base',
+    'action' => '/admin/account/delete',
+    'ajax'   => true,
+    'message' => '注销后数据不可恢复，请谨慎操作。',
+    'fields' => ['password' => ['label' => '请输入密码确认', 'type' => 'password', 'required' => true, 'autofocus' => true]],
+    'submit' => ['text' => '确认注销', 'variant' => 'danger'],
+]);
+```
+
 ### `successMail`
 
 `successMail` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
 
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::successMail([                  // 等价 authPage(['type' => 'success-mail'])
+    'layout' => 'base',
+    'status' => '重置链接已发送，请查收邮箱。',
+    'loginRedirect' => '/admin/login',
+]);
+// 该语义页无表单，仅展示成功图标 + 提示 + 返回链接
+```
+
 ### `loginPin`
 
 `loginPin` 是 `authPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\AuthPage`，参数与用法完全一致。
+
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::loginPin([                     // 等价 authPage(['type' => 'login-pin'])
+    'layout'   => 'base',
+    'action'   => '/admin/pin-login',
+    'ajax'     => true,
+    'pinGroup' => 6,                         // PIN 位数，也可写 fields['pin']['group']
+    'submit'   => ['text' => '登录'],
+]);
+```
 
 ---
 
@@ -494,6 +904,74 @@ XfAdmin::errorPage([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::errorPage([
+    'layout' => 'base',    // 布局模式（各组件不同，如 vertical/horizontal）
+    'class' => '',    // 附加到根元素的自定义 class
+    'id' => '',    // 根元素 id（留空自动生成唯一 id）
+    'bodyClass' => '',    // 追加到 <form> 的 class
+    'theme' => 'light',    // 主题（light / dark / 图表主题名）
+    // brand：品牌信息（name/logo/url）
+    'brand' => [
+        'name' => 'XfAdmin',
+        'url' => '/',
+        'logo' => null,
+    ],
+    'title' => '',    // 标题文本（部分组件为弹窗/tooltip 标题）
+    'heading' => 'Page Not Found',
+    'subheading' => '',    // 副标题（回退历史字段 subtitle）
+    'copyright' => '',    // 版权文案
+    'status' => '',    // 状态值 / 状态映射
+    'message' => '',
+    'action' => '',    // 表单提交地址 / 动作类型
+    'method' => 'POST',    // HTTP 方法（GET/POST/PUT/DELETE）
+    'ajax' => true,    // AJAX 地址或 DataTables 原生 ajax 配置
+    'fields' => [],    // 字段定义数组（表单字段 / 详情字段）
+    'buttons' => [],    // 按钮定义数组
+    'submit' => '提交',    // 提交按钮配置（字符串或数组：text/class/variant/icon）
+    'content' => '',    // 内容区（可为 HTML 字符串、组件实例或数组）
+    'below' => '',    // 表单下方补充内容（原样输出）
+    'beforeForm' => '',    // 插入到 <form> 之前的内容（原样输出）
+    'afterForm' => '',    // 插入到 </form> 之后的内容（原样输出）
+    'prepend' => '',    // 前缀内容（原样输出，如输入组文本/图标）
+    'append' => '',    // 后缀内容（原样输出，常用于协议说明）
+    'links' => [],    // 链接数组（导航 / 底部链接）
+    'loginRedirect' => '/login',    // 「去登录」链接地址
+    'registerRedirect' => '/register',    // 「去注册」链接地址
+    'backLink' => null,    // 返回链接配置（保留兼容）
+    'footerLinks' => [],    // 页脚链接 `[['url'=>..,'text'=>..]]`
+    'socialButtons' => [],    // 社交登录按钮 `['icon'=>..,'url'=>..,'label'=>..]`
+    'sideImage' => 'auth.jpg',    // 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径）
+    'sideImageAlt' => '',    // 侧栏背景图无障碍文本
+    'sideImageSize' => 'cover',    // 侧栏背景 background-size
+    'sideImagePosition' => 'center',    // 侧栏背景 background-position
+    'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
+    'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
+    'sideList' => [
+        [/* … */],
+        [/* … */],
+        [/* … */],
+    ],
+    'sideVariant' => 'primary',    // 侧栏语义变体（primary/info/success/…）
+    'user' => [],    // 用户信息（name/avatar/email/role 等）
+    'showBackToTop' => false,    // 是否显示「回到顶部」按钮
+    'captcha' => false,    // 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位
+    'code' => 404,
+    'image' => null,    // 默认取包内 images/svg/{code}.svg
+    'home_url' => '/',
+    'home_text' => '返回首页',
+    'card' => false,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `xf-error-code` `display-1` `fw-bold` `text-primary` `p-2` `text-center` `btn` `btn-primary`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -501,52 +979,52 @@ XfAdmin::errorPage([
 | `layout` | string | `'base'` | 布局模式（各组件不同，如 vertical/horizontal） |
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
-| `bodyClass` | string | `''` |  |
+| `bodyClass` | string | `''` | 追加到 <form> 的 class |
 | `theme` | string | `'light'` | 主题（light / dark / 图表主题名） |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `heading` | string | `'Page Not Found'` |  |
-| `subheading` | string | `''` |  |
-| `copyright` | string | `''` |  |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
+| `heading` | string | `'Page Not Found'` | **文本槽位**：输出前自动 HTML 转义 |
+| `subheading` | string | `''` | 副标题（回退历史字段 subtitle） |
+| `copyright` | string | `''` | 版权文案 |
 | `status` | string | `''` | 状态值 / 状态映射 |
-| `message` | string | `''` |  |
+| `message` | string | `''` | **文本槽位**：输出前自动 HTML 转义 |
 | `action` | string | `''` | 表单提交地址 / 动作类型 |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `ajax` | bool | `true` | AJAX 地址或 DataTables 原生 ajax 配置 |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `buttons` | array | `[]` | 按钮定义数组 |
-| `submit` | string | `'提交'` |  |
+| `submit` | string | `'提交'` | 提交按钮配置（字符串或数组：text/class/variant/icon） |
 | `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组） |
-| `below` | string | `''` |  |
-| `beforeForm` | string | `''` |  |
-| `afterForm` | string | `''` |  |
-| `prepend` | string | `''` |  |
-| `append` | string | `''` |  |
+| `below` | string | `''` | 表单下方补充内容（原样输出） |
+| `beforeForm` | string | `''` | 插入到 <form> 之前的内容（原样输出） |
+| `afterForm` | string | `''` | 插入到 </form> 之后的内容（原样输出） |
+| `prepend` | string | `''` | 前缀内容（原样输出，如输入组文本/图标） |
+| `append` | string | `''` | 后缀内容（原样输出，常用于协议说明） |
 | `links` | array | `[]` | 链接数组（导航 / 底部链接） |
-| `loginRedirect` | string | `'/login'` |  |
-| `registerRedirect` | string | `'/register'` |  |
-| `backLink` | mixed | `null` |  |
-| `footerLinks` | array | `[]` |  |
-| `socialButtons` | array | `[]` |  |
-| `sideImage` | string | `'auth.jpg'` |  |
-| `sideImageAlt` | string | `''` |  |
-| `sideImageSize` | string | `'cover'` |  |
-| `sideImagePosition` | string | `'center'` |  |
-| `sideOverlay` | bool | `true` |  |
-| `sideTitle` | string | `'企业级后台管理平台'` |  |
-| `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` |  |
-| `sideList` | array | `[{…}, {…}, {…}]` | 数组结构（见组件用法示例） |
-| `sideVariant` | string | `'primary'` |  |
+| `loginRedirect` | string | `'/login'` | 「去登录」链接地址 |
+| `registerRedirect` | string | `'/register'` | 「去注册」链接地址 |
+| `backLink` | mixed | `null` | 返回链接配置（保留兼容） |
+| `footerLinks` | array | `[]` | 页脚链接 `[['url'=>..,'text'=>..]]` |
+| `socialButtons` | array | `[]` | 社交登录按钮 `['icon'=>..,'url'=>..,'label'=>..]` |
+| `sideImage` | string | `'auth.jpg'` | 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径） |
+| `sideImageAlt` | string | `''` | 侧栏背景图无障碍文本 |
+| `sideImageSize` | string | `'cover'` | 侧栏背景 background-size |
+| `sideImagePosition` | string | `'center'` | 侧栏背景 background-position |
+| `sideOverlay` | bool | `true` | 侧栏是否显示渐变遮罩 |
+| `sideTitle` | string | `'企业级后台管理平台'` | 侧栏主标题 |
+| `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏说明文本 |
+| `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]` |
+| `sideVariant` | string | `'primary'` | 侧栏语义变体（primary/info/success/…） |
 | `user` | array | `[]` | 用户信息（name/avatar/email/role 等） |
-| `showBackToTop` | bool | `false` |  |
-| `captcha` | bool | `false` |  |
-| `code` | int | `404` |  |
+| `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮 |
+| `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
+| `code` | int | `404` | 源码用法：`$code = (string) $this->get('code');` |
 | `image` | mixed | `null` | 默认取包内 images/svg/{code}.svg |
-| `home_url` | string | `'/'` |  |
-| `home_text` | string | `'返回首页'` |  |
-| `card` | bool | `false` |  |
+| `home_url` | string | `'/'` | URL：经协议白名单校验（拦截 `javascript:` 等） |
+| `home_text` | string | `'返回首页'` | **文本槽位**：输出前自动 HTML 转义 |
+| `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -570,6 +1048,73 @@ XfAdmin::comingSoon([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::comingSoon([
+    'layout' => 'base',    // 布局模式（各组件不同，如 vertical/horizontal）
+    'class' => '',    // 附加到根元素的自定义 class
+    'id' => '',    // 根元素 id（留空自动生成唯一 id）
+    'bodyClass' => '',    // 追加到 <form> 的 class
+    'theme' => 'light',    // 主题（light / dark / 图表主题名）
+    // brand：品牌信息（name/logo/url）
+    'brand' => [
+        'name' => 'XfAdmin',
+        'url' => '/',
+        'logo' => null,
+    ],
+    'title' => '',    // 标题文本（部分组件为弹窗/tooltip 标题）
+    'heading' => '即将上线',
+    'subheading' => '',    // 副标题（回退历史字段 subtitle）
+    'copyright' => '',    // 版权文案
+    'status' => '',    // 状态值 / 状态映射
+    'message' => '我们正在努力打造精彩内容，敬请期待。',
+    'action' => '',    // 表单提交地址 / 动作类型
+    'method' => 'POST',    // HTTP 方法（GET/POST/PUT/DELETE）
+    'ajax' => true,    // AJAX 地址或 DataTables 原生 ajax 配置
+    'fields' => [],    // 字段定义数组（表单字段 / 详情字段）
+    'buttons' => [],    // 按钮定义数组
+    'submit' => '提交',    // 提交按钮配置（字符串或数组：text/class/variant/icon）
+    'content' => '',    // 内容区（可为 HTML 字符串、组件实例或数组）
+    'below' => '',    // 表单下方补充内容（原样输出）
+    'beforeForm' => '',    // 插入到 <form> 之前的内容（原样输出）
+    'afterForm' => '',    // 插入到 </form> 之后的内容（原样输出）
+    'prepend' => '',    // 前缀内容（原样输出，如输入组文本/图标）
+    'append' => '',    // 后缀内容（原样输出，常用于协议说明）
+    'links' => [],    // 链接数组（导航 / 底部链接）
+    'loginRedirect' => '/login',    // 「去登录」链接地址
+    'registerRedirect' => '/register',    // 「去注册」链接地址
+    'backLink' => null,    // 返回链接配置（保留兼容）
+    'footerLinks' => [],    // 页脚链接 `[['url'=>..,'text'=>..]]`
+    'socialButtons' => [],    // 社交登录按钮 `['icon'=>..,'url'=>..,'label'=>..]`
+    'sideImage' => 'auth.jpg',    // 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径）
+    'sideImageAlt' => '',    // 侧栏背景图无障碍文本
+    'sideImageSize' => 'cover',    // 侧栏背景 background-size
+    'sideImagePosition' => 'center',    // 侧栏背景 background-position
+    'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
+    'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
+    'sideList' => [
+        [/* … */],
+        [/* … */],
+        [/* … */],
+    ],
+    'sideVariant' => 'primary',    // 侧栏语义变体（primary/info/success/…）
+    'user' => [],    // 用户信息（name/avatar/email/role 等）
+    'showBackToTop' => false,    // 是否显示「回到顶部」按钮
+    'captcha' => false,    // 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位
+    'deadline' => null,
+    'image' => null,
+    'subscribe' => true,
+    'card' => false,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `text-center` `d-flex` `justify-content-center` `gap-3` `my-4` `card` `mb-0` `card-body`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -577,51 +1122,51 @@ XfAdmin::comingSoon([
 | `layout` | string | `'base'` | 布局模式（各组件不同，如 vertical/horizontal） |
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
-| `bodyClass` | string | `''` |  |
+| `bodyClass` | string | `''` | 追加到 <form> 的 class |
 | `theme` | string | `'light'` | 主题（light / dark / 图表主题名） |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `heading` | string | `'即将上线'` |  |
-| `subheading` | string | `''` |  |
-| `copyright` | string | `''` |  |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
+| `heading` | string | `'即将上线'` | **文本槽位**：输出前自动 HTML 转义 |
+| `subheading` | string | `''` | 副标题（回退历史字段 subtitle） |
+| `copyright` | string | `''` | 版权文案 |
 | `status` | string | `''` | 状态值 / 状态映射 |
-| `message` | string | `'我们正在努力打造精彩内容，敬请期待。'` |  |
+| `message` | string | `'我们正在努力打造精彩内容，敬请期待。'` | **文本槽位**：输出前自动 HTML 转义 |
 | `action` | string | `''` | 表单提交地址 / 动作类型 |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `ajax` | bool | `true` | AJAX 地址或 DataTables 原生 ajax 配置 |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `buttons` | array | `[]` | 按钮定义数组 |
-| `submit` | string | `'提交'` |  |
+| `submit` | string | `'提交'` | 提交按钮配置（字符串或数组：text/class/variant/icon） |
 | `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组） |
-| `below` | string | `''` |  |
-| `beforeForm` | string | `''` |  |
-| `afterForm` | string | `''` |  |
-| `prepend` | string | `''` |  |
-| `append` | string | `''` |  |
+| `below` | string | `''` | 表单下方补充内容（原样输出） |
+| `beforeForm` | string | `''` | 插入到 <form> 之前的内容（原样输出） |
+| `afterForm` | string | `''` | 插入到 </form> 之后的内容（原样输出） |
+| `prepend` | string | `''` | 前缀内容（原样输出，如输入组文本/图标） |
+| `append` | string | `''` | 后缀内容（原样输出，常用于协议说明） |
 | `links` | array | `[]` | 链接数组（导航 / 底部链接） |
-| `loginRedirect` | string | `'/login'` |  |
-| `registerRedirect` | string | `'/register'` |  |
-| `backLink` | mixed | `null` |  |
-| `footerLinks` | array | `[]` |  |
-| `socialButtons` | array | `[]` |  |
-| `sideImage` | string | `'auth.jpg'` |  |
-| `sideImageAlt` | string | `''` |  |
-| `sideImageSize` | string | `'cover'` |  |
-| `sideImagePosition` | string | `'center'` |  |
-| `sideOverlay` | bool | `true` |  |
-| `sideTitle` | string | `'企业级后台管理平台'` |  |
-| `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` |  |
-| `sideList` | array | `[{…}, {…}, {…}]` | 数组结构（见组件用法示例） |
-| `sideVariant` | string | `'primary'` |  |
+| `loginRedirect` | string | `'/login'` | 「去登录」链接地址 |
+| `registerRedirect` | string | `'/register'` | 「去注册」链接地址 |
+| `backLink` | mixed | `null` | 返回链接配置（保留兼容） |
+| `footerLinks` | array | `[]` | 页脚链接 `[['url'=>..,'text'=>..]]` |
+| `socialButtons` | array | `[]` | 社交登录按钮 `['icon'=>..,'url'=>..,'label'=>..]` |
+| `sideImage` | string | `'auth.jpg'` | 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径） |
+| `sideImageAlt` | string | `''` | 侧栏背景图无障碍文本 |
+| `sideImageSize` | string | `'cover'` | 侧栏背景 background-size |
+| `sideImagePosition` | string | `'center'` | 侧栏背景 background-position |
+| `sideOverlay` | bool | `true` | 侧栏是否显示渐变遮罩 |
+| `sideTitle` | string | `'企业级后台管理平台'` | 侧栏主标题 |
+| `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏说明文本 |
+| `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]` |
+| `sideVariant` | string | `'primary'` | 侧栏语义变体（primary/info/success/…） |
 | `user` | array | `[]` | 用户信息（name/avatar/email/role 等） |
-| `showBackToTop` | bool | `false` |  |
-| `captcha` | bool | `false` |  |
-| `deadline` | mixed | `null` |  |
-| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径） |
-| `subscribe` | bool | `true` |  |
-| `card` | bool | `false` |  |
+| `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮 |
+| `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
+| `deadline` | mixed | `null` | 截止时间（倒计时目标，任意可被 strtotime 解析的字符串）；开关：非空 / 真值时启用对应区块 |
+| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；开关：非空 / 真值时启用对应区块 |
+| `subscribe` | bool | `true` | 是否显示订阅表单；开关：非空 / 真值时启用对应区块 |
+| `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -644,6 +1189,72 @@ XfAdmin::maintenance([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::maintenance([
+    'layout' => 'base',    // 布局模式（各组件不同，如 vertical/horizontal）
+    'class' => '',    // 附加到根元素的自定义 class
+    'id' => '',    // 根元素 id（留空自动生成唯一 id）
+    'bodyClass' => '',    // 追加到 <form> 的 class
+    'theme' => 'light',    // 主题（light / dark / 图表主题名）
+    // brand：品牌信息（name/logo/url）
+    'brand' => [
+        'name' => 'XfAdmin',
+        'url' => '/',
+        'logo' => null,
+    ],
+    'title' => '',    // 标题文本（部分组件为弹窗/tooltip 标题）
+    'heading' => '网站维护中',
+    'subheading' => '',    // 副标题（回退历史字段 subtitle）
+    'copyright' => '',    // 版权文案
+    'status' => '',    // 状态值 / 状态映射
+    'message' => '我们正在进行例行维护，请稍后再访问。',
+    'action' => '',    // 表单提交地址 / 动作类型
+    'method' => 'POST',    // HTTP 方法（GET/POST/PUT/DELETE）
+    'ajax' => true,    // AJAX 地址或 DataTables 原生 ajax 配置
+    'fields' => [],    // 字段定义数组（表单字段 / 详情字段）
+    'buttons' => [],    // 按钮定义数组
+    'submit' => '提交',    // 提交按钮配置（字符串或数组：text/class/variant/icon）
+    'content' => '',    // 内容区（可为 HTML 字符串、组件实例或数组）
+    'below' => '',    // 表单下方补充内容（原样输出）
+    'beforeForm' => '',    // 插入到 <form> 之前的内容（原样输出）
+    'afterForm' => '',    // 插入到 </form> 之后的内容（原样输出）
+    'prepend' => '',    // 前缀内容（原样输出，如输入组文本/图标）
+    'append' => '',    // 后缀内容（原样输出，常用于协议说明）
+    'links' => [],    // 链接数组（导航 / 底部链接）
+    'loginRedirect' => '/login',    // 「去登录」链接地址
+    'registerRedirect' => '/register',    // 「去注册」链接地址
+    'backLink' => null,    // 返回链接配置（保留兼容）
+    'footerLinks' => [],    // 页脚链接 `[['url'=>..,'text'=>..]]`
+    'socialButtons' => [],    // 社交登录按钮 `['icon'=>..,'url'=>..,'label'=>..]`
+    'sideImage' => 'auth.jpg',    // 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径）
+    'sideImageAlt' => '',    // 侧栏背景图无障碍文本
+    'sideImageSize' => 'cover',    // 侧栏背景 background-size
+    'sideImagePosition' => 'center',    // 侧栏背景 background-position
+    'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
+    'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
+    'sideList' => [
+        [/* … */],
+        [/* … */],
+        [/* … */],
+    ],
+    'sideVariant' => 'primary',    // 侧栏语义变体（primary/info/success/…）
+    'user' => [],    // 用户信息（name/avatar/email/role 等）
+    'showBackToTop' => false,    // 是否显示「回到顶部」按钮
+    'captcha' => false,    // 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位
+    'image' => null,
+    'contact' => null,
+    'card' => false,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `text-center`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -651,50 +1262,50 @@ XfAdmin::maintenance([
 | `layout` | string | `'base'` | 布局模式（各组件不同，如 vertical/horizontal） |
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
-| `bodyClass` | string | `''` |  |
+| `bodyClass` | string | `''` | 追加到 <form> 的 class |
 | `theme` | string | `'light'` | 主题（light / dark / 图表主题名） |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `heading` | string | `'网站维护中'` |  |
-| `subheading` | string | `''` |  |
-| `copyright` | string | `''` |  |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
+| `heading` | string | `'网站维护中'` | **文本槽位**：输出前自动 HTML 转义 |
+| `subheading` | string | `''` | 副标题（回退历史字段 subtitle） |
+| `copyright` | string | `''` | 版权文案 |
 | `status` | string | `''` | 状态值 / 状态映射 |
-| `message` | string | `'我们正在进行例行维护，请稍后再访问。'` |  |
+| `message` | string | `'我们正在进行例行维护，请稍后再访问。'` | **文本槽位**：输出前自动 HTML 转义 |
 | `action` | string | `''` | 表单提交地址 / 动作类型 |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `ajax` | bool | `true` | AJAX 地址或 DataTables 原生 ajax 配置 |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `buttons` | array | `[]` | 按钮定义数组 |
-| `submit` | string | `'提交'` |  |
+| `submit` | string | `'提交'` | 提交按钮配置（字符串或数组：text/class/variant/icon） |
 | `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组） |
-| `below` | string | `''` |  |
-| `beforeForm` | string | `''` |  |
-| `afterForm` | string | `''` |  |
-| `prepend` | string | `''` |  |
-| `append` | string | `''` |  |
+| `below` | string | `''` | 表单下方补充内容（原样输出） |
+| `beforeForm` | string | `''` | 插入到 <form> 之前的内容（原样输出） |
+| `afterForm` | string | `''` | 插入到 </form> 之后的内容（原样输出） |
+| `prepend` | string | `''` | 前缀内容（原样输出，如输入组文本/图标） |
+| `append` | string | `''` | 后缀内容（原样输出，常用于协议说明） |
 | `links` | array | `[]` | 链接数组（导航 / 底部链接） |
-| `loginRedirect` | string | `'/login'` |  |
-| `registerRedirect` | string | `'/register'` |  |
-| `backLink` | mixed | `null` |  |
-| `footerLinks` | array | `[]` |  |
-| `socialButtons` | array | `[]` |  |
-| `sideImage` | string | `'auth.jpg'` |  |
-| `sideImageAlt` | string | `''` |  |
-| `sideImageSize` | string | `'cover'` |  |
-| `sideImagePosition` | string | `'center'` |  |
-| `sideOverlay` | bool | `true` |  |
-| `sideTitle` | string | `'企业级后台管理平台'` |  |
-| `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` |  |
-| `sideList` | array | `[{…}, {…}, {…}]` | 数组结构（见组件用法示例） |
-| `sideVariant` | string | `'primary'` |  |
+| `loginRedirect` | string | `'/login'` | 「去登录」链接地址 |
+| `registerRedirect` | string | `'/register'` | 「去注册」链接地址 |
+| `backLink` | mixed | `null` | 返回链接配置（保留兼容） |
+| `footerLinks` | array | `[]` | 页脚链接 `[['url'=>..,'text'=>..]]` |
+| `socialButtons` | array | `[]` | 社交登录按钮 `['icon'=>..,'url'=>..,'label'=>..]` |
+| `sideImage` | string | `'auth.jpg'` | 侧栏背景图（包内图片名 / 外链 / data URI / `/` 开头路径） |
+| `sideImageAlt` | string | `''` | 侧栏背景图无障碍文本 |
+| `sideImageSize` | string | `'cover'` | 侧栏背景 background-size |
+| `sideImagePosition` | string | `'center'` | 侧栏背景 background-position |
+| `sideOverlay` | bool | `true` | 侧栏是否显示渐变遮罩 |
+| `sideTitle` | string | `'企业级后台管理平台'` | 侧栏主标题 |
+| `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏说明文本 |
+| `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]` |
+| `sideVariant` | string | `'primary'` | 侧栏语义变体（primary/info/success/…） |
 | `user` | array | `[]` | 用户信息（name/avatar/email/role 等） |
-| `showBackToTop` | bool | `false` |  |
-| `captcha` | bool | `false` |  |
-| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径） |
-| `contact` | mixed | `null` |  |
-| `card` | bool | `false` |  |
+| `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮 |
+| `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
+| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；开关：非空 / 真值时启用对应区块 |
+| `contact` | mixed | `null` | 联系信息（渲染为 mailto 链接）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -718,17 +1329,33 @@ XfAdmin::emptyState([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::emptyState([
+    'icon' => 'ti ti-inbox',
+    'image' => null,
+    'title' => '暂无数据',
+    'text' => null,
+    'action' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `mt-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `icon` | string | `'ti ti-inbox'` | Tabler 图标 class，如 `ti ti-user` |
-| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径） |
-| `title` | string | `'暂无数据'` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义） |
-| `action` | mixed | `null` | 表单提交地址 / 动作类型 |
+| `icon` | string | `'ti ti-inbox'` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `'暂无数据'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `action` | mixed | `null` | 表单提交地址 / 动作类型；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -755,20 +1382,49 @@ XfAdmin::landing([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::landing([
+    'brand' => 'XfAdmin',
+    'nav' => [],
+    'hero' => [],
+    'stats' => [],
+    'features' => [],
+    'pricing' => [],
+    'testimonials' => [],
+    'footer' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `nav[]` 元素键：`url`（默认 `#`）、`text`
+- `hero[]` 元素键：`image`、`title`、`subtitle`、`primary`（默认 `立即体验`）、`secondary`（默认 `了解更多`）
+- `stats[]` 元素键：`value`、`label`
+- `features[]` 元素键：`icon`（默认 `ti ti-bolt`）、`title`、`text`
+- `pricing[]` 元素键：`highlight`、`title`、`price`、`features`、`button`（默认 `选择`）
+- `testimonials[]` 元素键：`avatar`、`text`、`name`、`role`
+- `footer[]` 元素键：`icon`（默认 `ti ti-bolt`）、`title`、`text`
+
+> **渲染骨架**：主要 class `landing-header` `navbar-brand` `fw-bold` `fs-4` `text-primary` `d-none` `d-md-flex` `gap-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url） |
-| `nav` | array | `[]` |  |
-| `hero` | array | `[]` |  |
-| `stats` | array | `[]` |  |
-| `features` | array | `[]` |  |
-| `pricing` | array | `[]` |  |
-| `testimonials` | array | `[]` |  |
+| `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；源码用法：`$brand = $this->get('brand');` |
+| `nav` | array | `[]` | 导航项数组 |
+| `hero` | array | `[]` | 输出到 `` 属性 |
+| `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
+| `features` | array | `[]` | 特性 / 功能列表 |
+| `pricing` | array | `[]` | 价格方案配置 |
+| `testimonials` | array | `[]` | 用户证言列表 |
 | `footer` | array | `[]` | 底部内容（原样输出） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -793,15 +1449,33 @@ XfAdmin::accountSettingsPanel([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::accountSettingsPanel([
+    'title' => '账户设置',
+    'tabs' => [],
+    'active' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `tabs[]` 元素键：`id`、`icon`（默认 `ti ti-point`）、`label`
+
+> **渲染骨架**：主要 class `list-group` `list-group-flush` `xf-asp-nav` `tab-content` `xf-asp-content` `card` `border-0` `shadow-sm`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'账户设置'` | 标题文本（部分组件为弹窗/tooltip 标题） |
+| `title` | string | `'账户设置'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$title = $this->get('title');` |
 | `tabs` | array | `[]` | 选项卡数组 |
-| `active` | mixed | `null` | 是否激活 / 默认选中项 |
+| `active` | mixed | `null` | 是否激活 / 默认选中项；源码用法：`$active = $this->get('active') ?? ($tabs[0]['id'] ?? '');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -830,15 +1504,31 @@ XfAdmin::menu([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::menu([
+    'mode' => 'side',    // side
+    'items' => [],
+    'current_url' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`title`、`text`、`disabled`、`children`、`icon`、`id`、`url`（默认 `#!`）、`target`、`active`、`badge`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `mode` | string | `'side'` | side |
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `current_url` | mixed | `null` |  |
+| `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮）；源码用法：`$current = $this->get('current_url');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -863,17 +1553,35 @@ XfAdmin::row([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::row([
+    'gutter' => null,
+    'align' => null,    // start|center|end  => align-items-*
+    'justify' => null,    // start|center|end|between|around => justify-content-*
+    'cols' => [],
+    'content' => null,    // 直接传内容（可与 cols 混用）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `cols[]` 元素键：`render`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `gutter` | mixed | `null` | 栅格间距（数字或 `['x'=>2,'y'=>3]`） |
-| `align` | mixed | `null` | start\|center\|end  => align-items-* |
-| `justify` | mixed | `null` | start\|center\|end\|between\|around => justify-content-* |
+| `gutter` | mixed | `null` | 栅格间距（数字或 `['x'=>2,'y'=>3]`）；源码用法：`$gutter = $this->get('gutter');` |
+| `align` | mixed | `null` | start\|center\|end  => align-items-*；开关：非空 / 真值时启用对应区块 |
+| `justify` | mixed | `null` | start\|center\|end\|between\|around => justify-content-*；开关：非空 / 真值时启用对应区块 |
 | `cols` | array | `[]` | 列数（栅格 / 分区列数） |
-| `content` | mixed | `null` | 直接传内容（可与 cols 混用） |
+| `content` | mixed | `null` | 直接传内容（可与 cols 混用）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -892,14 +1600,27 @@ XfAdmin::col(['width' => 6, 'content' => ...]);
 XfAdmin::col(['width' => ['md' => 6, 'xl' => 4], 'offset' => ['md' => 3], 'content' => ...]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::col([
+    'width' => null,    // int | 'auto' | [breakpoint => width]
+    'offset' => null,
+    'order' => null,
+    'content' => '',
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `width` | mixed | `null` | int \| 'auto' \| [breakpoint => width] |
-| `offset` | mixed | `null` | 栅格偏移 |
-| `order` | mixed | `null` | 排序规则，如 `[[0, 'asc']]` |
-| `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组） |
+| `offset` | mixed | `null` | 栅格偏移；源码用法：`foreach ((array) ($this->get('offset') ?? []) as $bp => $o) {` |
+| `order` | mixed | `null` | 排序规则，如 `[[0, 'asc']]`；源码用法：`foreach ((array) ($this->get('order') ?? []) as $bp => $o) {` |
+| `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

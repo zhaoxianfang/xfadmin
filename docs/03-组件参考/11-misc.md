@@ -78,18 +78,39 @@ XfAdmin::calendar([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::calendar([
+    'events' => [],
+    'editable' => false,
+    'locale' => 'zh-cn',
+    'externalEvents' => [],
+    'addText' => '新建事件',
+    'options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `externalEvents[]` 元素键：`className`（默认 `bg-primary-subtle text-primary border-start border-3 border-primary`）、`label`
+
+> **渲染骨架**：主要 class `card` `card-body` `col-xl-3` `col-lg-4` `border-end` `p-3` `row` `g-0`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `events` | array | `[]` |  |
-| `editable` | bool | `false` |  |
-| `locale` | string | `'zh-cn'` |  |
-| `externalEvents` | array | `[]` |  |
-| `addText` | string | `'新建事件'` |  |
+| `events` | array | `[]` | 事件数组（日历 / 时间线） |
+| `editable` | bool | `false` | 源码用法：`$editable = (bool) $this->get('editable');` |
+| `locale` | string | `'zh-cn'` | 源码用法：`'locale' => $this->get('locale'),` |
+| `externalEvents` | array | `[]` | 外部可拖拽事件（日历） |
+| `addText` | string | `'新建事件'` | 源码用法：`$addText = $this->get('addText');` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -116,16 +137,34 @@ XfAdmin::treeView([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::treeView([
+    'data' => [],
+    'checkbox' => false,
+    'dnd' => false,
+    'options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `data[]`：`id`、`text`（节点文案）、`children`（子节点数组，递归）、`icon`、`disabled`
+- `options[]`：透传 jsTree 原生配置
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `data` | array | `[]` | 数据数组（行数据 / 图表数据） |
-| `checkbox` | bool | `false` |  |
-| `dnd` | bool | `false` |  |
+| `checkbox` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
+| `dnd` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -153,16 +192,33 @@ XfAdmin::nestable([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::nestable([
+    'items' => [],    // 条目数组（结构见各组件说明）
+    'handle' => false,
+    'input' => null,
+    'options' => [],    // 透传给底层插件的原生配置（递归合并，优先级最高）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`id`、`content`、`children`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `handle` | bool | `false` |  |
-| `input` | mixed | `null` |  |
+| `handle` | bool | `false` | 源码用法：`$handle = (bool) $this->get('handle');` |
+| `input` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -188,17 +244,35 @@ XfAdmin::lightbox([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::lightbox([
+    'images' => [],
+    'columns' => 3,
+    'masonry' => false,
+    'gallery' => 'xf-gallery',
+    'options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `images[]` 元素键：`thumb`、`src`、`title`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `images` | array | `[]` |  |
-| `columns` | int | `3` | 列定义数组 |
-| `masonry` | bool | `false` |  |
-| `gallery` | string | `'xf-gallery'` |  |
+| `columns` | int | `3` | 列定义数组；源码用法：`$cols = max(1, (int) $this->get('columns'));` |
+| `masonry` | bool | `false` | 源码用法：`return $this->get('masonry') ? ['glightbox', 'masonry'] : ['glightbox'];` |
+| `gallery` | string | `'xf-gallery'` | 输出到 `` 属性 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -222,15 +296,27 @@ XfAdmin::tour([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::tour([
+    'steps' => [],
+    'auto' => false,
+    'options' => [],
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `steps` | array | `[]` | 步骤数组（向导 / 步骤条） |
-| `auto` | bool | `false` |  |
+| `auto` | bool | `false` | 源码用法：`'auto' => (bool) $this->get('auto'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -249,21 +335,45 @@ XfAdmin::clipboard(['text' => '要复制的内容', 'label' => '复制']);
 XfAdmin::clipboard(['target' => '#code-block', 'label' => '复制代码']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::clipboard([
+    'text' => null,
+    'target' => null,
+    'label' => '复制',
+    'variant' => 'light',
+    'success' => '已复制！',
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义） |
-| `target` | mixed | `null` | 链接打开方式，如 _blank |
-| `label` | string | `'复制'` | 标签文案（表单字段标签 / 按钮文案） |
-| `variant` | string | `'light'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束） |
-| `success` | string | `'已复制！'` |  |
+| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `target` | mixed | `null` | 目标（组件语义不同：链接打开方式 `_blank` / 倒计时目标时间 / 数值目标）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `label` | string | `'复制'` | 标签文案（表单字段标签 / 按钮文案）；**文本槽位**：输出前自动 HTML 转义 |
+| `variant` | string | `'light'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束）；源码用法：`'class' => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::E…` |
+| `success` | string | `'已复制！'` | 源码用法：`'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_…` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ### `clipboardButton`
 
 `clipboardButton` 是 `clipboard` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Misc\ClipboardButton`，参数与用法完全一致。
+
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::clipboardButton([              // 等价 XfAdmin::clipboard()
+    'text'  => 'https://example.com/invite/abc123',
+    'label' => '复制邀请链接',
+    'icon'  => 'ti ti-copy',
+]);
+```
 
 ---
 
@@ -290,23 +400,43 @@ XfAdmin::sweetAlert([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::sweetAlert([
+    'trigger' => null,
+    'trigger_variant' => 'primary',
+    'title' => '',
+    'text' => null,
+    'icon' => null,    // success | error | warning | info | question
+    'confirm_text' => '确定',
+    'cancel_text' => null,    // 非空则显示取消按钮
+    'confirm_url' => null,
+    'confirm_js' => null,
+    'auto' => false,
+    'options' => [],
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `trigger` | mixed | `null` | 触发方式（hover / click / focus），或触发按钮文案 |
-| `trigger_variant` | string | `'primary'` |  |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义） |
+| `trigger` | mixed | `null` | 触发方式（hover / click / focus），或触发按钮文案；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `trigger_variant` | string | `'primary'` | 触发按钮的语义变体（primary/secondary/…）；源码用法：`'class' => 'btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::…` |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；输出到 `` 属性 |
+| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`'text' => $this->get('text'),` |
 | `icon` | mixed | `null` | success \| error \| warning \| info \| question |
-| `confirm_text` | string | `'确定'` |  |
-| `cancel_text` | mixed | `null` | 非空则显示取消按钮 |
-| `confirm_url` | mixed | `null` |  |
-| `confirm_js` | mixed | `null` |  |
-| `auto` | bool | `false` |  |
+| `confirm_text` | string | `'确定'` | 源码用法：`'confirmButtonText' => $this->get('confirm_text'),` |
+| `cancel_text` | mixed | `null` | 非空则显示取消按钮；为 `null` 时不渲染该区块 |
+| `confirm_url` | mixed | `null` | 源码用法：`'confirmUrl' => $this->get('confirm_url'),` |
+| `confirm_js` | mixed | `null` | 源码用法：`'confirmJs' => $this->get('confirm_js'),` |
+| `auto` | bool | `false` | 源码用法：`'auto' => (bool) $this->get('auto'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -324,18 +454,33 @@ XfAdmin::sweetAlert([
 XfAdmin::raw(['html' => '<div id="custom"></div>', 'plugins' => ['apexcharts'], 'js' => 'console.log("init")']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::raw([
+    'html' => '',
+    'plugins' => [],
+    'js' => null,    // 追加内联 JS（自动去重可传 js_key）
+    'js_key' => null,
+    'css' => null,
+    'css_key' => null,
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `html` | string | `''` | 自定义 HTML（原样输出） |
-| `plugins` | array | `[]` |  |
-| `js` | mixed | `null` | 追加内联 JS（自动去重可传 js_key） |
-| `js_key` | mixed | `null` |  |
-| `css` | mixed | `null` |  |
-| `css_key` | mixed | `null` |  |
+| `html` | string | `''` | 自定义 HTML（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `plugins` | array | `[]` | 启用的插件列表 |
+| `js` | mixed | `null` | 追加内联 JS（自动去重可传 js_key）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `js_key` | mixed | `null` | 源码用法：`$assets->inlineJs((string) $this->get('js'), $this->get('js_key'));` |
+| `css` | mixed | `null` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `css_key` | mixed | `null` | 源码用法：`$assets->inlineCss((string) $this->get('css'), $this->get('css_key'));` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -353,15 +498,27 @@ XfAdmin::raw(['html' => '<div id="custom"></div>', 'plugins' => ['apexcharts'], 
 XfAdmin::tinycon(['count' => 5, 'color' => '#e63757']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::tinycon([
+    'count' => 0,    // 数量 / 计数徽标数字
+    'color' => '#e63757',    // 颜色值（#hex / rgb() / 具名色）
+    'background' => '#3e60d5',
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `count` | int | `0` | 数量 / 计数徽标数字 |
-| `color` | string | `'#e63757'` | 颜色值（#hex / rgb() / 具名色） |
-| `background` | string | `'#3e60d5'` |  |
+| `count` | int | `0` | 数量 / 计数徽标数字；源码用法：`$this->set('data-count', (int) $this->get('count'));` |
+| `color` | string | `'#e63757'` | 颜色值（#hex / rgb() / 具名色）；源码用法：`$this->set('data-color', $this->get('color'));` |
+| `background` | string | `'#3e60d5'` | 源码用法：`$this->set('data-bg', $this->get('background'));` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -385,17 +542,31 @@ XfAdmin::idleTimer([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::idleTimer([
+    'timeout' => 60,
+    'warn' => 0,
+    'warnText' => '您已闲置，即将自动锁定',
+    'onIdleUrl' => '',
+    'onIdle' => '',
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `timeout` | int | `60` |  |
-| `warn` | int | `0` |  |
-| `warnText` | string | `'您已闲置，即将自动锁定'` |  |
-| `onIdleUrl` | string | `''` |  |
-| `onIdle` | string | `''` |  |
+| `timeout` | int | `60` | 源码用法：`'timeout' => (int) $this->get('timeout'),` |
+| `warn` | int | `0` | 源码用法：`'warn' => (int) $this->get('warn'),` |
+| `warnText` | string | `'您已闲置，即将自动锁定'` | 源码用法：`'warnText' => $this->get('warnText'),` |
+| `onIdleUrl` | string | `''` | 源码用法：`'onIdleUrl'=> $this->get('onIdleUrl'),` |
+| `onIdle` | string | `''` | 源码用法：`'onIdle' => $this->get('onIdle'),` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -423,20 +594,37 @@ XfAdmin::animate([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::animate([
+    'animation' => 'bounce',
+    'trigger' => 'load',
+    'infinite' => false,
+    'delay' => null,
+    'speed' => null,
+    'repeat' => null,
+    'content' => '',
+    'tag' => 'div',
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `animation` | string | `'bounce'` | 动画类名 |
 | `trigger` | string | `'load'` | 触发方式（hover / click / focus），或触发按钮文案 |
-| `infinite` | bool | `false` |  |
-| `delay` | mixed | `null` | 延迟（毫秒） |
-| `speed` | mixed | `null` |  |
-| `repeat` | mixed | `null` |  |
-| `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组） |
-| `tag` | string | `'div'` |  |
+| `infinite` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
+| `delay` | mixed | `null` | 延迟（毫秒）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `speed` | mixed | `null` | 开关：非空 / 真值时启用对应区块 |
+| `repeat` | mixed | `null` | 开关：非空 / 真值时启用对应区块 |
+| `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `tag` | string | `'div'` | 标签 / 渲染标签名 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -458,16 +646,31 @@ XfAdmin::pdfViewer([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::pdfViewer([
+    'url' => '',
+    'height' => 600,
+    'toolbar' => true,
+    'download' => true,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `card-header` `d-flex` `align-items-center` `gap-2` `py-2` `small` `vr` `mx-1`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `url` | string | `''` | 链接地址（自动做安全协议校验） |
-| `height` | int | `600` | 高度（CSS 长度，受安全白名单约束） |
-| `toolbar` | bool | `true` | 是否显示工具条 |
-| `download` | bool | `true` |  |
+| `url` | string | `''` | 链接地址（自动做安全协议校验）；源码用法：`$raw = (string) $this->get('url');` |
+| `height` | int | `600` | 高度（CSS 长度，受安全白名单约束）；源码用法：`$html .= '<div class="card-body p-2 overflow-auto" data-role="viewport" style="height…` |
+| `toolbar` | bool | `true` | 是否显示工具条；开关：非空 / 真值时启用对应区块 |
+| `download` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -489,15 +692,29 @@ XfAdmin::textDiff([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::textDiff([
+    'old' => '',
+    'new' => '',
+    'mode' => 'inline',    // 模式（各组件不同）
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `bg-success-subtle` `text-success` `bg-danger-subtle` `text-danger` `text-decoration-line-through`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `old` | string | `''` |  |
-| `new` | string | `''` |  |
-| `mode` | string | `'inline'` | 模式（各组件不同） |
+| `old` | string | `''` | 源码用法：`'old' => $this->get('old'),` |
+| `new` | string | `''` | 源码用法：`'new' => $this->get('new'),` |
+| `mode` | string | `'inline'` | 模式（各组件不同）；源码用法：`$mode = $this->get('mode') === 'split' ? 'split' : 'inline';` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -520,14 +737,31 @@ XfAdmin::pinBoard([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::pinBoard([
+    'notes' => [],    // 备注
+    'addable' => true,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `notes[]` 元素键：`color`（默认 `warning`）、`title`、`text`、`author`、`time`
+
+> **渲染骨架**：主要 class `pin-board` `pin-note-head` `fw-semibold` `pin-note-body` `pin-note-foot` `pin-note` `pin-add`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `notes` | array | `[]` |  |
-| `addable` | bool | `true` |  |
+| `notes` | array | `[]` | 备注 |
+| `addable` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -552,6 +786,22 @@ XfAdmin::masonry([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::masonry([
+    'columns' => 3,    // 列定义数组
+    'gap' => 4,    // 间距
+    'items' => [],    // 条目数组（结构见各组件说明）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`html`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -560,7 +810,7 @@ XfAdmin::masonry([
 | `gap` | int | `4` | 间距 |
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -588,21 +838,41 @@ XfAdmin::videoPlayer([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::videoPlayer([
+    'src' => '',
+    'poster' => '',
+    'type' => 'video/mp4',
+    'width' => '100%',
+    'autoplay' => false,
+    'controls' => true,
+    'loop' => false,
+    'muted' => false,
+    'title' => '',
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `xf-video-player` `ratio` `ratio-16x9` `bg-dark` `rounded` `d-flex` `align-items-center` `justify-content-center`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `src` | string | `''` | 资源地址（图片 / iframe / 文件） |
-| `poster` | string | `''` |  |
+| `poster` | string | `''` | 视频封面图 |
 | `type` | string | `'video/mp4'` | 类型（各组件语义不同，详见该组件说明） |
 | `width` | string | `'100%'` | 宽度（数字=栅格列数或 CSS 长度） |
 | `autoplay` | bool | `false` | 是否自动播放 |
-| `controls` | bool | `true` |  |
+| `controls` | bool | `true` | 控件配置（播放器 / 轮播控件等） |
 | `loop` | bool | `false` | 是否循环 |
-| `muted` | bool | `false` |  |
+| `muted` | bool | `false` | 次要 / 弱化显示 |
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -633,13 +903,29 @@ XfAdmin::i18n([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::i18n([
+    'currentLocale' => 'zh-CN',
+    'locales' => [],
+    'demoKeys' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `locales[]` 元素键：`name`、`flag`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `currentLocale` | string | `'zh-CN'` |  |
-| `locales` | array | `[]` |  |
-| `demoKeys` | mixed | `null` |  |
+| `currentLocale` | string | `'zh-CN'` | 当前语言 |
+| `locales` | array | `[]` | 语言 / 区域列表 |
+| `demoKeys` | mixed | `null` | 源码用法：`$demoKeys = $this->get('demoKeys');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

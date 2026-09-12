@@ -1065,8 +1065,8 @@ P2 客户/公司/联系人/评论/聊天/顶栏/侧栏头像统一改用 Avatar�
 
 ### 文档
 
-- [表格](../.legacy/tables.md) 补充：服务端 `DataSet`/`dataResponse`、`filter_bar`、富单元格渲染器总表与操作栏用法。
-- [扩展组件](../.legacy/extending.md) 补充：前端交互事件（`xf:action` / `xf:switch` / `xf:cell-input` / `data-xf-event` / `xf:copy`）、
+- [表格](../04-进阶指南/03-datatable.md) 补充：服务端 `DataSet`/`dataResponse`、`filter_bar`、富单元格渲染器总表与操作栏用法。
+- [扩展组件](../02-核心架构/07-extending.md) 补充：前端交互事件（`xf:action` / `xf:switch` / `xf:cell-input` / `data-xf-event` / `xf:copy`）、
   单元格渲染器扩展与 `XFAdmin` API 速查。
 - [组件详细参考](07-components-reference.md) 补充 Tabs（footer/form/badge）与 Menu（箭头/徽标）条目。
 
@@ -1141,7 +1141,7 @@ P2 客户/公司/联系人/评论/聊天/顶栏/侧栏头像统一改用 Avatar�
 
 - 新增 [组件详细参考](07-components-reference.md)：由代码反射自动生成，覆盖全部 99 个组件，逐项列出
   别名、用途、输入参数（数据）、前端控件（`data-xf`）与可复制用法示例，并在顶部说明数据输入 / 输出通用约定。
-- [组件总览](../.legacy/components.md) 顶部新增「数据输入与输出约定」，并链接到详细参考；[README](../README.md)
+- [组件总览](../03-组件参考/00-总览.md) 顶部新增「数据输入与输出约定」，并链接到详细参考；[README](../README.md)
   文档目录同步新增条目。
 
 ---
@@ -1172,7 +1172,7 @@ P2 客户/公司/联系人/评论/聊天/顶栏/侧栏头像统一改用 Avatar�
 - 内联 `<script>` 中的 JSON 经 `Html::scriptJson()`（`JSON_HEX_TAG` / `JSON_HEX_AMP` 等）转义，
   防止 `</script>` 注入与存储型 XSS。
 - 属性值统一通过 `Html::attrs()` 转义；前端 `xfadmin.js` 对用户输入再做 `escapeHtml()` 二次转义。
-- 文档化可信边界：[安全与转义规范](../.legacy/security.md)。
+- 文档化可信边界：[安全与转义规范](../02-核心架构/04-security.md)。
 
 ### 文档
 

@@ -73,13 +73,29 @@ XfAdmin::article([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::article([
+    'article' => [],    // 文章数据（标题 / 正文 / 作者 / 封面等）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `article[]` 元素键：`author`、`cover`、`body`、`tags`、`related`、`title`、`category`、`date`、`read_time`、`quote`
+
+> **渲染骨架**：主要 class `text-muted` `small` `mb-3` `badge` `bg-primary-subtle` `text-primary` `me-2` `d-flex`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `article` | array | `[]` |  |
+| `article` | array | `[]` | 文章数据（标题 / 正文 / 作者 / 封面等） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -106,13 +122,29 @@ XfAdmin::blogArticle([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::blogArticle([
+    'article' => [],    // 文章数据（标题 / 正文 / 作者 / 封面等）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `article[]` 元素键：`author`、`cover`、`category`、`title`、`date`、`read_time`、`body`、`tags`、`related`
+
+> **渲染骨架**：主要 class `mb-3` `badge` `bg-primary-subtle` `text-primary` `d-flex` `align-items-center` `gap-2` `mb-4`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `article` | array | `[]` |  |
+| `article` | array | `[]` | 文章数据（标题 / 正文 / 作者 / 封面等） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -147,16 +179,33 @@ XfAdmin::blogList([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::blogList([
+    'items' => [],
+    'layout' => 'grid',
+    'cols' => 3,
+    'gap' => '24px',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`image`、`url`（默认 `#`）、`category`、`title`、`excerpt`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `layout` | string | `'grid'` | 布局模式（各组件不同，如 vertical/horizontal） |
-| `cols` | int | `3` | 列数（栅格 / 分区列数） |
+| `layout` | string | `'grid'` | 布局模式（各组件不同，如 vertical/horizontal）；源码用法：`$layout = $this->get('layout') === 'list' ? 'list' : 'grid';` |
+| `cols` | int | `3` | 列数（栅格 / 分区列数）；源码用法：`$colCls = $this->colClass((int) $this->get('cols'));` |
 | `gap` | string | `'24px'` | 间距 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -183,15 +232,33 @@ XfAdmin::commentThread([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::commentThread([
+    'items' => [],    // 条目数组（结构见各组件说明）
+    'form' => true,
+    'maxDepth' => 4,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`avatar`、`user`、`time`、`text`、`likes`、`replies`
+
+> **渲染骨架**：主要 class `mb-4` `text-end` `mt-2` `list-unstyled` `mb-0` `flex-grow-1` `d-flex`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `form` | bool | `true` |  |
-| `maxDepth` | int | `4` |  |
+| `items` | array | `[]` | 条目数组（结构见各组件说明）；源码用法：`foreach (array_values((array) $this->get('items')) as $c) {` |
+| `form` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `maxDepth` | int | `4` | 源码用法：`if ($depth < (int) $this->get('maxDepth')) {` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -217,16 +284,35 @@ XfAdmin::faq([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::faq([
+    'items' => [],
+    'flush' => false,
+    'bordered' => true,
+    'open' => 0,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`q`、`a`
+
+> **渲染骨架**：主要 class `accordion-item` `accordion-body` `accordion`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `flush` | bool | `false` |  |
-| `bordered` | bool | `true` | 是否显示边框 |
-| `open` | int | `0` |  |
+| `flush` | bool | `false` | 是否无边框（list-group-flush）；源码用法：`'accordion-flush' => (bool) $this->get('flush'),` |
+| `bordered` | bool | `true` | 是否显示边框；源码用法：`'accordion-bordered' => (bool) $this->get('bordered'),` |
+| `open` | int | `0` | 源码用法：`$open = $this->get('open') === $i;` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -250,6 +336,23 @@ XfAdmin::faqAccordion([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::faqAccordion([
+    'items' => [],
+    'title' => '常见问题',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`q`、`a`
+
+> **渲染骨架**：主要 class `card` `card-header` `card-body` `text-center` `text-muted` `py-4` `accordion` `accordion-item`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -257,7 +360,7 @@ XfAdmin::faqAccordion([
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 | `title` | string | `'常见问题'` | 标题文本（部分组件为弹窗/tooltip 标题） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -282,14 +385,32 @@ XfAdmin::forumThread([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::forumThread([
+    'thread' => [],    // 会话 / 主题贴数据
+    'posts' => [],    // 文章 / 帖子列表
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `thread[]` 元素键：`category`、`title`、`tags`、`author`、`created_at`、`views`、`replies`、`body`
+- `posts[]` 元素键：`author`、`is_solution`、`created_at`、`body`、`attachments`、`likes`
+
+> **渲染骨架**：主要 class `card` `mb-3` `card-body` `mb-2` `badge` `bg-primary-subtle` `text-primary` `bg-light`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `thread` | array | `[]` |  |
-| `posts` | array | `[]` |  |
+| `thread` | array | `[]` | 会话 / 主题贴数据 |
+| `posts` | array | `[]` | 文章 / 帖子列表 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -319,21 +440,45 @@ XfAdmin::gallery([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::gallery([
+    'items' => [],
+    'masonry' => true,
+    'lightbox' => true,
+    'search' => true,
+    'cols' => 4,
+    'ratio' => '4x3',
+    'gap' => '',    // 兼容旧参数；留空时用 INSPINIA 的 g-2 间距
+    'filter' => [],    // ['all' => '全部', 'design' => '设计', ...]
+    'card' => true,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`src`、`thumb`、`title`、`caption`、`group`
+
+> **渲染骨架**：主要 class `flex-grow-1` `app-search` `d-flex` `flex-wrap` `gap-1` `filter-buttons` `xf-gallery-filter` `card-body`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `masonry` | bool | `true` |  |
-| `lightbox` | bool | `true` |  |
-| `search` | bool | `true` | 是否启用搜索 |
-| `cols` | int | `4` | 列数（栅格 / 分区列数） |
-| `ratio` | string | `'4x3'` |  |
+| `masonry` | bool | `true` | 源码用法：`if ($this->get('masonry')) {` |
+| `lightbox` | bool | `true` | 灯箱配置 / 是否启用灯箱；源码用法：`if ($this->get('lightbox')) {` |
+| `search` | bool | `true` | 是否启用搜索；源码用法：`$search = (bool) $this->get('search');` |
+| `cols` | int | `4` | 列数（栅格 / 分区列数）；源码用法：`$wallCls = 'row g-2 ' . $this->rowColsClass((int) $this->get('cols'))` |
+| `ratio` | string | `'4x3'` | 宽高比（如 `16/9`）；CSS 比例：`N/M` 或纯数字 |
 | `gap` | string | `''` | 兼容旧参数；留空时用 INSPINIA 的 g-2 间距 |
 | `filter` | array | `[]` | ['all' => '全部', 'design' => '设计', ...] |
-| `card` | bool | `true` |  |
+| `card` | bool | `true` | 是否以卡片容器呈现（部分组件为遗留键）；源码用法：`$useCard = (bool) $this->get('card');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -361,18 +506,39 @@ XfAdmin::terms([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::terms([
+    'title' => '服务条款',
+    'updated_at' => null,
+    'intro' => null,
+    'sections' => [],
+    'toc' => true,
+    'accept' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `sections[]` 元素键：`id`（默认 `sec-`）、`title`
+
+> **渲染骨架**：主要 class `col-lg-3` `d-none` `d-lg-block` `xf-terms-toc` `sticky-top` `nav-link` `py-1` `px-2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'服务条款'` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `updated_at` | mixed | `null` |  |
-| `intro` | mixed | `null` |  |
+| `title` | string | `'服务条款'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `updated_at` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `intro` | mixed | `null` | 导语 / 简介文本；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
 | `sections` | array | `[]` | 分区数组 |
-| `toc` | bool | `true` |  |
-| `accept` | mixed | `null` |  |
+| `toc` | bool | `true` | 目录（Table of Contents）列表 |
+| `accept` | mixed | `null` | 源码用法：`$accept = $this->get('accept');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -400,17 +566,37 @@ XfAdmin::privacyPolicy([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::privacyPolicy([
+    'title' => 'Privacy Policy',
+    'effectiveDate' => '',
+    'intro' => '',
+    'sections' => [],
+    'contactEmail' => '',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `sections[]` 元素键：`title`、`body`、`list`
+
+> **渲染骨架**：主要 class `row` `justify-content-center` `col-xxl-9` `text-center` `my-4` `card` `card-body` `mt-4`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `title` | string | `'Privacy Policy'` | 标题文本（部分组件为弹窗/tooltip 标题） |
-| `effectiveDate` | string | `''` |  |
-| `intro` | string | `''` |  |
+| `effectiveDate` | string | `''` | 生效日期 |
+| `intro` | string | `''` | 导语 / 简介文本 |
 | `sections` | array | `[]` | 分区数组 |
-| `contactEmail` | string | `''` |  |
+| `contactEmail` | string | `''` | 联系邮箱 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -445,14 +631,31 @@ XfAdmin::sitemap([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::sitemap([
+    'columns' => [],
+    'colClass' => 'col-md-4',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `columns[]` 元素键：`title`、`links`
+
+> **渲染骨架**：主要 class `row` `card` `card-body` `list-unstyled` `sitemap-list` `mt-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `columns` | array | `[]` | 列定义数组 |
-| `colClass` | string | `'col-md-4'` |  |
+| `colClass` | string | `'col-md-4'` | 列 class（栅格） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -491,14 +694,31 @@ XfAdmin::socialFeed([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::socialFeed([
+    'posts' => [],
+    'title' => '团队动态',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `posts[]` 元素键：`avatar`、`name`（默认 `匿名用户`）、`handle`、`time`、`text`、`image`、`likes`、`comments`、`shares`
+
+> **渲染骨架**：主要 class `card` `card-header` `card-body` `text-center` `text-muted` `py-4` `d-flex` `gap-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `posts` | array | `[]` |  |
+| `posts` | array | `[]` | 文章 / 帖子列表 |
 | `title` | string | `'团队动态'` | 标题文本（部分组件为弹窗/tooltip 标题） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -522,14 +742,35 @@ XfAdmin::fileManager([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::fileManager([
+    'files' => [],
+    // cols
+    'cols' => [
+        'md' => 3,
+        'sm' => 6,
+    ],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `files[]` 元素键：`type`（默认 `file`）、`href`（默认 `#`）、`name`、`size`、`meta`
+
+> **渲染骨架**：主要 class `card` `mb-0` `h-100` `card-body` `d-flex` `align-items-center` `gap-2` `flex-grow-1`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `files` | array | `[]` |  |
-| `cols` | array | `['md'=>3, 'sm'=>6]` | 列数（栅格 / 分区列数） |
+| `files` | array | `[]` | 文件列表 |
+| `cols` | array | `['md'=>3, 'sm'=>6]` | 列数（栅格 / 分区列数）；源码用法：`$colCls = $this->resolveColClass($this->get('cols'));` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -561,17 +802,37 @@ XfAdmin::searchResults([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::searchResults([
+    'query' => '',
+    'count' => 0,
+    'items' => [],
+    'filters' => [],
+    'pagination' => '',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`thumb`、`icon`（默认 `ti ti-file-text`）、`url`（默认 `#`）、`title`、`meta`、`excerpt`、`tags`
+
+> **渲染骨架**：主要 class `d-flex` `align-items-center` `justify-content-between` `mb-3` `fw-semibold` `text-body` `flex-wrap` `gap-2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `query` | string | `''` |  |
-| `count` | int | `0` | 数量 / 计数徽标数字 |
+| `query` | string | `''` | **文本槽位**：输出前自动 HTML 转义 |
+| `count` | int | `0` | 数量 / 计数徽标数字；源码用法：`$html .= '<p class="text-muted mb-0">找到 <span class="fw-semibold text-body">' . (int)…` |
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `filters` | array | `[]` | 过滤条件定义 |
-| `pagination` | string | `''` |  |
+| `filters` | array | `[]` | 过滤条件定义；源码用法：`if (! empty($this->get('filters'))) {` |
+| `pagination` | string | `''` | 源码用法：`if ($pg = $this->get('pagination')) {` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -595,14 +856,31 @@ XfAdmin::searchResultsRich([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::searchResultsRich([
+    'query' => '',
+    'groups' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `groups[]` 元素键：`items`
+
+> **渲染骨架**：主要 class `xf-search-results` `text-muted` `text-center` `py-5` `list-group` `badge` `bg-light` `text-dark`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `query` | string | `''` |  |
-| `groups` | array | `[]` |  |
+| `query` | string | `''` | 源码用法：`$query = $this->get('query');` |
+| `groups` | array | `[]` | 分组数据（下拉分组 / 权限分组 / 设置分组） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -633,21 +911,51 @@ XfAdmin::pricingCard([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::pricingCard([
+    'name' => '',
+    'price' => '',
+    'period' => '/ 月',
+    'desc' => null,
+    'features' => [],
+    'featured' => false,
+    'badge' => null,
+    'icon' => null,
+    // button
+    'button' => [
+        'label' => '选择方案',
+        'href' => '#',
+        'variant' => 'primary',
+    ],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `features[]` 元素键：`enabled`、`text`
+- `button[]` 元素键：`variant`、`href`（默认 `#`）、`label`（默认 `选择方案`）
+
+> **渲染骨架**：主要 class `card-body` `p-4` `text-center` `badge` `bg-primary-subtle` `text-primary` `mb-2` `mb-3`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | string | `''` | 表单字段名 / 语义名称 |
-| `price` | string | `''` | 价格数值 |
-| `period` | string | `'/ 月'` |  |
-| `desc` | mixed | `null` |  |
-| `features` | array | `[]` |  |
-| `featured` | bool | `false` |  |
-| `badge` | mixed | `null` | 徽标文本或 `['text'=>..,'class'=>..]` |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user` |
-| `button` | array | `['label'=>'选择方案', 'href'=>'#', 'variant'=>'primary']` | 数组结构（见组件用法示例） |
+| `name` | string | `''` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义 |
+| `price` | string | `''` | 价格数值；**文本槽位**：输出前自动 HTML 转义 |
+| `period` | string | `'/ 月'` | **文本槽位**：输出前自动 HTML 转义 |
+| `desc` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `features` | array | `[]` | 特性 / 功能列表 |
+| `featured` | bool | `false` | 源码用法：`$cls = Html::cls('card h-100', ['border-primary' => (bool) $this->get('featured')]);` |
+| `badge` | mixed | `null` | 徽标文本或 `['text'=>..,'class'=>..]`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `button` | array | `['label'=>'选择方案', 'href'=>'#', 'variant'=>'primary']` | 数组结构（见「全参数示例」）；源码用法：`$btn = (array) $this->get('button');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -672,13 +980,31 @@ XfAdmin::testimonial([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::testimonial([
+    'items' => [],
+    'cols' => 3,
+    'carousel' => false,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `items[]` 元素键：`rating`、`text`、`avatar`、`name`、`role`
+
+> **渲染骨架**：主要 class `carousel` `slide` `carousel-inner` `mx-auto` `carousel-control-prev-icon` `carousel-control-next-icon`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 | `cols` | int | `3` | 列数（栅格 / 分区列数） |
-| `carousel` | bool | `false` |  |
+| `carousel` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

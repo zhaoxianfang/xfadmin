@@ -106,28 +106,59 @@ XfAdmin::form([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::form([
+    'action' => '',
+    'method' => 'POST',
+    'enctype' => null,
+    'validation' => false,
+    'ajax' => false,    // true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）
+    'remote' => false,    // 兼容别名（= ajax），保留旧调用方式
+    'redirect' => '',    // AJAX 成功且后端未返回 url 时前端兜底跳转地址（整页）
+    'reset' => false,    // AJAX 成功后是否重置表单（默认 false；与 reload 二选一）
+    'reload' => true,    // AJAX 成功且无 url/redirect 时是否刷新当前页（false=仅 toast）
+    'inline' => false,    // 兼容旧写法（等价 layout=inline）
+    'layout' => null,    // vertical | horizontal | inline（form-layouts.html）
+    'label_width' => 180,    // horizontal 布局标签列宽（px）
+    'fields' => [],
+    'content' => null,
+    'buttons' => null,
+    'csrf' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `fields[]`：组件实例 / HTML 字符串 / 数组的混合列表（逐个原样输出）
+
+> **渲染骨架**：主要 class `d-flex` `gap-2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `action` | string | `''` | 表单提交地址 / 动作类型 |
+| `action` | string | `''` | 表单提交地址 / 动作类型；源码用法：`'action' => $this->get('action'),` |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
-| `enctype` | mixed | `null` |  |
-| `validation` | bool | `false` |  |
-| `ajax` | bool | `false` | true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应） |
+| `enctype` | mixed | `null` | 源码用法：`'enctype' => $this->get('enctype'),` |
+| `validation` | bool | `false` | 源码用法：`'needs-validation' => $this->get('validation'),` |
+| `ajax` | bool | `false` | true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）；开关：非空 / 真值时启用对应区块 |
 | `remote` | bool | `false` | 兼容别名（= ajax），保留旧调用方式 |
 | `redirect` | string | `''` | AJAX 成功且后端未返回 url 时前端兜底跳转地址（整页） |
-| `reset` | bool | `false` | AJAX 成功后是否重置表单（默认 false；与 reload 二选一） |
+| `reset` | bool | `false` | AJAX 成功后是否重置表单（默认 false；与 reload 二选一）；开关：非空 / 真值时启用对应区块 |
 | `reload` | bool | `true` | AJAX 成功且无 url/redirect 时是否刷新当前页（false=仅 toast） |
 | `inline` | bool | `false` | 兼容旧写法（等价 layout=inline） |
 | `layout` | mixed | `null` | vertical \| horizontal \| inline（form-layouts.html） |
 | `label_width` | int | `180` | horizontal 布局标签列宽（px） |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
-| `content` | mixed | `null` | 内容区（可为 HTML 字符串、组件实例或数组） |
-| `buttons` | mixed | `null` | 按钮定义数组 |
-| `csrf` | array | `[]` |  |
+| `content` | mixed | `null` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `buttons` | mixed | `null` | 按钮定义数组；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `csrf` | array | `[]` | 是否注入 CSRF 隐藏域（`true` 注入；`[]`/`false` 不注入；数组为自定义隐藏域） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -148,34 +179,67 @@ XfAdmin::input(['name' => 'tags', 'label' => '标签', 'tags' => true, 'value' =
 XfAdmin::input(['name' => 'price', 'prepend' => '￥', 'append' => '.00']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::input([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'type' => 'text',
+    'size' => null,    // sm | lg
+    'mask' => null,    // inputmask 表达式
+    'tags' => false,    // tagify 标签输入
+    'prepend' => null,
+    'append' => null,
+    'min' => null,
+    'max' => null,
+    'step' => null,
+    'pattern' => null,
+    'autocomplete' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `input-group` `input-group-text` `form-control`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `` 属性 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `disabled` | bool | `false` | 是否禁用 |
-| `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
-| `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
-| `type` | string | `'text'` | 类型（各组件语义不同，详见该组件说明） |
-| `size` | mixed | `null` | sm \| lg |
-| `mask` | mixed | `null` | inputmask 表达式 |
-| `tags` | bool | `false` | tagify 标签输入 |
-| `prepend` | mixed | `null` |  |
-| `append` | mixed | `null` |  |
-| `min` | mixed | `null` | 最小值 |
-| `max` | mixed | `null` | 最大值 |
-| `step` | mixed | `null` | 步长 |
-| `pattern` | mixed | `null` |  |
-| `autocomplete` | mixed | `null` |  |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
+| `readonly` | bool | `false` | 是否只读；源码用法：`'readonly' => (bool) $this->get('readonly'),` |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；输出到 `` 属性 |
+| `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `type` | string | `'text'` | 类型（各组件语义不同，详见该组件说明）；输出到 `` 属性 |
+| `size` | mixed | `null` | 可选值：`lg` |
+| `mask` | mixed | `null` | inputmask 表达式；开关：非空 / 真值时启用对应区块 |
+| `tags` | bool | `false` | tagify 标签输入；开关：非空 / 真值时启用对应区块 |
+| `prepend` | mixed | `null` | 前缀内容（原样输出，如输入组文本/图标）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `append` | mixed | `null` | 后缀内容（原样输出，常用于协议说明）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；为 `null` 时不渲染该区块 |
+| `min` | mixed | `null` | 最小值；源码用法：`'min' => $this->get('min'),` |
+| `max` | mixed | `null` | 最大值；源码用法：`'max' => $this->get('max'),` |
+| `step` | mixed | `null` | 步长；源码用法：`'step' => $this->get('step'),` |
+| `pattern` | mixed | `null` | 源码用法：`'pattern' => $this->get('pattern'),` |
+| `autocomplete` | mixed | `null` | 源码用法：`'autocomplete' => $this->get('autocomplete'),` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -193,25 +257,47 @@ XfAdmin::input(['name' => 'price', 'prepend' => '￥', 'append' => '.00']);
 XfAdmin::textarea(['name' => 'remark', 'label' => '备注', 'rows' => 4]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::textarea([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'rows' => 3,
+    'maxlength' => null,
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `` 属性 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-textarea');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `disabled` | bool | `false` | 是否禁用 |
-| `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
-| `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
-| `rows` | int | `3` | 行数据数组 |
-| `maxlength` | mixed | `null` |  |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
+| `readonly` | bool | `false` | 是否只读；源码用法：`'readonly' => (bool) $this->get('readonly'),` |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
+| `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `rows` | int | `3` | 行数据数组；源码用法：`'rows' => $this->get('rows'),` |
+| `maxlength` | mixed | `null` | 源码用法：`'maxlength' => $this->get('maxlength'),` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -238,29 +324,63 @@ XfAdmin::select([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::select([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'options' => [],
+    'groups' => [],
+    'multiple' => false,
+    'size' => null,
+    'enhance' => null,
+    'enhance_options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：`值 => 文案` 或 `[['value'=>..,'label'=>..,'disabled'=>..]]`
+- `groups[]`：`组名 => [值 => 文案]`；非空时忽略 `options`
+- `enhance_options[]` 元素键：`placeholder`；补充：透传 choices / select2 原生配置
+
+> **渲染骨架**：主要 class `form-select`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `` 属性 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-select');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `disabled` | bool | `false` | 是否禁用 |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
 | `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
-| `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；源码用法：`$selected = (array) ($this->get('value') ?? []);` |
+| `placeholder` | mixed | `null` | 占位提示文案；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
-| `groups` | array | `[]` |  |
-| `multiple` | bool | `false` | 是否多选 |
-| `size` | mixed | `null` | 尺寸：sm \| lg（部分组件支持 md/xl） |
-| `enhance` | mixed | `null` | 增强插件：choices \| select2 |
-| `enhance_options` | array | `[]` |  |
+| `groups` | array | `[]` | 分组数据（下拉分组 / 权限分组 / 设置分组） |
+| `multiple` | bool | `false` | 是否多选；源码用法：`'name' => $this->get('name') . ($this->get('multiple') && $this->get('name') && ! str…` |
+| `size` | mixed | `null` | 可选值：`lg` |
+| `enhance` | mixed | `null` | 增强插件：choices \| select2；开关：非空 / 真值时启用对应区块 |
+| `enhance_options` | array | `[]` | 透传给增强插件（choices/select2）的原生配置 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -285,23 +405,47 @@ XfAdmin::check([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::check([
+    'type' => 'checkbox',    // checkbox | radio | switch
+    'name' => null,
+    'label' => null,
+    'options' => [],    // 一组：value => label
+    'value' => null,    // 选中值（组模式）；单个模式用 checked
+    'checked' => false,
+    'inline' => false,
+    'reverse' => false,
+    'disabled' => false,
+    'required' => false,
+    'wrapper' => 'mb-3',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：`值 => 文案` 键值数组；为空时进入「单控件模式」
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `type` | string | `'checkbox'` | checkbox \| radio \| switch |
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；源码用法：`'name' => $this->get('name'),` |
+| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案）；**文本槽位**：输出前自动 HTML 转义；为 `null` 时不渲染该区块 |
 | `options` | array | `[]` | 一组：value => label |
 | `value` | mixed | `null` | 选中值（组模式）；单个模式用 checked |
-| `checked` | bool | `false` |  |
-| `inline` | bool | `false` | 是否行内排列 |
-| `reverse` | bool | `false` |  |
-| `disabled` | bool | `false` | 是否禁用 |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `wrapper` | string | `'mb-3'` |  |
+| `checked` | bool | `false` | 源码用法：`(bool) $this->get('checked'),` |
+| `inline` | bool | `false` | 是否行内排列；源码用法：`'form-check-inline' => $this->get('inline'),` |
+| `reverse` | bool | `false` | 源码用法：`'form-check-reverse' => $this->get('reverse'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹）；源码用法：`$wrapper = $this->get('wrapper');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -319,29 +463,59 @@ XfAdmin::check([
 XfAdmin::slider(['name' => 'price', 'label' => '价格区间', 'min' => 0, 'max' => 1000, 'value' => [100, 500], 'tooltips' => true]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::slider([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'min' => 0,
+    'max' => 100,
+    'step' => 1,
+    'tooltips' => false,
+    'connect' => null,
+    'options' => [],    // 透传 noUiSlider 配置
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：透传 noUiSlider 原生配置（递归合并，优先级最高）
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-slider');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
 | `disabled` | bool | `false` | 是否禁用 |
 | `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value') ?? $this->get('min');` |
 | `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
-| `min` | int | `0` | 最小值 |
-| `max` | int | `100` | 最大值 |
-| `step` | int | `1` | 步长 |
-| `tooltips` | bool | `false` |  |
-| `connect` | mixed | `null` |  |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `min` | int | `0` | 最小值；源码用法：`$value = $this->get('value') ?? $this->get('min');` |
+| `max` | int | `100` | 最大值；源码用法：`'range' => ['min' => (float) $this->get('min'), 'max' => (float) $this->get('max')],` |
+| `step` | int | `1` | 步长；源码用法：`'step' => (float) $this->get('step'),` |
+| `tooltips` | bool | `false` | 滑块是否显示数值气泡；源码用法：`'tooltips' => $this->get('tooltips'),` |
+| `connect` | mixed | `null` | noUiSlider connect 配置（数组自动为 true）；源码用法：`'connect' => $this->get('connect') ?? (is_array($value) ? true : 'lower'),` |
 | `options` | array | `[]` | 透传 noUiSlider 配置 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -360,32 +534,73 @@ XfAdmin::dateRange(['name' => 'date', 'label' => '日期', 'single' => true]);
 XfAdmin::dateRange(['name' => 'range', 'label' => '时段', 'format' => 'YYYY-MM-DD', 'ranges' => true]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::dateRange([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'single' => false,
+    'timepicker' => false,
+    'format' => 'YYYY-MM-DD',
+    'ranges' => false,    // 快捷区间（今天/最近7天/本月...）
+    'options' => [],    // 透传 daterangepicker 配置
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：透传 daterangepicker 原生配置（递归合并，优先级最高）
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `` 属性 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-daterange');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `disabled` | bool | `false` | 是否禁用 |
-| `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
-| `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
-| `single` | bool | `false` |  |
-| `timepicker` | bool | `false` |  |
-| `format` | string | `'YYYY-MM-DD'` | 格式化闭包或格式字符串 |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
+| `readonly` | bool | `false` | 是否只读；源码用法：`'readonly' => (bool) $this->get('readonly'),` |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；输出到 `` 属性 |
+| `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `single` | bool | `false` | 单日期模式（singleDatePicker）；源码用法：`'singleDatePicker' => (bool) $this->get('single'),` |
+| `timepicker` | bool | `false` | 是否带时间选择；源码用法：`'timePicker' => (bool) $this->get('timepicker'),` |
+| `format` | string | `'YYYY-MM-DD'` | 格式化闭包或格式字符串；源码用法：`'locale' => ['format' => $this->get('format')],` |
 | `ranges` | bool | `false` | 快捷区间（今天/最近7天/本月...） |
 | `options` | array | `[]` | 透传 daterangepicker 配置 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ### `dateRangePicker`
 
 `dateRangePicker` 是 `dateRange` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Form\DateRangePicker`，参数与用法完全一致。
+
+**用法示例**（该别名的典型写法）
+
+```php
+echo XfAdmin::dateRangePicker([              // 等价 XfAdmin::dateRange()
+    'name'     => 'range',
+    'label'    => '下单时间',
+    'ranges'   => true,                      // 今天/昨天/最近7天/最近30天/本月/上月
+    'timepicker' => false,
+    'format'   => 'YYYY-MM-DD',
+]);
+```
 
 ---
 
@@ -404,30 +619,61 @@ XfAdmin::datePicker(['name' => 'birthday', 'label' => '生日']);
 XfAdmin::datePicker(['name' => 'meet_at', 'label' => '会议时间', 'timepicker' => true, 'format' => 'YYYY-MM-DD HH:mm']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::datePicker([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'timepicker' => false,
+    'format' => 'YYYY-MM-DD',
+    'min' => null,
+    'max' => null,
+    'options' => [],
+    'prepend' => '',
+    'append' => '',
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：透传 daterangepicker 原生配置（singleDatePicker 恒为 true）
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `` 属性 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-datepicker');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `disabled` | bool | `false` | 是否禁用 |
-| `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
-| `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
-| `timepicker` | bool | `false` |  |
-| `format` | string | `'YYYY-MM-DD'` | 格式化闭包或格式字符串 |
-| `min` | mixed | `null` | 最小值 |
-| `max` | mixed | `null` | 最大值 |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
+| `readonly` | bool | `false` | 是否只读；源码用法：`'readonly' => (bool) $this->get('readonly'),` |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；输出到 `` 属性 |
+| `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `timepicker` | bool | `false` | 是否带时间选择；源码用法：`'timePicker' => (bool) $this->get('timepicker'),` |
+| `format` | string | `'YYYY-MM-DD'` | 格式化闭包或格式字符串；源码用法：`'locale' => ['format' => $this->get('format')],` |
+| `min` | mixed | `null` | 最小值；源码用法：`'minDate' => $this->get('min'),` |
+| `max` | mixed | `null` | 最大值；源码用法：`'maxDate' => $this->get('max'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
-| `prepend` | string | `''` |  |
-| `append` | string | `''` |  |
+| `prepend` | string | `''` | 前缀内容（原样输出，如输入组文本/图标） |
+| `append` | string | `''` | 后缀内容（原样输出，常用于协议说明） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -445,27 +691,55 @@ XfAdmin::datePicker(['name' => 'meet_at', 'label' => '会议时间', 'timepicker
 XfAdmin::editor(['name' => 'content', 'label' => '正文', 'driver' => 'quill', 'theme' => 'snow', 'height' => 300, 'value' => '<p>初始内容</p>']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::editor([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'driver' => 'quill',    // quill | summernote
+    'theme' => 'snow',    // quill: snow | bubble
+    'height' => 260,
+    'options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：透传编辑器原生配置（quill 可传 `modules`，summernote 直接传选项）
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；输出到 `` 属性 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
 | `disabled` | bool | `false` | 是否禁用 |
 | `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；**文本槽位**：输出前自动 HTML 转义 |
 | `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 | `driver` | string | `'quill'` | quill \| summernote |
 | `theme` | string | `'snow'` | quill: snow \| bubble |
-| `height` | int | `260` | 高度（CSS 长度，受安全白名单约束） |
+| `height` | int | `260` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'height' => (int) $this->get('height'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -485,30 +759,63 @@ XfAdmin::upload(['driver' => 'dropzone', 'url' => '/upload', 'label' => '拖拽�
 XfAdmin::upload(['driver' => 'filepond', 'name' => 'avatar', 'multiple' => true]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::upload([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'driver' => 'native',    // native | dropzone | filepond
+    'url' => null,    // 上传地址
+    'multiple' => false,
+    'accept' => null,
+    'max_size' => null,    // MB
+    'text' => '点击或拖拽文件到此处上传',
+    'options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：透传 dropzone / filepond 原生配置
+
+> **渲染骨架**：主要 class `dz-message` `needsclick`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `` 属性 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-upload');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
-| `disabled` | bool | `false` | 是否禁用 |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
 | `readonly` | bool | `false` | 是否只读 |
 | `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
 | `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 | `driver` | string | `'native'` | native \| dropzone \| filepond |
 | `url` | mixed | `null` | 上传地址 |
-| `multiple` | bool | `false` | 是否多选 |
-| `accept` | mixed | `null` |  |
+| `multiple` | bool | `false` | 是否多选；源码用法：`'allowMultiple' => (bool) $this->get('multiple'),` |
+| `accept` | mixed | `null` | 源码用法：`'acceptedFiles' => $this->get('accept'),` |
 | `max_size` | mixed | `null` | MB |
-| `text` | string | `'点击或拖拽文件到此处上传'` | 正文/按钮文案（纯文本语义，输出时转义） |
+| `text` | string | `'点击或拖拽文件到此处上传'` | 正文/按钮文案（纯文本语义，输出时转义）；**文本槽位**：输出前自动 HTML 转义 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -526,25 +833,53 @@ XfAdmin::upload(['driver' => 'filepond', 'name' => 'avatar', 'multiple' => true]
 XfAdmin::colorPicker(['name' => 'color', 'label' => '主题色', 'value' => '#3e60d5', 'theme' => 'classic']);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::colorPicker([
+    'name' => null,    // 表单字段名 / 语义名称
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'value' => null,    // 当前值（表单控件值 / 展示数值）
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'theme' => 'classic',    // classic | monolith | nano
+    'options' => [],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `options[]`：透传 Pickr 原生配置
+
+> **渲染骨架**：主要 class `d-flex` `align-items-center` `gap-2`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义 |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-color');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
 | `disabled` | bool | `false` | 是否禁用 |
 | `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值） |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
 | `placeholder` | mixed | `null` | 占位提示文案 |
-| `wrapper` | string | `'mb-3'` |  |
-| `feedback` | mixed | `null` |  |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 | `theme` | string | `'classic'` | classic \| monolith \| nano |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -569,20 +904,43 @@ XfAdmin::tags([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::tags([
+    'name' => '',
+    'label' => null,
+    'value' => [],
+    'whitelist' => [],
+    'max' => null,
+    'placeholder' => '',
+    'help' => null,
+    'col' => null,
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `whitelist[]`：候选词字符串数组（Tagify 建议列表）
+
+> **渲染骨架**：主要 class `form-control`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | string | `''` | 表单字段名 / 语义名称 |
+| `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$attrs['name'] = $this->get('name');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
-| `value` | array | `[]` | 当前值（表单控件值 / 展示数值） |
-| `whitelist` | array | `[]` |  |
-| `max` | mixed | `null` | 最大值 |
-| `placeholder` | string | `''` | 占位提示文案 |
+| `value` | array | `[]` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value');` |
+| `whitelist` | array | `[]` | 标签输入候选词数组；源码用法：`'whitelist' => $this->get('whitelist') ?: null,` |
+| `max` | mixed | `null` | 最大值；源码用法：`'maxTags' => $this->get('max'),` |
+| `placeholder` | string | `''` | 占位提示文案；开关：非空 / 真值时启用对应区块 |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `col` | mixed | `null` |  |
+| `col` | mixed | `null` | 列宽（栅格列数 1-12） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -606,20 +964,39 @@ XfAdmin::maskedInput([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::maskedInput([
+    'name' => '',
+    'label' => null,
+    'mask' => null,
+    'alias' => null,
+    'value' => '',
+    'placeholder' => null,
+    'help' => null,
+    'col' => null,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `form-control`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | string | `''` | 表单字段名 / 语义名称 |
+| `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$attrs['name'] = $this->get('name');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
-| `mask` | mixed | `null` |  |
-| `alias` | mixed | `null` |  |
-| `value` | string | `''` | 当前值（表单控件值 / 展示数值） |
-| `placeholder` | mixed | `null` | 占位提示文案 |
+| `mask` | mixed | `null` | 输入掩码表达式，如 `999-9999-9999`；源码用法：`'mask' => $this->get('mask'),` |
+| `alias` | mixed | `null` | 掩码别名（部分驱动支持）；源码用法：`'alias' => $this->get('alias'),` |
+| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；源码用法：`$attrs['value'] = $this->get('value');` |
+| `placeholder` | mixed | `null` | 占位提示文案；开关：非空 / 真值时启用对应区块 |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `col` | mixed | `null` |  |
+| `col` | mixed | `null` | 列宽（栅格列数 1-12） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -646,20 +1023,49 @@ XfAdmin::wizard([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::wizard([
+    'steps' => [],
+    'variant' => 'primary',
+    'vertical' => false,
+    'progress' => true,
+    // labels
+    'labels' => [
+        'prev' => '上一步',
+        'next' => '下一步',
+        'finish' => '提交',
+    ],
+    'action' => '',    // 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit）
+    'method' => 'post',    // 提交方法
+    'remote' => false,    // 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管）
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `steps[]` 元素键：`icon`、`title`；补充：`title`（导航标题）、`icon`、`content`（面板内容，原样输出）
+- `labels[]` 元素键：`prev`（默认 `上一步`）、`finish`（默认 `提交`）、`next`（默认 `下一步`）
+
+> **渲染骨架**：主要 class `progress` `mb-3` `col-md-9` `d-flex` `justify-content-between` `mt-3` `xf-wizard`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `steps` | array | `[]` | 步骤数组（向导 / 步骤条） |
-| `variant` | string | `'primary'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束） |
-| `vertical` | bool | `false` | 是否纵向排列 |
-| `progress` | bool | `true` | 进度百分比（0-100） |
-| `labels` | array | `['prev'=>'上一步', 'next'=>'下一步', 'finish'=>'提交']` | 数组结构（见组件用法示例） |
+| `variant` | string | `'primary'` | 可选值：`primary` |
+| `vertical` | bool | `false` | 是否纵向排列；源码用法：`$vertical = (bool) $this->get('vertical');` |
+| `progress` | bool | `true` | 进度百分比（0-100）；开关：非空 / 真值时启用对应区块 |
+| `labels` | array | `['prev'=>'上一步', 'next'=>'下一步', 'finish'=>'提交']` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签）；源码用法：`$labels = (array) $this->get('labels');` |
 | `action` | string | `''` | 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit） |
-| `method` | string | `'post'` | 提交方法 |
+| `method` | string | `'post'` | 提交方法；**文本槽位**：输出前自动 HTML 转义 |
 | `remote` | bool | `false` | 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管） |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -683,19 +1089,37 @@ XfAdmin::passwordStrength([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::passwordStrength([
+    'name' => 'password',
+    'id' => null,
+    'label' => '密码',
+    'value' => '',
+    'showRules' => true,
+    'minScore' => 0,
+    'hint' => '',
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `form-text` `mt-2` `progress` `progress-bar` `small` `mt-1` `list-unstyled` `text-muted`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | string | `'password'` | 表单字段名 / 语义名称 |
+| `name` | string | `'password'` | 表单字段名 / 语义名称；输出到 `` 属性 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 | `label` | string | `'密码'` | 标签文案（表单字段标签 / 按钮文案） |
-| `value` | string | `''` | 当前值（表单控件值 / 展示数值） |
-| `showRules` | bool | `true` |  |
-| `minScore` | int | `0` |  |
-| `hint` | string | `''` |  |
+| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；输出到 `` 属性 |
+| `showRules` | bool | `true` | 是否展示密码规则清单；开关：非空 / 真值时启用对应区块 |
+| `minScore` | int | `0` | 最低分数要求（低于则禁用提交按钮）；源码用法：`'data-min' => (int) $this->get('minScore'),` |
+| `hint` | string | `''` | 输入框下方提示文本；源码用法：`if ($hint = $this->get('hint')) {` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -718,22 +1142,43 @@ XfAdmin::captcha([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::captcha([
+    'mode' => 'image',    // image | math | slide
+    'label' => '验证码',
+    'name' => 'captcha',
+    'id' => null,
+    'src' => null,    // image 模式图片地址（默认走 XfAdmin 通用 /captcha 约定）
+    'question' => null,    // math 模式题目，默认随机生成
+    'placeholder' => '请输入计算结果',
+    'refreshable' => true,    // image 模式点击刷新
+    'help' => null,
+    'required' => true,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `mb-3` `text-danger` `input-group` `mt-2` `form-text` `text-decoration-underline` `alert` `alert-light`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `mode` | string | `'image'` | image \| math \| slide |
-| `label` | string | `'验证码'` | 标签文案（表单字段标签 / 按钮文案） |
-| `name` | string | `'captcha'` | 表单字段名 / 语义名称 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `mode` | string | `'image'` | 枚举白名单 `'image', 'math', 'slide'` |
+| `label` | string | `'验证码'` | 标签文案（表单字段标签 / 按钮文案）；源码用法：`$label = $this->get('label');` |
+| `name` | string | `'captcha'` | 表单字段名 / 语义名称；源码用法：`$name = $this->get('name');` |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? ('captcha_' . $this->uid('cap'));` |
 | `src` | mixed | `null` | image 模式图片地址（默认走 XfAdmin 通用 /captcha 约定） |
 | `question` | mixed | `null` | math 模式题目，默认随机生成 |
-| `placeholder` | string | `'请输入计算结果'` | 占位提示文案 |
-| `refreshable` | bool | `true` | image 模式点击刷新 |
-| `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
-| `required` | bool | `true` | 是否必填（渲染 required 属性 + 红色星号） |
+| `placeholder` | string | `'请输入计算结果'` | 占位提示文案；**文本槽位**：输出前自动 HTML 转义 |
+| `refreshable` | bool | `true` | image 模式点击刷新；开关：非空 / 真值时启用对应区块 |
+| `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `required` | bool | `true` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`$req = ! empty($this->get('required'));` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -757,18 +1202,35 @@ XfAdmin::twoFactorInput([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::twoFactorInput([
+    'length' => 6,
+    'name' => 'code',
+    'value' => '',
+    'mask' => null,
+    'autofocus' => true,
+    'disabled' => false,
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `xf-2fa` `d-flex` `gap-2` `justify-content-center` `fw-semibold`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `length` | int | `6` |  |
-| `name` | string | `'code'` | 表单字段名 / 语义名称 |
-| `value` | string | `''` | 当前值（表单控件值 / 展示数值） |
-| `mask` | mixed | `null` |  |
-| `autofocus` | bool | `true` |  |
-| `disabled` | bool | `false` | 是否禁用 |
+| `length` | int | `6` | 长度 / 位数（如 OTP 格数 4-8）；源码用法：`$length = max(4, min(8, (int) $this->get('length')));` |
+| `name` | string | `'code'` | 表单字段名 / 语义名称；源码用法：`$name = $this->get('name');` |
+| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = (string) $this->get('value');` |
+| `mask` | mixed | `null` | 输入掩码表达式，如 `999-9999-9999`；源码用法：`$mask = $this->get('mask');` |
+| `autofocus` | bool | `true` | 源码用法：`$autofocus = $this->get('autofocus') ? ' data-xf-autofocus' : '';` |
+| `disabled` | bool | `false` | 是否禁用；源码用法：`$disabled = $this->get('disabled') ? ' disabled' : '';` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -793,18 +1255,33 @@ XfAdmin::quantityStepper([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::quantityStepper([
+    'name' => 'qty',
+    'value' => 1,
+    'min' => 1,
+    'max' => 99,
+    'step' => 1,
+    'size' => 'md',
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | string | `'qty'` | 表单字段名 / 语义名称 |
-| `value` | int | `1` | 当前值（表单控件值 / 展示数值） |
-| `min` | int | `1` | 最小值 |
-| `max` | int | `99` | 最大值 |
-| `step` | int | `1` | 步长 |
-| `size` | string | `'md'` | 尺寸：sm \| lg（部分组件支持 md/xl） |
+| `name` | string | `'qty'` | 表单字段名 / 语义名称；源码用法：`$name = $this->get('name');` |
+| `value` | int | `1` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = (int) $this->get('value');` |
+| `min` | int | `1` | 最小值；源码用法：`$min = (int) $this->get('min');` |
+| `max` | int | `99` | 最大值；源码用法：`$max = (int) $this->get('max');` |
+| `step` | int | `1` | 步长；源码用法：`$step = (int) $this->get('step');` |
+| `size` | string | `'md'` | 枚举白名单 `'sm', 'md', 'lg'` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -827,13 +1304,23 @@ XfAdmin::formElements([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::formElements([
+    'sections' => null,
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `sections` | mixed | `null` | 分区数组 |
+| `sections` | mixed | `null` | 分区数组；源码用法：`$sections = $this->get('sections');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -855,15 +1342,27 @@ XfAdmin::formLayout([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::formLayout([
+    'layout' => 'vertical',
+    'columns' => 2,
+    'fields' => null,
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `layout` | string | `'vertical'` | 布局模式（各组件不同，如 vertical/horizontal） |
-| `columns` | int | `2` | 列定义数组 |
-| `fields` | mixed | `null` | 字段定义数组（表单字段 / 详情字段） |
+| `layout` | string | `'vertical'` | 布局模式（各组件不同，如 vertical/horizontal）；源码用法：`? $this->renderCustomForm((string) $this->get('layout'), (int) $this->get('columns'),…` |
+| `columns` | int | `2` | 列定义数组；源码用法：`? $this->renderCustomForm((string) $this->get('layout'), (int) $this->get('columns'),…` |
+| `fields` | mixed | `null` | 字段定义数组（表单字段 / 详情字段）；源码用法：`$fields = $this->get('fields');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -883,13 +1382,35 @@ XfAdmin::formOtherPlugin([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::formOtherPlugin([
+    // plugins
+    'plugins' => [
+        'mask',
+        'autosize',
+        'maxlength',
+        'touchspin',
+    ],
+]);
+```
+
+</details>
+
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `plugins[]`：启用哪些插件段：`mask`、`autosize`、`maxlength`、`touchspin`
+
+> **渲染骨架**：主要 class `text-center` `text-muted` `py-4` `card` `mb-3` `card-header` `card-body` `row`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `plugins` | array | `['mask', 'autosize', 'maxlength', 'touchspin']` | 数组结构（见组件用法示例） |
+| `plugins` | array | `['mask', 'autosize', 'maxlength', 'touchspin']` | 启用的插件列表 |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
 ---
 
@@ -914,13 +1435,25 @@ XfAdmin::formValidation([
 ]);
 ```
 
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::formValidation([
+    'showBuiltin' => true,
+    'formId' => 'xf_form_val',
+    'fields' => null,
+]);
+```
+
+</details>
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `showBuiltin` | bool | `true` |  |
-| `formId` | string | `'xf_form_val'` |  |
-| `fields` | mixed | `null` | 字段定义数组（表单字段 / 详情字段） |
+| `showBuiltin` | bool | `true` | 是否显示内置区块 |
+| `formId` | string | `'xf_form_val'` | 源码用法：`? $this->renderCustomForm((string) $this->get('formId'), (array) $fields)` |
+| `fields` | mixed | `null` | 字段定义数组（表单字段 / 详情字段）；源码用法：`$fields = $this->get('fields');` |
 
-> 参数说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value` 等）见各组件所属基类的公共字段说明。
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
