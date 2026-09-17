@@ -3845,3 +3845,77 @@ table.dataTable td .btn-icon,
     body.xf-printing .xf-invoice-print-area * { visibility: visible; }
     body.xf-printing .xf-invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; }
 }
+
+/* ===================== 全局视觉打磨（additive，不回退框架类） =====================
+ * 原则：仅「增强 / 补全」框架未覆盖处；不重写框架已定义的 .card/.btn/.dropdown-menu
+ * 等类（避免破坏 INSPINIA 主题）。焦点环用 :where() 保持 0 特异性，确保「只追加不覆盖」。 */
+
+/* 1) 统一聚焦可见性：键盘可达性 + 美观焦点环。:where() 0 特异性，框架已有焦点样式不受影响 */
+:where(a, button, input, select, textarea,
+       .btn, .form-control, .form-select, .form-check-input,
+       .page-link, .dropdown-item, .nav-link, .list-group-item,
+       .xf-diy-comp-item, .xf-diy-block, .xf-diy-chip, .xf-swatch):focus-visible {
+    outline: 2px solid rgba(var(--bs-primary-rgb, 61, 96, 213), .6);
+    outline-offset: 2px;
+}
+
+/* 2) 交互过渡：仅给 xfadmin 自有组件类追加平滑过渡，避免覆盖框架 .btn 等既有 transition */
+.xf-diy-comp-item,
+.xf-diy-block,
+.xf-diy-chip,
+.xf-diy-col-empty,
+.xf-swatch {
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+
+/* 3) 卡片悬浮微抬升：仅在显式使用 .xf-card-lift 时生效（不覆盖框架 .card） */
+.xf-card-lift {
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+.xf-card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1.25rem rgba(0, 0, 0, .12);
+}
+
+/* 4) 细滚动条：xfadmin 自有滚动容器（侧栏 / 面板 / 代码区等） */
+.xf-scroll-soft {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120, 130, 150, .35) transparent;
+}
+.xf-scroll-soft::-webkit-scrollbar { width: 8px; height: 8px; }
+.xf-scroll-soft::-webkit-scrollbar-thumb {
+    background: rgba(120, 130, 150, .35);
+    border-radius: 8px;
+}
+.xf-scroll-soft::-webkit-scrollbar-thumb:hover { background: rgba(120, 130, 150, .55); }
+
+/* 5) 柔和分隔与微阴影工具类（用于卡片内分区、空状态等） */
+.xf-divider-soft {
+    border: 0;
+    border-top: 1px solid rgba(var(--bs-border-color-rgb, 222, 226, 230), .6);
+    margin: 1rem 0;
+}
+.xf-surface-soft {
+    background: rgba(var(--bs-light-rgb, 248, 249, 250), .6);
+    border-radius: .5rem;
+}
+[data-bs-theme="dark"] .xf-surface-soft {
+    background: rgba(255, 255, 255, .04);
+}
+
+/* 6) 通用空状态美化（与 EmptyState 组件配套，独立可用） */
+.xf-empty-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: 2.5rem 1rem;
+    color: var(--bs-secondary-color, #6c757d);
+    text-align: center;
+}
+.xf-empty-hint .xf-empty-icon {
+    font-size: 2.25rem;
+    line-height: 1;
+    opacity: .55;
+}

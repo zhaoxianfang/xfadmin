@@ -92,8 +92,8 @@ echo XfAdmin::apexChart([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `type` | string | `'line'` | 类型（各组件语义不同，详见该组件说明）；源码用法：`$type = (string) $this->get('type');` |
-| `height` | int | `350` | 高度（CSS 长度，受安全白名单约束）；输出到 `` 属性 |
-| `width` | mixed | `null` | 宽度（数字=栅格列数或 CSS 长度）；输出到 `` 属性 |
+| `height` | int | `350` | 高度（CSS 长度，受安全白名单约束）；输出到 `height` 属性 |
+| `width` | mixed | `null` | 宽度（数字=栅格列数或 CSS 长度）；输出到 `width` 属性 |
 | `series` | array | `[]` | 图表数据系列；源码用法：`'series' => $this->get('series'),` |
 | `labels` | mixed | `null` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
 | `colors` | mixed | `null` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
@@ -156,7 +156,7 @@ echo XfAdmin::apexTree([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `height` | int | `500` | 高度（CSS 长度，受安全白名单约束） |
-| `direction` | string | `'top'` | 方向 |
+| `direction` | string | `'top'` | 可选值：`horizontal` / `vertical` / `up` / `down` / `left` / `right` |
 | `data` | array | `[]` | 数据数组（行数据 / 图表数据） |
 | `node_width` | int | `150` | 节点宽度（树图，px） |
 | `node_height` | int | `60` | 节点高度（树图，px） |
@@ -273,7 +273,7 @@ echo XfAdmin::echart([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `height` | int | `350` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'style' => 'height:' . (int) $this->get('height') . 'px;',` |
-| `theme` | mixed | `null` | 主题（light / dark / 图表主题名）；源码用法：`'theme' => $this->get('theme'),` |
+| `theme` | mixed | `null` | 源码用法：`'theme' => $this->get('theme'),`；可选值：`light` / `dark` / `auto` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。

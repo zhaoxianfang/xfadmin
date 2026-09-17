@@ -34,6 +34,8 @@
 - [`menu`](#menu) — 菜单数据组件（导航菜单 DSL，供 sidenav/topnav 使用）
 - [`row`](#row) — 栅格行容器（Bootstrap row 封装）
 - [`col`](#col) — 栅格列（Bootstrap col 封装，支持响应式断点）
+- [`diyLayoutPage`](#diylayoutpage) — DIY 可视化布局器（左菜单/中舞台/右属性，对标 LayoutIt）
+- `diy` — 等价于 `diyLayoutPage`（同一组件类的别名）
 
 ## 本章导读
 
@@ -140,7 +142,7 @@ echo XfAdmin::page([
 | `author` | mixed | `null` | 作者信息；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
 | `favicon` | mixed | `null` | 源码用法：`$favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url…` |
 | `layout` | string | `'vertical'` | 布局模式（各组件不同，如 vertical/horizontal） |
-| `theme` | array | `[]` | 主题（light / dark / 图表主题名） |
+| `theme` | array | `[]` | 可选值：`light` / `dark` / `auto` |
 | `menu` | array | `[]` | 菜单数据数组 |
 | `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮）；源码用法：`$topnavOpts['current_url'] ??= $this->get('current_url');` |
 | `sidenav` | array | `[]` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
@@ -588,7 +590,7 @@ echo XfAdmin::authPage([
     'sideImagePosition' => 'center',    // 背景定位（CSS background-position：center/top left...）
     'sideOverlay' => true,    // 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角）
     'sideTitle' => '企业级后台管理平台',    // 侧栏标题（默认官方文案，可按需覆盖）
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
     // sideList
     'sideList' => [
         [/* … */],
@@ -623,7 +625,7 @@ echo XfAdmin::authPage([
 | `class` | string | `''` | 附加到根容器 class |
 | `id` | string | `''` | 根容器 id |
 | `bodyClass` | string | `''` | 卡片 / 主体区域附加 class |
-| `theme` | string | `'light'` | light \| dark（split/card 侧栏风格） |
+| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
 | `title` | string | `''` | <title> |
 | `heading` | string | `''` | 主标题 |
@@ -821,7 +823,7 @@ echo XfAdmin::lockScreen([
 |---|---|---|---|
 | `lang` | string | `'zh-CN'` | 源码用法：`$htmlAttrs = ['lang' => $this->get('lang')];` |
 | `title` | mixed | `null` | <title>，默认取 heading |
-| `theme` | array | `[]` | 主题（light / dark / 图表主题名） |
+| `theme` | array | `[]` | 可选值：`light` / `dark` / `auto` |
 | `user` | array | `['name'=>'User', 'avatar'=>'']` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = (array) $this->get('user');` |
 | `action` | string | `'#'` | 表单提交地址 / 动作类型；**文本槽位**：输出前自动 HTML 转义 |
 | `heading` | string | `'屏幕已锁定'` | **文本槽位**：输出前自动 HTML 转义 |
@@ -949,7 +951,7 @@ echo XfAdmin::errorPage([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -980,7 +982,7 @@ echo XfAdmin::errorPage([
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
 | `bodyClass` | string | `''` | 追加到 <form> 的 class |
-| `theme` | string | `'light'` | 主题（light / dark / 图表主题名） |
+| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
 | `heading` | string | `'Page Not Found'` | **文本槽位**：输出前自动 HTML 转义 |
@@ -1093,7 +1095,7 @@ echo XfAdmin::comingSoon([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -1123,7 +1125,7 @@ echo XfAdmin::comingSoon([
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
 | `bodyClass` | string | `''` | 追加到 <form> 的 class |
-| `theme` | string | `'light'` | 主题（light / dark / 图表主题名） |
+| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
 | `heading` | string | `'即将上线'` | **文本槽位**：输出前自动 HTML 转义 |
@@ -1234,7 +1236,7 @@ echo XfAdmin::maintenance([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -1263,7 +1265,7 @@ echo XfAdmin::maintenance([
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
 | `bodyClass` | string | `''` | 追加到 <form> 的 class |
-| `theme` | string | `'light'` | 主题（light / dark / 图表主题名） |
+| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
 | `heading` | string | `'网站维护中'` | **文本槽位**：输出前自动 HTML 转义 |
@@ -1417,7 +1419,7 @@ echo XfAdmin::landing([
 |---|---|---|---|
 | `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；源码用法：`$brand = $this->get('brand');` |
 | `nav` | array | `[]` | 导航项数组 |
-| `hero` | array | `[]` | 输出到 `` 属性 |
+| `hero` | array | `[]` | 输出到 `title` 属性 |
 | `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
 | `features` | array | `[]` | 特性 / 功能列表 |
 | `pricing` | array | `[]` | 价格方案配置 |
@@ -1576,7 +1578,7 @@ echo XfAdmin::row([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `gutter` | mixed | `null` | 栅格间距（数字或 `['x'=>2,'y'=>3]`）；源码用法：`$gutter = $this->get('gutter');` |
-| `align` | mixed | `null` | start\|center\|end  => align-items-*；开关：非空 / 真值时启用对应区块 |
+| `align` | mixed | `null` | 开关：非空 / 真值时启用对应区块；可选值：`start` / `center` / `end` |
 | `justify` | mixed | `null` | start\|center\|end\|between\|around => justify-content-*；开关：非空 / 真值时启用对应区块 |
 | `cols` | array | `[]` | 列数（栅格 / 分区列数） |
 | `content` | mixed | `null` | 直接传内容（可与 cols 混用）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
@@ -1623,4 +1625,69 @@ echo XfAdmin::col([
 | `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
+
+---
+
+### `diyLayoutPage`
+
+DIY 可视化布局器：左侧组件菜单 / 中间可视化舞台 / 右侧属性面板的三栏编辑器，对标 LayoutIt，用于通过拖拽快速搭建后台页面原型，并一键导出可直接运行的 Laravel / ThinkPHP 代码。
+
+> **类**：`zxf\XfAdmin\Components\Layout\DiyLayoutPage`
+> **文件**：`src/Components/Layout/DiyLayoutPage.php` + `src/Support/DiyRenderer.php`（服务端渲染与组件目录）
+> **依赖插件**：`diy`（含 `xfadmin-diy.css` / `xfadmin-diy.js` 与 `sortablejs`）
+
+**用法示例**
+
+```php
+XfAdmin::diyLayoutPage([
+    'render_url' => '/diy/render',   // 服务端实时渲染端点（返回 {html,css,js}）
+    'blocks'     => [...],           // 可选：初始块树；缺省为空舞台，可点击「载入示例」
+]);
+```
+
+<details><summary><b>全参数示例</b>（点击展开）</summary>
+
+```php
+echo XfAdmin::diyLayoutPage([
+    'title'      => 'DIY 可视化布局器',
+    'render_url' => '/diy/render',
+    'blocks'     => [],   // 初始块树；为空时显示引导空状态
+    'sample'     => [...], // 可选：自定义示例布局（缺省由包内置示例接管）
+]);
+```
+
+</details>
+
+> **渲染骨架**：主要 class `xf-diy-editor` `xf-diy-palette` `xf-diy-stage` `xf-diy-props` `xf-diy-comp-item` `xf-diy-layout-list` `xf-diy-tpl-*`
+
+**编辑器核心能力**
+
+| 能力 | 说明 |
+|---|---|
+| 添加组件 | 从左侧列表**点击**或**拖拽**组件 / 模板 / 行 / 列到舞台；空舞台可点「载入示例」 |
+| 布局嵌套 | 将组件拖入**栅格行 / 列**实现任意层级嵌套；选中列可**拆分**为 2/3/4 列或**添加同级列** |
+| 属性编辑 | 点击舞台中的任意块，在右侧面板修改**全部配置参数**（颜色 / 图标 / 图片 / 链接 / 候选项） |
+| 撤销重做 | 所有操作均可撤销 / 重做；自动保存到本地草稿（`localStorage`），下次打开自动恢复 |
+| 设备预览 | 顶栏切换**桌面 / 平板 / 手机**预览设备宽度 |
+| 预览浮层 | 点击「预览」打开全屏浮层，克隆当前舞台并真实渲染（图表 / 地图按真实配置渲染）；浮层右上角「← 退出预览」按钮或按 **Esc** 返回舞台 |
+| 生成代码 | 一键导出 Laravel / ThinkPHP 控制器 + HTML 视图 / 块树 JSON，直接复制使用 |
+
+**关于图表 / 地图组件**
+
+编辑器舞台每次改动都会整体重渲染，而 ApexCharts / ECharts / 矢量地图等依赖异步渲染，节点易被替换导致「永不显示」。因此**编辑态舞台内**图表 / 地图以**静态占位**呈现（标注「预览中查看真实渲染效果」），**预览浮层 / 导出页**中则按真实配置渲染出完整图表与地图。
+
+**配置参数**
+
+| 参数 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `title` | string | `'DIY 可视化布局器'` | 标题文本 |
+| `render_url` | string | `'/diy/render'` | 服务端实时渲染端点；经协议白名单校验（拦截 `javascript:` 等危险协议） |
+| `blocks` | array | `[]` | 初始块树；为空时显示引导空状态 |
+| `sample` | array | 包内置示例 | 可选：自定义示例布局（`blocks` 为空且用户未载入示例时作为首屏引导） |
+
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
+
+### `diy`
+
+`diy` 是 `diyLayoutPage` 的别名，指向同一个组件类 `zxf\XfAdmin\Components\Layout\DiyLayoutPage`，参数与用法完全一致。
 

@@ -223,6 +223,8 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Misc\PinBoard       pinBoard(array $options = [])  // 钉板（瀑布流便签卡片）
  * @method static Components\Misc\Masonry        masonry(array $options = [])  // 瀑布流布局（错落卡片墙）
  * @method static Components\Layout\Landing      landing(array $options = [])  // 落地页/营销首页（英雄区+特性+CTA）
+ * @method static Components\Layout\DiyLayoutPage diyLayoutPage(array $options = [])  // DIY 可视化布局器（左菜单/中舞台/右属性，对标 LayoutIt）
+ * @method static Components\Layout\DiyLayoutPage diy(array $options = [])  // DIY 可视化布局器（别名）
  * @method static Components\Data\EcommerceDashboard ecommerceDashboard(array $options = [])  // 电商仪表盘（销售/订单/库存概览）
  * @method static Components\Data\WidgetsDashboard widgetsDashboard(array $options = [])  // 小部件仪表盘（多 widget 汇总）
  * @method static Components\Data\ModuleNav      moduleNav(array $options = [])  // 模块导航（企业级模块菜单）
@@ -284,6 +286,9 @@ final class XfAdmin
         'emptyState'  => Components\Layout\EmptyState::class,
         'lockScreen'  => Components\Layout\LockScreen::class,
         'landing'     => Components\Layout\Landing::class,
+        // DIY 可视化布局器（拖拽组件 + 属性面板 + 服务端实时预览，对标 LayoutIt）
+        'diyLayoutPage' => Components\Layout\DiyLayoutPage::class,
+        'diy'          => Components\Layout\DiyLayoutPage::class,
         // 导航
         'menu'        => Components\Navigation\Menu::class,
         // 栅格
@@ -780,6 +785,23 @@ final class XfAdmin
     public static function dataResponse(iterable|object $rows, array $params = [], array $options = []): array
     {
         return Support\DataSet::response($rows, $params, $options);
+    }
+
+    /**
+     * DiyLayoutPage 服务端渲染入口
+     *
+     * 把编辑器维护的「块树」转换为真实 HTML：
+     *   - mode=block ：渲染单个组件，返回 {html, css[], js[]}（css/js 为完整资源 URL，
+     *     供前端动态补齐依赖后 XFAdmin.scan() 初始化）；
+     *   - mode=page  ：渲染整棵块树，返回干净 HTML 片段；
+     *   - mode=export：把整棵块树包进 XfAdmin::page() 输出完整页面文档。
+     *
+     * @param  array  $payload  {mode, alias, options, tree}
+     * @return mixed
+     */
+    public static function diyRender(array $payload): mixed
+    {
+        return Support\DiyRenderer::render($payload);
     }
 
     /**

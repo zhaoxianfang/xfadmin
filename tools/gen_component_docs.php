@@ -67,6 +67,7 @@ $GROUPS = [
             'accountSettingsPanel',
             'menu',
             'row', 'col',
+            'diyLayoutPage', 'diy',
         ],
     ],
     '02-ui.md' => [
@@ -1367,6 +1368,37 @@ const PARAM_DICT = [
 ];
 
 /**
+ * 枚举常量 → 实际允许值（与 `src/Components/Component.php` 中的 ENUM_* 常量保持一致）
+ * 当组件源码使用 `enum($this->get('x'), self::ENUM_X, 'default')` 时，据此列出全部可选项。
+ */
+const ENUM_VALUES = [
+    'ENUM_VARIANT'          => ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'],
+    'ENUM_VARIANT_OUTLINE'  => ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'],
+    'ENUM_SIZE'             => ['sm', 'lg'],
+    'ENUM_PLACEMENT'        => ['top', 'bottom', 'left', 'right', 'start', 'end'],
+    'ENUM_BREAKPOINT'       => ['sm', 'md', 'lg', 'xl', 'xxl'],
+];
+
+/**
+ * 通用参数「全部可选项」字典（覆盖未显式调用 `enum()` 助手、仅用字面默认值的组件）。
+ * 键名来自 `defaults()` 实际字段；仅当组件声明了该参数才会注入，不会给无关组件凭空编造选项。
+ * 取值为 XfAdmin 全组件的通用约定（Bootstrap / Tabler），可在「全参数示例」基础上进一步明确。
+ */
+const PARAM_OPTIONS = [
+    'variant'    => ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'],
+    'variant_outline' => ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'],
+    'size'       => ['sm', 'lg'],
+    'placement'  => ['top', 'bottom', 'left', 'right', 'start', 'end'],
+    'breakpoint' => ['sm', 'md', 'lg', 'xl', 'xxl'],
+    'align'      => ['start', 'center', 'end'],
+    'trigger'    => ['hover', 'click', 'focus'],
+    'position'   => ['top', 'bottom', 'left', 'right'],
+    'direction'  => ['horizontal', 'vertical', 'up', 'down', 'left', 'right'],
+    'theme'      => ['light', 'dark', 'auto'],
+    'orientation'=> ['horizontal', 'vertical'],
+];
+
+/**
  * 从组件源码（html() 及全文）分析某个参数的真实用法语义
  *
  * 返回可直接写入文档「说明」列的提示数组，来源全部是源码事实：
@@ -1387,8 +1419,17 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
     if (preg_match("#enum\(\s*{$get}\s*,\s*(self::(\w+)|\[([^\]]*)\])\s*,\s*'([^']*)'#", $methodSrc, $m)) {
         $fallback = $m[5] ?? '';
         if (! empty($m[3])) {
-            $hints[] = '枚举白名单 `' . $m[3] . '`'
-                . ($fallback !== '' ? '，非法值回退 `' . $fallback . '`' : '');
+            // self::ENUM_X：解析为实际允许值（见 ENUM_VALUES），列出全部可选项
+            $const = $m[3];
+            $vals  = ENUM_VALUES[$const] ?? null;
+            if ($vals !== null) {
+                $hints[] = '可选值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', $vals))
+                    . '（白名单 `' . $const . '`'
+                    . ($fallback !== '' ? '，非法值回退 `' . $fallback . '`' : '') . '）';
+            } else {
+                $hints[] = '枚举白名单 `' . $const . '`'
+                    . ($fallback !== '' ? '，非法值回退 `' . $fallback . '`' : '');
+            }
         } else {
             $vals = array_filter(array_map('trim', explode(',', (string) $m[4])),
                 fn ($v) => $v !== '' && $v !== "'" );
@@ -1449,7 +1490,7 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
         $hints[] = '为 `null` 时不渲染该区块';
     }
     // 参与属性输出
-    if (preg_match("#'(?:class|style|width|height|id|href|src|type|name|value|title|alt|target|role|data-[\w-]*)'\s*=>\s*{$get}#", $methodSrc, $am)) {
+    if (preg_match("#'((?:class|style|width|height|id|href|src|type|name|value|title|alt|target|role|data-[\w-]*))'\s*=>\s*{$get}#", $methodSrc, $am)) {
         $hints[] = '输出到 `' . $am[1] . '` 属性';
     }
 
@@ -1980,6 +2021,19 @@ foreach ($GROUPS as $file => $group) {
                         $strong = true;
                         break;
                     }
+                }
+                // 通用「全部可选项」注入：源码未给出枚举/分支时，用 PARAM_OPTIONS 补全全部可选项；
+                // 源码已给出枚举白名单（如 self::ENUM_X）则把具体值附在其后，避免只显示常量名。
+                if (isset(PARAM_OPTIONS[$k])) {
+                    $fullOpts = '可选值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', PARAM_OPTIONS[$k]));
+                    $hints    = array_values(array_filter($hints, fn ($h) => ! str_starts_with($h, '可选值：')));
+                    $hasEnum  = false;
+                    foreach ($hints as &$h) {
+                        if (str_contains($h, '枚举白名单')) { $h .= '；' . $fullOpts; $hasEnum = true; }
+                    }
+                    unset($h);
+                    if (! $hasEnum) { $hints[] = $fullOpts; }
+                    $strong = $strong || true;
                 }
                 if ($hints !== []) {
                     $comment = $strong

@@ -130,7 +130,7 @@ echo XfAdmin::table([
 | `align_middle` | bool | `false` | 单元格垂直居中；源码用法：`'align-middle' => $this->get('align_middle'),` |
 | `centered` | bool | `false` | 是否垂直居中；源码用法：`'table-centered' => $this->get('centered'),` |
 | `nowrap` | bool | `false` | 源码用法：`'table-nowrap' => $this->get('nowrap'),` |
-| `variant` | mixed | `null` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束）；源码用法：`], $this->get('variant') ? 'table-' . $this->enum($this->get('variant'), ['light', 'd…` |
+| `variant` | mixed | `null` | 源码用法：`], $this->get('variant') ? 'table-' . $this->enum($this->get('variant'), ['light', 'd…`；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `head_variant` | mixed | `null` | 枚举白名单 `'light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'` |
 | `responsive` | bool | `true` | 是否响应式（横向滚动 / 响应式表格）；开关：非空 / 真值时启用对应区块 |
 | `caption` | mixed | `null` | 表格 caption 文本；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
@@ -280,7 +280,7 @@ echo XfAdmin::dataTable([
 | `align_middle` | bool | `true` | 单元格垂直居中 |
 | `centered` | bool | `false` | 是否垂直居中 |
 | `nowrap` | bool | `false` |  |
-| `variant` | mixed | `null` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束） |
+| `variant` | mixed | `null` | 可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `head_variant` | mixed | `null` | 枚举白名单 `'light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'` |
 | `responsive` | bool | `false` | 默认关闭响应式折叠（避免列被收进 child 子行），依赖 scrollX 水平滚动处理溢出列；row_detail 启用时仍互斥；开关：非空 / 真值时启用对应区块 |
 | `caption` | mixed | `null` | 表格 caption 文本 |

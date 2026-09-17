@@ -163,6 +163,12 @@ final class Assets
         'pdfjs'        => ['js' => ['plugins/pdfjs/pdf.min.js']],
         'tinycon'      => ['js' => ['plugins/tinycon/tinycon.min.js']],
         'diff'         => ['js' => ['plugins/diff/diff.min.js']],
+        // DIY 可视化布局器（拖拽 + 属性面板 + 服务端实时预览）
+        'diy'          => [
+            'css' => ['css/xfadmin-diy.css'],
+            'js'  => ['js/xfadmin-diy.js'],
+            'deps' => ['sortablejs'],
+        ],
     ];
 
     /**

@@ -269,7 +269,7 @@ echo XfAdmin::lightbox([
 | `images` | array | `[]` |  |
 | `columns` | int | `3` | 列定义数组；源码用法：`$cols = max(1, (int) $this->get('columns'));` |
 | `masonry` | bool | `false` | 源码用法：`return $this->get('masonry') ? ['glightbox', 'masonry'] : ['glightbox'];` |
-| `gallery` | string | `'xf-gallery'` | 输出到 `` 属性 |
+| `gallery` | string | `'xf-gallery'` | 输出到 `data-gallery` 属性 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -356,7 +356,7 @@ echo XfAdmin::clipboard([
 | `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
 | `target` | mixed | `null` | 目标（组件语义不同：链接打开方式 `_blank` / 倒计时目标时间 / 数值目标）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
 | `label` | string | `'复制'` | 标签文案（表单字段标签 / 按钮文案）；**文本槽位**：输出前自动 HTML 转义 |
-| `variant` | string | `'light'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束）；源码用法：`'class' => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::E…` |
+| `variant` | string | `'light'` | 源码用法：`'class' => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::E…`；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `success` | string | `'已复制！'` | 源码用法：`'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_…` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -424,9 +424,9 @@ echo XfAdmin::sweetAlert([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `trigger` | mixed | `null` | 触发方式（hover / click / focus），或触发按钮文案；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `trigger` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块；可选值：`hover` / `click` / `focus` |
 | `trigger_variant` | string | `'primary'` | 触发按钮的语义变体（primary/secondary/…）；源码用法：`'class' => 'btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::…` |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；输出到 `` 属性 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；输出到 `title` 属性 |
 | `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`'text' => $this->get('text'),` |
 | `icon` | mixed | `null` | success \| error \| warning \| info \| question |
 | `confirm_text` | string | `'确定'` | 源码用法：`'confirmButtonText' => $this->get('confirm_text'),` |
@@ -616,7 +616,7 @@ echo XfAdmin::animate([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `animation` | string | `'bounce'` | 动画类名 |
-| `trigger` | string | `'load'` | 触发方式（hover / click / focus），或触发按钮文案 |
+| `trigger` | string | `'load'` | 可选值：`hover` / `click` / `focus` |
 | `infinite` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
 | `delay` | mixed | `null` | 延迟（毫秒）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
 | `speed` | mixed | `null` | 开关：非空 / 真值时启用对应区块 |

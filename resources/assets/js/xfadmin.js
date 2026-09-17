@@ -4289,8 +4289,20 @@
         xfThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
     }
 
+    // DIY 编辑器内图表/地图以静态占位呈现（避免舞台反复重渲染导致异步图表节点被替换而永不显示）；
+    // 真实渲染在「预览/导出页」进行（其 XF.scan 会临时置 window.__xfDiyEdit=false）。
+    function xfDiyChartPlaceholder(el, label, h) {
+        h = (typeof h === 'number') ? h : 320;
+        el.style.minHeight = h + 'px';
+        el.innerHTML = '<div class="xf-diy-chart-ph">'
+            + '<div class="xf-diy-chart-ph-ic"><i class="ti ti-chart-bar"></i></div>'
+            + '<div class="xf-diy-chart-ph-t">' + (label || '图表') + '</div>'
+            + '<div class="xf-diy-chart-ph-s">预览中查看真实渲染效果</div>'
+            + '</div>';
+    }
     XFAdmin.register('apexchart', function (el, options) {
         if (!global.ApexCharts) return;
+        if (window.__xfDiyEdit) { xfDiyChartPlaceholder(el, '图表预览', (options && options.chart && options.chart.height) || 350); return; }
         options = options || {};
         // 未显式指定主题时，跟随当前 data-bs-theme
         if (!options.theme) {
@@ -4303,7 +4315,13 @@
             options.theme = { mode: xfCurrentThemeMode() };
         }
         var chart = new global.ApexCharts(el, options);
-        chart.render();
+        // render() 返回 Promise；在 DIY 等会频繁重渲染（节点被替换）的场景下，
+        // Promise 内部可能抛 "Element not found"。捕获之，避免未处理拒绝刷屏报错
+        // （节点被替换的图表在预览/导出页一次性渲染时仍正常显示）。
+        try {
+            var __r = chart.render();
+            if (__r && typeof __r.catch === 'function') { __r.catch(function () {}); }
+        } catch (e) {}
         window.__xfApex.push(chart);
         // 响应式：监听窗口 resize，调用 chart.resize() 适应容器宽度变化
         // 使用防抖避免频繁调用，与 ECharts 一致
@@ -4324,6 +4342,7 @@
 
     XFAdmin.register('echart', function (el, config) {
         if (!global.echarts) return;
+        if (window.__xfDiyEdit) { xfDiyChartPlaceholder(el, '图表预览', (config && config.options && config.options.height) || 350); return; }
         config = config || {};
         // 主题：PHP 显式传 theme 则强制使用该名；否则跟随当前 data-bs-theme（dark 用内置 'dark'）
         var forceTheme = config.theme || null;
@@ -4346,6 +4365,7 @@
 
     XFAdmin.register('vectormap', function (el, config) {
         if (!global.jsVectorMap) return;
+        if (window.__xfDiyEdit) { xfDiyChartPlaceholder(el, '地图预览', 360); return; }
         config.selector = '#' + el.id;
         return new global.jsVectorMap(config);
     });
@@ -5953,6 +5973,7 @@
     /* ==================== 组织架构树（charts-apextree.html，apextree 插件） ==================== */
     XFAdmin.register('apextree', function (el, cfg) {
         if (!global.ApexTree) return;
+        if (window.__xfDiyEdit) { xfDiyChartPlaceholder(el, '关系树预览', (cfg && cfg.height) || 360); return; }
         cfg = cfg || {};
         // 把扁平节点（name/role/avatar/color）转换为 apextree 期望的 {id,data,options,children} 结构
         function toNode(n, idx) {
@@ -6010,6 +6031,7 @@
      */
     XFAdmin.register('apexsankey', function (el, cfg) {
         if (!global.ApexSankey) return;
+        if (window.__xfDiyEdit) { xfDiyChartPlaceholder(el, '桑基图预览', (cfg && cfg.height) || 400); return; }
         cfg = cfg || {};
         var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
         // 图形配置：内置暗色适配的默认值，cfg.options 可整体覆盖任意原生项

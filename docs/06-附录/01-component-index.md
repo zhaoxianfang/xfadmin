@@ -1,7 +1,7 @@
 # 组件索引（按别名排序）
 
 > 本文件由 `php tools/gen_component_docs.php` 自动生成。
-> 共 **215** 个组件条目（注册表别名 **226** 个，11 个为指向同一组件类的重复别名）。
+> 共 **216** 个组件条目（注册表别名 **228** 个，12 个为指向同一组件类的重复别名）。
 > 按分类浏览见 [组件总览](../03-组件参考/00-总览.md)。
 
 | 别名 | 一句话说明 | 组件类 | 源文件 | 分类文档 |
@@ -68,6 +68,7 @@
 | `deals` | 交易/商机列表 | `Data\Deals` | `src/Components/Data/Deals.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-组件参考/08-data-people.md) |
 | `descriptionList` | 描述列表 | `UI\DescriptionList` | `src/Components/UI/DescriptionList.php` | [UI 基础组件](../03-组件参考/02-ui.md) |
 | `divider` | 分割线 | `UI\Divider` | `src/Components/UI/Divider.php` | [UI 基础组件](../03-组件参考/02-ui.md) |
+| `diyLayoutPage` | DIY 可视化布局器 | `Layout\DiyLayoutPage` | `src/Components/Layout/DiyLayoutPage.php` | [布局 · 导航 · 栅格](../03-组件参考/01-layout.md) |
 | `dropdown` | 下拉菜单 | `UI\Dropdown` | `src/Components/UI/Dropdown.php` | [UI 基础组件](../03-组件参考/02-ui.md) |
 | `dropzoneUpload` | 拖拽上传区 | `UI\DropzoneUpload` | `src/Components/UI/DropzoneUpload.php` | [UI 基础组件](../03-组件参考/02-ui.md) |
 | `echart` | ECharts 图表 | `Chart\EChart` | `src/Components/Chart/EChart.php` | [图表与地图](../03-组件参考/05-chart.md) |

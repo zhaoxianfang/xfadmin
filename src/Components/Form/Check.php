@@ -85,7 +85,19 @@ class Check extends Component
      */
     protected function html(): string
     {
-        $options = (array) $this->get('options', []);
+        $raw = (array) $this->get('options', []);
+        // 兼容两种候选项格式：
+        //   - 关联数组 value => label（如 ['m'=>'男','f'=>'女']）
+        //   - 对象数组 [{text,value}]（属性面板 JSON 编辑器与 diy_defaults 采用此格式）
+        $options = [];
+        foreach ($raw as $k => $v) {
+            if (is_array($v) && (array_key_exists('value', $v) || array_key_exists('text', $v) || array_key_exists('label', $v))) {
+                $val = (string) ($v['value'] ?? $k);
+                $options[$val] = (string) ($v['text'] ?? $v['label'] ?? '');
+            } else {
+                $options[(string) $k] = (string) $v;
+            }
+        }
 
         if ($options === []) {
             $html = $this->renderOne(

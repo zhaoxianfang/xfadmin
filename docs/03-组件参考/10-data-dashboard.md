@@ -98,7 +98,7 @@ echo XfAdmin::widget([
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
 | `value` | string | `''` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
 | `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `variant` | string | `'primary'` | 语义变体：primary/secondary/success/danger/warning/info/light/dark（受白名单约束）；**文本槽位**：输出前自动 HTML 转义 |
+| `variant` | string | `'primary'` | **文本槽位**：输出前自动 HTML 转义；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `trend` | mixed | `null` | 趋势值（正/负）；开关：非空 / 真值时启用对应区块 |
 | `progress` | mixed | `null` | 进度百分比（0-100）；为 `null` 时不渲染该区块 |
 | `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
@@ -235,7 +235,7 @@ echo XfAdmin::statMiniSparkline([
 | `value` | string | `''` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value');` |
 | `delta` | mixed | `null` | 源码用法：`$delta = $this->get('delta');` |
 | `series` | array | `[]` | 图表数据系列 |
-| `variant` | string | `'primary'` | 可选值：`primary` |
+| `variant` | string | `'primary'` | 可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；源码用法：`$icon = $this->get('icon');` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -563,7 +563,7 @@ echo XfAdmin::moduleNav([
 | `items` | array | `[]` | 条目数组（结构见各组件说明）；源码用法：`$items = $this->get('items');` |
 | `sections` | array | `[]` | 分区数组；源码用法：`$sections = $this->get('sections');` |
 | `type` | string | `'pills'` | 枚举白名单 `'pills', 'tabs', 'underline'` |
-| `align` | string | `'start'` | 枚举白名单 `'start', 'center', 'end'` |
+| `align` | string | `'start'` | 枚举白名单 `'start', 'center', 'end'`；可选值：`start` / `center` / `end` |
 | `class` | string | `'xf-module-subnav'` | 附加到根元素的自定义 class；**文本槽位**：输出前自动 HTML 转义 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 

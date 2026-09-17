@@ -85,10 +85,25 @@ $menu = [
     ]],
     ['text' => '登录页', 'icon' => 'ti ti-lock', 'url' => '/login'],
     ['text' => '404', 'icon' => 'ti ti-alert-triangle', 'url' => '/404'],
+    ['text' => 'DIY 布局器', 'icon' => 'ti ti-layout-dashboard', 'url' => '/diy'],
 ];
 
 $route = trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/');
 $route = $route === '' ? 'home' : $route;
+
+// DIY 可视化布局器：实时渲染端点（POST {mode,alias,options,tree}）
+if ($route === 'diy/render') {
+    $payload = json_decode((string) file_get_contents('php://input'), true) ?: [];
+    $result  = XfAdmin::diyRender($payload);
+    if (is_array($result)) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($result, JSON_UNESCAPED_UNICODE);
+    } else {
+        header('Content-Type: text/html; charset=utf-8');
+        echo $result;
+    }
+    exit;
+}
 
 $user = ['name' => '张三', 'role' => '超级管理员', 'items' => [
     ['text' => '个人资料', 'icon' => 'ti ti-user', 'url' => '#'],
@@ -109,5 +124,6 @@ match ($route) {
     'login'   => require __DIR__ . '/pages/login.php',
     'auth'    => require __DIR__ . '/pages/auth.php',
     '404'     => require __DIR__ . '/pages/error404.php',
+    'diy'     => require __DIR__ . '/pages/diy.php',
     default   => require __DIR__ . '/pages/error404.php',
 };

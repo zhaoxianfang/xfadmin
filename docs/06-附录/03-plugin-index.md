@@ -50,6 +50,7 @@
 | `pdfjs` | — | 1 个 | — | `pdfViewer` |
 | `tinycon` | — | 1 个 | — | `tinycon` |
 | `diff` | — | 1 个 | — | `textDiff` |
+| `diy` | 1 个 | 1 个 | `sortablejs` | `diyLayoutPage` |
 
 ## 明细
 
@@ -349,4 +350,12 @@
 
 - **JS**：
   - `plugins/diff/diff.min.js`
+
+### `diy`
+
+- **依赖**：`sortablejs`
+- **CSS**：
+  - `css/xfadmin-diy.css`
+- **JS**：
+  - `js/xfadmin-diy.js`
 
