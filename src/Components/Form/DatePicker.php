@@ -35,12 +35,12 @@ class DatePicker extends Component
     {
         return $this->fieldDefaults() + [
             'timepicker' => false,
-            'format'     => 'YYYY-MM-DD',
-            'min'        => null,
-            'max'        => null,
-            'options'    => [],
-            'prepend'    => '',
-            'append'     => '',
+            'format' => 'YYYY-MM-DD',
+            'min' => null,
+            'max' => null,
+            'options' => [],
+            'prepend' => '',
+            'append' => '',
         ];
     }
 
@@ -65,27 +65,31 @@ class DatePicker extends Component
 
         $config = array_replace_recursive([
             'singleDatePicker' => true,
-            'timePicker'        => (bool) $this->get('timepicker'),
-            'locale'            => ['format' => $this->get('format')],
-            'minDate'           => $this->get('min'),
-            'maxDate'           => $this->get('max'),
+            'timePicker' => (bool) $this->get('timepicker'),
+            'locale' => ['format' => $this->get('format')],
+            'minDate' => $this->get('min'),
+            'maxDate' => $this->get('max'),
         ], (array) $this->get('options', []));
 
+        $dateAttrs = [
+            'type' => 'text',
+            'class' => Html::cls('form-control', $this->controlStateClass()),
+            'id' => $id,
+            'name' => $this->get('name'),
+            'value' => $this->get('value'),
+            'placeholder' => $this->get('placeholder'),
+            'required' => (bool) $this->get('required'),
+            'disabled' => (bool) $this->get('disabled'),
+            'readonly' => (bool) $this->get('readonly'),
+            'data-xf' => 'daterangepicker',
+            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
+        ];
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
+        $dateAttrs = array_merge($dateAttrs, $this->describeAttrs($id), $this->stateAria());
+
         $control = (string) $this->get('prepend', '')
-            . '<input' . Html::attrs([
-                'type'           => 'text',
-                'class'          => 'form-control',
-                'id'             => $id,
-                'name'           => $this->get('name'),
-                'value'          => $this->get('value'),
-                'placeholder'    => $this->get('placeholder'),
-                'required'       => (bool) $this->get('required'),
-                'disabled'       => (bool) $this->get('disabled'),
-                'readonly'       => (bool) $this->get('readonly'),
-                'data-xf'        => 'daterangepicker',
-                'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-            ]) . '>'
-            . (string) $this->get('append', '');
+            .'<input'.Html::attrs($dateAttrs).'>'
+            .(string) $this->get('append', '');
 
         return $this->wrapField($control, $id);
     }

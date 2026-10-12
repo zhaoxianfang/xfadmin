@@ -27,13 +27,13 @@ class Upload extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'driver'   => 'native',  // native | dropzone | filepond
-            'url'      => null,      // 上传地址
+            'driver' => 'native',  // native | dropzone | filepond
+            'url' => null,      // 上传地址
             'multiple' => false,
-            'accept'   => null,
+            'accept' => null,
             'max_size' => null,      // MB
-            'text'     => '点击或拖拽文件到此处上传',
-            'options'  => [],
+            'text' => '点击或拖拽文件到此处上传',
+            'options' => [],
         ];
     }
 
@@ -47,7 +47,7 @@ class Upload extends Component
         return match ($this->get('driver')) {
             'dropzone' => ['dropzone'],
             'filepond' => ['filepond'],
-            default    => [],
+            default => [],
         };
     }
 
@@ -58,53 +58,59 @@ class Upload extends Component
      */
     protected function html(): string
     {
-        $id     = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-upload');
+        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-upload');
         $driver = $this->get('driver');
 
         if ($driver === 'dropzone') {
-            $config  = array_replace_recursive([
-                'url'           => $this->get('url'),
-                'maxFilesize'   => $this->get('max_size'),
+            $config = array_replace_recursive([
+                'url' => $this->get('url'),
+                'maxFilesize' => $this->get('max_size'),
                 'acceptedFiles' => $this->get('accept'),
-                'paramName'     => $this->get('name') ?? 'file',
+                'paramName' => $this->get('name') ?? 'file',
             ], (array) $this->get('options', []));
-            $control = '<div' . $this->attrs([
-                'id'             => $id,
-                'class'          => 'dropzone',
-                'data-xf'        => 'dropzone',
+            // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（落到拖拽容器）
+            $dzAttrs = $this->controlAttrs([
+                'id' => $id,
+                'class' => 'dropzone',
+                'data-xf' => 'dropzone',
                 'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-            ]) . '><div class="dz-message needsclick"><i class="ti ti-cloud-upload h1 text-muted"></i><h4>' . $this->e($this->get('text')) . '</h4></div></div>';
+            ], $id);
+            $control = '<div'.Html::attrs($dzAttrs).'><div class="dz-message needsclick"><i class="ti ti-cloud-upload h1 text-muted"></i><h4>'.$this->e($this->get('text')).'</h4></div></div>';
 
             return $this->wrapField($control, $id);
         }
         if ($driver === 'filepond') {
-            $config  = array_replace_recursive([
+            $config = array_replace_recursive([
                 'allowMultiple' => (bool) $this->get('multiple'),
-                'server'        => $this->get('url'),
-                'maxFileSize'   => $this->get('max_size') ? $this->get('max_size') . 'MB' : null,
+                'server' => $this->get('url'),
+                'maxFileSize' => $this->get('max_size') ? $this->get('max_size').'MB' : null,
             ], (array) $this->get('options', []));
-            $control = '<input' . Html::attrs([
-                'type'           => 'file',
-                'id'             => $id,
-                'name'           => $this->get('name'),
-                'multiple'       => (bool) $this->get('multiple'),
-                'accept'         => $this->get('accept'),
-                'data-xf'        => 'filepond',
+            $fpAttrs = [
+                'type' => 'file',
+                'id' => $id,
+                'name' => $this->get('name'),
+                'multiple' => (bool) $this->get('multiple'),
+                'accept' => $this->get('accept'),
+                'data-xf' => 'filepond',
                 'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-            ]) . '>';
+            ];
+            $fpAttrs = array_merge($fpAttrs, $this->describeAttrs($id), $this->stateAria());
 
-            return $this->wrapField($control, $id);
+            return $this->wrapField('<input'.Html::attrs($fpAttrs).'>', $id);
         }
-        $control = '<input' . Html::attrs([
-            'type'     => 'file',
-            'class'    => 'form-control',
-            'id'       => $id,
-            'name'     => $this->get('name'),
+        $nativeAttrs = [
+            'type' => 'file',
+            'class' => Html::cls('form-control', $this->controlStateClass()),
+            'id' => $id,
+            'name' => $this->get('name'),
             'multiple' => (bool) $this->get('multiple'),
-            'accept'   => $this->get('accept'),
+            'accept' => $this->get('accept'),
             'required' => (bool) $this->get('required'),
             'disabled' => (bool) $this->get('disabled'),
-        ]) . '>';
+        ];
+        $nativeAttrs = array_merge($nativeAttrs, $this->describeAttrs($id), $this->stateAria());
+
+        $control = '<input'.Html::attrs($nativeAttrs).'>';
 
         return $this->wrapField($control, $id);
     }

@@ -71,6 +71,7 @@ use zxf\XfAdmin\Support\Html;
             'fixed_columns'  => null,     // 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动）
             'filter_bar'     => [],       // 过滤工具栏（服务端模式自动拼接查询参数并重载）
             'filter_auto'    => false,    // 过滤工具栏是否即改即查（默认点击“搜索”按钮才发起请求）
+            'filter_all'     => false,    // 是否依据 columns 自动生成「全部列」筛选控件（按字段类型推断：文本/下拉/日期区间）
             'create'         => null,     // 「新增」弹窗按钮：'/xx/create' 或 ['page'=>..,'label'=>..,'title'=>..,'size'=>..,'frame'=>..,'icon'=>..,'class'=>..]
             'density'        => null,     // 'compact' | 'comfortable'（行间距密度；默认舒适）
             'options'        => [],
@@ -392,7 +393,7 @@ use zxf\XfAdmin\Support\Html;
             'createdRow'        => $this->get('created_row'),
             'drawCallback'      => $this->get('draw_callback'),
         ];
-        if ((array) $this->get('filter_bar', []) !== []) {
+        if ((array) $this->get('filter_bar', []) !== [] || $this->get('filter_all')) {
             $xfConfig['filterBar']  = true;
             $xfConfig['filterAuto'] = (bool) $this->get('filter_auto');
         }
@@ -473,7 +474,12 @@ use zxf\XfAdmin\Support\Html;
             $html = '<div class="table-responsive">' . $html . '</div>';
         }
         // 过滤工具栏（前端自动接线：变更 => 拼接查询参数 => 重载表格）
+        // filter_all=true 时，依据 columns 自动生成「全部列」筛选控件，并与显式 filter_bar 合并
+        // （已显式声明的字段不再重复生成，保留业务侧定制筛选如日志级别/通道）。
         $filterBar = (array) $this->get('filter_bar', []);
+        if ($this->get('filter_all')) {
+            $filterBar = array_merge($filterBar, $this->buildAutoFilterBar((array) $this->get('columns', []), $filterBar));
+        }
         if ($filterBar !== []) {
             $html = $this->renderFilterBar($id, $filterBar) . $html;
         }
@@ -750,6 +756,77 @@ use zxf\XfAdmin\Support\Html;
         $html .= '</form>';
 
         return $html;
+    }
+
+    /**
+     * 依据列定义自动生成「全部列」筛选控件
+     *
+     * filter_all=true 时调用。按字段类型推断控件形态：
+     *  - 显式声明 filter=false 的列：跳过（业务侧不希望暴露筛选）；
+     *  - 显式声明 filter 元信息（数组）的列：优先采用（如枚举列指定 select + options）；
+     *  - 列自带 options（枚举型）→ 下拉筛选；
+     *  - 日期 / 时间类字段（created_at / updated_at / *_at / date / time 等）：时间段选择；
+     *  - 其余文本 / 数值字段：文本框（服务端对数值按等值、文本按模糊匹配）。
+     * 操作列、纯展示 / 聚合列（无真实字段）、关系列默认跳过，避免产出无效控件。
+     * 已显式声明于 $existing（filter_bar）的字段不再重复生成，保留业务侧定制筛选。
+     *
+     * @param  array<int|string, mixed> $columns 列定义
+     * @param  array<int, array<string, mixed>> $existing 已显式声明的筛选控件（按 name 去重）
+     * @return array<int, array<string, mixed>> 过滤工具栏控件配置
+     */
+    protected function buildAutoFilterBar(array $columns, array $existing = []): array
+    {
+        $controls   = [];
+        $declared   = [];
+        foreach ($existing as $c) {
+            if (is_array($c) && isset($c['name'])) {
+                $declared[strtolower((string) $c['name'])] = true;
+            }
+        }
+        // 日期 / 时间字段名特征（命中即渲染时间段选择器）
+        $dateRe = '/^(?:.*_at|.*_time|created|updated|deleted|expiration_at|expired_at|birthday|date|time)$/i';
+        // 无真实数据库字段、仅作展示 / 聚合 / 关系的列（跳过，避免无效筛选控件）
+        $skipKeys = ['actions', 'groups', 'parent', 'roles', 'admin_count', 'children'];
+
+        foreach ($columns as $key => $def) {
+            if (! is_array($def)) {
+                continue;
+            }
+            if (isset($def['actions']) || in_array($key, $skipKeys, true)) {
+                continue;
+            }
+            if (array_key_exists('filter', $def) && $def['filter'] === false) {
+                continue;
+            }
+            $field = (string) ($def['key'] ?? $def['field'] ?? $key);
+            if (isset($declared[strtolower($field)])) {
+                continue;
+            }
+            $label = (string) ($def['label'] ?? $def['key'] ?? $key);
+
+            // 显式 filter 元信息优先（开发者可声明 select / radio / daterange 等）
+            if (isset($def['filter']) && is_array($def['filter']) && $def['filter'] !== []) {
+                $ctl            = $def['filter'];
+                $ctl['name']    = $ctl['name'] ?? $field;
+                $ctl['label']   = $ctl['label'] ?? $label;
+                $controls[]     = $ctl;
+                continue;
+            }
+            // 列自带 options（枚举型）→ 下拉筛选
+            if (! empty($def['options']) && is_array($def['options'])) {
+                $controls[] = ['name' => $field, 'label' => $label, 'type' => 'select', 'options' => $def['options']];
+                continue;
+            }
+            // 日期 / 时间类 → 时间段选择
+            if (preg_match($dateRe, $field) || in_array((string) ($def['type'] ?? ''), ['date', 'datetime', 'time'], true)) {
+                $controls[] = ['name' => $field, 'label' => $label, 'type' => 'daterange'];
+                continue;
+            }
+            // 其余 → 文本框（服务端对数值等值匹配、文本模糊匹配）
+            $controls[] = ['name' => $field, 'label' => $label, 'type' => 'text', 'placeholder' => '搜索' . $label];
+        }
+
+        return $controls;
     }
 
     /** 递归渲染树形过滤控件 */

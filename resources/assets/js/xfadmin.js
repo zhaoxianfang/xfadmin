@@ -315,8 +315,11 @@
             XFAdmin.toast({ body: okMsg, variant: 'success' });
             if (cfg.onSuccess) cfg.onSuccess(res);
             if (data.url) {
-                // 响应携带跳转地址：提示后等待 3 秒再跳转（给查看提示留出时间）
-                setTimeout(function () { window.location.href = data.url; }, 3000);
+                // 响应携带跳转地址：提示后等待指定毫秒再跳转（默认 3 秒；
+                // 可通过表单 data-xf-redirect-delay 调整，例如登录页设为 600ms 更顺滑）
+                var rd = (form && form.getAttribute) ? parseInt(form.getAttribute('data-xf-redirect-delay'), 10) : NaN;
+                if (isNaN(rd) || rd < 0) { rd = 3000; }
+                setTimeout(function () { window.location.href = data.url; }, rd);
             } else if (form && form.getAttribute('data-xf-redirect')) {
                 // 前端兜底跳转地址（后端未返回 url 时生效）
                 var rd = form.getAttribute('data-xf-redirect');
@@ -1104,8 +1107,10 @@
                 var inner = (item.icon ? '<i class="' + escapeHtml(item.icon) + '"></i>' : '') +
                     (item.label && item.icon ? ' ' : '') + (item.label ? escapeHtml(item.label) : '');
                 if (item.title) attrs += ' title="' + escapeHtml(item.title) + '"';
+                // 动作类型归一化：兼容 action / type 两种键名（删除等动作常用 type 声明）
+                var act = item.action || item.type || '';
                 // 行编辑：action=edit（弹出模态表单，保存后自动刷新表格）
-                if (item.action === 'edit') {
+                if (act === 'edit') {
                     var editCfg = {
                         url: item.ajax ? XFAdmin.tpl(item.ajax, row) : '',
                         method: item.method || 'PUT',
@@ -1122,22 +1127,32 @@
                     return '<button type="button"' + attrs + '>' + inner + '</button>';
                 }
                 // 行详情：action=view（item.view 支持个性化详情布局：layout/sections/header/template/ajax 等）
-                if (item.action === 'view' && (item.view || item.viewTitle)) {
+                if (act === 'view' && (item.view || item.viewTitle)) {
                     attrs += ' data-xf-view="' + escapeHtml(JSON.stringify(item.view || { title: item.viewTitle })) + '"';
                 }
                 // 行详情（弹窗加载远程页面）：action=modal 复用声明式 data-xf-page-dialog 触发器，
                 // 在模态框中加载 item.url 指向的「丰富齐全」详情页（如系统日志详情）。
-                if (item.action === 'modal' && item.url) {
+                if (act === 'modal' && item.url) {
                     attrs += ' data-xf-page-dialog="' + escapeHtml(XFAdmin.tpl(item.url, row)) + '"';
                     if (item.title) attrs += ' data-xf-title="' + escapeHtml(tplRaw(item.title, row)) + '"';
                     if (item.size) attrs += ' data-xf-size="' + escapeHtml(item.size) + '"';
                     if (item.maximizable) attrs += ' data-xf-maximizable="1"';
                     return '<button type="button"' + attrs + '>' + inner + '</button>';
                 }
+                // 删除动作：渲染为按钮并触发确认弹窗 + 异步请求，禁止直接跳转（否则会绕过确认）
+                if (act === 'delete') {
+                    attrs += ' data-xf-act="delete"'
+                        + ' data-xf-url="' + escapeHtml(XFAdmin.tpl(item.url || item.ajax, row)) + '"'
+                        + ' data-xf-method="' + escapeHtml(item.method || 'POST') + '"';
+                    if (item.confirm) attrs += ' data-xf-confirm="' + escapeHtml(item.confirm) + '"';
+                    if (item.confirm_popover) attrs += ' data-xf-confirm-popover="1"';
+                    if (item.reload) attrs += ' data-xf-reload="1"';
+                    return '<button type="button"' + attrs + '>' + inner + '</button>';
+                }
                 if (item.url) {
                     return '<a href="' + XFAdmin.tpl(item.url, row) + '"' + attrs + (item.target ? ' target="' + escapeHtml(item.target) + '"' : '') + '>' + inner + '</a>';
                 }
-                attrs += ' data-xf-act="' + escapeHtml(item.action || 'ajax') + '"';
+                attrs += ' data-xf-act="' + escapeHtml(act || 'ajax') + '"';
                 if (item.ajax) attrs += ' data-xf-url="' + escapeHtml(XFAdmin.tpl(item.ajax, row)) + '"';
                 if (item.method) attrs += ' data-xf-method="' + escapeHtml(item.method) + '"';
                 if (item.confirm) attrs += ' data-xf-confirm="' + escapeHtml(item.confirm) + '"';
@@ -3811,6 +3826,7 @@
             }
             var content = extractPageContent(res.raw || '');
             body.innerHTML = content || '<div class="alert alert-warning m-3 mb-0">页面未返回有效内容</div>';
+            // 优先由 pageDialog 接管远程表单（携带 modal / tableEl，成功后可关闭弹窗并刷新父表格）
             var form = body.querySelector('form');
             if (form) {
                 XFAdmin.handleRemoteForm(form, {
@@ -3818,9 +3834,13 @@
                     reload: opts.reload !== false,
                     modal: modal
                 });
+                // 标记已接管，避免下方 scan -> bindRemoteForms 重复绑定导致重复提交
+                form.classList.add('xf-remote-form-bound');
                 var first = form.querySelector('input:not([type=hidden]),select,textarea');
                 if (first) setTimeout(function () { first.focus(); }, 80);
             }
+            // 增量初始化弹窗内 xfadmin 组件（树、表格、图表等）与 Bootstrap 增强（tooltip/popover/表单校验）
+            try { XFAdmin.scan(body); } catch (e) {}
             if (typeof opts.onLoaded === 'function') opts.onLoaded(body, modal);
         });
         return modal;
@@ -3868,9 +3888,14 @@
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var pick = doc.querySelector('[data-xf-page-content]') || doc.querySelector('main') ||
                 doc.querySelector('.content-page') || doc.querySelector('.card') || doc.querySelector('.container-fluid');
-            return pick ? pick.innerHTML : '';
-        } catch (e) { /* noop */ }
-        return '';
+            if (pick) return pick.innerHTML;
+            // 兜底 1：弹窗内容可能仅是裸 <form>（如 XfAdmin::form 直接输出），取其完整标签
+            var form = doc.querySelector('form');
+            if (form) return form.outerHTML;
+            // 兜底 2：再退回 body 内容
+            var bodyEl = doc.querySelector('body');
+            return bodyEl ? bodyEl.innerHTML : html;
+        } catch (e) { return html; }
     }
 
     /**
@@ -3898,6 +3923,12 @@
             }
             XFAdmin.request(action, { method: method, data: new FormData(form) }).then(function (res) {
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = savedHtml; }
+                // 派发 success/error 事件，供页面级钩子（如失败后刷新验证码）使用；
+                // 与 Form 组件的 xf.form.success/error 契约保持一致，可被通用监听复用。
+                try {
+                    var evtName = res.ok ? 'xf.form.success' : 'xf.form.error';
+                    form.dispatchEvent(new CustomEvent(evtName, { detail: { res: res, form: form }, bubbles: true }));
+                } catch (e) {}
                 if (res.ok) {
                     // 弹窗模式：维持弹窗关闭 + 父表格刷新决策（不触发整页 url 跳转）
                     if (cfg.modal) {
@@ -4559,6 +4590,141 @@
     XFAdmin.register('jstree', function (el, config) {
         if (!global.jQuery || !global.jQuery.fn.jstree) { xfWarnMissingDep('jstree'); return; }
         return global.jQuery(el).jstree(config);
+    });
+
+    /**
+     * 权限树（原生实现，零依赖，可在 AJAX 弹窗片段中直接初始化）
+     *
+     * 组件以 data-xf="perm-tree" 声明，配合 data-xf-config 传入：
+     *   { data: [{id,text,children?:[]}], checked: [id,...], hiddenId: '隐藏域id' }
+     * 特性：
+     *  - 父子联动勾选（父勾子全勾、父取消子全取消）；
+     *  - 父节点半选（indeterminate）状态自动回显；
+     *  - 勾选变化同步写入 hiddenId 指向的隐藏域（逗号分隔），供后端保存；
+     *  - 展开/折叠、全选、清空由 data-xf-tree-* 按钮（在弹窗作用域内）驱动。
+     */
+    XFAdmin.register('perm-tree', function (el, config) {
+        config = config || {};
+        var nodes = config.data || [];
+        var checked = {};
+        (config.checked || []).forEach(function (id) { checked[id] = true; });
+        var hiddenId = config.hiddenId || '';
+
+        // 注入一次样式（避免依赖包 CSS，保证在弹窗片段内可用）
+        if (!document.getElementById('xf-pt-style')) {
+            var s = document.createElement('style');
+            s.id = 'xf-pt-style';
+            s.textContent = ''
+                + '.xf-pt-list{list-style:none;margin:0;padding-left:1rem;}'
+                + '.xf-pt-root{padding-left:0;}'
+                + '.xf-pt-node{margin:.125rem 0;}'
+                + '.xf-pt-row{display:flex;align-items:center;gap:.4rem;padding:.25rem .35rem;border-radius:.35rem;cursor:pointer;}'
+                + '.xf-pt-row:hover{background:rgba(0,0,0,.04);}'
+                + '.xf-pt-toggle{cursor:pointer;color:#888;transition:transform .15s;flex:0 0 auto;}'
+                + '.xf-pt-dot{color:#bbb;font-size:.5rem;flex:0 0 auto;width:1rem;text-align:center;}'
+                + '.xf-pt-check{flex:0 0 auto;cursor:pointer;}'
+                + '.xf-pt-text{user-select:none;}'
+                + '.xf-pt-children{margin-left:.5rem;}';
+            document.head.appendChild(s);
+        }
+
+        function render(ns, level) {
+            if (!ns.length) return '';
+            var html = '<ul class="xf-pt-list' + (level === 0 ? ' xf-pt-root' : '') + '">';
+            ns.forEach(function (n) {
+                var id = String(n.id);
+                var kids = (n.children && n.children.length) ? n.children : null;
+                var hasKids = !!kids;
+                var row = '<div class="xf-pt-row">'
+                    + (hasKids
+                        ? '<i class="ti ti-chevron-right xf-pt-toggle" data-xf-pt-toggle></i>'
+                        : '<i class="ti ti-circle-dot xf-pt-dot"></i>')
+                    + '<input type="checkbox" class="xf-pt-check form-check-input" value="' + escapeHtml(id) + '"'
+                    + (checked[id] ? ' checked' : '') + '>'
+                    + '<span class="xf-pt-text">' + escapeHtml(n.text) + '</span>'
+                    + '</div>';
+                html += '<li class="xf-pt-node" data-id="' + escapeHtml(id) + '">' + row;
+                if (hasKids) { html += '<div class="xf-pt-children">' + render(kids, level + 1) + '</div>'; }
+                html += '</li>';
+            });
+            return html + '</ul>';
+        }
+        el.innerHTML = render(nodes, 0);
+
+        function syncHidden() {
+            if (!hiddenId) return;
+            var input = document.getElementById(hiddenId);
+            if (!input) return;
+            var ids = [];
+            el.querySelectorAll('.xf-pt-check:checked').forEach(function (c) { ids.push(c.value); });
+            input.value = ids.join(',');
+        }
+
+        // 父节点半选状态：根据子孙勾选情况回显
+        function refreshIndeterminate() {
+            el.querySelectorAll('.xf-pt-node').forEach(function (li) {
+                var self = li.querySelector(':scope > .xf-pt-row .xf-pt-check');
+                if (!self) return;
+                var desc = li.querySelectorAll('.xf-pt-children .xf-pt-check');
+                if (!desc.length) return;
+                var any = false, all = true;
+                desc.forEach(function (c) { if (c.checked) any = true; else all = false; });
+                self.indeterminate = any && !all;
+            });
+        }
+
+        // 勾选变化：子节点跟随父、父节点半选回显
+        el.addEventListener('change', function (e) {
+            var cb = e.target;
+            if (!cb.classList.contains('xf-pt-check')) return;
+            var li = cb.closest('.xf-pt-node');
+            var checkedNow = cb.checked;
+            li.querySelectorAll('.xf-pt-children .xf-pt-check').forEach(function (c) {
+                c.checked = checkedNow;
+                c.indeterminate = false;
+            });
+            refreshIndeterminate();
+            syncHidden();
+        });
+
+        // 展开/折叠
+        el.addEventListener('click', function (e) {
+            var t = e.target.closest('[data-xf-pt-toggle]');
+            if (!t) return;
+            var kids = t.closest('.xf-pt-node').querySelector(':scope > .xf-pt-children');
+            if (!kids) return;
+            var open = kids.style.display !== 'none';
+            kids.style.display = open ? 'none' : '';
+            t.classList.toggle('ti-chevron-right', open);
+            t.classList.toggle('ti-chevron-down', !open);
+        });
+
+        // 快捷按钮（展开全部 / 全选 / 清空）：在弹窗作用域内查找，避免影响其它实例
+        var scope = el.closest('.modal-body') || el;
+        function bindBtn(sel, fn) {
+            scope.querySelectorAll(sel).forEach(function (b) {
+                if (b.__xfPtBound) return;
+                b.__xfPtBound = 1;
+                b.addEventListener('click', fn);
+            });
+        }
+        bindBtn('[data-xf-tree-expand]', function () {
+            el.querySelectorAll('.xf-pt-children').forEach(function (k) { k.style.display = ''; });
+            el.querySelectorAll('[data-xf-pt-toggle]').forEach(function (t) {
+                t.classList.remove('ti-chevron-right'); t.classList.add('ti-chevron-down');
+            });
+        });
+        bindBtn('[data-xf-tree-check-all]', function () {
+            el.querySelectorAll('.xf-pt-check').forEach(function (c) { c.checked = true; c.indeterminate = false; });
+            refreshIndeterminate(); syncHidden();
+        });
+        bindBtn('[data-xf-tree-uncheck-all]', function () {
+            el.querySelectorAll('.xf-pt-check').forEach(function (c) { c.checked = false; c.indeterminate = false; });
+            syncHidden();
+        });
+
+        refreshIndeterminate();
+        syncHidden();
     });
 
     XFAdmin.register('lightbox', function (el, config) {

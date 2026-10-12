@@ -25,7 +25,7 @@ class Textarea extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'rows'      => 3,
+            'rows' => 3,
             'maxlength' => null,
         ];
     }
@@ -39,17 +39,21 @@ class Textarea extends Component
     {
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-textarea');
 
-        $control = '<textarea' . $this->attrs([
-            'class'       => 'form-control',
-            'id'          => $id,
-            'name'        => $this->get('name'),
-            'rows'        => $this->get('rows'),
+        $attrs = [
+            'class' => Html::cls('form-control', $this->controlStateClass()),
+            'id' => $id,
+            'name' => $this->get('name'),
+            'rows' => $this->get('rows'),
             'placeholder' => $this->get('placeholder'),
-            'maxlength'   => $this->get('maxlength'),
-            'required'    => (bool) $this->get('required'),
-            'disabled'    => (bool) $this->get('disabled'),
-            'readonly'    => (bool) $this->get('readonly'),
-        ]) . '>' . $this->e($this->get('value')) . '</textarea>';
+            'maxlength' => $this->get('maxlength'),
+            'required' => (bool) $this->get('required'),
+            'disabled' => (bool) $this->get('disabled'),
+            'readonly' => (bool) $this->get('readonly'),
+        ];
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
+        $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
+
+        $control = '<textarea'.$this->attrs($attrs).'>'.$this->e($this->get('value')).'</textarea>';
 
         return $this->wrapField($control, $id);
     }

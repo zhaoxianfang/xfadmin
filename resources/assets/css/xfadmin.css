@@ -3919,3 +3919,236 @@ table.dataTable td .btn-icon,
     line-height: 1;
     opacity: .55;
 }
+
+/* ============================================================================
+   7. XfAdmin 增强层（抛光 / 无障碍 / 状态 / 性能感知）【全面美化 · 加强 · 完善】
+   ----------------------------------------------------------------------------
+   本节为增量补充，全部使用 --bs-* / --xf-* 变量，不重写 app.min.css 既有布局类，
+   确保明暗主题下视觉一致；新增类统一以 xf- 前缀，避免与模板/业务样式冲突。
+   ========================================================================== */
+
+/* 7.1 焦点可见性（键盘可达性 / 无障碍） */
+:where(a, button, .btn, .form-control, .form-select, .page-link,
+       .dropdown-item, .list-group-item-action, .nav-link, .btn-close,
+       [tabindex], [role="button"], input, select, textarea):focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+/* 软色按钮焦点保持主色描边，且不破坏原有配色 */
+.btn-soft-primary:focus-visible,
+.btn-soft-secondary:focus-visible,
+.btn-soft-success:focus-visible,
+.btn-soft-info:focus-visible,
+.btn-soft-warning:focus-visible,
+.btn-soft-danger:focus-visible,
+.btn-soft-light:focus-visible,
+.btn-soft-dark:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+/* 7.2 统一过渡（尊重 prefers-reduced-motion，见 7.9） */
+.btn, .card, .badge, .dropdown-item, .nav-link, .page-link,
+.list-group-item-action, .xf-hoverable {
+    transition: background-color .15s ease, border-color .15s ease,
+                color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+/* 7.3 卡片悬停微交互（需显式加 .xf-hoverable，避免影响所有卡片布局） */
+.xf-hoverable {
+    border: 1px solid var(--bs-border-color);
+    box-shadow: var(--xf-shadow-sm);
+}
+.xf-hoverable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--xf-shadow-lg);
+    border-color: rgba(var(--bs-primary-rgb), .35);
+}
+
+/* 7.4 骨架屏（内容加载占位，提升感知性能） */
+.xf-skeleton {
+    position: relative;
+    overflow: hidden;
+    background: rgba(var(--bs-secondary-color-rgb, 155, 166, 183), .18);
+    border-radius: .35rem;
+}
+.xf-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, .35) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    animation: xf-skeleton-shimmer 1.2s infinite;
+}
+[data-bs-theme="dark"] .xf-skeleton::after {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, .08) 50%,
+        rgba(255, 255, 255, 0) 100%);
+}
+@keyframes xf-skeleton-shimmer { 100% { transform: translateX(100%); } }
+
+/* 7.5 内容加载遮罩（AJAX 片段 / 卡片刷新） */
+.xf-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--bs-body-bg-rgb, 255, 255, 255), .55);
+    backdrop-filter: blur(1px);
+    z-index: 5;
+}
+.xf-loading-overlay.xf-show { display: flex; }
+[data-bs-theme="dark"] .xf-loading-overlay {
+    background: rgba(var(--bs-body-bg-rgb, 23, 24, 30), .55);
+}
+
+/* 7.6 表格行交互增强（安全补充，不重写 Bootstrap 表样式） */
+.table > tbody > tr.xf-row-active > td {
+    background-color: rgba(var(--bs-primary-rgb), .10);
+}
+.table.xf-table-hover > tbody > tr:hover > td {
+    background-color: rgba(var(--bs-primary-rgb), .06);
+}
+
+/* 7.7 通用细滚动条（通过 .xf-scroll 显式启用，避免全局侵入） */
+.xf-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--bs-secondary-color-rgb, 155, 166, 183), .5) transparent;
+}
+.xf-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.xf-scroll::-webkit-scrollbar-thumb {
+    background: rgba(var(--bs-secondary-color-rgb, 155, 166, 183), .5);
+    border-radius: 8px;
+}
+.xf-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--bs-secondary-color-rgb, 155, 166, 183), .75);
+}
+
+/* 7.8 Toast 容器补充（与 XFAdminToast 助手配套） */
+#xf-toast-container {
+    max-width: 360px;
+}
+#xf-toast-container .toast { box-shadow: var(--xf-shadow); }
+
+/* 7.9 动效降级（无障碍 / 性能 / 省电） */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .xf-skeleton::after { animation: none; }
+}
+
+/* 7.10 卡片刷新遮罩（修复 app.js initPortletCard card-refresh 依赖的未定义类） */
+.card-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;            /* app.js 通过 style.display 切换 flex / none */
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--bs-body-bg-rgb, 255, 255, 255), .55);
+    backdrop-filter: blur(1px);
+    border-radius: inherit;
+    z-index: 6;
+}
+[dir="rtl"] .card-overlay { inset-inline: 0; }
+[data-bs-theme="dark"] .card-overlay {
+    background: rgba(var(--bs-body-bg-rgb, 23, 24, 30), .55);
+}
+
+/* 7.11 选项卡公共底部区（统一提交按钮区，与卡片/表单风格一致） */
+.xf-tabs-footer {
+    background: var(--bs-tertiary-bg, rgba(var(--bs-secondary-color-rgb, 155, 166, 183), .06));
+    border-radius: 0 0 var(--bs-card-border-radius, .5rem) var(--bs-card-border-radius, .5rem);
+}
+.xf-tabs-footer:empty { display: none; }
+
+/* 7.12 状态点（极简状态指示，常用于列表/详情在线·禁用等） */
+.xf-status-dot {
+    display: inline-block;
+    width: .5rem;
+    height: .5rem;
+    border-radius: 50%;
+    background: var(--bs-secondary);
+    vertical-align: middle;
+    flex: none;
+}
+.xf-status-dot.xf-dot-success { background: var(--bs-success); }
+.xf-status-dot.xf-dot-danger  { background: var(--bs-danger); }
+.xf-status-dot.xf-dot-warning { background: var(--bs-warning); }
+.xf-status-dot.xf-dot-info    { background: var(--bs-info); }
+.xf-status-dot.xf-dot-primary { background: var(--bs-primary); }
+.xf-status-dot.xf-dot-pulse {
+    position: relative;
+}
+.xf-status-dot.xf-dot-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: inherit;
+    animation: xf-dot-pulse 1.6s ease-out infinite;
+}
+@keyframes xf-dot-pulse {
+    0%   { transform: scale(1);   opacity: .7; }
+    70%  { transform: scale(2.4); opacity: 0; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* 7.13 分页当前页微光（与焦点风格一致，强化当前位置感知） */
+.pagination .page-item.active .page-link {
+    box-shadow: 0 0 0 1px rgba(var(--bs-primary-rgb), .35);
+}
+.pagination .page-link {
+    transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+/* 7.14 表单抛光（统一说明文本 / 校验反馈视觉，强化交互反馈，明暗主题一致） */
+.form-text {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+    margin-top: .25rem;
+}
+/* 校验反馈字体收敛，避免与正文差异过大 */
+.valid-feedback,
+.invalid-feedback {
+    font-size: .8125rem;
+}
+/* 校验失败控件在聚焦时仍保持警示描边，提升错误可感知性 */
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-danger-rgb), .25);
+}
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-success-rgb), .25);
+}
+/* 表单控件悬停态微反馈（非禁用时） */
+.form-control:not(:disabled):not(.is-invalid):not(.is-valid):hover,
+.form-select:not(:disabled):not(.is-invalid):not(.is-valid):hover {
+    border-color: rgba(var(--bs-primary-rgb), .45);
+}
+/* 禁用态更柔和的提示 */
+.form-control:disabled,
+.form-select:disabled,
+.form-control[readonly] {
+    cursor: not-allowed;
+}
+/* 开关控件对齐微调（与 form-check 标签基线一致） */
+.form-check .form-check-input {
+    cursor: pointer;
+}
+.form-check .form-check-input:disabled {
+    cursor: not-allowed;
+}

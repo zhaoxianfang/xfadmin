@@ -28,15 +28,15 @@ class Input extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'type'    => 'text',
-            'size'    => null,     // sm | lg
-            'mask'    => null,     // inputmask 表达式
-            'tags'    => false,    // tagify 标签输入
+            'type' => 'text',
+            'size' => null,     // sm | lg
+            'mask' => null,     // inputmask 表达式
+            'tags' => false,    // tagify 标签输入
             'prepend' => null,
-            'append'  => null,
-            'min'     => null,
-            'max'     => null,
-            'step'    => null,
+            'append' => null,
+            'min' => null,
+            'max' => null,
+            'step' => null,
             'pattern' => null,
             'autocomplete' => null,
         ];
@@ -56,6 +56,7 @@ class Input extends Component
         if ($this->get('tags')) {
             $assets[] = 'tagify';
         }
+
         return $assets;
     }
 
@@ -66,26 +67,26 @@ class Input extends Component
      */
     protected function html(): string
     {
-        $id    = $this->resolveId('xf-input');
+        $id = $this->resolveId('xf-input');
         $attrs = [
-            'type'        => $this->get('type'),
-            'class'       => Html::cls('form-control', $this->get('size') ? 'form-control-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : ''),
-            'id'          => $id,
-            'name'        => $this->get('name'),
-            'value'       => $this->get('value'),
+            'type' => $this->get('type'),
+            'class' => Html::cls('form-control', $this->get('size') ? 'form-control-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '', $this->controlStateClass()),
+            'id' => $id,
+            'name' => $this->get('name'),
+            'value' => $this->get('value'),
             'placeholder' => $this->get('placeholder'),
-            'required'    => (bool) $this->get('required'),
-            'disabled'    => (bool) $this->get('disabled'),
-            'readonly'    => (bool) $this->get('readonly'),
-            'min'         => $this->get('min'),
-            'max'         => $this->get('max'),
-            'step'        => $this->get('step'),
-            'pattern'     => $this->get('pattern'),
+            'required' => (bool) $this->get('required'),
+            'disabled' => (bool) $this->get('disabled'),
+            'readonly' => (bool) $this->get('readonly'),
+            'min' => $this->get('min'),
+            'max' => $this->get('max'),
+            'step' => $this->get('step'),
+            'pattern' => $this->get('pattern'),
             'autocomplete' => $this->get('autocomplete'),
         ];
 
         if ($this->get('mask')) {
-            $attrs['data-xf']        = 'inputmask';
+            $attrs['data-xf'] = 'inputmask';
             $attrs['data-xf-config'] = json_encode(['mask' => $this->get('mask')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         } elseif ($this->get('tags')) {
             $attrs['data-xf'] = 'tagify';
@@ -96,15 +97,18 @@ class Input extends Component
         foreach ($custom as $k => $v) {
             $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'], $v) : $v;
         }
-        $control = '<input' . Html::attrs($attrs) . '>';
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（置于自定义属性之后，确保不被覆盖）
+        $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
+        $control = '<input'.Html::attrs($attrs).'>';
 
         if ($this->get('prepend') !== null || $this->get('append') !== null) {
             $control = '<div class="input-group">'
-                . ($this->get('prepend') !== null ? '<span class="input-group-text">' . $this->raw($this->get('prepend')) . '</span>' : '')
-                . $control
-                . ($this->get('append') !== null ? '<span class="input-group-text">' . $this->raw($this->get('append')) . '</span>' : '')
-                . '</div>';
+                .($this->get('prepend') !== null ? '<span class="input-group-text">'.$this->raw($this->get('prepend')).'</span>' : '')
+                .$control
+                .($this->get('append') !== null ? '<span class="input-group-text">'.$this->raw($this->get('append')).'</span>' : '')
+                .'</div>';
         }
+
         return $this->wrapField($control, $id);
     }
 }

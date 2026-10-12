@@ -55,9 +55,9 @@ class DataSet
     /**
      * 生成 DataTables serverSide 协议响应数组
      *
-     * @param  iterable|object  $rows     数组数据 / Traversable / Laravel 查询构造器
-     * @param  array            $params   请求参数（如 $_GET、request()->all()）
-     * @param  array            $options  searchable | filters | transform | columns_map
+     * @param  iterable|object  $rows  数组数据 / Traversable / Laravel 查询构造器
+     * @param  array  $params  请求参数（如 $_GET、request()->all()）
+     * @param  array  $options  searchable | filters | transform | columns_map
      */
     public static function response(iterable|object $rows, array $params = [], array $options = []): array
     {
@@ -116,10 +116,10 @@ class DataSet
             }
             $colSearch = $col['search'] ?? null;
             $columns[(int) $i] = [
-                'data'       => self::str($col['data'] ?? null),
+                'data' => self::str($col['data'] ?? null),
                 'searchable' => self::str($col['searchable'] ?? 'true') !== 'false',
-                'orderable'  => self::str($col['orderable'] ?? 'true') !== 'false',
-                'search'     => is_array($colSearch) ? self::str($colSearch['value'] ?? null) : self::str($colSearch),
+                'orderable' => self::str($col['orderable'] ?? 'true') !== 'false',
+                'search' => is_array($colSearch) ? self::str($colSearch['value'] ?? null) : self::str($colSearch),
             ];
         }
 
@@ -133,18 +133,18 @@ class DataSet
             if ($idx >= 0 && isset($columns[$idx]) && $columns[$idx]['orderable'] && $columns[$idx]['data'] !== '') {
                 $order[] = [
                     'field' => $columns[$idx]['data'],
-                    'dir'   => strtolower(self::str($o['dir'] ?? 'asc')) === 'desc' ? 'desc' : 'asc',
+                    'dir' => strtolower(self::str($o['dir'] ?? 'asc')) === 'desc' ? 'desc' : 'asc',
                 ];
             }
         }
 
         return [
-            'draw'    => self::int($params['draw'] ?? null, 1),
-            'start'   => max(0, self::int($params['start'] ?? null, 0)),
-            'length'  => $length,
-            'search'  => $searchValue,
+            'draw' => self::int($params['draw'] ?? null, 1),
+            'start' => max(0, self::int($params['start'] ?? null, 0)),
+            'length' => $length,
+            'search' => $searchValue,
             'columns' => $columns,
-            'order'   => $order,
+            'order' => $order,
         ];
     }
 
@@ -165,10 +165,10 @@ class DataSet
                 }
                 $p = explode(':', $spec);
                 $columns[$i] = [
-                    'data'       => rawurldecode($p[0] ?? ''),
+                    'data' => rawurldecode($p[0] ?? ''),
                     'searchable' => ($p[1] ?? '1') === '1' ? 'true' : 'false',
-                    'orderable'  => ($p[2] ?? '1') === '1' ? 'true' : 'false',
-                    'search'     => ['value' => rawurldecode($p[3] ?? '')],
+                    'orderable' => ($p[2] ?? '1') === '1' ? 'true' : 'false',
+                    'search' => ['value' => rawurldecode($p[3] ?? '')],
                 ];
             }
             $params['columns'] = $columns;
@@ -187,6 +187,7 @@ class DataSet
         if (isset($params['xfs']) && empty($params['search'])) {
             $params['search'] = ['value' => self::str($params['xfs'])];
         }
+
         return $params;
     }
 
@@ -197,11 +198,10 @@ class DataSet
     /**
      * from Array（protected静态方法）
      *
-     * @param array $data data
-     * @param array $req req
-     * @param array $params params
-     * @param array $options options
-     *
+     * @param  array  $data  data
+     * @param  array  $req  req
+     * @param  array  $params  params
+     * @param  array  $options  options
      * @return array result
      */
     protected static function fromArray(array $data, array $req, array $params, array $options): array
@@ -214,7 +214,7 @@ class DataSet
         // 2. 全局搜索
         $searchable = self::searchableFields($data, $req, $options);
         if ($req['search'] !== '' && $searchable !== []) {
-            $kw   = mb_strtolower($req['search']);
+            $kw = mb_strtolower($req['search']);
             $data = array_values(array_filter($data, function ($row) use ($kw, $searchable) {
                 foreach ($searchable as $field) {
                     if (self::contains(self::field($row, $field), $kw)) {
@@ -229,7 +229,7 @@ class DataSet
         // 3. 列搜索
         foreach ($req['columns'] as $col) {
             if ($col['search'] !== '' && $col['data'] !== '') {
-                $kw   = mb_strtolower($col['search']);
+                $kw = mb_strtolower($col['search']);
                 $data = array_values(array_filter($data, fn ($row) => self::contains(self::field($row, $col['data']), $kw)));
             }
         }
@@ -259,10 +259,10 @@ class DataSet
         $page = self::transformRows($page, $options);
 
         return [
-            'draw'            => $req['draw'],
-            'recordsTotal'    => $total,
+            'draw' => $req['draw'],
+            'recordsTotal' => $total,
             'recordsFiltered' => $filtered,
-            'data'            => $page,
+            'data' => $page,
         ];
     }
 
@@ -292,7 +292,7 @@ class DataSet
                 ));
             } elseif (is_array($def)) {
                 // 多字段模糊匹配
-                $kw   = mb_strtolower($value);
+                $kw = mb_strtolower($value);
                 $data = array_values(array_filter($data, function ($row) use ($def, $kw) {
                     foreach ($def as $field) {
                         if (self::contains(self::field($row, (string) $field), $kw)) {
@@ -305,7 +305,7 @@ class DataSet
             } else {
                 // 单字段精确匹配
                 $field = (string) $def;
-                $data  = array_values(array_filter($data, fn ($row) => (string) self::scalar(self::field($row, $field)) === $value));
+                $data = array_values(array_filter($data, fn ($row) => (string) self::scalar(self::field($row, $field)) === $value));
             }
         }
 
@@ -335,6 +335,7 @@ class DataSet
                 }
             }
         }
+
         return $fields;
     }
 
@@ -345,6 +346,7 @@ class DataSet
         if ($transform instanceof Closure) {
             $rows = array_map($transform, $rows);
         }
+
         return array_values(array_map(
             fn ($row) => is_object($row) && method_exists($row, 'toArray') ? $row->toArray() : $row,
             $rows
@@ -358,11 +360,10 @@ class DataSet
     /**
      * from Builder（protected静态方法）
      *
-     * @param object $query query
-     * @param array $req req
-     * @param array $params params
-     * @param array $options options
-     *
+     * @param  object  $query  query
+     * @param  array  $req  req
+     * @param  array  $params  params
+     * @param  array  $options  options
      * @return array result
      */
     protected static function fromBuilder(object $query, array $req, array $params, array $options): array
@@ -390,7 +391,7 @@ class DataSet
                 $fields = $def;
                 $query->where(function ($q) use ($fields, $value) {
                     foreach ($fields as $field) {
-                        $q->orWhere((string) $field, 'like', '%' . addcslashes($value, '%_\\') . '%');
+                        $q->orWhere((string) $field, 'like', '%'.addcslashes($value, '%_\\').'%');
                     }
                 });
             } else {
@@ -407,18 +408,23 @@ class DataSet
             }
         }
         if ($req['search'] !== '' && $searchable !== []) {
-            $kw = '%' . addcslashes($req['search'], '%_\\') . '%';
+            $kw = '%'.addcslashes($req['search'], '%_\\').'%';
             $query->where(function ($q) use ($searchable, $kw) {
                 foreach ($searchable as $field) {
-                    $q->orWhere((string) $field, 'like', $kw);
+                    $safe = self::safeColumn((string) $field);
+                    if ($safe === null) {
+                        continue;
+                    }
+                    $q->orWhere($safe, 'like', $kw);
                 }
             });
         }
 
         // 列搜索
         foreach ($req['columns'] as $col) {
-            if ($col['search'] !== '' && $col['data'] !== '') {
-                $query->where($col['data'], 'like', '%' . addcslashes($col['search'], '%_\\') . '%');
+            $field = self::safeColumn($col['data']);
+            if ($field !== null && $col['search'] !== '') {
+                $query->where($field, 'like', '%'.addcslashes($col['search'], '%_\\').'%');
             }
         }
 
@@ -426,20 +432,23 @@ class DataSet
 
         // 排序
         foreach ($req['order'] as $o) {
-            $query->orderBy($o['field'], $o['dir']);
+            $field = self::safeColumn($o['field']);
+            if ($field !== null) {
+                $query->orderBy($field, $o['dir']);
+            }
         }
 
         // 分页
         $length = $req['length'] > 0 ? $req['length'] : self::$maxLength;
-        $page   = (int) floor($req['start'] / $length) + 1;
-        $rows   = $query->forPage($page, $length)->get();
-        $rows   = is_array($rows) ? $rows : (method_exists($rows, 'all') ? $rows->all() : iterator_to_array($rows, false));
+        $page = (int) floor($req['start'] / $length) + 1;
+        $rows = $query->forPage($page, $length)->get();
+        $rows = is_array($rows) ? $rows : (method_exists($rows, 'all') ? $rows->all() : iterator_to_array($rows, false));
 
         return [
-            'draw'            => $req['draw'],
-            'recordsTotal'    => $total,
+            'draw' => $req['draw'],
+            'recordsTotal' => $total,
             'recordsFiltered' => $filtered,
-            'data'            => self::transformRows($rows, $options),
+            'data' => self::transformRows($rows, $options),
         ];
     }
 
@@ -474,7 +483,7 @@ class DataSet
     /** 纯日期(Y-m-d)的 date_to 上界自动补齐当天末尾，保证包含当天数据 */
     protected static function dateToUpper(string $value): string
     {
-        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value . ' 23:59:59' : $value;
+        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value.' 23:59:59' : $value;
     }
 
     /** 数组管线：行是否满足 op 规则（like 为多字段 OR，其余作用于首字段） */
@@ -494,18 +503,18 @@ class DataSet
         $rv = self::field($row, $fields[0] ?? '');
 
         return match ($op) {
-            '=', 'eq'        => (string) self::scalar($rv) === $value,
-            '!=', 'neq'      => (string) self::scalar($rv) !== $value,
-            '>', 'gt'        => self::compare($rv, $value) > 0,
-            '>=', 'gte'      => self::compare($rv, $value) >= 0,
-            '<', 'lt'        => self::compare($rv, $value) < 0,
-            '<=', 'lte'      => self::compare($rv, $value) <= 0,
-            'in'             => in_array((string) self::scalar($rv), array_map('trim', explode(',', $value)), true),
-            'not_in'         => ! in_array((string) self::scalar($rv), array_map('trim', explode(',', $value)), true),
-            'between'        => self::betweenMatch($rv, $value),
-            'date_from'      => self::compare($rv, $value) >= 0,
-            'date_to'        => self::compare($rv, self::dateToUpper($value)) <= 0,
-            default          => (string) self::scalar($rv) === $value,
+            '=', 'eq' => (string) self::scalar($rv) === $value,
+            '!=', 'neq' => (string) self::scalar($rv) !== $value,
+            '>', 'gt' => self::compare($rv, $value) > 0,
+            '>=', 'gte' => self::compare($rv, $value) >= 0,
+            '<', 'lt' => self::compare($rv, $value) < 0,
+            '<=', 'lte' => self::compare($rv, $value) <= 0,
+            'in' => in_array((string) self::scalar($rv), array_map('trim', explode(',', $value)), true),
+            'not_in' => ! in_array((string) self::scalar($rv), array_map('trim', explode(',', $value)), true),
+            'between' => self::betweenMatch($rv, $value),
+            'date_from' => self::compare($rv, $value) >= 0,
+            'date_to' => self::compare($rv, self::dateToUpper($value)) <= 0,
+            default => (string) self::scalar($rv) === $value,
         };
     }
 
@@ -532,7 +541,7 @@ class DataSet
         }
         switch ($op) {
             case 'like':
-                $kw = '%' . addcslashes($value, '%_\\') . '%';
+                $kw = '%'.addcslashes($value, '%_\\').'%';
                 $query->where(function ($q) use ($fields, $kw) {
                     foreach ($fields as $f) {
                         $q->orWhere($f, 'like', $kw);
@@ -588,6 +597,21 @@ class DataSet
     // 工具
     // ------------------------------------------------------------------
 
+    /**
+     * 安全列名（SQL 注入纵深防护）
+     *
+     * orderBy / where 的列名参数在 Laravel 中不参与参数绑定（仅 wrap 标识符），
+     * 而前端可控的排序/搜索字段（$columns[i]['data']、压缩协议 xfc 的 data）
+     * 会直接进入该参数。本方法仅放行「字母/数字/下划线/英文点（表名.列名）」形式，
+     * 拒绝含空格、括号、分号、注释符等任意输入，作为查询构造器管线的最后一道护栏。
+     *
+     * @return string|null 合法列名，否则 null（调用方应跳过该条件）
+     */
+    public static function safeColumn(string $name): ?string
+    {
+        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_.]*$/', $name) === 1 ? $name : null;
+    }
+
     /** 取行字段（支持 a.b.c 点语法、数组/对象） */
     public static function field(mixed $row, string $key): mixed
     {
@@ -604,16 +628,17 @@ class DataSet
                     return null;
                 }
             }
+
             return $row;
         }
+
         return null;
     }
 
     /**
      * scalar（protected静态方法）
      *
-     * @param mixed $value value
-     *
+     * @param  mixed  $value  value
      * @return string|int|float result
      */
     protected static function scalar(mixed $value): string|int|float
@@ -621,15 +646,15 @@ class DataSet
         if (is_scalar($value)) {
             return is_bool($value) ? (int) $value : $value;
         }
+
         return $value === null ? '' : (string) json_encode($value, JSON_UNESCAPED_UNICODE);
     }
 
     /**
      * contains（protected静态方法）
      *
-     * @param mixed $value value
-     * @param string $lowerKeyword lower Keyword
-     *
+     * @param  mixed  $value  value
+     * @param  string  $lowerKeyword  lower Keyword
      * @return bool result
      */
     protected static function contains(mixed $value, string $lowerKeyword): bool

@@ -26,11 +26,11 @@ class DateRangePicker extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'single'     => false,
+            'single' => false,
             'timepicker' => false,
-            'format'     => 'YYYY-MM-DD',
-            'ranges'     => false,    // 快捷区间（今天/最近7天/本月...）
-            'options'    => [],       // 透传 daterangepicker 配置
+            'format' => 'YYYY-MM-DD',
+            'ranges' => false,    // 快捷区间（今天/最近7天/本月...）
+            'options' => [],       // 透传 daterangepicker 配置
         ];
     }
 
@@ -55,24 +55,28 @@ class DateRangePicker extends Component
 
         $config = array_replace_recursive([
             'singleDatePicker' => (bool) $this->get('single'),
-            'timePicker'       => (bool) $this->get('timepicker'),
-            'locale'           => ['format' => $this->get('format')],
-            'xfRanges'         => (bool) $this->get('ranges'),
+            'timePicker' => (bool) $this->get('timepicker'),
+            'locale' => ['format' => $this->get('format')],
+            'xfRanges' => (bool) $this->get('ranges'),
         ], (array) $this->get('options', []));
 
-        $control = '<input' . Html::attrs([
-            'type'           => 'text',
-            'class'          => 'form-control',
-            'id'             => $id,
-            'name'           => $this->get('name'),
-            'value'          => $this->get('value'),
-            'placeholder'    => $this->get('placeholder'),
-            'required'       => (bool) $this->get('required'),
-            'disabled'       => (bool) $this->get('disabled'),
-            'readonly'       => (bool) $this->get('readonly'),
-            'data-xf'        => 'daterangepicker',
+        $ctrlAttrs = [
+            'type' => 'text',
+            'class' => Html::cls('form-control', $this->controlStateClass()),
+            'id' => $id,
+            'name' => $this->get('name'),
+            'value' => $this->get('value'),
+            'placeholder' => $this->get('placeholder'),
+            'required' => (bool) $this->get('required'),
+            'disabled' => (bool) $this->get('disabled'),
+            'readonly' => (bool) $this->get('readonly'),
+            'data-xf' => 'daterangepicker',
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '>';
+        ];
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
+        $ctrlAttrs = array_merge($ctrlAttrs, $this->describeAttrs($id), $this->stateAria());
+
+        $control = '<input'.Html::attrs($ctrlAttrs).'>';
 
         return $this->wrapField($control, $id);
     }

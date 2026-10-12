@@ -30,14 +30,15 @@ class Card extends Component
     protected function defaults(): array
     {
         return [
-            'title'    => null,
+            'title' => null,
             'subtitle' => null,
-            'tools'    => [],
-            'actions'  => null,
-            'body'     => '',
-            'footer'   => null,
-            'padding'  => true,
-            'class'    => null,
+            'tools' => [],
+            'actions' => null,
+            'body' => '',
+            'footer' => null,
+            'padding' => true,
+            'hoverable' => false,   // 鼠标悬停微交互（依赖 xfadmin.css 的 .xf-hoverable）
+            'class' => null,
         ];
     }
 
@@ -48,22 +49,26 @@ class Card extends Component
      */
     protected function html(): string
     {
-        $html = '<div' . $this->attrs(['class' => Html::cls('card', $this->get('class'))]) . '>';
+        $cardClass = Html::cls('card', $this->get('class'));
+        if ($this->get('hoverable')) {
+            $cardClass .= ' xf-hoverable';
+        }
+        $html = '<div'.$this->attrs(['class' => $cardClass]).'>';
 
         if ($this->get('title') !== null || $this->get('actions') !== null || $this->get('tools') !== []) {
             $html .= '<div class="card-header justify-content-between align-items-center d-flex">';
             $html .= '<div>';
             if ($this->get('title') !== null) {
-                $html .= '<h4 class="card-title mb-0">' . $this->e($this->get('title')) . '</h4>';
+                $html .= '<h4 class="card-title mb-0">'.$this->e($this->get('title')).'</h4>';
             }
             if ($this->get('subtitle') !== null) {
-                $html .= '<p class="card-subtitle text-muted mt-1 mb-0">' . $this->e($this->get('subtitle')) . '</p>';
+                $html .= '<p class="card-subtitle text-muted mt-1 mb-0">'.$this->e($this->get('subtitle')).'</p>';
             }
             $html .= '</div>';
 
             $tools = $this->get('tools');
             if ($this->get('actions') !== null) {
-                $html .= '<div>' . $this->raw($this->get('actions')) . '</div>';
+                $html .= '<div>'.$this->raw($this->get('actions')).'</div>';
             } elseif ($tools !== []) {
                 $html .= '<div class="card-action">';
                 if (is_array($tools)) {
@@ -71,9 +76,9 @@ class Card extends Component
                         $html .= match ($tool) {
                             // 与 INSPINIA 模板 app.js initPortletCard() 对齐：使用 data-action 属性
                             'collapse' => '<span class="card-action-item" data-action="card-toggle"><i class="ti ti-chevron-up"></i></span>',
-                            'refresh'  => '<span class="card-action-item" data-action="card-refresh"><i class="ti ti-refresh"></i></span>',
-                            'close'    => '<span class="card-action-item" data-action="card-close"><i class="ti ti-x"></i></span>',
-                            default    => $this->raw($tool),
+                            'refresh' => '<span class="card-action-item" data-action="card-refresh"><i class="ti ti-refresh"></i></span>',
+                            'close' => '<span class="card-action-item" data-action="card-close"><i class="ti ti-x"></i></span>',
+                            default => $this->raw($tool),
                         };
                     }
                 } else {
@@ -83,11 +88,12 @@ class Card extends Component
             }
             $html .= '</div>';
         }
-        $html .= '<div class="' . Html::cls('card-body', ['p-0' => ! $this->get('padding')]) . '">' . $this->raw($this->get('body')) . '</div>';
+        $html .= '<div class="'.Html::cls('card-body', ['p-0' => ! $this->get('padding')]).'">'.$this->raw($this->get('body')).'</div>';
 
         if ($this->get('footer') !== null) {
-            $html .= '<div class="card-footer">' . $this->raw($this->get('footer')) . '</div>';
+            $html .= '<div class="card-footer">'.$this->raw($this->get('footer')).'</div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

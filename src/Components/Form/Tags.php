@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin\Components\Form;
 
-use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
 use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
 use zxf\XfAdmin\Support\Html;
 
 /**
@@ -42,14 +42,15 @@ class Tags extends Component
     protected function defaults(): array
     {
         return [
-            'name'        => '',
-            'label'       => null,
-            'value'       => [],
-            'whitelist'   => [],
-            'max'         => null,
+            'name' => '',
+            'label' => null,
+            'value' => [],
+            'whitelist' => [],
+            'max' => null,
             'placeholder' => '',
-            'help'        => null,
-            'col'         => null,
+            'help' => null,
+            'state' => null,     // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
+            'col' => null,
         ];
     }
 
@@ -65,12 +66,12 @@ class Tags extends Component
 
         $config = array_filter([
             'whitelist' => $this->get('whitelist') ?: null,
-            'maxTags'   => $this->get('max'),
+            'maxTags' => $this->get('max'),
         ], fn ($v) => $v !== null && $v !== []);
 
         $attrs = $this->initAttrs('tagify', $config);
-        $attrs['class'] = Html::cls('form-control');
-        $attrs['name']  = $this->get('name');
+        $attrs['class'] = Html::cls('form-control', $this->controlStateClass());
+        $attrs['name'] = $this->get('name');
         $attrs['value'] = $value;
         if ($this->get('placeholder')) {
             $attrs['placeholder'] = $this->get('placeholder');
@@ -82,7 +83,9 @@ class Tags extends Component
         foreach ($custom as $k => $v) {
             $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'] ?? '', $v) : $v;
         }
-        $input = '<input type="text"' . Html::attrs($attrs) . '>';
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（置于自定义属性之后，确保不被覆盖）
+        $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
+        $input = '<input type="text"'.Html::attrs($attrs).'>';
 
         return $this->wrapField($input, $id);
     }

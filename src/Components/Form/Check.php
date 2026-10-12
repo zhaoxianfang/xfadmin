@@ -29,53 +29,72 @@ class Check extends Component
     protected function defaults(): array
     {
         return [
-            'type'     => 'checkbox',  // checkbox | radio | switch
-            'name'     => null,
-            'label'    => null,
-            'options'  => [],          // 一组：value => label
-            'value'    => null,        // 选中值（组模式）；单个模式用 checked
-            'checked'  => false,
-            'inline'   => false,
-            'reverse'  => false,
+            'type' => 'checkbox',  // checkbox | radio | switch
+            'name' => null,
+            'label' => null,
+            'options' => [],          // 一组：value => label
+            'value' => null,        // 选中值（组模式）；单个模式用 checked
+            'checked' => false,
+            'inline' => false,
+            'reverse' => false,
             'disabled' => false,
             'required' => false,
-            'wrapper'  => 'mb-3',
+            'wrapper' => 'mb-3',
+            'help' => null,    // 说明文本（组模式渲染在组下方，单模式渲染在控件下方，转义）
+            'state' => null,    // 'valid' | 'invalid' | null（显式校验着色）
         ];
+    }
+
+    /**
+     * 控件校验状态 class（is-valid / is-invalid）
+     *
+     * @return string result
+     */
+    protected function stateClass(): string
+    {
+        return match ($this->get('state')) {
+            'valid' => ' is-valid',
+            'invalid' => ' is-invalid',
+            default => '',
+        };
     }
 
     /**
      * render One（protected实例方法）
      *
-     * @param string|int $value value
-     * @param string $label label
-     * @param bool $checked checked
-     * @param ?string $id id
-     *
+     * @param  string|int  $value  value
+     * @param  string  $label  label
+     * @param  bool  $checked  checked
+     * @param  ?string  $id  id
+     * @param  ?string  $helpId  help Id（用于 aria-describedby 无障碍接线）
      * @return string result
      */
-    protected function renderOne(string|int $value, string $label, bool $checked, ?string $id = null): string
+    protected function renderOne(string|int $value, string $label, bool $checked, ?string $id = null, ?string $helpId = null): string
     {
-        $type     = $this->get('type');
+        $type = $this->get('type');
         $isSwitch = $type === 'switch';
-        $id     ??= $this->uid('xf-check');
+        $id ??= $this->uid('xf-check');
+        $state = $this->stateClass();
+        $describe = $helpId !== null ? ' aria-describedby="'.$this->e($helpId).'"' : '';
+        $invalid = $this->get('state') === 'invalid' ? ' aria-invalid="true"' : '';
 
-        return '<div class="' . Html::cls('form-check', [
-            'form-switch'        => $isSwitch,
-            'form-check-inline'  => $this->get('inline'),
+        return '<div class="'.Html::cls('form-check', [
+            'form-switch' => $isSwitch,
+            'form-check-inline' => $this->get('inline'),
             'form-check-reverse' => $this->get('reverse'),
-        ]) . '">'
-            . '<input class="form-check-input" type="' . ($isSwitch ? 'checkbox' : $this->e($type)) . '"'
-            . ($isSwitch ? ' role="switch"' : '')
-            . Html::attrs([
-                'name'     => $this->get('name'),
-                'id'       => $id,
-                'value'    => $value,
-                'checked'  => $checked,
+        ]).'">'
+            .'<input class="form-check-input'.$state.'" type="'.($isSwitch ? 'checkbox' : $this->e($type)).'"'
+            .($isSwitch ? ' role="switch"' : '')
+            .Html::attrs([
+                'name' => $this->get('name'),
+                'id' => $id,
+                'value' => $value,
+                'checked' => $checked,
                 'disabled' => (bool) $this->get('disabled'),
                 'required' => (bool) $this->get('required'),
-            ]) . '>'
-            . '<label class="form-check-label" for="' . $this->e($id) . '">' . $this->e($label) . '</label>'
-            . '</div>';
+            ]).$describe.$invalid.'>'
+            .'<label class="form-check-label" for="'.$this->e($id).'">'.$this->e($label).'</label>'
+            .'</div>';
     }
 
     /**
@@ -99,22 +118,33 @@ class Check extends Component
             }
         }
 
+        // 说明文本（转义，防存储型 XSS）；组模式多个控件共享同一个 help 节点与 id
+        $helpHtml = '';
+        $helpId = null;
+        if ($this->get('help') !== null) {
+            $helpId = $this->uid('xf-check').'-help';
+            $helpHtml = '<div class="form-text" id="'.$this->e($helpId).'">'.$this->e($this->get('help')).'</div>';
+        }
+
         if ($options === []) {
             $html = $this->renderOne(
                 (string) ($this->get('value') ?? '1'),
                 (string) $this->get('label'),
                 (bool) $this->get('checked'),
-                $this->get('id')
+                $this->get('id'),
+                $helpId
             );
+            $html .= $helpHtml;
         } else {
             $selected = array_map('strval', (array) ($this->get('value') ?? []));
-            $html     = $this->get('label') !== null ? '<label class="form-label d-block">' . $this->e($this->get('label')) . '</label>' : '';
+            $html = $this->get('label') !== null ? '<label class="form-label d-block">'.$this->e($this->get('label')).'</label>' : '';
             foreach ($options as $value => $label) {
-                $html .= $this->renderOne($value, (string) $label, in_array((string) $value, $selected, true));
+                $html .= $this->renderOne($value, (string) $label, in_array((string) $value, $selected, true), null, $helpId);
             }
+            $html .= $helpHtml;
         }
         $wrapper = $this->get('wrapper');
 
-        return $wrapper ? '<div class="' . $this->e($wrapper) . '">' . $html . '</div>' : $html;
+        return $wrapper ? '<div class="'.$this->e($wrapper).'">'.$html.'</div>' : $html;
     }
 }

@@ -34,11 +34,11 @@ class Select extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'options'         => [],
-            'groups'          => [],
-            'multiple'        => false,
-            'size'            => null,
-            'enhance'         => null,
+            'options' => [],
+            'groups' => [],
+            'multiple' => false,
+            'size' => null,
+            'enhance' => null,
             'enhance_options' => [],
         ];
     }
@@ -53,37 +53,37 @@ class Select extends Component
         return match ($this->get('enhance')) {
             'choices' => ['choices'],
             'select2' => ['select2'],
-            default   => [],
+            default => [],
         };
     }
 
     /**
      * render Options（protected实例方法）
      *
-     * @param array $options options
-     *
+     * @param  array  $options  options
      * @return string result
      */
     protected function renderOptions(array $options): string
     {
         $selected = (array) ($this->get('value') ?? []);
         $selected = array_map('strval', $selected);
-        $html     = '';
+        $html = '';
 
         foreach ($options as $value => $label) {
             if (is_array($label)) {
-                $opt   = $label;
+                $opt = $label;
                 $value = $opt['value'] ?? $value;
                 $label = $opt['label'] ?? $value;
             } else {
                 $opt = [];
             }
-            $html .= '<option' . Html::attrs([
-                'value'    => $value,
+            $html .= '<option'.Html::attrs([
+                'value' => $value,
                 'selected' => in_array((string) $value, $selected, true),
                 'disabled' => (bool) ($opt['disabled'] ?? false),
-            ]) . '>' . $this->e($label) . '</option>';
+            ]).'>'.$this->e($label).'</option>';
         }
+
         return $html;
     }
 
@@ -97,13 +97,16 @@ class Select extends Component
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-select');
 
         $attrs = [
-            'class'    => Html::cls('form-select', $this->get('size') ? 'form-select-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : ''),
-            'id'       => $id,
-            'name'     => $this->get('name') . ($this->get('multiple') && $this->get('name') && ! str_ends_with((string) $this->get('name'), '[]') ? '[]' : ''),
+            'class' => Html::cls('form-select', $this->get('size') ? 'form-select-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '', $this->controlStateClass()),
+            'id' => $id,
+            'name' => $this->get('name').($this->get('multiple') && $this->get('name') && ! str_ends_with((string) $this->get('name'), '[]') ? '[]' : ''),
             'multiple' => (bool) $this->get('multiple'),
             'required' => (bool) $this->get('required'),
             'disabled' => (bool) $this->get('disabled'),
         ];
+
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
+        $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
 
         if ($this->get('enhance')) {
             $enhanceCfg = (array) $this->get('enhance_options', []);
@@ -112,7 +115,7 @@ class Select extends Component
             if ($this->get('placeholder') && ! $this->get('multiple')) {
                 $enhanceCfg['placeholder'] = $this->get('placeholder');
             }
-            $attrs['data-xf']        = $this->get('enhance');
+            $attrs['data-xf'] = $this->get('enhance');
             $attrs['data-xf-config'] = json_encode(
                 $enhanceCfg,
                 JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
@@ -120,17 +123,17 @@ class Select extends Component
         }
         $inner = '';
         if ($this->get('placeholder') && ! $this->get('multiple')) {
-            $inner .= '<option value="">' . $this->e($this->get('placeholder')) . '</option>';
+            $inner .= '<option value="">'.$this->e($this->get('placeholder')).'</option>';
         }
         $groups = (array) $this->get('groups', []);
         if ($groups !== []) {
             foreach ($groups as $groupLabel => $groupOptions) {
-                $inner .= '<optgroup label="' . $this->e($groupLabel) . '">' . $this->renderOptions((array) $groupOptions) . '</optgroup>';
+                $inner .= '<optgroup label="'.$this->e($groupLabel).'">'.$this->renderOptions((array) $groupOptions).'</optgroup>';
             }
         } else {
             $inner .= $this->renderOptions((array) $this->get('options', []));
         }
-        $control = '<select' . Html::attrs($attrs) . '>' . $inner . '</select>';
+        $control = '<select'.Html::attrs($attrs).'>'.$inner.'</select>';
 
         return $this->wrapField($control, $id);
     }

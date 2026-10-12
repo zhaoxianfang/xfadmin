@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Components\Form;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 富文本编辑器（Quill / Summernote）
@@ -24,9 +25,9 @@ class Editor extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'driver'  => 'quill',   // quill | summernote
-            'theme'   => 'snow',    // quill: snow | bubble
-            'height'  => 260,
+            'driver' => 'quill',   // quill | summernote
+            'theme' => 'snow',    // quill: snow | bubble
+            'height' => 260,
             'options' => [],
         ];
     }
@@ -48,36 +49,48 @@ class Editor extends Component
      */
     protected function html(): string
     {
-        $id     = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');
+        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');
         $driver = $this->get('driver');
 
         $config = array_replace_recursive([
             'driver' => $driver,
-            'theme'  => $this->get('theme'),
+            'theme' => $this->get('theme'),
             'height' => (int) $this->get('height'),
-            'input'  => $this->get('name'),
+            'input' => $this->get('name'),
         ], (array) $this->get('options', []));
 
         $json = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
         if ($driver === 'summernote') {
-            $control = '<textarea' . $this->attrs([
-                'id'             => $id,
-                'name'           => $this->get('name'),
-                'data-xf'        => 'summernote',
+            $sumAttrs = [
+                'id' => $id,
+                'name' => $this->get('name'),
+                'class' => Html::cls('form-control', $this->controlStateClass()),
+                'data-xf' => 'summernote',
                 'data-xf-config' => $json,
-            ]) . '>' . $this->e($this->get('value')) . '</textarea>';
+            ];
+            // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
+            $sumAttrs = array_merge($sumAttrs, $this->describeAttrs($id), $this->stateAria());
+
+            $control = '<textarea'.$this->attrs($sumAttrs).'>'.$this->e($this->get('value')).'</textarea>';
         } else {
-            $control = '<div' . $this->attrs([
-                'id'             => $id,
-                'data-xf'        => 'quill',
+            $control = '<div'.$this->attrs([
+                'id' => $id,
+                'data-xf' => 'quill',
                 'data-xf-config' => $json,
-                'style'          => 'height:' . (int) $this->get('height') . 'px;',
-            ]) . '>' . $this->raw($this->get('value')) . '</div>';
+                'style' => 'height:'.(int) $this->get('height').'px;',
+            ]).'>'.$this->raw($this->get('value')).'</div>';
             if ($this->get('name')) {
-                $control .= '<input type="hidden" name="' . $this->e($this->get('name')) . '" value="' . $this->e($this->get('value')) . '">';
+                // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（落到真实提交用的隐藏 input）
+                $qAttrs = array_merge([
+                    'type' => 'hidden',
+                    'name' => $this->get('name'),
+                    'value' => $this->get('value'),
+                ], $this->describeAttrs($id), $this->stateAria());
+                $control .= '<input'.Html::attrs($qAttrs).'>';
             }
         }
+
         return $this->wrapField($control, $id);
     }
 }

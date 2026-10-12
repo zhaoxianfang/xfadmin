@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Components\Form;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 范围滑块（noUiSlider）
@@ -24,12 +25,12 @@ class Slider extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'min'      => 0,
-            'max'      => 100,
-            'step'     => 1,
+            'min' => 0,
+            'max' => 100,
+            'step' => 1,
             'tooltips' => false,
-            'connect'  => null,
-            'options'  => [],  // 透传 noUiSlider 配置
+            'connect' => null,
+            'options' => [],  // 透传 noUiSlider 配置
         ];
     }
 
@@ -50,29 +51,31 @@ class Slider extends Component
      */
     protected function html(): string
     {
-        $id    = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-slider');
+        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-slider');
         $value = $this->get('value') ?? $this->get('min');
 
         $config = [
-            'start'    => is_array($value) ? array_values($value) : [$value],
-            'range'    => ['min' => (float) $this->get('min'), 'max' => (float) $this->get('max')],
-            'step'     => (float) $this->get('step'),
+            'start' => is_array($value) ? array_values($value) : [$value],
+            'range' => ['min' => (float) $this->get('min'), 'max' => (float) $this->get('max')],
+            'step' => (float) $this->get('step'),
             'tooltips' => $this->get('tooltips'),
-            'connect'  => $this->get('connect') ?? (is_array($value) ? true : 'lower'),
-            'input'    => $this->get('name'),  // 同步到隐藏 input
+            'connect' => $this->get('connect') ?? (is_array($value) ? true : 'lower'),
+            'input' => $this->get('name'),  // 同步到隐藏 input
         ];
         $config = array_replace_recursive($config, (array) $this->get('options', []));
 
-        $control = '<div' . $this->attrs([
-            'id'             => $id,
-            'data-xf'        => 'slider',
+        $sliderAttrs = $this->controlAttrs([
+            'id' => $id,
+            'data-xf' => 'slider',
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '></div>';
+        ], $id);
+        $control = '<div'.Html::attrs($sliderAttrs).'></div>';
 
         if ($this->get('name')) {
-            $control .= '<input type="hidden" name="' . $this->e($this->get('name')) . '" value="'
-                . $this->e(is_array($value) ? implode(',', $value) : $value) . '">';
+            $control .= '<input type="hidden" name="'.$this->e($this->get('name')).'" value="'
+                .$this->e(is_array($value) ? implode(',', $value) : $value).'">';
         }
+
         return $this->wrapField($control, $id);
     }
 }

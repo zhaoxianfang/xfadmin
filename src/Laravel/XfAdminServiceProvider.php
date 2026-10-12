@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace zxf\XfAdmin\Laravel;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\XfAdmin;
 
 /**
@@ -16,8 +18,11 @@ use zxf\XfAdmin\XfAdmin;
  *   php artisan vendor:publish --tag=xfadmin-config
  *
  * Blade 指令：
+ *
  *   @xfHead                      —— <head> 中输出 CSS
+ *
  *   @xfScripts                   —— </body> 前输出 JS
+ *
  *   @xf('card', ['title'=>'x'])  —— 渲染任意组件
  */
 class XfAdminServiceProvider extends ServiceProvider
@@ -29,12 +34,12 @@ class XfAdminServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/xfadmin.php', 'xfadmin');
+        $this->mergeConfigFrom(__DIR__.'/../../config/xfadmin.php', 'xfadmin');
 
         $this->app->singleton('xfadmin', function ($app) {
             XfAdmin::config($app['config']->get('xfadmin', []));
 
-            return new XfAdmin();
+            return new XfAdmin;
         });
     }
 
@@ -50,11 +55,11 @@ class XfAdminServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../../resources/assets' => public_path('zxf/xfadmin'),
+                __DIR__.'/../../resources/assets' => public_path('zxf/xfadmin'),
             ], 'xfadmin-assets');
 
             $this->publishes([
-                __DIR__ . '/../../config/xfadmin.php' => config_path('xfadmin.php'),
+                __DIR__.'/../../config/xfadmin.php' => config_path('xfadmin.php'),
             ], 'xfadmin-config');
         }
         // 资源自动托管：未发布（或未完全发布）资源时，把 `assets_url` 前缀下的请求直接映射到
@@ -64,12 +69,18 @@ class XfAdminServiceProvider extends ServiceProvider
         // 路由层 + 控制器层双重限制扩展名白名单，杜绝 .php 等被当作资源输出。
         $prefix = AssetController::prefix();
         if ($prefix !== '' && ! preg_match('#^https?://#', $prefix)) {
-            \Illuminate\Support\Facades\Route::get($prefix . '/{path}', [AssetController::class, 'serve'])
+            Route::get($prefix.'/{path}', [AssetController::class, 'serve'])
                 ->where('path', '(?i).*\.(css|js|mjs|map|json|svg|png|jpe?g|gif|ico|webp|avif|woff2?|ttf|eot|otf)$')
                 ->name('xfadmin.assets');
         }
         Blade::directive('xfHead', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::head(); ?>");
         Blade::directive('xfScripts', fn () => "<?php echo \\zxf\XfAdmin\\XfAdmin::scripts(); ?>");
         Blade::directive('xf', fn ($expression) => "<?php echo \\zxf\XfAdmin\\XfAdmin::component({$expression}); ?>");
+
+        // 资源收集单例在请求结束后重置，兼容 Swoole / Octane 等常驻内存环境，
+        // 避免上一请求的插件/CSS/JS 收集状态跨请求累积污染（保留 baseUrl 与 version 配置）。
+        if (method_exists($this->app, 'terminating')) {
+            $this->app->terminating(fn () => Assets::reset());
+        }
     }
 }

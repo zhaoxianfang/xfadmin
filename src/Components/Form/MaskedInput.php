@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin\Components\Form;
 
-use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
 use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
 use zxf\XfAdmin\Support\Html;
 
 /**
@@ -41,14 +41,15 @@ class MaskedInput extends Component
     protected function defaults(): array
     {
         return [
-            'name'        => '',
-            'label'       => null,
-            'mask'        => null,
-            'alias'       => null,
-            'value'       => '',
+            'name' => '',
+            'label' => null,
+            'mask' => null,
+            'alias' => null,
+            'value' => '',
             'placeholder' => null,
-            'help'        => null,
-            'col'         => null,
+            'help' => null,
+            'state' => null,     // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
+            'col' => null,
         ];
     }
 
@@ -60,14 +61,14 @@ class MaskedInput extends Component
     protected function html(): string
     {
         $config = array_filter([
-            'mask'  => $this->get('mask'),
+            'mask' => $this->get('mask'),
             'alias' => $this->get('alias'),
         ], fn ($v) => $v !== null);
 
         $attrs = $this->initAttrs('inputmask', $config);
-        $attrs['type']  = 'text';
-        $attrs['class'] = Html::cls('form-control');
-        $attrs['name']  = $this->get('name');
+        $attrs['type'] = 'text';
+        $attrs['class'] = Html::cls('form-control', $this->controlStateClass());
+        $attrs['name'] = $this->get('name');
         $attrs['value'] = $this->get('value');
         if ($this->get('placeholder')) {
             $attrs['placeholder'] = $this->get('placeholder');
@@ -79,6 +80,9 @@ class MaskedInput extends Component
         foreach ($custom as $k => $v) {
             $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'] ?? '', $v) : $v;
         }
-        return $this->wrapField('<input' . Html::attrs($attrs) . '>', $id);
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（置于自定义属性之后，确保不被覆盖）
+        $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
+
+        return $this->wrapField('<input'.Html::attrs($attrs).'>', $id);
     }
 }

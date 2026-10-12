@@ -111,6 +111,7 @@ class AuthPage extends Component
             'action'        => '',       // 表单提交地址（核心字段；formAttrs.action 兼容）
             'method'        => 'POST',
             'ajax'          => true,     // 表单以 AJAX 方式提交（data-xf-remote，组件内置支持）
+            'redirectDelay' => null,     // 成功后携带 data.url 时的跳转延迟（毫秒）；null 用默认 3 秒
             'fields'        => [],       // 关联数组：['email' => [...], 'password' => [...]]
             'buttons'       => [],       // 按钮数组（label/variant/type/...）
             'submit'        => '提交',    // 默认提交按钮文案（未传 buttons 时使用）
@@ -1128,13 +1129,19 @@ class AuthPage extends Component
 
         $remote = $this->get('ajax') ? ' data-xf-remote' : '';
 
+        // 跳转延迟（毫秒）：登录/注册等成功后携带 data.url 时，覆盖默认的 3 秒等待，
+        // 让跳转更顺滑（如设为 600）。透传到 data-xf-redirect-delay 由 handleFormResponse 读取。
+        $redirectDelay = $this->get('redirectDelay');
+        $delayAttr = ($redirectDelay !== null && $redirectDelay !== '') ? ' data-xf-redirect-delay="' . (int) $redirectDelay . '"' : '';
+
         return ' action="' . $this->e($action) . '"'
             . ' method="POST"'
             . ' class="' . trim($class) . '"'
             . $id
             . ' accept-charset="UTF-8"'
             . ' novalidate'
-            . $remote;
+            . $remote
+            . $delayAttr;
     }
 
     /**

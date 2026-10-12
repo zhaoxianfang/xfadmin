@@ -25,22 +25,23 @@ class Button extends Component
     protected function defaults(): array
     {
         return [
-            'text'     => '',
-            'variant'  => 'primary',
-            'type'     => 'button',
-            'href'     => null,
-            'size'     => null,       // sm | lg
-            'soft'     => false,
-            'outline'  => false,
-            'ghost'    => false,
-            'rounded'  => false,      // rounded-pill
-            'icon'     => null,
+            'text' => '',
+            'variant' => 'primary',
+            'type' => 'button',
+            'href' => null,
+            'size' => null,       // sm | lg
+            'soft' => false,
+            'outline' => false,
+            'ghost' => false,
+            'rounded' => false,      // rounded-pill
+            'icon' => null,
             'icon_only' => false,
+            'label' => null,       // 无障碍名：icon_only 按钮或纯图标场景必须提供
             'disabled' => false,
-            'ladda'    => false,
-            'toggle'   => null,       // modal | offcanvas | collapse | dropdown
-            'target'   => null,
-            'onclick'  => null,
+            'ladda' => false,
+            'toggle' => null,       // modal | offcanvas | collapse | dropdown
+            'target' => null,
+            'onclick' => null,
         ];
     }
 
@@ -62,25 +63,33 @@ class Button extends Component
     protected function html(): string
     {
         $variant = $this->get('variant');
-        $style   = 'btn-' . $variant;
+        $style = 'btn-'.$variant;
         if ($this->get('soft')) {
-            $style = 'btn-soft-' . $variant;
+            $style = 'btn-soft-'.$variant;
         } elseif ($this->get('outline')) {
-            $style = 'btn-outline-' . $variant;
+            $style = 'btn-outline-'.$variant;
         } elseif ($this->get('ghost')) {
-            $style = 'btn-ghost-' . $variant;
+            $style = 'btn-ghost-'.$variant;
         }
         $class = Html::cls('btn', $style, [
-            'btn-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') => (bool) $this->get('size'),
-            'rounded-pill'              => $this->get('rounded'),
-            'btn-icon'                  => $this->get('icon_only'),
-            'ladda-button'              => $this->get('ladda'),
-            'disabled'                  => $this->get('disabled') && $this->get('href'),
+            'btn-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') => (bool) $this->get('size'),
+            'rounded-pill' => $this->get('rounded'),
+            'btn-icon' => $this->get('icon_only'),
+            'ladda-button' => $this->get('ladda'),
+            'disabled' => $this->get('disabled') && $this->get('href'),
         ]);
 
         $attrs = ['class' => $class];
+        // 无障碍：图标按钮必须提供可访问名称（aria-label）。
+        // icon_only 或仅含图标时，优先用显式 label，其次回退 text。
+        if ($this->get('icon_only') || $this->get('text') === '') {
+            $a11y = $this->get('label') ?? $this->get('text');
+            if ($a11y !== null && $a11y !== '') {
+                $attrs['aria-label'] = (string) $a11y;
+            }
+        }
         if ($this->get('ladda')) {
-            $attrs['data-xf']    = 'ladda';
+            $attrs['data-xf'] = 'ladda';
             $attrs['data-style'] = 'zoom-out';
         }
         if ($this->get('toggle')) {
@@ -92,18 +101,18 @@ class Button extends Component
         if ($this->get('onclick')) {
             $attrs['onclick'] = $this->get('onclick');
         }
-        $icon  = $this->get('icon') ? '<i class="' . $this->e($this->get('icon')) . ($this->get('icon_only') || $this->get('text') === '' ? '"' : ' me-1"') . '></i>' : '';
-        $label = $this->get('ladda') ? '<span class="ladda-label">' . $icon . $this->e($this->get('text')) . '</span>' : $icon . $this->e($this->get('text'));
+        $icon = $this->get('icon') ? '<i class="'.$this->e($this->get('icon')).($this->get('icon_only') || $this->get('text') === '' ? '"' : ' me-1"').'></i>' : '';
+        $label = $this->get('ladda') ? '<span class="ladda-label">'.$icon.$this->e($this->get('text')).'</span>' : $icon.$this->e($this->get('text'));
 
         if ($this->get('href') !== null) {
             $attrs['href'] = $this->safeUrl($this->get('href'));
             $attrs['role'] = 'button';
 
-            return '<a' . $this->attrs($attrs) . '>' . $label . '</a>';
+            return '<a'.$this->attrs($attrs).'>'.$label.'</a>';
         }
-        $attrs['type']     = $this->get('type');
+        $attrs['type'] = $this->get('type');
         $attrs['disabled'] = (bool) $this->get('disabled');
 
-        return '<button' . $this->attrs($attrs) . '>' . $label . '</button>';
+        return '<button'.$this->attrs($attrs).'>'.$label.'</button>';
     }
 }

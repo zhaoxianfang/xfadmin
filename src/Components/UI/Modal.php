@@ -32,16 +32,16 @@ class Modal extends Component
     protected function defaults(): array
     {
         return [
-            'title'      => null,
-            'body'       => '',
-            'footer'     => null,
-            'size'       => null,
-            'centered'   => false,
+            'title' => null,
+            'body' => '',
+            'footer' => null,
+            'size' => null,
+            'centered' => false,
             'scrollable' => false,
-            'fade'       => true,
-            'static'     => false,
-            'close'      => true,
-            'trigger'    => null,
+            'fade' => true,
+            'static' => false,
+            'close' => true,
+            'trigger' => null,
             'trigger_variant' => 'primary',
         ];
     }
@@ -53,42 +53,47 @@ class Modal extends Component
      */
     protected function html(): string
     {
-        $id   = $this->resolveId('xf-modal');
+        $id = $this->resolveId('xf-modal');
         $html = '';
 
         if ($this->get('trigger') !== null) {
-            $html .= '<button type="button" class="btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary') . '" data-bs-toggle="modal" data-bs-target="#' . $this->e($id) . '">'
-                . $this->e($this->get('trigger')) . '</button>';
+            $html .= '<button type="button" class="btn btn-'.$this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary').'" data-bs-toggle="modal" data-bs-target="#'.$this->e($id).'">'
+                .$this->e($this->get('trigger')).'</button>';
         }
         $dialogClass = Html::cls('modal-dialog', [
-            'modal-dialog-centered'   => $this->get('centered'),
+            'modal-dialog-centered' => $this->get('centered'),
             'modal-dialog-scrollable' => $this->get('scrollable'),
-        ], $this->get('size') ? 'modal-' . $this->enum($this->get('size'), ['sm', 'lg', 'xl', 'fullscreen', 'fullscreen-sm-down', 'fullscreen-md-down', 'fullscreen-lg-down', 'fullscreen-xl-down', 'fullscreen-xxl-down'], 'lg') : '');
+        ], $this->get('size') ? 'modal-'.$this->enum($this->get('size'), ['sm', 'lg', 'xl', 'fullscreen', 'fullscreen-sm-down', 'fullscreen-md-down', 'fullscreen-lg-down', 'fullscreen-xl-down', 'fullscreen-xxl-down'], 'lg') : '');
 
+        $titleId = $id.'-label';
         $attrs = [
-            'class'    => Html::cls('modal', ['fade' => $this->get('fade')]),
-            'id'       => $id,
+            'class' => Html::cls('modal', ['fade' => $this->get('fade')]),
+            'id' => $id,
             'tabindex' => '-1',
             'aria-hidden' => 'true',
         ];
+        // 无障碍：弹窗有关联标题时，声明 aria-labelledby 指向标题，供屏幕阅读器识别
+        if ($this->get('title') !== null) {
+            $attrs['aria-labelledby'] = $titleId;
+        }
         if ($this->get('static')) {
             $attrs['data-bs-backdrop'] = 'static';
             $attrs['data-bs-keyboard'] = 'false';
         }
-        $html .= '<div' . $this->attrs($attrs) . '><div class="' . $dialogClass . '"><div class="modal-content">';
+        $html .= '<div'.$this->attrs($attrs).'><div class="'.$dialogClass.'"><div class="modal-content">';
         if ($this->get('title') !== null || $this->get('close')) {
             $html .= '<div class="modal-header">';
             if ($this->get('title') !== null) {
-                $html .= '<h5 class="modal-title">' . $this->e($this->get('title')) . '</h5>';
+                $html .= '<h5 class="modal-title" id="'.$this->e($titleId).'">'.$this->e($this->get('title')).'</h5>';
             }
             if ($this->get('close')) {
                 $html .= '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
             }
             $html .= '</div>';
         }
-        $html .= '<div class="modal-body">' . $this->raw($this->get('body')) . '</div>';
+        $html .= '<div class="modal-body">'.$this->raw($this->get('body')).'</div>';
         if ($this->get('footer') !== null) {
-            $html .= '<div class="modal-footer">' . $this->raw($this->get('footer')) . '</div>';
+            $html .= '<div class="modal-footer">'.$this->raw($this->get('footer')).'</div>';
         }
         $html .= '</div></div></div>';
 

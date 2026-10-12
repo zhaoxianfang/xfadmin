@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Components\Form;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Components\Form\Concerns\FieldWrapper;
+use zxf\XfAdmin\Support\Html;
 
 /**
  * 颜色选择器（Pickr）
@@ -24,7 +25,7 @@ class ColorPicker extends Component
     protected function defaults(): array
     {
         return $this->fieldDefaults() + [
-            'theme'   => 'classic',  // classic | monolith | nano
+            'theme' => 'classic',  // classic | monolith | nano
             'options' => [],
         ];
     }
@@ -46,17 +47,24 @@ class ColorPicker extends Component
      */
     protected function html(): string
     {
-        $id     = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-color');
+        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-color');
         $config = array_replace_recursive([
-            'theme'   => $this->get('theme'),
+            'theme' => $this->get('theme'),
             'default' => $this->get('value') ?: '#3e60d5',
-            'input'   => $this->get('name'),
+            'input' => $this->get('name'),
         ], (array) $this->get('options', []));
 
+        // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（落到真实提交用的隐藏 input）
+        $hiddenAttrs = array_merge([
+            'type' => 'hidden',
+            'name' => $this->get('name'),
+            'value' => $this->get('value'),
+        ], $this->describeAttrs($id), $this->stateAria());
+
         $control = '<div class="d-flex align-items-center gap-2">'
-            . '<div id="' . $this->e($id) . '" data-xf="pickr" data-xf-config="' . $this->e(json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)) . '"></div>'
-            . ($this->get('name') ? '<input type="hidden" name="' . $this->e($this->get('name')) . '" value="' . $this->e($this->get('value')) . '">' : '')
-            . '</div>';
+            .'<div id="'.$this->e($id).'" data-xf="pickr" data-xf-config="'.$this->e(json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"></div>'
+            .($this->get('name') ? '<input'.Html::attrs($hiddenAttrs).'>' : '')
+            .'</div>';
 
         return $this->wrapField($control, $id);
     }
