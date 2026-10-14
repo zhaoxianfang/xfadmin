@@ -61,7 +61,7 @@
 日历（FullCalendar 事件视图）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Calendar`
-> **文件**：`src/Components/Misc/Calendar.php`（88 行）
+> **文件**：`src/Components/Misc/Calendar.php`（112 行）
 > **依赖插件**：`fullcalendar`
 
 **用法示例**
@@ -119,7 +119,7 @@ echo XfAdmin::calendar([
 树形视图（可展开节点）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\TreeView`
-> **文件**：`src/Components/Misc/TreeView.php`（53 行）
+> **文件**：`src/Components/Misc/TreeView.php`（75 行）
 > **依赖插件**：`jstree`
 
 **用法示例**
@@ -173,7 +173,7 @@ echo XfAdmin::treeView([
 可拖拽排序列表（嵌套 sortable）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Nestable`
-> **文件**：`src/Components/Misc/Nestable.php`（72 行）
+> **文件**：`src/Components/Misc/Nestable.php`（100 行）
 > **依赖插件**：`sortablejs`
 
 **用法示例**
@@ -227,7 +227,7 @@ echo XfAdmin::nestable([
 灯箱（点击图片放大预览）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Lightbox`
-> **文件**：`src/Components/Misc/Lightbox.php`（67 行）
+> **文件**：`src/Components/Misc/Lightbox.php`（92 行）
 > **依赖插件**：`glightbox`、`masonry`
 
 **用法示例**
@@ -281,7 +281,7 @@ echo XfAdmin::lightbox([
 新手指引漫游（分步高亮引导）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Tour`
-> **文件**：`src/Components/Misc/Tour.php`（46 行）
+> **文件**：`src/Components/Misc/Tour.php`（68 行）
 > **依赖插件**：`tourguide`
 
 **用法示例**
@@ -325,7 +325,7 @@ echo XfAdmin::tour([
 剪贴板复制按钮（clipboard.js）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\ClipboardButton` 等 `clipboard` / `clipboardButton`
-> **文件**：`src/Components/Misc/ClipboardButton.php`（50 行）
+> **文件**：`src/Components/Misc/ClipboardButton.php`（64 行）
 > **依赖插件**：`clipboard`
 
 **用法示例**
@@ -382,7 +382,7 @@ echo XfAdmin::clipboardButton([              // 等价 XfAdmin::clipboard()
 SweetAlert2 弹窗（confirm/toast 等）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\SweetAlert`
-> **文件**：`src/Components/Misc/SweetAlert.php`（74 行）
+> **文件**：`src/Components/Misc/SweetAlert.php`（99 行）
 > **依赖插件**：`sweetalert2`
 
 **用法示例**
@@ -445,7 +445,7 @@ echo XfAdmin::sweetAlert([
 原生 HTML 透传（不包裹任何结构的原样输出组件）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Raw`
-> **文件**：`src/Components/Misc/Raw.php`（46 行）
+> **文件**：`src/Components/Misc/Raw.php`（59 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -489,7 +489,7 @@ echo XfAdmin::raw([
 动态 favicon 角标（未读消息数）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Tinycon`
-> **文件**：`src/Components/Misc/Tinycon.php`（47 行）
+> **文件**：`src/Components/Misc/Tinycon.php`（69 行）
 > **依赖插件**：`tinycon`
 
 **用法示例**
@@ -527,7 +527,7 @@ echo XfAdmin::tinycon([
 空闲计时器（用户无操作超时处理）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\IdleTimer`
-> **文件**：`src/Components/Misc/IdleTimer.php`（72 行）
+> **文件**：`src/Components/Misc/IdleTimer.php`（93 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -575,7 +575,7 @@ echo XfAdmin::idleTimer([
 入场动画（滚动触发元素动画）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Animate`
-> **文件**：`src/Components/Misc/Animate.php`（73 行）
+> **文件**：`src/Components/Misc/Animate.php`（113 行）
 > **依赖插件**：`animate`
 
 **用法示例**
@@ -633,7 +633,7 @@ echo XfAdmin::animate([
 PDF 预览（pdf.js 内嵌查看）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\PdfViewer`
-> **文件**：`src/Components/Misc/PdfViewer.php`（88 行）
+> **文件**：`src/Components/Misc/PdfViewer.php`（110 行）
 > **依赖插件**：`pdfjs`
 
 **用法示例**
@@ -679,7 +679,7 @@ echo XfAdmin::pdfViewer([
 文本差异对比（merge-diff 高亮）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\TextDiff`
-> **文件**：`src/Components/Misc/TextDiff.php`（56 行）
+> **文件**：`src/Components/Misc/TextDiff.php`（74 行）
 > **依赖插件**：`diff`
 
 **用法示例**
@@ -723,7 +723,7 @@ echo XfAdmin::textDiff([
 钉板（瀑布流便签卡片）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\PinBoard`
-> **文件**：`src/Components/Misc/PinBoard.php`（45 行）
+> **文件**：`src/Components/Misc/PinBoard.php`（64 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -770,7 +770,7 @@ echo XfAdmin::pinBoard([
 瀑布流布局（错落卡片墙）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Masonry`
-> **文件**：`src/Components/Misc/Masonry.php`（47 行）
+> **文件**：`src/Components/Misc/Masonry.php`（73 行）
 > **依赖插件**：`masonry`
 
 **用法示例**
@@ -819,7 +819,7 @@ echo XfAdmin::masonry([
 视频播放器（plyr 等）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\VideoPlayer`
-> **文件**：`src/Components/Misc/VideoPlayer.php`（79 行）
+> **文件**：`src/Components/Misc/VideoPlayer.php`（103 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -881,7 +881,7 @@ echo XfAdmin::videoPlayer([
 国际化（多语言切换演示）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\I18n`
-> **文件**：`src/Components/Misc/I18n.php`（149 行）
+> **文件**：`src/Components/Misc/I18n.php`（175 行）
 > **依赖插件**：无
 
 **用法示例**

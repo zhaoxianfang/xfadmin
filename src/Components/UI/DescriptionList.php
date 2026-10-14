@@ -31,10 +31,10 @@ class DescriptionList extends Component
     protected function defaults(): array
     {
         return [
-            'items'       => [],
-            'horizontal'  => true,
+            'items' => [],
+            'horizontal' => true,
             'label_width' => 4,
-            'striped'     => false,
+            'striped' => false,
         ];
     }
 
@@ -49,7 +49,7 @@ class DescriptionList extends Component
         $lw = max(1, min(6, (int) $this->get('label_width')));
 
         $cls = Html::cls('mb-0', ['row' => $horizontal]);
-        $html = '<dl' . $this->attrs(['class' => $cls]) . '>';
+        $html = '<dl'.$this->attrs(['class' => $cls]).'>';
 
         foreach ((array) $this->get('items', []) as $key => $val) {
             if (is_array($val) && isset($val['label'])) {
@@ -59,15 +59,19 @@ class DescriptionList extends Component
                 $label = $key;
                 $value = $val;
             }
-            $valHtml = $this->raw($value);
+            // raw 选项：默认 value 走 text()（字符串转义、组件实例透传），
+            // 仅当 item['raw'] 为真时走 raw() 原样输出（调用方需自行保证内容可信）
+            $raw = is_array($val) && ! empty($val['raw']);
+            $valHtml = $raw ? $this->raw($value) : $this->text($value);
 
             if ($horizontal) {
-                $html .= '<dt class="col-sm-' . $lw . ' text-muted fw-normal py-1">' . $this->e($label) . '</dt>';
-                $html .= '<dd class="col-sm-' . (12 - $lw) . ' mb-0 py-1">' . $valHtml . '</dd>';
+                $html .= '<dt class="col-sm-'.$lw.' text-muted fw-normal py-1">'.$this->e($label).'</dt>';
+                $html .= '<dd class="col-sm-'.(12 - $lw).' mb-0 py-1">'.$valHtml.'</dd>';
             } else {
-                $html .= '<dt class="text-muted fw-normal">' . $this->e($label) . '</dt><dd class="mb-2">' . $valHtml . '</dd>';
+                $html .= '<dt class="text-muted fw-normal">'.$this->e($label).'</dt><dd class="mb-2">'.$valHtml.'</dd>';
             }
         }
-        return $html . '</dl>';
+
+        return $html.'</dl>';
     }
 }

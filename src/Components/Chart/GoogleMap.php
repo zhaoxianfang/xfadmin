@@ -33,13 +33,13 @@ class GoogleMap extends Component
     protected function defaults(): array
     {
         return [
-            'height'   => 400,
-            'place'    => null,
-            'center'   => [39.9042, 116.4074],
-            'zoom'     => 12,
-            'maptype'  => 'roadmap',
+            'height' => 400,
+            'place' => null,
+            'center' => [39.9042, 116.4074],
+            'zoom' => 12,
+            'maptype' => 'roadmap',
             'language' => 'zh-CN',
-            'rounded'  => true,
+            'rounded' => true,
         ];
     }
 
@@ -50,31 +50,31 @@ class GoogleMap extends Component
      */
     protected function html(): string
     {
-        $id   = $this->resolveId('xf-gmap');
+        $id = $this->resolveId('xf-gmap');
         $zoom = max(1, min(21, (int) $this->get('zoom', 12)));
 
         // 组装免 Key 嵌入地址：place 优先按名称搜索，否则按经纬度
         $query = $this->get('place');
         if ($query === null || $query === '') {
             $center = (array) $this->get('center', [39.9042, 116.4074]);
-            $query  = ($center[0] ?? 39.9042) . ',' . ($center[1] ?? 116.4074);
+            $query = ($center[0] ?? 39.9042).','.($center[1] ?? 116.4074);
         }
         $params = [
-            'q'      => (string) $query,
-            'z'      => (string) $zoom,
-            'hl'     => (string) $this->get('language', 'zh-CN'),
+            'q' => (string) $query,
+            'z' => (string) $zoom,
+            'hl' => (string) $this->get('language', 'zh-CN'),
             'output' => 'embed',
         ];
         if (($this->get('maptype') ?? 'roadmap') === 'satellite') {
             $params['t'] = 'k'; // k = 卫星图层
         }
-        $src = 'https://maps.google.com/maps?' . http_build_query($params);
+        $src = 'https://maps.google.com/maps?'.http_build_query($params);
 
-        return '<div' . $this->attrs([
-            'class' => 'xf-gmap overflow-hidden' . ($this->get('rounded') ? ' rounded' : ''),
-            'id'    => $id,
-            'style' => 'height:' . (int) $this->get('height', 400) . 'px',
-        ]) . '><iframe src="' . $this->e($src) . '" style="border:0;width:100%;height:100%;"'
-            . ' loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
+        return '<div'.$this->attrs([
+            'class' => 'xf-gmap overflow-hidden'.($this->get('rounded') ? ' rounded' : ''),
+            'id' => $id,
+            'style' => 'height:'.(int) ($this->get('height') ?? 400).'px',
+        ]).'><iframe src="'.$this->e($src).'" style="border:0;width:100%;height:100%;"'
+            .' loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
     }
 }

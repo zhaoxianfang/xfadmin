@@ -12,10 +12,9 @@ declare(strict_types=1);
  *
  * 退出码：0 = 全部通过，1 = 存在缺陷。
  */
-
 spl_autoload_register(function ($class) {
     if (str_starts_with($class, 'zxf\\XfAdmin\\')) {
-        $f = __DIR__ . '/../src/' . str_replace('\\', '/', substr($class, strlen('zxf\\XfAdmin\\'))) . '.php';
+        $f = __DIR__.'/../src/'.str_replace('\\', '/', substr($class, strlen('zxf\\XfAdmin\\'))).'.php';
         if (is_file($f)) {
             require $f;
         }
@@ -34,14 +33,14 @@ function ok(string $name): void
 {
     global $pass;
     $pass++;
-    echo "  ✔ {$name}" . PHP_EOL;
+    echo "  ✔ {$name}".PHP_EOL;
 }
 
 function bad(string $name, string $detail = ''): void
 {
     global $fail;
     $fail++;
-    echo "  ✘ {$name}" . ($detail !== '' ? "  → {$detail}" : '') . PHP_EOL;
+    echo "  ✘ {$name}".($detail !== '' ? "  → {$detail}" : '').PHP_EOL;
 }
 
 function check(string $name, bool $cond, string $detail = ''): void
@@ -50,18 +49,19 @@ function check(string $name, bool $cond, string $detail = ''): void
 }
 
 /* ------------------------------------------------------------------ */
-/* 1. 资源完整性                                                        */
+/* 1. 资源完整性 */
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . '== 资源完整性（组件声明 ↔ PLUGINS 注册 ↔ 文件存在） ==' . PHP_EOL;
+echo PHP_EOL.'== 资源完整性（组件声明 ↔ PLUGINS 注册 ↔ 文件存在） =='.PHP_EOL;
 
 $components = XfAdmin::componentList();
-check('组件注册表非空', count($components) > 100, '实际 ' . count($components) . ' 个');
+check('组件注册表非空', count($components) > 100, '实际 '.count($components).' 个');
 
 $missingPlugin = [];
-$assetErrors   = [];
+$assetErrors = [];
 foreach ($components as $alias => $class) {
     if (! class_exists($class)) {
         $assetErrors[] = "{$alias}: 类 {$class} 不存在";
+
         continue;
     }
     // assets() 是 protected，用反射取出声明依赖
@@ -86,7 +86,7 @@ foreach (Assets::PLUGINS as $name => $def) {
     foreach (['css', 'js'] as $type) {
         foreach ($def[$type] ?? [] as $file) {
             // PLUGINS 中的路径均相对于 resources/assets（js/ 前缀已在路径内）
-            $path = $root . '/resources/assets/' . ltrim($file, '/');
+            $path = $root.'/resources/assets/'.ltrim($file, '/');
             if (! is_file($path)) {
                 $missingFile[] = "{$name}:{$file}";
             }
@@ -97,9 +97,9 @@ check('PLUGINS 声明的资源文件均存在', $missingFile === [], implode('; 
 check('组件类文件均可加载', $assetErrors === [], implode('; ', array_slice($assetErrors, 0, 5)));
 
 /* ------------------------------------------------------------------ */
-/* 2. 注入模糊审计                                                      */
+/* 2. 注入模糊审计 */
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . '== 注入模糊审计（文本字段 ↔ 输出转义） ==' . PHP_EOL;
+echo PHP_EOL.'== 注入模糊审计（文本字段 ↔ 输出转义） =='.PHP_EOL;
 
 const PAYLOAD = '"><xfxss-payload>';
 
@@ -116,15 +116,15 @@ const RAW_KEYS = [
 const RAW_EXEMPT = [
     'popover' => ['text'],
     'tooltip' => ['text'],
-    'editor'  => ['value'],
+    'editor' => ['value'],
     // Terms.intro / accept 是明确声明的 HTML 槽位（见类注释：「前言 HTML」「或 HTML」）
-    'terms'   => ['intro', 'accept'],
+    'terms' => ['intro', 'accept'],
     // AuthPage 的 captcha 为字符串时按「web component HTML」原样输出（见类注释）
     'authPage' => ['captcha'],
-    'signIn'   => ['captcha'],
-    'signUp'   => ['captcha'],
+    'signIn' => ['captcha'],
+    'signUp' => ['captcha'],
     'resetPass' => ['captcha'],
-    'newPass'  => ['captcha'],
+    'newPass' => ['captcha'],
     'twoFactor' => ['captcha'],
     'lockScreen' => ['captcha'],
     'deleteAccount' => ['captcha'],
@@ -132,12 +132,12 @@ const RAW_EXEMPT = [
     // DashboardGrid.bottom 是 HTML 内容槽位（传入 Tabs 等组件渲染出的字符串 / 开发者自定义 HTML），按 raw 原样输出
     'dashboardGrid' => ['bottom'],
     // ReportPage.filters / table 与 SearchResults.pagination 同为 HTML 内容槽位（Form/DataTable/Pagination 组件实例或自定义 HTML）
-    'reportPage'    => ['filters', 'table'],
+    'reportPage' => ['filters', 'table'],
     'searchResults' => ['pagination'],
 ];
 
 $violations = [];
-$crashes    = [];
+$crashes = [];
 
 foreach ($components as $alias => $class) {
     if (! class_exists($class) || ! is_subclass_of($class, Component::class)) {
@@ -167,7 +167,8 @@ foreach ($components as $alias => $class) {
             $html = (string) XfAdmin::{$alias}([$key => PAYLOAD]);
         } catch (Throwable $e) {
             // 渲染本身抛异常说明健壮性有问题（第 3 节单独统计），此处不计为 XSS
-            $crashes[] = "{$alias}.{$key}: " . get_class($e) . ' ' . $e->getMessage();
+            $crashes[] = "{$alias}.{$key}: ".get_class($e).' '.$e->getMessage();
+
             continue;
         }
         if (str_contains($html, '<xfxss-payload')) {
@@ -180,9 +181,9 @@ check('文本字段注入 payload 均未裸输出', $violations === [], implode(
 check('注入未引发渲染异常', $crashes === [], implode('; ', array_slice($crashes, 0, 6)));
 
 /* ------------------------------------------------------------------ */
-/* 3. 健壮性审计（历史缺陷回归）                                        */
+/* 3. 健壮性审计（历史缺陷回归） */
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . '== 健壮性审计（非法输入不崩溃 / 历史缺陷回归） ==' . PHP_EOL;
+echo PHP_EOL.'== 健壮性审计（非法输入不崩溃 / 历史缺陷回归） =='.PHP_EOL;
 
 function noCrash(string $name, callable $fn): void
 {
@@ -190,7 +191,7 @@ function noCrash(string $name, callable $fn): void
         $fn();
         ok($name);
     } catch (Throwable $e) {
-        bad($name, get_class($e) . ': ' . $e->getMessage());
+        bad($name, get_class($e).': '.$e->getMessage());
     }
 }
 
@@ -282,27 +283,27 @@ noCrash('FieldWrapper help 文本被转义', function () {
 });
 
 /* ------------------------------------------------------------------ */
-/* 4. 前端契约审计                                                      */
+/* 4. 前端契约审计 */
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . '== 前端契约审计（JS/CSS 关键修复点仍在位） ==' . PHP_EOL;
+echo PHP_EOL.'== 前端契约审计（JS/CSS 关键修复点仍在位） =='.PHP_EOL;
 
-$js  = (string) file_get_contents($root . '/resources/assets/js/xfadmin.js');
-$css = (string) file_get_contents($root . '/resources/assets/css/xfadmin.css');
+$js = (string) file_get_contents($root.'/resources/assets/js/xfadmin.js');
+$css = (string) file_get_contents($root.'/resources/assets/css/xfadmin.css');
 
 check('xfadmin.js 通过 node --check 语法校验', (static function () use ($root): bool {
     $node = trim((string) shell_exec('command -v node 2>/dev/null'));
     if ($node === '') {
         return true; // 环境无 node 时跳过，不误报
     }
-    $cmd = escapeshellarg($node) . ' --check ' . escapeshellarg($root . '/resources/assets/js/xfadmin.js') . ' 2>&1';
+    $cmd = escapeshellarg($node).' --check '.escapeshellarg($root.'/resources/assets/js/xfadmin.js').' 2>&1';
     $out = (string) shell_exec($cmd);
 
     return trim($out) === '';
 })());
 
-check('countdown 过期文案经 escapeHtml 输出', str_contains($js, "escapeHtml(expired)"));
-check('countdown 非法目标时间不再常驻定时器', str_contains($js, "if (end == null) return { destroy: function () {} };"));
-check('时间线节点文本经 escapeHtml 输出', str_contains($js, "escapeHtml(btn.textContent.trim())"));
+check('countdown 过期文案经 escapeHtml 输出', str_contains($js, 'escapeHtml(expired)'));
+check('countdown 非法目标时间不再常驻定时器', str_contains($js, 'if (end == null) return { destroy: function () {} };'));
+check('时间线节点文本经 escapeHtml 输出', str_contains($js, 'escapeHtml(btn.textContent.trim())'));
 check('kanban 持久化使用正确的 request 签名', str_contains($js, "XFAdmin.request(url, { method: 'PATCH', data: payload })"));
 check('kanban 持久化接收卡片节点', str_contains($js, 'persistMove(detail, card)'));
 check('弹窗移除统一走 disposeModal', str_contains($js, "XFAdmin.disposeModal('xf-dialog-modal')")
@@ -325,7 +326,7 @@ check('jQuery 依赖缺失有明确告警', str_contains($js, "xfWarnMissingDep(
 check('提供组件销毁钩子 destroy/destroyWithin', str_contains($js, 'XFAdmin.destroy = function')
     && str_contains($js, 'XFAdmin.destroyWithin = function'));
 check('register 支持第三参销毁函数', str_contains($js, 'XFAdmin.register = function (name, initFn, destroyFn)'));
-check('countdown/countup/backtotop 返回 destroy 钩子', str_contains($js, "return { destroy: function () { clearInterval(timer); } };")
+check('countdown/countup/backtotop 返回 destroy 钩子', str_contains($js, 'return { destroy: function () { clearInterval(timer); } };')
     && str_contains($js, "return { destroy: function () { global.removeEventListener('scroll', onScroll); } };")
     && str_contains($js, 'if (rafId) cancelAnimationFrame(rafId);'));
 check('DataTable 销毁时反注册 ResizeObserver', str_contains($js, "el.addEventListener('destroy.dt'")
@@ -341,9 +342,9 @@ check('select2 下拉层级低于模态框', ! preg_match('/\.select2-dropdown\s
 check('auth-split 无重复定义', substr_count($css, '.auth-split-wrapper { min-height: 100vh; }') === 1);
 
 /* ------------------------------------------------------------------ */
-/* 5. HTML 结构完整性                                                  */
+/* 5. HTML 结构完整性 */
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . '== HTML 结构完整性（标签配平 / 无未闭合） ==' . PHP_EOL;
+echo PHP_EOL.'== HTML 结构完整性（标签配平 / 无未闭合） =='.PHP_EOL;
 
 /**
  * 标签配平检查：忽略 void 元素与自闭合标签，返回问题描述数组。
@@ -364,6 +365,7 @@ function htmlUnbalanced(string $html): array
         }
         if ($t[1] !== '/') {
             $stack[] = $name;
+
             continue;
         }
         $top = array_pop($stack);
@@ -372,7 +374,7 @@ function htmlUnbalanced(string $html): array
         }
     }
 
-    return $stack === [] ? [] : ['未闭合: ' . implode(' > ', array_slice($stack, 0, 5))];
+    return $stack === [] ? [] : ['未闭合: '.implode(' > ', array_slice($stack, 0, 5))];
 }
 
 /** 结构性豁免：片段型组件（只输出开标签或不完整结构，由调用方拼接） */
@@ -391,15 +393,15 @@ foreach ($components as $alias => $class) {
     }
     $errs = htmlUnbalanced($html);
     if ($errs !== []) {
-        $htmlIssues[] = "{$alias}: " . implode('; ', $errs);
+        $htmlIssues[] = "{$alias}: ".implode('; ', $errs);
     }
 }
 check('组件输出 HTML 标签均配平', $htmlIssues === [], implode(' | ', array_slice($htmlIssues, 0, 10)));
 
 /* ------------------------------------------------------------------ */
-/* 6. 可访问性 / HTML 有效性基线                                        */
+/* 6. 可访问性 / HTML 有效性基线 */
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . '== 可访问性基线（img 必带 alt / 装饰性图标不参与统计） ==' . PHP_EOL;
+echo PHP_EOL.'== 可访问性基线（img 必带 alt / 装饰性图标不参与统计） =='.PHP_EOL;
 
 $altIssues = [];
 foreach ($components as $alias => $class) {
@@ -424,8 +426,8 @@ $altIssues = array_values(array_unique($altIssues));
 check('所有 <img> 均带 alt 属性', $altIssues === [], implode(', ', array_slice($altIssues, 0, 12)));
 
 /* ------------------------------------------------------------------ */
-echo PHP_EOL . ($fail === 0
-    ? "ALL AUDIT PASSED（{$pass} 项）" . PHP_EOL
-    : "AUDIT FAILED：{$fail} 项未通过 / {$pass} 项通过" . PHP_EOL);
+echo PHP_EOL.($fail === 0
+    ? "ALL AUDIT PASSED（{$pass} 项）".PHP_EOL
+    : "AUDIT FAILED：{$fail} 项未通过 / {$pass} 项通过".PHP_EOL);
 
 exit($fail === 0 ? 0 : 1);

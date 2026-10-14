@@ -28,12 +28,12 @@ class EmptyState extends Component
     protected function defaults(): array
     {
         return [
-            'icon'  => 'ti ti-package',
+            'icon' => 'ti ti-package',
             'title' => '暂无数据',
-            'text'  => '',
+            'text' => '',
             'action' => '',
-            'size'  => '',
-            'id'    => null,
+            'size' => '',
+            'id' => null,
             'class' => '',
         ];
     }
@@ -49,19 +49,19 @@ class EmptyState extends Component
 
         // size 直接拼进 class，走白名单（非法值忽略，不产生 xf-empty-icon-<任意串>）
         $sz = $this->enum($this->get('size'), self::ENUM_SIZE, '');
-        $iconSize = $sz !== '' ? ' xf-empty-icon-' . $sz : '';
+        $iconSize = $sz !== '' ? ' xf-empty-icon-'.$sz : '';
 
-        $action = $this->get('action') !== '' && $this->get('action') !== null ? '<div class="xf-empty-action mt-3">' . $this->raw($this->get('action')) . '</div>' : '';
+        $action = $this->get('action') !== '' && $this->get('action') !== null ? '<div class="xf-empty-action mt-3">'.$this->raw($this->get('action')).'</div>' : '';
 
-        return '<div' . $this->attrs([
-            'id'    => $id,
+        return '<div'.$this->attrs([
+            'id' => $id,
             'class' => 'xf-empty text-center py-5'
-                . ($this->get('class') !== '' ? ' ' . $this->get('class') : ''),
-        ]) . '>'
-            . '<div class="xf-empty-icon' . $iconSize . '"><i class="' . $this->e($this->get('icon')) . '"></i></div>'
-            . '<h6 class="xf-empty-title mt-3 mb-1">' . $this->e($this->get('title')) . '</h6>'
-            . ($this->get('text') !== '' ? '<p class="xf-empty-text text-muted small">' . $this->e($this->get('text')) . '</p>' : '')
-            . $action
-            . '</div>';
+                .($this->get('class') !== '' ? ' '.$this->get('class') : ''),
+        ]).'>'
+            .'<div class="xf-empty-icon'.$iconSize.'"><i class="'.$this->iconClass($this->get('icon')).'"></i></div>'
+            .'<h6 class="xf-empty-title mt-3 mb-1">'.$this->e($this->get('title')).'</h6>'
+            .($this->get('text') !== '' ? '<p class="xf-empty-text text-muted small">'.$this->e($this->get('text')).'</p>' : '')
+            .$action
+            .'</div>';
     }
 }

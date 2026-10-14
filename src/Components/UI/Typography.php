@@ -30,7 +30,7 @@ class Typography extends Component
     {
         return [
             'blocks' => [],          // 区块列表：字符串（built-in 键）或 ['title'=>..,'body'=>..]
-            'grid'   => true,        // 是否用 row/col 网格包裹
+            'grid' => true,        // 是否用 row/col 网格包裹
         ];
     }
 
@@ -42,7 +42,7 @@ class Typography extends Component
     protected function html(): string
     {
         $blocks = (array) $this->get('blocks', []);
-        $grid   = (bool) $this->get('grid', true);
+        $grid = (bool) $this->get('grid', true);
 
         if (empty($blocks)) {
             $blocks = ['display', 'headings', 'text', 'blockquote', 'lists', 'abbr'];
@@ -53,13 +53,14 @@ class Typography extends Component
                 $out .= $this->builtin($block);
             } elseif (is_array($block)) {
                 $title = (string) ($block['title'] ?? '');
-                $body  = (string) ($block['body'] ?? '');
-                $out  .= $this->card($title, $body);
+                $body = (string) ($block['body'] ?? '');
+                $out .= $this->card($title, $body);
             }
         }
-        if (!$grid) {
+        if (! $grid) {
             return $out;
         }
+
         // 将卡片按列重排：每个 card 包一层 col
         return $this->wrapGrid($out);
     }
@@ -67,8 +68,7 @@ class Typography extends Component
     /**
      * wrap Grid（private实例方法）
      *
-     * @param string $html html
-     *
+     * @param  string  $html  html
      * @return string result
      */
     private function wrapGrid(string $html): string
@@ -78,53 +78,53 @@ class Typography extends Component
         $offset = 0;
         while (preg_match('/<div class="card">(.*?)<\/div>\s*<!-- end card-->/s', $html, $m, PREG_OFFSET_CAPTURE, $offset)) {
             $cards[] = $m[0][0];
-            $offset  = $m[0][1] + strlen($m[0][0]);
+            $offset = $m[0][1] + strlen($m[0][0]);
         }
         if (empty($cards)) {
-            return '<div class="container-xxl"><div class="row">' . $html . '</div></div>';
+            return '<div class="container-xxl"><div class="row">'.$html.'</div></div>';
         }
         $cols = '';
         $wideFirst = true;
         foreach ($cards as $i => $c) {
             $colClass = ($i === 0 && $wideFirst) ? 'col-12' : 'col-lg-4';
-            $cols .= '<div class="' . $colClass . '">' . $c . '</div>';
+            $cols .= '<div class="'.$colClass.'">'.$c.'</div>';
         }
-        return '<div class="container-xxl"><div class="row">' . $cols . '</div></div>';
+
+        return '<div class="container-xxl"><div class="row">'.$cols.'</div></div>';
     }
 
     /**
      * card（private实例方法）
      *
-     * @param string $title title
-     * @param string $body body
-     *
+     * @param  string  $title  title
+     * @param  string  $body  body
      * @return string result
      */
     private function card(string $title, string $body): string
     {
         return '<div class="card">'
-            . '<div class="card-header"><h4 class="card-title">' . $this->e($title) . '</h4></div>'
-            . '<div class="card-body">' . $body . '</div>'
-            . '</div><!-- end card-->';
+            .'<div class="card-header"><h4 class="card-title">'.$this->e($title).'</h4></div>'
+            .'<div class="card-body">'.$body.'</div>'
+            .'</div><!-- end card-->';
     }
 
     /**
      * builtin（private实例方法）
      *
-     * @param string $key key
-     *
+     * @param  string  $key  key
      * @return string result
      */
     private function builtin(string $key): string
     {
         return match ($key) {
             'display' => $this->card('Display Headings', implode("\n", array_map(
-                fn($n) => '<h1 class="display-' . $n . '">Display ' . $n . '</h1>',
+                fn ($n) => '<h1 class="display-'.$n.'">Display '.$n.'</h1>',
                 range(1, 6)
             ))),
             'headings' => $this->card('Headings', implode("\n", array_map(
                 function ($n) {
-                    $h = '<h' . $n . '>Heading ' . $n . ' <small>Sub Heading</small></h' . $n . '>';
+                    $h = '<h'.$n.'>Heading '.$n.' <small>Sub Heading</small></h'.$n.'>';
+
                     return $h;
                 },
                 range(1, 6)

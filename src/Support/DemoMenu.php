@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin\Support;
 
+use zxf\XfAdmin\XfAdmin;
+
 /**
  * 演示菜单数据
  *
@@ -22,7 +24,7 @@ final class DemoMenu
      */
     public static function topbarTools(string $url = '#!'): array
     {
-        $img = static fn (string $p): string => \zxf\XfAdmin\XfAdmin::img($p);
+        $img = static fn (string $p): string => XfAdmin::img($p);
 
         return [
             'languages' => [
@@ -32,39 +34,39 @@ final class DemoMenu
                 ['name' => 'Deutsch', 'code' => 'de', 'url' => $url],
             ],
             'messages' => [
-                'title'   => '邮件通知',
-                'count'   => 4,
+                'title' => '邮件通知',
+                'count' => 4,
                 'all_url' => $url,
-                'items'   => [
+                'items' => [
                     ['from' => '李文静', 'text' => '关于下周产品评审会的议程安排…', 'time' => '5 分钟前',
-                     'avatar' => $img('users/user-1.jpg'), 'url' => $url],
+                        'avatar' => $img('users/user-1.jpg'), 'url' => $url],
                     ['from' => '王建国', 'text' => '合同附件已上传，请查收并确认。', 'time' => '1 小时前',
-                     'avatar' => $img('users/user-3.jpg'), 'url' => $url],
+                        'avatar' => $img('users/user-3.jpg'), 'url' => $url],
                     ['from' => '系统邮件', 'text' => '您的月度账单已生成。', 'time' => '昨天',
-                     'icon' => 'ti ti-mail-opened', 'variant' => 'info', 'url' => $url],
+                        'icon' => 'ti ti-mail-opened', 'variant' => 'info', 'url' => $url],
                     ['from' => '张晓芳', 'text' => '设计稿第二版已同步至云文档。', 'time' => '2 天前',
-                     'avatar' => $img('users/user-5.jpg'), 'url' => $url],
+                        'avatar' => $img('users/user-5.jpg'), 'url' => $url],
                 ],
             ],
             'notifications' => [
-                'title'   => '消息通知',
-                'count'   => 3,
+                'title' => '消息通知',
+                'count' => 3,
                 'all_url' => $url,
-                'items'   => [
+                'items' => [
                     ['title' => '订单支付成功', 'text' => '订单 #20260808 已完成支付。', 'time' => '刚刚',
-                     'icon' => 'ti ti-shopping-cart', 'variant' => 'success', 'url' => $url],
+                        'icon' => 'ti ti-shopping-cart', 'variant' => 'success', 'url' => $url],
                     ['title' => '服务器告警', 'text' => 'node-02 CPU 使用率超过 90%。', 'time' => '20 分钟前',
-                     'icon' => 'ti ti-alert-triangle', 'variant' => 'danger', 'url' => $url],
+                        'icon' => 'ti ti-alert-triangle', 'variant' => 'danger', 'url' => $url],
                     ['title' => '新用户注册', 'text' => '今日新增注册用户 128 人。', 'time' => '3 小时前',
-                     'icon' => 'ti ti-user-plus', 'variant' => 'primary', 'url' => $url],
+                        'icon' => 'ti ti-user-plus', 'variant' => 'primary', 'url' => $url],
                 ],
             ],
             'user' => [
-                'name'   => '陈管理员',
-                'role'   => '超级管理员',
-                'email'  => 'admin@example.com',
+                'name' => '陈管理员',
+                'role' => '超级管理员',
+                'email' => 'admin@example.com',
                 'avatar' => $img('users/user-2.jpg'),
-                'items'  => [
+                'items' => [
                     ['text' => '个人资料', 'icon' => 'ti ti-user-circle', 'url' => $url],
                     ['text' => '账号设置', 'icon' => 'ti ti-settings', 'url' => $url],
                     ['text' => '消息中心', 'icon' => 'ti ti-bell', 'url' => $url],
@@ -73,11 +75,11 @@ final class DemoMenu
                 ],
             ],
             'apps' => [
-                'title'   => '我的应用',
+                'title' => '我的应用',
                 'variant' => 'rounded',
                 'all_url' => $url,
                 'add_url' => $url,
-                'items'   => [
+                'items' => [
                     ['text' => '邮箱', 'icon' => 'ti ti-mail', 'variant' => 'primary', 'url' => $url],
                     ['text' => '日历', 'icon' => 'ti ti-calendar', 'variant' => 'info', 'url' => $url],
                     ['text' => '聊天', 'icon' => 'ti ti-messages', 'variant' => 'success', 'url' => $url],
@@ -107,7 +109,7 @@ final class DemoMenu
             ['text' => '应用', 'icon' => 'ti ti-apps', 'children' => [
                 ['text' => '日历', 'icon' => 'ti ti-calendar', 'url' => $url],
                 ['text' => '聊天', 'icon' => 'ti ti-message', 'url' => $url,
-                 'badge' => ['text' => '5', 'class' => 'text-bg-danger']],
+                    'badge' => ['text' => '5', 'class' => 'text-bg-danger']],
                 ['text' => '邮箱', 'icon' => 'ti ti-mail', 'children' => [
                     ['text' => '收件箱', 'url' => $url],
                     ['text' => '已发送', 'url' => $url],
@@ -117,8 +119,8 @@ final class DemoMenu
                 ['text' => '文件管理', 'icon' => 'ti ti-folder', 'url' => $url],
             ]],
             ['text' => '电商', 'icon' => 'ti ti-shopping-cart', 'mega' => [
-                'cols'    => 3,
-                'title'   => '电商中心',
+                'cols' => 3,
+                'title' => '电商中心',
                 'columns' => [
                     ['title' => '商品', 'items' => [
                         ['text' => '商品列表', 'url' => $url],
@@ -136,7 +138,7 @@ final class DemoMenu
                         ['text' => '客户列表', 'url' => $url],
                         ['text' => '会员等级', 'url' => $url],
                         ['text' => '优惠券', 'url' => $url,
-                         'badge' => ['text' => 'NEW', 'class' => 'text-bg-success']],
+                            'badge' => ['text' => 'NEW', 'class' => 'text-bg-success']],
                         ['text' => '评价管理', 'url' => $url],
                     ]],
                 ],
@@ -171,8 +173,8 @@ final class DemoMenu
     public static function deepMenu(string $url = '#!'): array
     {
         return [
-            'text'     => '多级菜单',
-            'icon'     => 'ti ti-stack-2',
+            'text' => '多级菜单',
+            'icon' => 'ti ti-stack-2',
             'children' => [
                 ['title' => '五级深度演示'],
                 ['text' => '第一级 · 直达页面', 'icon' => 'ti ti-file', 'url' => $url],
@@ -189,7 +191,7 @@ final class DemoMenu
                                 ['text' => '五级条目 A', 'url' => $url, 'icon' => 'ti ti-point'],
                                 ['text' => '五级条目 B', 'url' => $url, 'icon' => 'ti ti-point'],
                                 ['text' => '五级条目 C', 'url' => $url, 'icon' => 'ti ti-point',
-                                 'badge' => ['text' => 'NEW', 'class' => 'bg-success']],
+                                    'badge' => ['text' => 'NEW', 'class' => 'bg-success']],
                             ]],
                         ]],
                     ]],

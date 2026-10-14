@@ -40,9 +40,10 @@ class MaskedInput extends Component
      */
     protected function defaults(): array
     {
+        // 复用 fieldDefaults 补齐通用键（mb-3 外层包装 / required / feedback 等）；
+        // 注意 + 运算符左侧优先：组件自身取值必须写在左边，fieldDefaults 只兜底
         return [
             'name' => '',
-            'label' => null,
             'mask' => null,
             'alias' => null,
             'value' => '',
@@ -50,7 +51,7 @@ class MaskedInput extends Component
             'help' => null,
             'state' => null,     // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
             'col' => null,
-        ];
+        ] + $this->fieldDefaults();
     }
 
     /**
@@ -73,8 +74,10 @@ class MaskedInput extends Component
         if ($this->get('placeholder')) {
             $attrs['placeholder'] = $this->get('placeholder');
         }
-        $id = $this->get('id') ?? $this->uid('xf-mask');
+        // id 解析与其它字段组件一致：配置 > attr() > 自动生成
+        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-mask');
         $attrs['id'] = $id;
+        // 合并自定义属性（id 已被上面消费并写入 attrs，此处剔除避免重复覆盖）
         $custom = $this->attributes;
         unset($custom['id']);
         foreach ($custom as $k => $v) {

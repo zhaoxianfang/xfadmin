@@ -26,8 +26,8 @@ class VectorMap extends Component
     protected function defaults(): array
     {
         return [
-            'map'     => 'world',
-            'height'  => 360,
+            'map' => 'world',
+            'height' => 360,
             'markers' => [],
             'options' => [],
         ];
@@ -50,17 +50,18 @@ class VectorMap extends Component
      */
     protected function html(): string
     {
-        $id     = $this->resolveId('xf-map');
+        $id = $this->resolveId('xf-map');
         $config = array_replace_recursive([
-            'map'     => $this->get('map'),
+            'map' => $this->get('map'),
             'markers' => $this->get('markers'),
         ], (array) $this->get('options', []));
 
-        return '<div' . $this->attrs([
-            'id'             => $id,
-            'style'          => 'height:' . (int) $this->get('height') . 'px;',
-            'data-xf'        => 'vectormap',
-            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '></div>';
+        return '<div'.$this->attrs([
+            'id' => $id,
+            // height 显式传 null 时回退 400，避免渲染出 height:0px
+            'style' => 'height:'.(int) ($this->get('height') ?? 400).'px;',
+            'data-xf' => 'vectormap',
+            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
+        ]).'></div>';
     }
 }

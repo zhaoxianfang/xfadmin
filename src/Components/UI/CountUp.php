@@ -27,9 +27,9 @@ class CountUp extends Component
     protected function defaults(): array
     {
         return [
-            'value'    => 0,
-            'prefix'   => '',
-            'suffix'   => '',
+            'value' => 0,
+            'prefix' => '',
+            'suffix' => '',
             'decimals' => 0,
             'duration' => 1500,
         ];
@@ -43,17 +43,17 @@ class CountUp extends Component
     protected function html(): string
     {
         $cfg = [
-            'value'    => (float) $this->get('value'),
-            'prefix'   => (string) $this->get('prefix'),
-            'suffix'   => (string) $this->get('suffix'),
+            'value' => (float) $this->get('value'),
+            'prefix' => (string) $this->get('prefix'),
+            'suffix' => (string) $this->get('suffix'),
             'decimals' => (int) $this->get('decimals'),
             'duration' => (int) $this->get('duration'),
         ];
 
-        return '<span' . $this->attrs(['class' => 'xf-countup'])
-            . ' data-xf="countup" data-xf-config="' . $this->e(json_encode(
+        return '<span'.$this->attrs(['class' => 'xf-countup'])
+            .' data-xf="countup" data-xf-config="'.$this->e(json_encode(
                 $cfg,
                 JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
-            )) . '">' . $this->e($cfg['prefix'] . '0' . $cfg['suffix']) . '</span>';
+            )).'">'.$this->e($cfg['prefix'].'0'.$cfg['suffix']).'</span>';
     }
 }

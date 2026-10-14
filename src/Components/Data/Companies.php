@@ -39,7 +39,7 @@ class Companies extends Component
     protected function defaults(): array
     {
         return [
-            'cols'      => 3,
+            'cols' => 3,
             'companies' => [],
         ];
     }
@@ -51,14 +51,15 @@ class Companies extends Component
         if (empty($items)) {
             return '';
         }
-        $cols   = max(1, min(4, (int) $this->get('cols', 3)));
-        $colCls = 'col-xl-' . intdiv(12, $cols) . ' col-md-6';
+        $cols = max(1, min(4, (int) $this->get('cols', 3)));
+        $colCls = 'col-xl-'.intdiv(12, $cols).' col-md-6';
 
-        $html = '<div' . $this->attrs(['class' => 'row xf-companies']) . '>';
+        $html = '<div'.$this->attrs(['class' => 'row xf-companies']).'>';
         foreach ($items as $c) {
-            $html .= '<div class="' . $colCls . '">' . $this->companyCard((array) $c) . '</div>';
+            $html .= '<div class="'.$colCls.'">'.$this->companyCard((array) $c).'</div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 
     /** 单张公司卡片 */
@@ -69,8 +70,8 @@ class Companies extends Component
         // 左侧 Logo
         if (! empty($c['logo'])) {
             $html .= '<div class="avatar avatar-xl flex-shrink-0 me-3">'
-                . '<img src="' . $this->e($this->img($c['logo'])) . '" alt="" class="img-fluid rounded">'
-                . '</div>';
+                .'<img src="'.$this->e($this->img($c['logo'])).'" alt="" class="img-fluid rounded">'
+                .'</div>';
         }
         $html .= '<div class="flex-grow-1">';
 
@@ -78,13 +79,13 @@ class Companies extends Component
         $followed = ! empty($c['followed']);
         $html .= '<div class="d-flex justify-content-between align-items-start">';
         $html .= '<div><h4 class="mb-1 fw-bold">'
-            . '<a href="' . $this->e($c['url'] ?? '#') . '" class="link-reset">' . $this->e($c['name'] ?? '') . '</a></h4>';
+            .'<a href="'.$this->e($c['url'] ?? '#').'" class="link-reset">'.$this->e($c['name'] ?? '').'</a></h4>';
         if (! empty($c['website'])) {
-            $html .= '<a href="#" class="text-muted text-decoration-none">' . $this->e($c['website']) . '</a>';
+            $html .= '<a href="#" class="text-muted text-decoration-none">'.$this->e($c['website']).'</a>';
         }
         $html .= '</div>';
-        $html .= '<a href="#" class="btn btn-sm rounded-pill ' . ($followed ? 'btn-danger' : 'btn-outline-danger') . '">'
-            . '<i class="ti ti-heart' . ($followed ? '-filled' : '') . ' me-1"></i>' . ($followed ? '已关注' : '关注') . '</a>';
+        $html .= '<a href="#" class="btn btn-sm rounded-pill '.($followed ? 'btn-danger' : 'btn-outline-danger').'">'
+            .'<i class="ti ti-heart'.($followed ? '-filled' : '').' me-1"></i>'.($followed ? '已关注' : '关注').'</a>';
         $html .= '</div>';
 
         // 位置 / 行业徽标
@@ -93,34 +94,34 @@ class Companies extends Component
             $html .= '<div class="mt-2 mb-3 d-flex flex-wrap gap-2">';
             foreach ($badges as $b) {
                 $color = $this->e($b['color'] ?? 'primary');
-                $html .= '<span class="badge bg-light text-' . $color . ' p-1 fs-xxs">'
-                    . (! empty($b['icon']) ? '<i class="' . $this->e($b['icon']) . ' me-1"></i>' : '')
-                    . $this->e($b['text'] ?? '') . '</span>';
+                $html .= '<span class="badge bg-light text-'.$color.' p-1 fs-xxs">'
+                    .(! empty($b['icon']) ? '<i class="'.$this->e($b['icon']).' me-1"></i>' : '')
+                    .$this->e($b['text'] ?? '').'</span>';
             }
             $html .= '</div>';
         }
         // 简介
         if (! empty($c['desc'])) {
-            $html .= '<p class="text-muted mb-3">' . $this->e($c['desc']) . '</p>';
+            $html .= '<p class="text-muted mb-3">'.$this->e($c['desc']).'</p>';
         }
         // 员工 / 营收 / 评分
         $html .= '<div class="d-flex justify-content-between flex-wrap mt-2 gap-3">';
         if (isset($c['employees'])) {
-            $html .= '<div><h6 class="text-muted">员工数</h6><span class="fw-semibold fs-lg">' . $this->e($c['employees']) . '</span></div>';
+            $html .= '<div><h6 class="text-muted">员工数</h6><span class="fw-semibold fs-lg">'.$this->e($c['employees']).'</span></div>';
         }
         if (isset($c['revenue'])) {
-            $html .= '<div><h6 class="text-muted">年营收</h6><span class="fw-semibold fs-lg">' . $this->e($c['revenue']) . '</span></div>';
+            $html .= '<div><h6 class="text-muted">年营收</h6><span class="fw-semibold fs-lg">'.$this->e($c['revenue']).'</span></div>';
         }
         if (isset($c['rating'])) {
             $rate = max(0, min(5, (int) $c['rating']));
             $html .= '<div class="text-warning align-self-center fs-lg">';
             for ($i = 1; $i <= 5; $i++) {
-                $html .= '<i class="ti ti-star' . ($i <= $rate ? '-filled' : '') . '"></i>';
+                $html .= '<i class="ti ti-star'.($i <= $rate ? '-filled' : '').'"></i>';
             }
             $html .= '</div>';
         }
         $html .= '</div>';
 
-        return $html . '</div></div>';
+        return $html.'</div></div>';
     }
 }

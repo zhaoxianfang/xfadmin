@@ -272,14 +272,14 @@ final class Assets
             return $path;
         }
         $rel = ltrim($path, '/');
-        // 归一化：当传入的 path 已包含资源基址（如组件对「已被 asset() 过」的 URL 再次 asset，
+        // 归一化：当传入的 path 以资源基址开头（如组件对「已被 asset() 过」的 URL 再次 asset，
         // 或 Demo 传入了完整 URL）时，截取基址之后的真实相对路径，避免 /zxf/xfadmin 被拼接两遍。
+        // 仅匹配「开头」，避免 images/zxf/xfadmin/logo.png 这类合法路径被误截断。
         $base = ltrim($this->baseUrl, '/');
         if ($base !== '') {
             $marker = $base.'/';
-            $pos = strrpos($rel, $marker);
-            if ($pos !== false) {
-                $rel = substr($rel, $pos + strlen($marker));
+            if (str_starts_with($rel, $marker)) {
+                $rel = substr($rel, strlen($marker));
             }
             // 去掉随二次 asset 误带入的版本号，统一在末尾追加
             if (str_contains($rel, '?')) {

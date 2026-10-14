@@ -30,10 +30,10 @@ class TreeView extends Component
     protected function defaults(): array
     {
         return [
-            'data'     => [],
+            'data' => [],
             'checkbox' => false,
-            'dnd'      => false,
-            'options'  => [],
+            'dnd' => false,
+            'options' => [],
         ];
     }
 
@@ -62,14 +62,14 @@ class TreeView extends Component
             $plugins[] = 'dnd';
         }
         $config = array_replace_recursive([
-            'core'    => ['data' => array_values((array) $this->get('data', [])), 'check_callback' => (bool) $this->get('dnd')],
+            'core' => ['data' => array_values((array) $this->get('data', [])), 'check_callback' => (bool) $this->get('dnd')],
             'plugins' => $plugins,
         ], (array) $this->get('options', []));
 
-        return '<div' . $this->attrs([
-            'id'             => $this->resolveId('xf-tree'),
-            'data-xf'        => 'jstree',
+        return '<div'.$this->attrs([
+            'id' => $this->resolveId('xf-tree'),
+            'data-xf' => 'jstree',
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '></div>';
+        ]).'></div>';
     }
 }

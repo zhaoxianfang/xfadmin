@@ -39,7 +39,10 @@ class Editor extends Component
      */
     protected function assets(): array
     {
-        return $this->get('driver') === 'summernote' ? ['summernote'] : ['quill'];
+        // driver 白名单兜底 quill：非法驱动名不会意外加载 summernote 资源
+        $driver = $this->enum($this->get('driver'), ['quill', 'summernote'], 'quill');
+
+        return $driver === 'summernote' ? ['summernote'] : ['quill'];
     }
 
     /**
@@ -50,7 +53,8 @@ class Editor extends Component
     protected function html(): string
     {
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');
-        $driver = $this->get('driver');
+        // driver 白名单兜底 quill：非法值统一按 quill 渲染，不产生未定义分支
+        $driver = $this->enum($this->get('driver'), ['quill', 'summernote'], 'quill');
 
         $config = array_replace_recursive([
             'driver' => $driver,

@@ -25,9 +25,9 @@ class PageTitle extends Component
     protected function defaults(): array
     {
         return [
-            'title'      => '',
+            'title' => '',
             'breadcrumb' => [],
-            'actions'    => null,
+            'actions' => null,
         ];
     }
 
@@ -38,8 +38,8 @@ class PageTitle extends Component
      */
     protected function html(): string
     {
-        $html  = '<div' . $this->attrs(['class' => 'page-title-head d-flex align-items-center']) . '>';
-        $html .= '<div class="flex-grow-1"><h4 class="fs-sm text-uppercase fw-bold m-0">' . $this->e($this->get('title')) . '</h4></div>';
+        $html = '<div'.$this->attrs(['class' => 'page-title-head d-flex align-items-center']).'>';
+        $html .= '<div class="flex-grow-1"><h4 class="fs-sm text-uppercase fw-bold m-0">'.$this->e($this->get('title')).'</h4></div>';
         $html .= '<div class="text-end">';
 
         if ($this->get('actions') !== null) {
@@ -50,12 +50,12 @@ class PageTitle extends Component
                 $html .= '<ol class="breadcrumb m-0 py-0">';
                 $last = array_key_last($items);
                 foreach ($items as $i => $item) {
-                    $item   = is_array($item) ? $item : ['text' => $item];
+                    $item = is_array($item) ? $item : ['text' => $item];
                     $active = ($item['active'] ?? false) || $i === $last;
                     if ($active || empty($item['url'])) {
-                        $html .= '<li class="breadcrumb-item' . ($active ? ' active' : '') . '">' . $this->e($item['text'] ?? '') . '</li>';
+                        $html .= '<li class="breadcrumb-item'.($active ? ' active' : '').'">'.$this->e($item['text'] ?? '').'</li>';
                     } else {
-                        $html .= '<li class="breadcrumb-item"><a href="' . $this->e($this->safeUrl($item['url'])) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
+                        $html .= '<li class="breadcrumb-item"><a href="'.$this->e($this->safeUrl($item['url'])).'">'.$this->e($item['text'] ?? '').'</a></li>';
                     }
                 }
                 $html .= '</ol>';

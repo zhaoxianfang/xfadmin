@@ -32,12 +32,12 @@ class Calendar extends Component
     protected function defaults(): array
     {
         return [
-            'events'        => [],
-            'editable'      => false,
-            'locale'        => 'zh-cn',
+            'events' => [],
+            'editable' => false,
+            'locale' => 'zh-cn',
             'externalEvents' => [],
-            'addText'       => '新建事件',
-            'options'       => [],
+            'addText' => '新建事件',
+            'options' => [],
         ];
     }
 
@@ -60,22 +60,22 @@ class Calendar extends Component
     {
         $editable = (bool) $this->get('editable');
         $external = (array) $this->get('externalEvents', []);
-        $addText  = $this->get('addText');
+        $addText = $this->get('addText');
 
         $config = array_replace_recursive([
-            'initialView'   => 'dayGridMonth',
-            'themeSystem'   => 'bootstrap',
-            'locale'        => $this->get('locale'),
-            'editable'      => $editable,
-            'droppable'     => $editable,
-            'selectable'    => true,
-            'nowIndicator'  => true,
-            'dayMaxEvents'  => true,
-            'buttonText'    => ['today' => '今天', 'month' => '月', 'week' => '周', 'day' => '日', 'list' => '列表', 'prev' => '上一页', 'next' => '下一页'],
+            'initialView' => 'dayGridMonth',
+            'themeSystem' => 'bootstrap',
+            'locale' => $this->get('locale'),
+            'editable' => $editable,
+            'droppable' => $editable,
+            'selectable' => true,
+            'nowIndicator' => true,
+            'dayMaxEvents' => true,
+            'buttonText' => ['today' => '今天', 'month' => '月', 'week' => '周', 'day' => '日', 'list' => '列表', 'prev' => '上一页', 'next' => '下一页'],
             'headerToolbar' => [
-                'left'   => 'prev,next today',
+                'left' => 'prev,next today',
                 'center' => 'title',
-                'right'  => 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+                'right' => 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
             ],
             'events' => array_values((array) $this->get('events', [])),
         ], (array) $this->get('options', []));
@@ -84,29 +84,29 @@ class Calendar extends Component
         if ($external) {
             $config['externalEvents'] = true;
         }
-        $calendarDiv = '<div' . $this->attrs([
-            'id'             => $this->resolveId('xf-calendar'),
-            'data-xf'        => 'calendar',
+        $calendarDiv = '<div'.$this->attrs([
+            'id' => $this->resolveId('xf-calendar'),
+            'data-xf' => 'calendar',
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '></div>';
+        ]).'></div>';
 
-        if (!$external) {
-            return '<div class="card"><div class="card-body">' . $calendarDiv . '</div></div>';
+        if (! $external) {
+            return '<div class="card"><div class="card-body">'.$calendarDiv.'</div></div>';
         }
         // 两栏：左 外部事件 + 右 日历
         $side = '<div class="col-xl-3 col-lg-4 border-end p-3">';
-        $side .= '<button class="btn btn-primary w-100 mb-3 btn-new-event"><i class="ti ti-plus me-1"></i>' . $this->e($addText) . '</button>';
+        $side .= '<button class="btn btn-primary w-100 mb-3 btn-new-event"><i class="ti ti-plus me-1"></i>'.$this->e($addText).'</button>';
         $side .= '<div id="external-events">';
         $side .= '<p class="text-muted small mb-2">拖动事件到日历</p>';
         foreach ($external as $ev) {
             $ev = is_array($ev) ? $ev : ['label' => (string) $ev, 'className' => 'bg-primary-subtle text-primary border-start border-3 border-primary'];
             $cls = $ev['className'] ?? 'bg-primary-subtle text-primary border-start border-3 border-primary';
-            $side .= '<div class="external-event fc-event ' . $this->e($cls) . ' fw-semibold mb-2 p-2 rounded" data-class="' . $this->e($cls) . '">' . $this->e($ev['label'] ?? '') . '</div>';
+            $side .= '<div class="external-event fc-event '.$this->e($cls).' fw-semibold mb-2 p-2 rounded" data-class="'.$this->e($cls).'">'.$this->e($ev['label'] ?? '').'</div>';
         }
         $side .= '</div></div>';
 
-        return '<div class="card" data-calendar-root><div class="row g-0"><' . $side
-            . '<div class="col-xl-9 col-lg-8"><div class="card-body p-3">' . $calendarDiv . '</div></div>'
-            . '</div></div>';
+        return '<div class="card" data-calendar-root><div class="row g-0"><'.$side
+            .'<div class="col-xl-9 col-lg-8"><div class="card-body p-3">'.$calendarDiv.'</div></div>'
+            .'</div></div>';
     }
 }

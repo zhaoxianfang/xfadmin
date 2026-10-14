@@ -71,7 +71,8 @@ class Tabs extends Component
         if ($items !== [] && ! array_filter($items, fn ($i) => ! empty($i['active']))) {
             $items[0]['active'] = true;
         }
-        $navClass = Html::cls('nav', 'nav-'.$this->e($this->get('style')), [
+        // style 白名单：tabs | pills | underline，非法值回退默认 tabs，防止任意 class 注入
+        $navClass = Html::cls('nav', 'nav-'.$this->enum($this->get('style'), ['tabs', 'pills', 'underline'], 'tabs'), [
             'nav-justified' => $this->get('justified'),
             'flex-column' => $this->get('vertical'),
         ]);
@@ -115,7 +116,8 @@ class Tabs extends Component
         $form = $this->get('form');
         if (is_array($form)) {
             $body = '<form'.Html::attrs(array_filter([
-                'action' => $form['action'] ?? '',
+                // action 走 safeUrl 白名单，拦截 javascript: 等伪协议
+                'action' => $this->safeUrl($form['action'] ?? ''),
                 'method' => strtoupper($form['method'] ?? 'POST') === 'GET' ? 'GET' : 'POST',
                 'id' => $form['id'] ?? null,
                 'data-xf' => ! empty($form['ajax']) ? 'form' : null,

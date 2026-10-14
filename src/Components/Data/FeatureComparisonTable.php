@@ -31,9 +31,9 @@ class FeatureComparisonTable extends Component
     protected function defaults(): array
     {
         return [
-            'plans'    => [],
+            'plans' => [],
             'featured' => null,
-            'rows'     => [],
+            'rows' => [],
         ];
     }
 
@@ -44,28 +44,28 @@ class FeatureComparisonTable extends Component
      */
     protected function html(): string
     {
-        $plans    = (array) $this->get('plans', []);
+        $plans = (array) $this->get('plans', []);
         $featured = $this->get('featured');
-        $rows     = (array) $this->get('rows', []);
+        $rows = (array) $this->get('rows', []);
 
         $html = '<div class="table-responsive"><table class="table table-bordered align-middle text-center">';
         $html .= '<thead><tr><th class="text-start">功能</th>';
         foreach ($plans as $i => $p) {
             $cls = ($i === $featured) ? ' table-primary' : '';
-            $html .= '<th class="' . $cls . '">' . $this->e($p) . '</th>';
+            $html .= '<th class="'.$cls.'">'.$this->e($p).'</th>';
         }
         $html .= '</tr></thead><tbody>';
 
         foreach ($rows as $r) {
             $r = (array) $r;
-            $html .= '<tr><td class="text-start fw-medium">' . $this->e($r['name'] ?? '') . '</td>';
+            $html .= '<tr><td class="text-start fw-medium">'.$this->e($r['name'] ?? '').'</td>';
             foreach ((array) ($r['values'] ?? []) as $v) {
                 if (is_bool($v)) {
                     $html .= $v
                         ? '<td><i class="ti ti-check text-success fs-5"></i></td>'
                         : '<td><i class="ti ti-x text-danger"></i></td>';
                 } else {
-                    $html .= '<td>' . $this->e($v) . '</td>';
+                    $html .= '<td>'.$this->e($v).'</td>';
                 }
             }
             $html .= '</tr>';

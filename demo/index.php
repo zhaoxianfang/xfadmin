@@ -6,35 +6,35 @@ declare(strict_types=1);
 // 无需执行发布命令即可在浏览器中正常加载 CSS/JS（修复全部 404）。
 $__xfAssetPrefix = '/zxf/xfadmin';
 $__xfUri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH));
-if (str_starts_with($__xfUri, $__xfAssetPrefix . '/')) {
-    $__xfRel  = ltrim(substr($__xfUri, strlen($__xfAssetPrefix) + 1), '/');
-    $__xfFile = __DIR__ . '/../resources/assets/' . $__xfRel;
+if (str_starts_with($__xfUri, $__xfAssetPrefix.'/')) {
+    $__xfRel = ltrim(substr($__xfUri, strlen($__xfAssetPrefix) + 1), '/');
+    $__xfFile = __DIR__.'/../resources/assets/'.$__xfRel;
     // 扩展名白名单（未知扩展一律 404）+ realpath 包含性校验（防越界读取）
     $__xfMime = match (strtolower(pathinfo($__xfFile, PATHINFO_EXTENSION))) {
-        'css'  => 'text/css; charset=utf-8',
+        'css' => 'text/css; charset=utf-8',
         'js', 'mjs' => 'text/javascript; charset=utf-8',
-        'svg'  => 'image/svg+xml',
-        'png'  => 'image/png',
+        'svg' => 'image/svg+xml',
+        'png' => 'image/png',
         'jpg', 'jpeg' => 'image/jpeg',
-        'gif'  => 'image/gif',
-        'ico'  => 'image/x-icon',
+        'gif' => 'image/gif',
+        'ico' => 'image/x-icon',
         'webp' => 'image/webp',
         'woff' => 'font/woff',
         'woff2' => 'font/woff2',
-        'ttf'  => 'font/ttf',
+        'ttf' => 'font/ttf',
         'json', 'map' => 'application/json',
-        'pdf'  => 'application/pdf',
+        'pdf' => 'application/pdf',
         default => null,
     };
-    $__xfBase = realpath(__DIR__ . '/../resources/assets');
+    $__xfBase = realpath(__DIR__.'/../resources/assets');
     $__xfReal = realpath($__xfFile);
     if ($__xfMime !== null
         && ! str_contains($__xfRel, '..')
         && $__xfBase !== false && $__xfReal !== false
-        && str_starts_with($__xfReal, $__xfBase . DIRECTORY_SEPARATOR)
+        && str_starts_with($__xfReal, $__xfBase.DIRECTORY_SEPARATOR)
         && is_file($__xfReal)
     ) {
-        header('Content-Type: ' . $__xfMime);
+        header('Content-Type: '.$__xfMime);
         header('Cache-Control: public, max-age=3600');
         readfile($__xfReal);
         exit;
@@ -44,25 +44,25 @@ if (str_starts_with($__xfUri, $__xfAssetPrefix . '/')) {
 }
 
 // 无需 composer install 也可运行的演示自动加载
-if (is_file(__DIR__ . '/../vendor/autoload.php')) {
-    require __DIR__ . '/../vendor/autoload.php';
+if (is_file(__DIR__.'/../vendor/autoload.php')) {
+    require __DIR__.'/../vendor/autoload.php';
 } else {
     spl_autoload_register(function (string $class): void {
         if (str_starts_with($class, 'zxf\XfAdmin\\')) {
-            $path = __DIR__ . '/../src/' . str_replace('\\', '/', substr($class, 12)) . '.php';
+            $path = __DIR__.'/../src/'.str_replace('\\', '/', substr($class, 12)).'.php';
             if (is_file($path)) {
                 require $path;
             }
         }
     });
-    require __DIR__ . '/../src/helpers.php';
+    require __DIR__.'/../src/helpers.php';
 }
 
 use zxf\XfAdmin\XfAdmin;
 
-XfAdmin::config(array_replace(require __DIR__ . '/../config/xfadmin.php', [
+XfAdmin::config(array_replace(require __DIR__.'/../config/xfadmin.php', [
     'assets_url' => $__xfAssetPrefix,
-    'version'    => '1.0.0',
+    'version' => '2.2.15',
 ]));
 
 $menu = [
@@ -94,7 +94,7 @@ $route = $route === '' ? 'home' : $route;
 // DIY 可视化布局器：实时渲染端点（POST {mode,alias,options,tree}）
 if ($route === 'diy/render') {
     $payload = json_decode((string) file_get_contents('php://input'), true) ?: [];
-    $result  = XfAdmin::diyRender($payload);
+    $result = XfAdmin::diyRender($payload);
     if (is_array($result)) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($result, JSON_UNESCAPED_UNICODE);
@@ -113,17 +113,17 @@ $user = ['name' => '张三', 'role' => '超级管理员', 'items' => [
 ]];
 
 match ($route) {
-    'home'    => require __DIR__ . '/pages/home.php',
-    'apps'    => require __DIR__ . '/pages/apps.php',
-    'landing' => require __DIR__ . '/pages/landing.php',
-    'topnav'  => require __DIR__ . '/pages/topnav.php',
-    'widgets' => require __DIR__ . '/pages/widgets.php',
-    'tables'  => require __DIR__ . '/pages/tables.php',
-    'forms'   => require __DIR__ . '/pages/forms.php',
-    'charts'  => require __DIR__ . '/pages/charts.php',
-    'login'   => require __DIR__ . '/pages/login.php',
-    'auth'    => require __DIR__ . '/pages/auth.php',
-    '404'     => require __DIR__ . '/pages/error404.php',
-    'diy'     => require __DIR__ . '/pages/diy.php',
-    default   => require __DIR__ . '/pages/error404.php',
+    'home' => require __DIR__.'/pages/home.php',
+    'apps' => require __DIR__.'/pages/apps.php',
+    'landing' => require __DIR__.'/pages/landing.php',
+    'topnav' => require __DIR__.'/pages/topnav.php',
+    'widgets' => require __DIR__.'/pages/widgets.php',
+    'tables' => require __DIR__.'/pages/tables.php',
+    'forms' => require __DIR__.'/pages/forms.php',
+    'charts' => require __DIR__.'/pages/charts.php',
+    'login' => require __DIR__.'/pages/login.php',
+    'auth' => require __DIR__.'/pages/auth.php',
+    '404' => require __DIR__.'/pages/error404.php',
+    'diy' => require __DIR__.'/pages/diy.php',
+    default => require __DIR__.'/pages/error404.php',
 };

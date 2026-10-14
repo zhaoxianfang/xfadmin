@@ -5,22 +5,22 @@ declare(strict_types=1);
 /**
  * 冒烟测试：无框架环境下渲染全部组件（php tests/smoke.php）
  */
-
 spl_autoload_register(function (string $class): void {
     if (str_starts_with($class, 'zxf\XfAdmin\\')) {
-        $path = __DIR__ . '/../src/' . str_replace('\\', '/', substr($class, 12)) . '.php';
+        $path = __DIR__.'/../src/'.str_replace('\\', '/', substr($class, 12)).'.php';
         if (is_file($path)) {
             require $path;
         }
     }
 });
-require __DIR__ . '/../src/helpers.php';
+require __DIR__.'/../src/helpers.php';
 
 use zxf\XfAdmin\Assets\Assets;
+use zxf\XfAdmin\Support\DataSet;
 use zxf\XfAdmin\Support\Html;
 use zxf\XfAdmin\XfAdmin;
 
-XfAdmin::config(require __DIR__ . '/../config/xfadmin.php');
+XfAdmin::config(require __DIR__.'/../config/xfadmin.php');
 
 $failures = [];
 $check = function (string $name, callable $fn) use (&$failures): void {
@@ -29,7 +29,7 @@ $check = function (string $name, callable $fn) use (&$failures): void {
         if (trim($html) === '') {
             $failures[] = "$name: 输出为空";
         } else {
-            echo "  ✔ {$name} (" . strlen($html) . " bytes)\n";
+            echo "  ✔ {$name} (".strlen($html)." bytes)\n";
         }
     } catch (Throwable $e) {
         $failures[] = "$name: {$e->getMessage()} @ {$e->getFile()}:{$e->getLine()}";
@@ -60,8 +60,8 @@ $check('row/col', fn () => XfAdmin::row(['gutter' => 3, 'cols' => [
 $check('card', fn () => XfAdmin::card(['title' => '卡片', 'tools' => ['collapse', 'refresh', 'close'], 'body' => '内容', 'footer' => 'foot']));
 $check('statCard', fn () => XfAdmin::statCard(['title' => '用户数', 'counter' => 1234, 'icon' => 'ti ti-users', 'trend' => ['text' => '+5%', 'direction' => 'up']]));
 $check('table', fn () => XfAdmin::table([
-    'columns' => ['name' => '姓名', 'op' => ['label' => '操作', 'format' => fn ($r) => '<a href="#' . $r['id'] . '">编辑</a>', 'raw' => true]],
-    'data'    => [['id' => 1, 'name' => '张<b>三</b>']],
+    'columns' => ['name' => '姓名', 'op' => ['label' => '操作', 'format' => fn ($r) => '<a href="#'.$r['id'].'">编辑</a>', 'raw' => true]],
+    'data' => [['id' => 1, 'name' => '张<b>三</b>']],
     'striped' => true, 'hover' => true,
 ]));
 $check('dataTable', fn () => XfAdmin::dataTable([
@@ -168,22 +168,22 @@ $check('comingSoon', fn () => XfAdmin::comingSoon(['heading' => '即将上线', 
 $check('maintenance', fn () => XfAdmin::maintenance(['heading' => '维护中', 'contact' => 'a@b.com']));
 $check('emptyState', fn () => XfAdmin::emptyState(['title' => '暂无数据', 'text' => '还没有记录', 'action' => '<a class="btn btn-primary">新建</a>']));
 $check('emailApp', fn () => XfAdmin::emailApp([
-    'folders'  => [['icon' => 'ti ti-inbox', 'text' => '收件箱', 'badge' => '3', 'active' => true]],
-    'labels'   => [['text' => '工作', 'color' => 'primary']],
+    'folders' => [['icon' => 'ti ti-inbox', 'text' => '收件箱', 'badge' => '3', 'active' => true]],
+    'labels' => [['text' => '工作', 'color' => 'primary']],
     'messages' => [['from' => '张伟', 'avatar' => 'users/user-1.jpg', 'subject' => '季度报表', 'preview' => '附件…', 'time' => '09:24', 'unread' => true]],
-    'message'  => ['subject' => '季度报表', 'from' => ['name' => '张伟', 'email' => 'a@b.com', 'avatar' => 'users/user-1.jpg', 'time' => '09:24'], 'body' => '<p>正文</p>', 'attachments' => [['name' => '报表.xlsx', 'size' => '1.2 MB']]],
+    'message' => ['subject' => '季度报表', 'from' => ['name' => '张伟', 'email' => 'a@b.com', 'avatar' => 'users/user-1.jpg', 'time' => '09:24'], 'body' => '<p>正文</p>', 'attachments' => [['name' => '报表.xlsx', 'size' => '1.2 MB']]],
 ]));
 $check('chatApp', fn () => XfAdmin::chatApp([
     'conversations' => [['name' => '李娜', 'avatar' => 'users/user-2.jpg', 'last' => '好的', 'time' => '10:02', 'unread' => 2, 'active' => true, 'online' => true]],
-    'peer'          => ['name' => '李娜', 'avatar' => 'users/user-2.jpg', 'online' => true, 'status' => '在线'],
-    'messages'      => [['from' => 'other', 'text' => '你好', 'time' => '09:58'], ['from' => 'me', 'text' => '在的', 'time' => '09:59', 'avatar' => 'users/user-1.jpg']],
+    'peer' => ['name' => '李娜', 'avatar' => 'users/user-2.jpg', 'online' => true, 'status' => '在线'],
+    'messages' => [['from' => 'other', 'text' => '你好', 'time' => '09:58'], ['from' => 'me', 'text' => '在的', 'time' => '09:59', 'avatar' => 'users/user-1.jpg']],
 ]));
 $check('profilePage', fn () => XfAdmin::profilePage([
     'avatar' => 'users/user-1.jpg', 'name' => '张伟', 'verified' => true, 'role' => '产品经理',
-    'meta'   => [['icon' => 'ti ti-map-pin', 'text' => '深圳']],
-    'stats'  => [['value' => '128', 'label' => '项目']],
+    'meta' => [['icon' => 'ti ti-map-pin', 'text' => '深圳']],
+    'stats' => [['value' => '128', 'label' => '项目']],
     'actions' => [['text' => '关注', 'class' => 'btn-primary', 'icon' => 'ti ti-user-plus']],
-    'tabs'   => [['title' => '动态', 'content' => '<p>a</p>', 'active' => true], ['title' => '设置', 'content' => '<p>b</p>']],
+    'tabs' => [['title' => '动态', 'content' => '<p>a</p>', 'active' => true], ['title' => '设置', 'content' => '<p>b</p>']],
 ]));
 $check('companies', fn () => XfAdmin::companies([
     'companies' => [[
@@ -227,8 +227,8 @@ $check('projectActivity', fn () => XfAdmin::projectActivity([
 ]));
 $check('invoiceDetail', fn () => XfAdmin::invoiceDetail([
     'title' => 'XF Admin', 'number' => 'INV-2026-0728', 'status' => ['text' => '待付款', 'color' => 'warning'],
-    'meta'  => [['label' => '开票日期', 'value' => '2026-07-28']],
-    'from'  => ['name' => '甲公司', 'lines' => ['地址1']], 'to' => ['name' => '乙公司', 'lines' => ['地址2']],
+    'meta' => [['label' => '开票日期', 'value' => '2026-07-28']],
+    'from' => ['name' => '甲公司', 'lines' => ['地址1']], 'to' => ['name' => '乙公司', 'lines' => ['地址2']],
     'items' => [['name' => '企业版授权', 'desc' => '1 年', 'qty' => 2, 'price' => 4999]],
     'summary' => [['label' => '小计', 'value' => '¥9,998.00'], ['label' => '合计', 'value' => '¥11,097.78', 'strong' => true]],
     'notes' => '15 日内付款', 'actions' => [['text' => '打印', 'icon' => 'ti ti-printer', 'onclick' => 'window.print()']],
@@ -237,7 +237,7 @@ $check('invoiceDetail', fn () => XfAdmin::invoiceDetail([
 echo "\n== 嵌套互不干扰 ==\n";
 $nested = (string) XfAdmin::card([
     'title' => '嵌套',
-    'body'  => XfAdmin::row(['cols' => [
+    'body' => XfAdmin::row(['cols' => [
         ['width' => ['md' => 6], 'content' => XfAdmin::tabs(['items' => [
             ['title' => '表单', 'content' => XfAdmin::form(['fields' => [XfAdmin::tags(['name' => 't', 'value' => ['a']])]])],
             ['title' => '看板', 'content' => XfAdmin::kanban(['columns' => [['id' => 'c1', 'title' => 'A', 'cards' => []]]])],
@@ -248,7 +248,7 @@ $nested = (string) XfAdmin::card([
 if (trim($nested) === '') {
     $failures[] = '嵌套渲染: 输出为空';
 } else {
-    echo "  ✔ 嵌套 card>row>tabs(form/kanban)+accordion>faq (" . strlen($nested) . " bytes)\n";
+    echo '  ✔ 嵌套 card>row>tabs(form/kanban)+accordion>faq ('.strlen($nested)." bytes)\n";
 }
 
 echo "\n== 资源去重 ==\n";
@@ -260,9 +260,9 @@ XfAdmin::dataTable(['columns' => ['a' => 'A'], 'data' => []])->render();
 XfAdmin::dataTable(['columns' => ['a' => 'A'], 'data' => [], 'buttons' => ['pdf']])->render();
 XfAdmin::select(['options' => [], 'enhance' => 'select2'])->render();   // 依赖 jquery
 XfAdmin::treeView(['data' => []])->render();                            // 依赖 jquery
-$js  = Assets::instance()->jsFiles();
+$js = Assets::instance()->jsFiles();
 $css = Assets::instance()->cssFiles();
-$dupJs  = array_diff_assoc($js, array_unique($js));
+$dupJs = array_diff_assoc($js, array_unique($js));
 $assert = function (bool $cond, string $msg) use (&$failures): void {
     if ($cond) {
         echo "  ✔ {$msg}\n";
@@ -274,16 +274,16 @@ $assert($dupJs === [], 'JS 无重复');
 $assert(count(array_filter($js, fn ($f) => str_contains($f, 'jquery'))) === 1, 'jquery 仅加载一次');
 $assert(count(array_filter($js, fn ($f) => str_contains($f, 'dataTables.min.js'))) === 1, 'datatables 仅加载一次（渲染3个表格）');
 $assert(in_array('plugins/datatables/pdfmake.min.js', $js, true), 'pdf 按钮附加 pdfmake');
-$head    = Assets::instance()->head();
+$head = Assets::instance()->head();
 $scripts = Assets::instance()->scripts();
 $assert(substr_count($head, 'vendors.min.css') === 1, 'head 含 vendors.min.css 一次');
 $assert(substr_count($scripts, 'xfadmin.js') === 1, 'scripts 含 xfadmin.js 一次');
-$assert(str_contains($head, '?v=' . XfAdmin::VERSION), '版本号附加');
+$assert(str_contains($head, '?v='.XfAdmin::VERSION), '版本号附加');
 
 // 兜底：head() 先于组件渲染时，渲染期注册的插件 CSS 不应丢失（修复样式丢失）
 Assets::reset();
 XfAdmin::config(['assets_url' => '/zxf/xfadmin', 'version' => XfAdmin::VERSION]);
-$headLate    = Assets::instance()->head(); // 此时尚无任何插件 CSS
+$headLate = Assets::instance()->head(); // 此时尚无任何插件 CSS
 XfAdmin::dataTable(['columns' => [['key' => 'a', 'title' => 'A']], 'data' => []])->render();
 $scriptsLate = Assets::instance()->scripts();
 $assert(str_contains($scriptsLate, 'datatables'), 'head() 之后渲染的 dataTable 插件 CSS 经 scripts() 兜底输出（修复样式丢失）');
@@ -293,11 +293,11 @@ echo "\n== 整页渲染 ==\n";
 Assets::reset();
 XfAdmin::config(['assets_url' => '/zxf/xfadmin']);
 $check('page(vertical)', fn () => XfAdmin::page([
-    'title'      => '仪表盘',
-    'menu'       => $menu,
-    'topbar'     => ['user' => ['name' => '张三']],
+    'title' => '仪表盘',
+    'menu' => $menu,
+    'topbar' => ['user' => ['name' => '张三']],
     'page_title' => ['title' => '仪表盘', 'breadcrumb' => [['text' => '首页']]],
-    'content'    => [
+    'content' => [
         XfAdmin::row(['cols' => [XfAdmin::statCard(['title' => 'X', 'value' => '1'])]]),
         XfAdmin::card(['title' => '图表', 'body' => XfAdmin::apexChart(['series' => [['data' => [1, 2]]]])]),
     ],
@@ -349,11 +349,11 @@ echo "\n== DataTables 服务端处理（DataSet） ==\n";
 $rows = [];
 for ($i = 1; $i <= 53; $i++) {
     $rows[] = [
-        'id'         => $i,
-        'name'       => '用户' . $i,
-        'email'      => 'u' . $i . '@x.com',
-        'status'     => $i % 2 ? 'on' : 'off',
-        'created_at' => '2026-07-' . str_pad((string) (($i % 28) + 1), 2, '0', STR_PAD_LEFT),
+        'id' => $i,
+        'name' => '用户'.$i,
+        'email' => 'u'.$i.'@x.com',
+        'status' => $i % 2 ? 'on' : 'off',
+        'created_at' => '2026-07-'.str_pad((string) (($i % 28) + 1), 2, '0', STR_PAD_LEFT),
     ];
 }
 $searchCols = [
@@ -362,23 +362,23 @@ $searchCols = [
     ['data' => 'email', 'searchable' => 'true'],
     ['data' => 'status', 'searchable' => 'false'],
 ];
-$ds = \zxf\XfAdmin\Support\DataSet::response($rows, [
-    'draw'    => 2,
-    'start'   => 0,
-    'length'  => 10,
-    'search'  => ['value' => '用户1'],
+$ds = DataSet::response($rows, [
+    'draw' => 2,
+    'start' => 0,
+    'length' => 10,
+    'search' => ['value' => '用户1'],
     'columns' => $searchCols,
-    'order'   => [['column' => 1, 'dir' => 'asc']],
+    'order' => [['column' => 1, 'dir' => 'asc']],
 ], ['searchable' => ['name', 'email'], 'filters' => ['status']]);
 $assert($ds['draw'] === 2, 'DataSet draw 透传');
 $assert($ds['recordsTotal'] === 53, 'DataSet recordsTotal = 全量');
 $assert($ds['recordsFiltered'] === 11 && count($ds['data']) === 10, 'DataSet 全局搜索「用户1」=> 11 条 / 分页 10 条');
 $assert($ds['data'][0]['name'] === '用户1', 'DataSet 按 name 升序首行');
 
-$dsOn = \zxf\XfAdmin\Support\DataSet::response($rows, ['length' => 10, 'search' => ['value' => ''], 'status' => 'on'], ['filters' => ['status']]);
+$dsOn = DataSet::response($rows, ['length' => 10, 'search' => ['value' => ''], 'status' => 'on'], ['filters' => ['status']]);
 $assert($dsOn['recordsFiltered'] === 27, 'DataSet 自定义过滤 status=on => 27 条');
 
-$dsNull = \zxf\XfAdmin\Support\DataSet::response($rows, ['length' => 10, 'search' => ['value' => null], 'columns' => []], []);
+$dsNull = DataSet::response($rows, ['length' => 10, 'search' => ['value' => null], 'columns' => []], []);
 $assert($dsNull['recordsFiltered'] === 53, 'DataSet 兼容 search[value]=null（ConvertEmptyStringsToNull 场景不崩）');
 
 $dr = XfAdmin::dataResponse($rows, ['length' => 5], []);
@@ -398,9 +398,9 @@ $assert(str_contains($tabsHtml, 'xf-tabs-footer') && str_contains($tabsHtml, '�
 $assert(str_contains($tabsHtml, 'badge'), 'Tabs item badge 渲染');
 
 $tabsForm = XfAdmin::tabs([
-    'items'  => [['title' => 'A', 'content' => 'a'], ['title' => 'B', 'content' => 'b']],
+    'items' => [['title' => 'A', 'content' => 'a'], ['title' => 'B', 'content' => 'b']],
     'footer' => '<button class="btn">提交</button>',
-    'form'   => ['action' => '/save', 'method' => 'POST', 'ajax' => true],
+    'form' => ['action' => '/save', 'method' => 'POST', 'ajax' => true],
 ]);
 $tf = (string) $tabsForm;
 $assert(str_contains($tf, '<form') && str_contains($tf, 'data-xf="form"') && str_contains($tf, '/save'), 'Tabs form 包裹（多标签一次提交）');
@@ -423,18 +423,18 @@ $assert(str_contains($menuHtml, 'rounded-pill'), 'Menu badge rounded-pill 外观
 echo "\n== DataTable filter_bar + 富单元格 ==\n";
 $dt = XfAdmin::dataTable([
     'columns' => [
-        'id'     => 'ID',
-        'name'   => ['label' => '姓名', 'render' => 'input', 'xfCellInput' => ['url' => '/cell']],
-        'ip'     => ['label' => 'IP', 'render' => 'ip'],
+        'id' => 'ID',
+        'name' => ['label' => '姓名', 'render' => 'input', 'xfCellInput' => ['url' => '/cell']],
+        'ip' => ['label' => 'IP', 'render' => 'ip'],
         'status' => ['label' => '状态', 'render' => 'switch', 'xfSwitch' => ['url' => '/switch']],
-        'tags'   => ['label' => '标签', 'render' => 'tags'],
-        'color'  => ['label' => '颜色', 'render' => 'color'],
-        'op'     => ['label' => '操作', 'actions' => [
+        'tags' => ['label' => '标签', 'render' => 'tags'],
+        'color' => ['label' => '颜色', 'render' => 'color'],
+        'op' => ['label' => '操作', 'actions' => [
             ['text' => '查看', 'icon' => 'ti ti-eye', 'act' => 'view'],
             ['text' => '删除', 'icon' => 'ti ti-trash', 'act' => 'ajax', 'url' => '/del', 'confirm' => '确定删除？'],
         ]],
     ],
-    'data'       => [],
+    'data' => [],
     'filter_bar' => [
         ['name' => 'status', 'label' => '状态', 'options' => ['on' => '启用', 'off' => '停用']],
         ['name' => 'keyword', 'label' => '关键词', 'type' => 'text'],
@@ -447,31 +447,31 @@ $assert(str_contains($dtHtml, 'data-xf="datatable"'), 'DataTable 标记 data-xf=
 
 // 11.5) DataSet：紧凑协议（xfc/xfo/xfs）+ op 运算符过滤
 echo "\n== DataSet 紧凑协议 + op 过滤 ==\n";
-$dsc = \zxf\XfAdmin\Support\DataSet::response($rows, [
+$dsc = DataSet::response($rows, [
     'draw' => 3, 'start' => 0, 'length' => 10,
-    'xfc'  => 'id:0:1|name:1:1|email:1:1|status:0:1',
-    'xfo'  => '1:d',
-    'xfs'  => '用户1',
+    'xfc' => 'id:0:1|name:1:1|email:1:1|status:0:1',
+    'xfo' => '1:d',
+    'xfs' => '用户1',
 ], ['searchable' => ['name', 'email']]);
 $assert($dsc['recordsFiltered'] === 11, 'DataSet xfc/xfs 紧凑协议还原（搜索 11 条）');
 $assert($dsc['data'][0]['name'] === '用户19', 'DataSet xfo 紧凑排序还原（name 降序）');
 
-$dsOp = \zxf\XfAdmin\Support\DataSet::response($rows, [
+$dsOp = DataSet::response($rows, [
     'length' => 100, 'score_min' => '50',
 ], ['filters' => ['score_min' => ['field' => 'id', 'op' => '>=']]]);
 $assert($dsOp['recordsFiltered'] === 4, 'DataSet op >= 过滤（id>=50 => 4 条）');
 
-$dsIn = \zxf\XfAdmin\Support\DataSet::response($rows, [
+$dsIn = DataSet::response($rows, [
     'length' => 100, 'st' => 'on,off',
 ], ['filters' => ['st' => ['field' => 'status', 'op' => 'in']]]);
 $assert($dsIn['recordsFiltered'] === 53, 'DataSet op in 过滤（多值逗号分隔）');
 
-$dsBt = \zxf\XfAdmin\Support\DataSet::response($rows, [
+$dsBt = DataSet::response($rows, [
     'length' => 100, 'idr' => '10,20',
 ], ['filters' => ['idr' => ['field' => 'id', 'op' => 'between']]]);
 $assert($dsBt['recordsFiltered'] === 11, 'DataSet op between 过滤（10~20 => 11 条）');
 
-$dsDt = \zxf\XfAdmin\Support\DataSet::response($rows, [
+$dsDt = DataSet::response($rows, [
     'length' => 100, 'to' => '2026-07-05',
 ], ['filters' => ['to' => ['field' => 'created_at', 'op' => 'date_to']]]);
 $assert($dsDt['recordsFiltered'] > 0 && $dsDt['recordsFiltered'] < 53, 'DataSet op date_to 过滤（纯日期自动补 23:59:59）');
@@ -488,10 +488,10 @@ $dtExt = (string) XfAdmin::dataTable([
             ]],
         ]],
     ],
-    'ajax'        => '/api/data/u',
+    'ajax' => '/api/data/u',
     'server_side' => true,
-    'method'      => 'POST',
-    'filter_bar'  => [
+    'method' => 'POST',
+    'filter_bar' => [
         ['name' => 'score', 'label' => '积分', 'type' => 'range', 'min' => 0],
         ['name' => 'reg', 'label' => '注册', 'type' => 'daterange'],
         ['name' => 'vips', 'label' => 'VIP', 'options' => ['1' => 'V1'], 'multiple' => true],
@@ -508,11 +508,11 @@ $assert(str_contains($dtExtRaw, '"type":"POST"'), 'method=POST => ajax 转对象
 $assert(str_contains($dtExtRaw, '"action":"edit"') && str_contains($dtExtRaw, 'nickname'), '行编辑 action=edit 配置带 fields 输出');
 
 // 11.7) JS 回归：confirm 唯一定义 / 紧凑参数 / formDialog / editRow
-$xfJs = (string) file_get_contents(__DIR__ . '/../resources/assets/js/xfadmin.js');
+$xfJs = (string) file_get_contents(__DIR__.'/../resources/assets/js/xfadmin.js');
 $assert(substr_count($xfJs, 'XFAdmin.confirm = function') === 1, 'xfadmin.js confirm 仅一处定义（修复覆盖导致确认回调失效）');
 $assert(str_contains($xfJs, 'd.xfc') && str_contains($xfJs, 'd.xfo'), 'xfadmin.js serverSide 参数压缩（规避超长 URL 403）');
 $assert(str_contains($xfJs, 'XFAdmin.formDialog') && str_contains($xfJs, 'XFAdmin.editRow'), 'xfadmin.js 表单弹窗 + 行编辑 API');
-$appJs = (string) file_get_contents(__DIR__ . '/../resources/assets/js/app.js');
+$appJs = (string) file_get_contents(__DIR__.'/../resources/assets/js/app.js');
 $assert(str_contains($appJs, 'if(!document.querySelector(this.translationKeySelector))return;'), 'app.js i18n 无 data-lang 时跳过（根治 en.json 404）');
 $assert(str_contains($appJs, 'sessionStorage.setItem("__INSPINIA_LANG__"'), 'app.js 语言切换持久化与读取存储一致');
 
@@ -521,7 +521,7 @@ echo "\n== StatCard 响应式列宽 ==\n";
 $sc = (string) XfAdmin::statCard(['title' => '总数', 'value' => '99', 'width' => ['sm' => 6, 'xl' => 3]]);
 $assert(str_contains($sc, 'col-sm-6') && str_contains($sc, 'col-xl-3') && str_contains($sc, 'h-100'), 'StatCard 响应式列宽包裹 + h-100');
 $scNo = (string) XfAdmin::statCard(['title' => '总数', 'value' => '99']);
-$assert(!str_contains($scNo, 'col-') && str_contains($scNo, 'card'), 'StatCard 无 width 时不包裹列');
+$assert(! str_contains($scNo, 'col-') && str_contains($scNo, 'card'), 'StatCard 无 width 时不包裹列');
 echo "ok\n";
 
 Assets::reset();

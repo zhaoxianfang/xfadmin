@@ -29,8 +29,8 @@ class Testimonial extends Component
     protected function defaults(): array
     {
         return [
-            'items'    => [],
-            'cols'     => 3,
+            'items' => [],
+            'cols' => 3,
             'carousel' => false,
         ];
     }
@@ -38,8 +38,7 @@ class Testimonial extends Component
     /**
      * card（protected实例方法）
      *
-     * @param array $t t
-     *
+     * @param  array  $t  t
      * @return string result
      */
     protected function card(array $t): string
@@ -50,22 +49,22 @@ class Testimonial extends Component
         if ($rating > 0) {
             $html .= '<div class="mb-2 text-warning">';
             for ($i = 1; $i <= 5; $i++) {
-                $html .= '<i class="ti ti-star' . ($i <= $rating ? '-filled' : '') . '"></i>';
+                $html .= '<i class="ti ti-star'.($i <= $rating ? '-filled' : '').'"></i>';
             }
             $html .= '</div>';
         }
-        $html .= '<p class="mb-3 fst-italic">“' . $this->e($t['text'] ?? '') . '”</p>';
+        $html .= '<p class="mb-3 fst-italic">“'.$this->e($t['text'] ?? '').'”</p>';
         $html .= '<div class="d-flex align-items-center gap-2">';
         $avatar = $t['avatar'] ?? '';
         if ($avatar) {
-            $html .= '<span class="avatar avatar-sm flex-shrink-0"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $avatar)) . '" class="img-fluid rounded-circle" alt=""></span>';
+            $html .= '<span class="avatar avatar-sm flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $avatar)).'" class="img-fluid rounded-circle" alt=""></span>';
         } else {
             $ini = mb_substr((string) ($t['name'] ?? '?'), 0, 1);
-            $html .= '<span class="avatar-sm"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">' . $this->e($ini) . '</span></span>';
+            $html .= '<span class="avatar-sm"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->e($ini).'</span></span>';
         }
-        $html .= '<div><h6 class="mb-0 fw-semibold">' . $this->e($t['name'] ?? '') . '</h6>';
+        $html .= '<div><h6 class="mb-0 fw-semibold">'.$this->e($t['name'] ?? '').'</h6>';
         if (! empty($t['role'])) {
-            $html .= '<small class="text-muted">' . $this->e($t['role']) . '</small>';
+            $html .= '<small class="text-muted">'.$this->e($t['role']).'</small>';
         }
         $html .= '</div></div></div></div>';
 
@@ -85,24 +84,27 @@ class Testimonial extends Component
         }
         if ($this->get('carousel')) {
             $id = $this->uid('xf-tes');
-            $html = '<div id="' . $id . '" class="carousel slide" data-bs-ride="carousel"' . $this->attrs([]) . '>';
+            $html = '<div id="'.$id.'" class="carousel slide" data-bs-ride="carousel"'.$this->attrs([]).'>';
             $html .= '<div class="carousel-inner">';
             foreach ($items as $i => $t) {
-                $html .= '<div class="carousel-item' . ($i === 0 ? ' active' : '') . '"><div class="mx-auto" style="max-width:640px">' . $this->card($t) . '</div></div>';
+                // 标量容错：强转为数组，避免 card(array) 收到非数组致命错误
+                $html .= '<div class="carousel-item'.($i === 0 ? ' active' : '').'"><div class="mx-auto" style="max-width:640px">'.$this->card((array) $t).'</div></div>';
             }
             $html .= '</div>';
-            $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#' . $id . '" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>';
-            $html .= '<button class="carousel-control-next" type="button" data-bs-target="#' . $id . '" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>';
+            $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#'.$id.'" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>';
+            $html .= '<button class="carousel-control-next" type="button" data-bs-target="#'.$id.'" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>';
             $html .= '</div>';
 
             return $html;
         }
         $n = max(1, min(4, (int) $this->get('cols', 3)));
-        $colCls = $n === 1 ? 'col-12' : 'col-12 col-md-' . (int) (12 / $n);
-        $html = '<div' . $this->attrs(['class' => 'row g-3 xf-testimonial']) . '>';
+        $colCls = $n === 1 ? 'col-12' : 'col-12 col-md-'.(int) (12 / $n);
+        $html = '<div'.$this->attrs(['class' => 'row g-3 xf-testimonial']).'>';
         foreach ($items as $t) {
-            $html .= '<div class="' . $colCls . '">' . $this->card($t) . '</div>';
+            // 标量容错：强转为数组，避免 card(array) 收到非数组致命错误
+            $html .= '<div class="'.$colCls.'">'.$this->card((array) $t).'</div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

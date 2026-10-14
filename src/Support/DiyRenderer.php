@@ -5,6 +5,20 @@ declare(strict_types=1);
 namespace zxf\XfAdmin\Support;
 
 use zxf\XfAdmin\Assets\Assets;
+use zxf\XfAdmin\Components\Layout\AccountSettingsPanel;
+use zxf\XfAdmin\Components\Layout\AuthPage;
+use zxf\XfAdmin\Components\Layout\ComingSoon;
+use zxf\XfAdmin\Components\Layout\Customizer;
+use zxf\XfAdmin\Components\Layout\DiyLayoutPage;
+use zxf\XfAdmin\Components\Layout\ErrorPage;
+use zxf\XfAdmin\Components\Layout\Footer;
+use zxf\XfAdmin\Components\Layout\Landing;
+use zxf\XfAdmin\Components\Layout\LockScreen;
+use zxf\XfAdmin\Components\Layout\Maintenance;
+use zxf\XfAdmin\Components\Layout\Page;
+use zxf\XfAdmin\Components\Layout\Sidenav;
+use zxf\XfAdmin\Components\Layout\Topbar;
+use zxf\XfAdmin\Components\Layout\TopNav;
 use zxf\XfAdmin\XfAdmin;
 
 /**
@@ -31,113 +45,114 @@ final class DiyRenderer
 
     /** 分类命名空间 → 中文分类名 */
     private const CATEGORIES = [
-        'Layout'     => '布局',
+        'Layout' => '布局',
         'Navigation' => '导航',
-        'Grid'       => '栅格',
-        'UI'         => '基础 UI',
-        'Form'       => '表单',
-        'Chart'      => '图表',
-        'Table'      => '表格',
-        'Data'       => '业务数据',
-        'Misc'       => '杂项',
+        'Grid' => '栅格',
+        'UI' => '基础 UI',
+        'Form' => '表单',
+        'Chart' => '图表',
+        'Table' => '表格',
+        'Data' => '业务数据',
+        'Misc' => '杂项',
     ];
 
     /** 全局候选值（变体 / 尺寸） */
     private const VARIANT_OPTIONS = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'none'];
-    private const SIZE_OPTIONS    = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+
+    private const SIZE_OPTIONS = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 
     /** 组件别名 → 中文展示名（未列出的回退到别名自动分词） */
     private const LABELS = [
-        'page'        => '整页骨架',
-        'sidenav'     => '侧边导航',
-        'topbar'      => '顶部导航',
-        'topNav'      => '水平导航',
-        'pageTitle'   => '页面标题',
-        'footer'      => '页脚',
-        'customizer'  => '主题定制面板',
-        'authPage'    => '认证页',
-        'errorPage'   => '错误页',
-        'comingSoon'  => '即将上线',
+        'page' => '整页骨架',
+        'sidenav' => '侧边导航',
+        'topbar' => '顶部导航',
+        'topNav' => '水平导航',
+        'pageTitle' => '页面标题',
+        'footer' => '页脚',
+        'customizer' => '主题定制面板',
+        'authPage' => '认证页',
+        'errorPage' => '错误页',
+        'comingSoon' => '即将上线',
         'maintenance' => '维护页',
-        'emptyState'  => '空状态页',
-        'landing'     => '落地页',
-        'menu'        => '菜单数据',
-        'row'         => '栅格行',
-        'col'         => '栅格列',
-        'card'        => '卡片',
-        'statCard'    => '指标卡',
-        'table'       => '静态表格',
-        'dataTable'   => '数据表格',
-        'form'        => '表单',
-        'input'       => '输入框',
-        'textarea'    => '多行文本',
-        'select'      => '下拉框',
-        'check'       => '复选/单选',
-        'slider'      => '滑块',
-        'dateRange'   => '日期范围',
-        'datePicker'  => '日期选择',
-        'editor'      => '富文本',
-        'upload'      => '文件上传',
+        'emptyState' => '空状态页',
+        'landing' => '落地页',
+        'menu' => '菜单数据',
+        'row' => '栅格行',
+        'col' => '栅格列',
+        'card' => '卡片',
+        'statCard' => '指标卡',
+        'table' => '静态表格',
+        'dataTable' => '数据表格',
+        'form' => '表单',
+        'input' => '输入框',
+        'textarea' => '多行文本',
+        'select' => '下拉框',
+        'check' => '复选/单选',
+        'slider' => '滑块',
+        'dateRange' => '日期范围',
+        'datePicker' => '日期选择',
+        'editor' => '富文本',
+        'upload' => '文件上传',
         'colorPicker' => '颜色选择',
-        'tags'        => '标签输入',
-        'wizard'      => '向导',
-        'alert'       => '警告提示',
-        'badge'       => '徽章',
-        'button'      => '按钮',
-        'dropdown'    => '下拉菜单',
-        'modal'       => '模态框',
-        'offcanvas'   => '抽屉面板',
-        'tabs'        => '选项卡',
-        'accordion'   => '手风琴',
-        'progress'    => '进度条',
-        'spinner'     => '加载指示器',
-        'pagination'  => '分页器',
-        'listGroup'   => '列表组',
-        'avatar'      => '头像',
-        'icon'        => '图标',
-        'toast'       => '轻提示',
-        'timeline'    => '时间线',
-        'carousel'    => '轮播图',
-        'breadcrumb'  => '面包屑',
-        'tooltip'     => '文字提示',
-        'popover'     => '弹出框',
-        'ribbon'      => '缎带角标',
-        'chip'        => '筹码标签',
-        'stepper'     => '步骤条',
-        'rating'      => '评分',
-        'switch'      => '开关',
-        'codeBlock'   => '代码块',
-        'empty'       => '空状态',
-        'toolbar'     => '工具栏',
-        'searchBox'   => '搜索框',
-        'countdown'   => '倒计时',
-        'countUp'     => '数字滚动',
-        'backToTop'   => '回到顶部',
-        'callout'     => '强调提示',
-        'divider'     => '分割线',
-        'kbd'         => '键盘按键',
-        'media'       => '媒体对象',
-        'skeleton'    => '骨架屏',
-        'typography'  => '排版展示',
-        'utilities'   => '工具类',
-        'iconSet'     => '图标集',
-        'colorPalette'=> '配色方案',
-        'videoEmbed'  => '视频嵌入',
-        'apexChart'   => 'Apex 图表',
-        'echart'      => 'ECharts 图表',
-        'leafletMap'  => 'Leaflet 地图',
-        'vectorMap'   => '矢量地图',
-        'googleMap'   => 'Google 地图',
+        'tags' => '标签输入',
+        'wizard' => '向导',
+        'alert' => '警告提示',
+        'badge' => '徽章',
+        'button' => '按钮',
+        'dropdown' => '下拉菜单',
+        'modal' => '模态框',
+        'offcanvas' => '抽屉面板',
+        'tabs' => '选项卡',
+        'accordion' => '手风琴',
+        'progress' => '进度条',
+        'spinner' => '加载指示器',
+        'pagination' => '分页器',
+        'listGroup' => '列表组',
+        'avatar' => '头像',
+        'icon' => '图标',
+        'toast' => '轻提示',
+        'timeline' => '时间线',
+        'carousel' => '轮播图',
+        'breadcrumb' => '面包屑',
+        'tooltip' => '文字提示',
+        'popover' => '弹出框',
+        'ribbon' => '缎带角标',
+        'chip' => '筹码标签',
+        'stepper' => '步骤条',
+        'rating' => '评分',
+        'switch' => '开关',
+        'codeBlock' => '代码块',
+        'empty' => '空状态',
+        'toolbar' => '工具栏',
+        'searchBox' => '搜索框',
+        'countdown' => '倒计时',
+        'countUp' => '数字滚动',
+        'backToTop' => '回到顶部',
+        'callout' => '强调提示',
+        'divider' => '分割线',
+        'kbd' => '键盘按键',
+        'media' => '媒体对象',
+        'skeleton' => '骨架屏',
+        'typography' => '排版展示',
+        'utilities' => '工具类',
+        'iconSet' => '图标集',
+        'colorPalette' => '配色方案',
+        'videoEmbed' => '视频嵌入',
+        'apexChart' => 'Apex 图表',
+        'echart' => 'ECharts 图表',
+        'leafletMap' => 'Leaflet 地图',
+        'vectorMap' => '矢量地图',
+        'googleMap' => 'Google 地图',
         'pricingCard' => '价格方案卡',
-        'faq'         => '常见问题',
-        'profileHeader'=> '个人资料头',
+        'faq' => '常见问题',
+        'profileHeader' => '个人资料头',
         'productCard' => '商品卡',
-        'kanban'      => '看板',
-        'chatBox'     => '聊天框',
-        'widget'      => '小部件卡',
-        'gallery'     => '图片画廊',
-        'blogList'    => '博客列表',
-        'commentThread'=> '评论线程',
+        'kanban' => '看板',
+        'chatBox' => '聊天框',
+        'widget' => '小部件卡',
+        'gallery' => '图片画廊',
+        'blogList' => '博客列表',
+        'commentThread' => '评论线程',
         'statMiniSparkline' => '迷你指标',
     ];
 
@@ -151,7 +166,7 @@ final class DiyRenderer
     private static function buildSchema(string $alias, array $defaults): array
     {
         $curated = self::curatedFields()[$alias] ?? [];
-        $schema  = [];
+        $schema = [];
         foreach ($curated as $f) {
             if (is_array($f) && isset($f['name'])) {
                 $schema[$f['name']] = $f;
@@ -175,7 +190,7 @@ final class DiyRenderer
      */
     private static function inferField(string $key, mixed $value): array
     {
-        $k     = strtolower($key);
+        $k = strtolower($key);
         $label = self::humanLabel($key);
 
         if (is_bool($value)) {
@@ -261,7 +276,7 @@ final class DiyRenderer
             return $map[$key];
         }
         $words = preg_split('/[_\-]+/', $key);
-        $words = array_map(static fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)) . mb_substr($w, 1), $words);
+        $words = array_map(static fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)).mb_substr($w, 1), $words);
 
         return implode(' ', $words);
     }
@@ -272,28 +287,28 @@ final class DiyRenderer
     private static function jsonHint(string $k): string
     {
         $examples = [
-            'items'     => "JSON 数组，每项例：{\"title\":\"标题\",\"text\":\"描述\"}",
-            'rows'      => "JSON 二维数组，例：[[\"列1\",\"列2\"],[\"值1\",\"值2\"]]",
-            'columns'   => "JSON 数组，每项例：{\"title\":\"列名\",\"items\":[{\"text\":\"任务\"}]}",
-            'series'    => "JSON 数组，例：[{\"name\":\"访问量\",\"data\":[120,200,150]}]",
-            'data'      => "JSON 数组，例：[10,20,30,40]",
-            'tabs'      => "JSON 数组，每项例：{\"title\":\"标签\",\"content\":\"内容\"}",
-            'features'  => "JSON 数组，例：[\"功能一\",\"功能二\"]",
-            'comments'  => "JSON 数组，每项例：{\"author\":\"张三\",\"text\":\"评论\"}",
-            'messages'  => "JSON 数组，每项例：{\"from\":\"user\",\"text\":\"消息\"}",
-            'posts'     => "JSON 数组，每项例：{\"title\":\"标题\",\"excerpt\":\"摘要\"}",
-            'plans'     => "JSON 数组，每项例：{\"title\":\"方案\",\"price\":\"¥99\"}",
-            'steps'     => "JSON 数组，每项例：{\"title\":\"步骤\",\"text\":\"说明\"}",
-            'options'   => "JSON 数组，每项例：{\"text\":\"选项\",\"value\":\"v\"}",
-            'cards'     => "JSON 数组，每项例：{\"title\":\"卡片\",\"body\":\"内容\"}",
-            'menu'      => "JSON 数组，每项例：{\"text\":\"菜单\",\"href\":\"#\"}",
-            'navigation'=> "JSON 数组，每项例：{\"text\":\"导航\",\"href\":\"#\"}",
-            'nodes'     => "JSON 数组 / 树结构",
-            'points'    => "JSON 数组，例：[[116.4,39.9]]",
-            'trend'     => "JSON 对象，例：{\"value\":\"+12%\",\"direction\":\"up\"}",
-            'button'    => "JSON 对象，例：{\"text\":\"按钮\",\"variant\":\"primary\"}",
-            'ribbon'    => "JSON 对象，例：{\"text\":\"推荐\",\"variant\":\"danger\"}",
-            'badge'     => "JSON 对象，例：{\"text\":\"新\",\"variant\":\"primary\"}",
+            'items' => 'JSON 数组，每项例：{"title":"标题","text":"描述"}',
+            'rows' => 'JSON 二维数组，例：[["列1","列2"],["值1","值2"]]',
+            'columns' => 'JSON 数组，每项例：{"title":"列名","items":[{"text":"任务"}]}',
+            'series' => 'JSON 数组，例：[{"name":"访问量","data":[120,200,150]}]',
+            'data' => 'JSON 数组，例：[10,20,30,40]',
+            'tabs' => 'JSON 数组，每项例：{"title":"标签","content":"内容"}',
+            'features' => 'JSON 数组，例：["功能一","功能二"]',
+            'comments' => 'JSON 数组，每项例：{"author":"张三","text":"评论"}',
+            'messages' => 'JSON 数组，每项例：{"from":"user","text":"消息"}',
+            'posts' => 'JSON 数组，每项例：{"title":"标题","excerpt":"摘要"}',
+            'plans' => 'JSON 数组，每项例：{"title":"方案","price":"¥99"}',
+            'steps' => 'JSON 数组，每项例：{"title":"步骤","text":"说明"}',
+            'options' => 'JSON 数组，每项例：{"text":"选项","value":"v"}',
+            'cards' => 'JSON 数组，每项例：{"title":"卡片","body":"内容"}',
+            'menu' => 'JSON 数组，每项例：{"text":"菜单","href":"#"}',
+            'navigation' => 'JSON 数组，每项例：{"text":"导航","href":"#"}',
+            'nodes' => 'JSON 数组 / 树结构',
+            'points' => 'JSON 数组，例：[[116.4,39.9]]',
+            'trend' => 'JSON 对象，例：{"value":"+12%","direction":"up"}',
+            'button' => 'JSON 对象，例：{"text":"按钮","variant":"primary"}',
+            'ribbon' => 'JSON 对象，例：{"text":"推荐","variant":"danger"}',
+            'badge' => 'JSON 对象，例：{"text":"新","variant":"primary"}',
         ];
         foreach ($examples as $key => $hint) {
             if ($k === $key || str_ends_with($k, $key)) {
@@ -313,7 +328,7 @@ final class DiyRenderer
     private static function curatedFields(): array
     {
         $variants = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'none'];
-        $sizes    = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+        $sizes = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 
         return [
             'pageTitle' => [
@@ -708,6 +723,7 @@ final class DiyRenderer
     private static function diyDefaults(): array
     {
         $img = static fn (string $p): string => XfAdmin::img($p);
+
         return [
             'pageTitle' => ['title' => '页面标题', 'subtitle' => '副标题说明文字'],
             'alert' => ['variant' => 'info', 'text' => '这是一条提示信息，可在右侧编辑内容与样式。', 'icon' => 'ti ti-info-circle'],
@@ -890,6 +906,7 @@ final class DiyRenderer
             'banner' => 'ti ti-flag', 'hero' => 'ti ti-layout', 'cta' => 'ti ti-speakerphone', 'nav' => 'ti ti-menu',
             'footer' => 'ti ti-layout',
         ];
+
         return $map[$alias] ?? 'ti ti-box';
     }
 
@@ -902,25 +919,25 @@ final class DiyRenderer
 
         foreach ($list as $alias => $class) {
             // 编辑器自身不进入组件面板（唯一需排除的组件）
-            if ($class === \zxf\XfAdmin\Components\Layout\DiyLayoutPage::class || $alias === 'diy' || $alias === 'diyLayoutPage') {
+            if ($class === DiyLayoutPage::class || $alias === 'diy' || $alias === 'diyLayoutPage') {
                 continue;
             }
             // 整页 / 导航类布局组件（渲染完整 HTML 文档或页面级 chrome，而非可嵌入的内容片段）
             // 拖入舞台会输出 <head>/<script> 或嵌套破损结构，故不进入组件面板。
             static $diyExcludeClasses = [
-                \zxf\XfAdmin\Components\Layout\Page::class,
-                \zxf\XfAdmin\Components\Layout\Sidenav::class,
-                \zxf\XfAdmin\Components\Layout\Topbar::class,
-                \zxf\XfAdmin\Components\Layout\TopNav::class,
-                \zxf\XfAdmin\Components\Layout\Footer::class,
-                \zxf\XfAdmin\Components\Layout\Customizer::class,
-                \zxf\XfAdmin\Components\Layout\AuthPage::class,
-                \zxf\XfAdmin\Components\Layout\ErrorPage::class,
-                \zxf\XfAdmin\Components\Layout\ComingSoon::class,
-                \zxf\XfAdmin\Components\Layout\Maintenance::class,
-                \zxf\XfAdmin\Components\Layout\Landing::class,
-                \zxf\XfAdmin\Components\Layout\LockScreen::class,
-                \zxf\XfAdmin\Components\Layout\AccountSettingsPanel::class,
+                Page::class,
+                Sidenav::class,
+                Topbar::class,
+                TopNav::class,
+                Footer::class,
+                Customizer::class,
+                AuthPage::class,
+                ErrorPage::class,
+                ComingSoon::class,
+                Maintenance::class,
+                Landing::class,
+                LockScreen::class,
+                AccountSettingsPanel::class,
             ];
             if (in_array($class, $diyExcludeClasses, true)) {
                 continue;
@@ -936,14 +953,14 @@ final class DiyRenderer
             $schemaSrc = $dd ?? $defaults;
             $schema = self::buildSchema($alias, $schemaSrc);
             $components[] = [
-                'alias'      => $alias,
-                'label'      => self::LABELS[$alias] ?? self::labelOf($alias),
-                'category'   => $catKey,
-                'icon'       => self::iconFor($alias),
-                'desc'       => $cat['label'],
-                'defaults'   => $defaults,
+                'alias' => $alias,
+                'label' => self::LABELS[$alias] ?? self::labelOf($alias),
+                'category' => $catKey,
+                'icon' => self::iconFor($alias),
+                'desc' => $cat['label'],
+                'defaults' => $defaults,
                 'diy_defaults' => $dd,
-                'schema'     => $schema,
+                'schema' => $schema,
                 'param_count' => count($schema),
             ];
         }
@@ -1010,9 +1027,9 @@ final class DiyRenderer
                 'tree' => [
                     ['kind' => 'component', 'alias' => 'card', 'options' => [
                         'class' => 'text-center py-5',
-                        'body'  => '<h1 class="display-5 fw-bold mb-3">欢迎使用 DIY 布局器</h1>'
-                            . '<p class="lead text-muted">从左侧拖入任意组件，右侧编辑属性，像搭积木一样构建页面。</p>'
-                            . '<a class="btn btn-primary btn-lg" href="#">立即开始</a>',
+                        'body' => '<h1 class="display-5 fw-bold mb-3">欢迎使用 DIY 布局器</h1>'
+                            .'<p class="lead text-muted">从左侧拖入任意组件，右侧编辑属性，像搭积木一样构建页面。</p>'
+                            .'<a class="btn btn-primary btn-lg" href="#">立即开始</a>',
                     ]],
                 ],
             ],
@@ -1022,7 +1039,7 @@ final class DiyRenderer
                 'tree' => [
                     ['kind' => 'row', 'options' => ['gutters' => 'g-4 align-items-center'], 'children' => [
                         ['kind' => 'col', 'options' => ['width' => ['md' => 5]], 'children' => [
-                            ['kind' => 'component', 'alias' => 'card', 'options' => ['body' => '<img src="' . XfAdmin::img('gallery/1.jpg') . '" class="img-fluid rounded" alt="示例">']],
+                            ['kind' => 'component', 'alias' => 'card', 'options' => ['body' => '<img src="'.XfAdmin::img('gallery/1.jpg').'" class="img-fluid rounded" alt="示例">']],
                         ]],
                         ['kind' => 'col', 'options' => ['width' => ['md' => 7]], 'children' => [
                             ['kind' => 'component', 'alias' => 'card', 'options' => ['title' => '图文标题', 'body' => '在右侧属性区修改图片地址与文案。']],
@@ -1114,10 +1131,10 @@ final class DiyRenderer
                 'icon' => 'ti ti-id',
                 'tree' => [
                     ['kind' => 'component', 'alias' => 'card', 'options' => ['body' => (string) XfAdmin::component('media', [
-                        'img'   => XfAdmin::img('users/user-1.jpg'),
+                        'img' => XfAdmin::img('users/user-1.jpg'),
                         'title' => '张明 · 产品总监',
-                        'text'  => '负责平台整体规划与体验设计，关注数据驱动的增长。',
-                        'meta'  => '📧 ming@example.com · 📱 138-0000-0000',
+                        'text' => '负责平台整体规划与体验设计，关注数据驱动的增长。',
+                        'meta' => '📧 ming@example.com · 📱 138-0000-0000',
                     ])]],
                     ['kind' => 'row', 'options' => ['gutters' => 'g-4'], 'children' => [
                         ['kind' => 'col', 'options' => ['width' => ['md' => 6]], 'children' => [
@@ -1185,9 +1202,9 @@ final class DiyRenderer
                 'tree' => [
                     ['kind' => 'component', 'alias' => 'card', 'options' => [
                         'class' => 'text-center py-5',
-                        'body'  => '<h1 class="display-5 fw-bold mb-3">用积木方式构建后台页面</h1>'
-                            . '<p class="lead text-muted">200+ 组件、实时预览、一键导出，让页面搭建前所未有的高效。</p>'
-                            . '<a class="btn btn-primary btn-lg me-2" href="#">免费试用</a><a class="btn btn-outline-secondary btn-lg" href="#">查看文档</a>',
+                        'body' => '<h1 class="display-5 fw-bold mb-3">用积木方式构建后台页面</h1>'
+                            .'<p class="lead text-muted">200+ 组件、实时预览、一键导出，让页面搭建前所未有的高效。</p>'
+                            .'<a class="btn btn-primary btn-lg me-2" href="#">免费试用</a><a class="btn btn-outline-secondary btn-lg" href="#">查看文档</a>',
                     ]],
                     ['kind' => 'row', 'options' => ['gutters' => 'g-3'], 'children' => [
                         ['kind' => 'col', 'options' => ['width' => ['md' => 4]], 'children' => [
@@ -1209,27 +1226,27 @@ final class DiyRenderer
      * 渲染入口（供 demo/router.php 与 wsf DemoController 调用）
      *
      * @param  array  $payload  {mode, alias, options, tree}
-     * @return mixed  block → array{html,css,js}；page/export → string
+     * @return mixed block → array{html,css,js}；page/export → string
      */
     public static function render(array $payload): mixed
     {
         $mode = (string) ($payload['mode'] ?? 'block');
 
         if ($mode === 'block') {
-            $alias   = (string) ($payload['alias'] ?? '');
+            $alias = (string) ($payload['alias'] ?? '');
             $options = (array) ($payload['options'] ?? []);
-            $html    = self::renderComponent($alias, $options);
+            $html = self::renderComponent($alias, $options);
 
             $assets = Assets::instance();
-            $mk     = static fn (array $files): array => array_map(
+            $mk = static fn (array $files): array => array_map(
                 static fn (string $f) => XfAdmin::asset($f),
                 $files
             );
 
             return [
                 'html' => $html,
-                'css'  => $mk($assets->cssFiles()),
-                'js'   => $mk($assets->jsFiles()),
+                'css' => $mk($assets->cssFiles()),
+                'js' => $mk($assets->jsFiles()),
             ];
         }
 
@@ -1237,14 +1254,15 @@ final class DiyRenderer
 
         if ($mode === 'export') {
             $inner = self::renderTree($tree, 0);
+
             return (string) XfAdmin::page([
-                'title'      => 'DIY 导出页面',
-                'sidenav'    => false,
-                'topbar'     => false,
-                'footer'     => false,
+                'title' => 'DIY 导出页面',
+                'sidenav' => false,
+                'topbar' => false,
+                'footer' => false,
                 'customizer' => false,
-                'container'  => 'container-fluid',
-                'content'    => $inner,
+                'container' => 'container-fluid',
+                'content' => $inner,
             ]);
         }
 
@@ -1280,19 +1298,19 @@ final class DiyRenderer
         $kind = (string) ($block['kind'] ?? 'component');
 
         if ($kind === 'row') {
-            $opt   = (array) ($block['options'] ?? []);
-            $cls   = 'row ' . ($opt['gutters'] ?? 'g-3');
+            $opt = (array) ($block['options'] ?? []);
+            $cls = 'row '.($opt['gutters'] ?? 'g-3');
             $inner = self::renderTree((array) ($block['children'] ?? []), $depth + 1);
 
-            return '<div class="' . Html::e(trim($cls)) . '">' . $inner . '</div>';
+            return '<div class="'.Html::e(trim($cls)).'">'.$inner.'</div>';
         }
 
         if ($kind === 'col') {
-            $opt   = (array) ($block['options'] ?? []);
-            $cls   = self::colClass($opt['width'] ?? null);
+            $opt = (array) ($block['options'] ?? []);
+            $cls = self::colClass($opt['width'] ?? null);
             $inner = self::renderTree((array) ($block['children'] ?? []), $depth + 1);
 
-            return '<div class="' . Html::e($cls) . '">' . $inner . '</div>';
+            return '<div class="'.Html::e($cls).'">'.$inner.'</div>';
         }
 
         return self::renderComponent((string) ($block['alias'] ?? ''), (array) ($block['options'] ?? []));
@@ -1304,7 +1322,7 @@ final class DiyRenderer
     private static function renderComponent(string $alias, array $options): string
     {
         if ($alias === '' || ! XfAdmin::has($alias)) {
-            return '<div class="alert alert-warning mb-0">未知组件：' . Html::e($alias) . '</div>';
+            return '<div class="alert alert-warning mb-0">未知组件：'.Html::e($alias).'</div>';
         }
 
         return (string) XfAdmin::component($alias, $options);
@@ -1329,7 +1347,7 @@ final class DiyRenderer
                 if ($n < 1 || $n > 12) {
                     continue;
                 }
-                $cls .= ' col-' . $bp . '-' . $n;
+                $cls .= ' col-'.$bp.'-'.$n;
             }
 
             return $cls;
@@ -1337,7 +1355,7 @@ final class DiyRenderer
         if (is_numeric($width)) {
             $n = (int) $width;
 
-            return ($n < 1 || $n > 12) ? 'col-12' : 'col-12 col-md-' . $n . ' col-xl-' . $n;
+            return ($n < 1 || $n > 12) ? 'col-12' : 'col-12 col-md-'.$n.' col-xl-'.$n;
         }
 
         return 'col-12';

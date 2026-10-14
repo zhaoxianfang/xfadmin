@@ -12,6 +12,9 @@ use zxf\XfAdmin\Components\Component;
  * 结构：.row + .col-xl-N.col-md-6.masonry-cell，由 xfadmin.js 的 masonry 模块基于 Masonry.js 初始化。
  * 若 Masonry.js 未加载，自动降级为 Bootstrap 网格（不破版）。
  *
+ * 注意：items 为可信 HTML 槽位（数组项字符串 / ['html' => ...] 均原样输出），
+ * 传入用户数据前务必自行转义，防止 XSS。
+ *
  * XfAdmin::masonry([
  *     'columns' => 3,
  *     'gap'     => 4,
@@ -51,8 +54,8 @@ class Masonry extends Component
     protected function html(): string
     {
         $items = (array) $this->get('items', []);
-        $cols  = max(1, min(4, (int) $this->get('columns', 3)));
-        $gap   = (int) $this->get('gap', 4);
+        $cols = max(1, min(4, (int) $this->get('columns', 3)));
+        $gap = (int) $this->get('gap', 4);
 
         if (empty($items)) {
             return '';
@@ -60,11 +63,12 @@ class Masonry extends Component
         // 列数 → Bootstrap xl 跨度（2→6, 3→4, 4→3）
         $xl = [1 => 12, 2 => 6, 3 => 4, 4 => 3][$cols] ?? 4;
 
-        $html = '<div class="row g-' . $gap . '" data-xf="masonry" data-masonry=\'{"percentPosition": true}\'>';
+        $html = '<div class="row g-'.$gap.'" data-xf="masonry" data-masonry=\'{"percentPosition": true}\'>';
         foreach ($items as $item) {
             $inner = is_array($item) ? (string) ($item['html'] ?? '') : (string) $item;
-            $html .= '<div class="col-xl-' . $xl . ' col-md-6 masonry-cell">' . $inner . '</div>';
+            $html .= '<div class="col-xl-'.$xl.' col-md-6 masonry-cell">'.$inner.'</div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

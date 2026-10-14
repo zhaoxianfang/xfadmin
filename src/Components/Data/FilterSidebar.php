@@ -44,7 +44,7 @@ class FilterSidebar extends Component
     protected function html(): string
     {
         $groups = (array) $this->get('groups', []);
-        $btn    = (array) $this->get('button', []);
+        $btn = (array) $this->get('button', []);
         $variant = $this->enum($btn['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
 
         $html = '<div class="xf-filter-sidebar card border-0 shadow-sm">';
@@ -54,26 +54,26 @@ class FilterSidebar extends Component
             $g = (array) $g;
             $type = $g['type'] ?? 'check';
             $html .= '<div class="mb-3">';
-            $html .= '<div class="fw-semibold mb-2">' . $this->e($g['title'] ?? '') . '</div>';
+            $html .= '<div class="fw-semibold mb-2">'.$this->e($g['title'] ?? '').'</div>';
 
             if ($type === 'check') {
                 foreach ((array) ($g['items'] ?? []) as $it) {
                     $it = (array) $it;
-                    $html .= '<div class="form-check"><input class="form-check-input" type="checkbox" name="f_' . $this->e($g['title'] ?? 'x') . '[]" value="' . $this->e($it['value'] ?? '') . '">'
-                        . '<label class="form-check-label">' . $this->e($it['label'] ?? '') . '</label></div>';
+                    $html .= '<div class="form-check"><input class="form-check-input" type="checkbox" name="f_'.$this->e($g['title'] ?? 'x').'[]" value="'.$this->e($it['value'] ?? '').'">'
+                        .'<label class="form-check-label">'.$this->e($it['label'] ?? '').'</label></div>';
                 }
             } elseif ($type === 'price') {
                 $min = (int) ($g['min'] ?? 0);
                 $max = (int) ($g['max'] ?? 9999);
-                $html .= '<div class="d-flex gap-2"><input type="number" class="form-control form-control-sm" placeholder="' . $min . '" name="price_min">'
-                    . '<span class="align-self-center text-muted">—</span>'
-                    . '<input type="number" class="form-control form-control-sm" placeholder="' . $max . '" name="price_max"></div>';
+                $html .= '<div class="d-flex gap-2"><input type="number" class="form-control form-control-sm" placeholder="'.$min.'" name="price_min">'
+                    .'<span class="align-self-center text-muted">—</span>'
+                    .'<input type="number" class="form-control form-control-sm" placeholder="'.$max.'" name="price_max"></div>';
             } elseif ($type === 'tree') {
                 $html .= $this->renderTree((array) ($g['items'] ?? []), 0);
             }
             $html .= '</div>';
         }
-        $html .= '<button class="btn btn-' . $variant . ' w-100">' . $this->e($btn['text'] ?? '应用筛选') . '</button>';
+        $html .= '<button class="btn btn-'.$variant.' w-100">'.$this->e($btn['text'] ?? '应用筛选').'</button>';
         $html .= '</div></div>';
 
         return $html;
@@ -82,9 +82,8 @@ class FilterSidebar extends Component
     /**
      * render Tree（private实例方法）
      *
-     * @param array $items items
-     * @param int $depth depth
-     *
+     * @param  array  $items  items
+     * @param  int  $depth  depth
      * @return string result
      */
     private function renderTree(array $items, int $depth): string
@@ -92,12 +91,12 @@ class FilterSidebar extends Component
         if (empty($items)) {
             return '';
         }
-        $html = '<ul class="list-unstyled mb-0" style="padding-left:' . ($depth ? 16 : 0) . 'px;">';
+        $html = '<ul class="list-unstyled mb-0" style="padding-left:'.($depth ? 16 : 0).'px;">';
         foreach ($items as $it) {
             $it = (array) $it;
             $html .= '<li class="mb-1"><div class="form-check">'
-                . '<input class="form-check-input" type="checkbox" name="cat[]" value="' . $this->e($it['value'] ?? '') . '">'
-                . '<label class="form-check-label">' . $this->e($it['label'] ?? '') . '</label></div>';
+                .'<input class="form-check-input" type="checkbox" name="cat[]" value="'.$this->e($it['value'] ?? '').'">'
+                .'<label class="form-check-label">'.$this->e($it['label'] ?? '').'</label></div>';
             if (! empty($it['children'])) {
                 $html .= $this->renderTree((array) $it['children'], $depth + 1);
             }

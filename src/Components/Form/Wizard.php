@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Components\Form;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 分步向导（form-wizard.html）—— 纯原生 JS 驱动
@@ -31,14 +32,16 @@ class Wizard extends Component
     protected function defaults(): array
     {
         return [
-            'steps'    => [],
-            'variant'  => 'primary',
+            'steps' => [],
+            'variant' => 'primary',
             'vertical' => false,
             'progress' => true,
-            'labels'   => ['prev' => '上一步', 'next' => '下一步', 'finish' => '提交'],
-            'action'   => '',          // 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit）
-            'method'   => 'post',      // 提交方法
-            'remote'   => false,       // 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管）
+            'labels' => ['prev' => '上一步', 'next' => '下一步', 'finish' => '提交'],
+            'action' => '',          // 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit）
+            'method' => 'post',      // 提交方法（GET/POST 原样输出，PUT/PATCH/DELETE 以 POST + _method 隐藏域伪装）
+            'remote' => false,       // 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管）
+            // true（默认）：自动注入 _token；false：不注入；[name=>value]：自定义隐藏域
+            'csrf' => true,
         ];
     }
 
@@ -49,8 +52,8 @@ class Wizard extends Component
      */
     protected function html(): string
     {
-        $id     = $this->resolveId('wizard');
-        $steps  = array_values((array) $this->get('steps', []));
+        $id = $this->resolveId('wizard');
+        $steps = array_values((array) $this->get('steps', []));
         $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
         $labels = (array) $this->get('labels');
         $vertical = (bool) $this->get('vertical');
@@ -58,42 +61,58 @@ class Wizard extends Component
         $remote = $this->get('remote');
 
         $wrapCls = Html::cls('xf-wizard', ['xf-wizard-vertical row' => $vertical]);
+        // 方法白名单：仅 GET/POST 原样输出；PUT/PATCH/DELETE 等以 POST + _method 隐藏域伪装
+        $method = strtoupper((string) $this->get('method', 'POST'));
+        $formMethod = in_array($method, ['GET', 'POST'], true) ? $method : 'POST';
         $open = '';
         // 配置了 action 时整体以 <form> 包裹，使最后一步「提交」能真正提交并被后端接收处理。
         if ($action) {
             $attrs = [
-                'action'  => $action,
-                'method'  => $this->e($this->get('method')),
-                'class'   => 'xf-wizard-form',
+                'action' => $this->safeUrl($action),
+                'method' => $formMethod,
+                'class' => 'xf-wizard-form',
             ];
             if ($remote) {
                 $attrs['data-xf-remote'] = '';
             }
-            $open = '<form' . $this->attrs($attrs) . '>';
+            $open = '<form'.$this->attrs($attrs).'>';
+            // CSRF 注入（与 Form 一致）：true 自动注入 _token；false 不注入；数组自定义隐藏域
+            $csrf = $this->get('csrf', true);
+            if ($csrf === true) {
+                $open .= '<input type="hidden" name="_token" value="'.$this->e(XfAdmin::csrfToken()).'">';
+            } elseif (is_array($csrf) && $csrf !== []) {
+                foreach ($csrf as $name => $value) {
+                    $open .= '<input type="hidden" name="'.$this->e($name).'" value="'.$this->e($value).'">';
+                }
+            }
+            // 非 GET/POST 方法追加 _method 隐藏域，保证后端 REST 方法伪装可识别
+            if (! in_array($method, ['GET', 'POST'], true)) {
+                $open .= '<input type="hidden" name="_method" value="'.$this->e($method).'">';
+            }
         }
-        $html = $open . '<div' . $this->attrs(['class' => $wrapCls, 'id' => $id]) . ' data-xf="wizard">';
+        $html = $open.'<div'.$this->attrs(['class' => $wrapCls, 'id' => $id]).' data-xf="wizard">';
 
         // 步骤导航
         $navCls = $vertical ? 'nav flex-column nav-pills col-md-3' : 'nav nav-pills nav-justified mb-3';
-        $html .= '<ul class="' . $navCls . ' xf-wizard-nav">';
+        $html .= '<ul class="'.$navCls.' xf-wizard-nav">';
         foreach ($steps as $i => $s) {
             // 标量（字符串）容错：非数组项按 title 处理，避免 PHP 8 下标访问致命错误
             if (! is_array($s)) {
                 $s = ['title' => (string) $s];
             }
             $active = $i === 0 ? ' active' : '';
-            $html .= '<li class="nav-item"><span class="nav-link' . $active . '" data-step="' . $i . '">';
+            $html .= '<li class="nav-item"><span class="nav-link'.$active.'" data-step="'.$i.'">';
             if (! empty($s['icon'])) {
-                $html .= '<i class="' . $this->e($s['icon']) . ' me-1"></i>';
+                $html .= '<i class="'.$this->e($s['icon']).' me-1"></i>';
             }
-            $html .= '<span class="badge rounded-pill bg-' . $variant . '-subtle text-' . $variant . ' me-1">' . ($i + 1) . '</span>';
-            $html .= $this->e($s['title'] ?? '') . '</span></li>';
+            $html .= '<span class="badge rounded-pill bg-'.$variant.'-subtle text-'.$variant.' me-1">'.($i + 1).'</span>';
+            $html .= $this->e($s['title'] ?? '').'</span></li>';
         }
         $html .= '</ul>';
 
         // 进度条
         if ($this->get('progress') && ! $vertical) {
-            $html .= '<div class="progress mb-3" style="height:4px;"><div class="progress-bar bg-' . $variant . ' xf-wizard-progress" style="width:' . (count($steps) ? round(100 / count($steps)) : 0) . '%"></div></div>';
+            $html .= '<div class="progress mb-3" style="height:4px;"><div class="progress-bar bg-'.$variant.' xf-wizard-progress" style="width:'.(count($steps) ? round(100 / count($steps)) : 0).'%"></div></div>';
         }
         // 内容面板
         $paneWrap = $vertical ? '<div class="col-md-9">' : '<div>';
@@ -103,15 +122,15 @@ class Wizard extends Component
                 $s = ['content' => (string) $s];
             }
             $show = $i === 0 ? '' : ' d-none';
-            $html .= '<div class="xf-wizard-pane' . $show . '" data-pane="' . $i . '">' . $this->raw($s['content'] ?? '') . '</div>';
+            $html .= '<div class="xf-wizard-pane'.$show.'" data-pane="'.$i.'">'.$this->raw($s['content'] ?? '').'</div>';
         }
         // 按钮
         $html .= '<div class="d-flex justify-content-between mt-3">';
-        $html .= '<button type="button" class="btn btn-light xf-wizard-prev" disabled>' . $this->e($labels['prev'] ?? '上一步') . '</button>';
-        $html .= '<button type="button" class="btn btn-' . $variant . ' xf-wizard-next" data-finish-label="' . $this->e($labels['finish'] ?? '提交') . '">' . $this->e($labels['next'] ?? '下一步') . '</button>';
+        $html .= '<button type="button" class="btn btn-light xf-wizard-prev" disabled>'.$this->e($labels['prev'] ?? '上一步').'</button>';
+        $html .= '<button type="button" class="btn btn-'.$variant.' xf-wizard-next" data-finish-label="'.$this->e($labels['finish'] ?? '提交').'">'.$this->e($labels['next'] ?? '下一步').'</button>';
         $html .= '</div>';
         $html .= '</div>';
 
-        return $open ? $html . '</div></form>' : $html . '</div>';
+        return $open ? $html.'</div></form>' : $html.'</div>';
     }
 }

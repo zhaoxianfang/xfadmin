@@ -7,6 +7,7 @@ namespace zxf\XfAdmin\Components;
 use Stringable;
 use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 组件基类
@@ -30,8 +31,7 @@ abstract class Component implements Stringable
     /**
      * construct（public实例方法）
      *
-     * @param array $options options
-     *
+     * @param  array  $options  options
      * @return mixed 渲染结果 / 组件实例或配置
      */
     public function __construct(array $options = [])
@@ -42,8 +42,7 @@ abstract class Component implements Stringable
     /**
      * make（public静态方法）
      *
-     * @param array $options options
-     *
+     * @param  array  $options  options
      * @return static result
      */
     public static function make(array $options = []): static
@@ -73,9 +72,8 @@ abstract class Component implements Stringable
     /**
      * set（public静态方法）
      *
-     * @param string|array $key key
-     * @param mixed $value value
-     *
+     * @param  string|array  $key  key
+     * @param  mixed  $value  value
      * @return static result
      */
     public function set(string|array $key, mixed $value = null): static
@@ -85,15 +83,15 @@ abstract class Component implements Stringable
         } else {
             Html::set($this->options, $key, $value);
         }
+
         return $this;
     }
 
     /**
      * get（public实例方法）
      *
-     * @param string $key key
-     * @param mixed $default default
-     *
+     * @param  string  $key  key
+     * @param  mixed  $default  default
      * @return mixed result
      */
     public function get(string $key, mixed $default = null): mixed
@@ -118,9 +116,8 @@ abstract class Component implements Stringable
     /**
      * attr（public静态方法）
      *
-     * @param string|array $name name
-     * @param mixed $value value
-     *
+     * @param  string|array  $name  name
+     * @param  mixed  $value  value
      * @return static result
      */
     public function attr(string|array $name, mixed $value = true): static
@@ -130,6 +127,7 @@ abstract class Component implements Stringable
         } else {
             $this->attributes[$name] = $value;
         }
+
         return $this;
     }
 
@@ -137,7 +135,6 @@ abstract class Component implements Stringable
      * add Class（public静态方法）
      *
      * @param string ... $classes classes
-     *
      * @return static result
      */
     public function addClass(string ...$classes): static
@@ -150,8 +147,7 @@ abstract class Component implements Stringable
     /**
      * id（public静态方法）
      *
-     * @param string $id id
-     *
+     * @param  string  $id  id
      * @return static result
      */
     public function id(string $id): static
@@ -170,6 +166,7 @@ abstract class Component implements Stringable
                 $merged[$name] = $value;
             }
         }
+
         return Html::attrs($merged);
     }
 
@@ -180,8 +177,7 @@ abstract class Component implements Stringable
     /**
      * e（protected实例方法）
      *
-     * @param mixed $value value
-     *
+     * @param  mixed  $value  value
      * @return string result
      */
     protected function e(mixed $value): string
@@ -197,8 +193,11 @@ abstract class Component implements Stringable
 
     /** 常见枚举值白名单集合 */
     protected const ENUM_VARIANT = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
+
     protected const ENUM_VARIANT_OUTLINE = ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'];
+
     protected const ENUM_SIZE = ['sm', 'lg'];
+
     protected const ENUM_PLACEMENT = ['top', 'bottom', 'left', 'right', 'start', 'end'];
 
     /** Bootstrap 栅格断点白名单（响应式列宽的「键」必须受限，否则可逃逸出 class 属性） */
@@ -295,7 +294,7 @@ abstract class Component implements Stringable
                 if ($n < 1 || $n > 12) {
                     continue;
                 }
-                $cls .= ' col-' . $bp . '-' . $n;
+                $cls .= ' col-'.$bp.'-'.$n;
             }
 
             return $cls;
@@ -306,7 +305,7 @@ abstract class Component implements Stringable
                 return 'col-12';
             }
 
-            return 'col-12 col-md-' . $n . ' col-xl-' . $n;
+            return 'col-12 col-md-'.$n.' col-xl-'.$n;
         }
 
         return 'col-12';
@@ -324,6 +323,7 @@ abstract class Component implements Stringable
         if (is_array($value)) {
             return implode('', array_map(fn ($v) => $this->raw($v), $value));
         }
+
         return (string) $value;
     }
 
@@ -336,7 +336,7 @@ abstract class Component implements Stringable
      */
     protected function text(mixed $value): string
     {
-        if ($value instanceof \Stringable || $value instanceof \Closure) {
+        if ($value instanceof Stringable || $value instanceof \Closure) {
             return $this->raw($value);
         }
         if (is_array($value)) {
@@ -357,16 +357,47 @@ abstract class Component implements Stringable
             // 空路径返回透明 1x1 GIF，避免组件输出 src="" 触发破图请求
             return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
         }
-        if (preg_match('#^(?:https?:)?//|^data:#i', $p)) {
+        // 放行：协议相对 // 与 http(s):// 原样返回（外链图片）
+        if (preg_match('#^(?:https?:)?//#i', $p)) {
             return $p;
         }
-        return \zxf\XfAdmin\XfAdmin::asset('images/' . ltrim($p, '/'));
+        // 放行：仅 data:image/*（拒绝 data:text/html 等可承载脚本的 XSS 载体）
+        if (preg_match('#^data:image/#i', $p)) {
+            return $p;
+        }
+        // 拦截：javascript:/vbscript:/data: 非图片 等显式伪协议。
+        // 必须在 asset() 拼接基址之前拦截，否则 javascript:alert(1) 经 asset 变为
+        // /base/javascript:alert(1) 后会因「以 / 开头」绕过 safeUrl 检测。
+        if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $p)) {
+            return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        }
+
+        return XfAdmin::asset('images/'.ltrim($p, '/'));
+    }
+
+    /**
+     * 图标 class 净化
+     *
+     * 图标字段本质是 CSS 类名（如 ti ti-user），仅允许 [a-zA-Z0-9_\- ]，
+     * 剔除可用于属性注入的字符（: ( ) " ' < > 等）。比 e() 更彻底：e() 不转义
+     * 冒号与括号，故 javascript:alert(1) 经 e() 后仍会以类名义留在 class 中。
+     */
+    protected function iconClass(mixed $value, string $default = ''): string
+    {
+        $v = trim((string) $value);
+        if ($v === '') {
+            return $default;
+        }
+        // 去除非法字符后压缩多余空白（保留合法类名与分隔空格）
+        $v = (string) preg_replace('/[^a-zA-Z0-9_\- ]/', '', $v);
+
+        return (string) preg_replace('/\s+/', ' ', trim($v));
     }
 
     /** 生成组件级唯一 id */
     protected function uid(string $prefix = 'xf'): string
     {
-        return $prefix . '-' . (++self::$uidCounter);
+        return $prefix.'-'.(++self::$uidCounter);
     }
 
     /** 取或生成根元素 id */
@@ -378,6 +409,7 @@ abstract class Component implements Stringable
         if ($this->get('id')) {
             return (string) $this->get('id');
         }
+
         return $this->attributes['id'] = $this->uid($prefix);
     }
 
@@ -397,6 +429,7 @@ abstract class Component implements Stringable
                 | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             );
         }
+
         return $attrs;
     }
 
@@ -431,6 +464,7 @@ abstract class Component implements Stringable
             || ! preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $v)) {
             return $v;
         }
+
         // 含非常规协议（javascript:/vbscript:/data: 非图片 等）→ 拦截
         return $default;
     }
@@ -448,6 +482,7 @@ abstract class Component implements Stringable
         if ($plugins !== []) {
             Assets::instance()->plugin(...$plugins);
         }
+
         // 说明：render 不做结果缓存——内联初始化 JS 按 key/内容去重已保证不重复输出；
         // 同一实例被多次渲染时各自生成独立 uid，互不干扰；且跨多个完整页面复用实例时
         // 能在资源状态重置后重新注册初始化脚本。

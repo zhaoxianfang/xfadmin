@@ -29,11 +29,11 @@ class Placeholder extends Component
     protected function defaults(): array
     {
         return [
-            'lines'     => [12, 8, 10, 6],
+            'lines' => [12, 8, 10, 6],
             'animation' => 'glow',   // glow|wave|null
-            'variant'   => null,
-            'size'      => null,     // xs|sm|lg
-            'body'      => null,
+            'variant' => null,
+            'size' => null,     // xs|sm|lg
+            'body' => null,
         ];
     }
 
@@ -49,18 +49,19 @@ class Placeholder extends Component
             'placeholder-wave' => $this->get('animation') === 'wave',
         ]);
 
-        $html = '<div' . $this->attrs(['class' => $wrapClass]) . '>';
+        $html = '<div'.$this->attrs(['class' => $wrapClass]).'>';
 
         if ($this->get('body') !== null) {
             $html .= $this->raw($this->get('body'));
         } else {
-            $sizeCls    = $this->get('size') ? ' placeholder-' . $this->enum($this->get('size'), ['xs', 'sm', 'lg'], 'lg') : '';
-            $variantCls = $this->get('variant') ? ' bg-' . $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary') : '';
+            $sizeCls = $this->get('size') ? ' placeholder-'.$this->enum($this->get('size'), ['xs', 'sm', 'lg'], 'lg') : '';
+            $variantCls = $this->get('variant') ? ' bg-'.$this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary') : '';
             foreach ((array) $this->get('lines', []) as $col) {
                 $col = max(1, min(12, (int) $col));
-                $html .= '<p class="mb-2"><span class="placeholder col-' . $col . $sizeCls . $variantCls . '"></span></p>';
+                $html .= '<p class="mb-2"><span class="placeholder col-'.$col.$sizeCls.$variantCls.'"></span></p>';
             }
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

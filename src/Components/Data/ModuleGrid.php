@@ -34,11 +34,11 @@ class ModuleGrid extends Component
     {
         return [
             'sections' => [],
-            'columns'  => 4,     // 桌面列数
-            'title'    => '',
+            'columns' => 4,     // 桌面列数
+            'title' => '',
             'subtitle' => '',
-            'class'    => '',
-            'id'       => null,
+            'class' => '',
+            'id' => null,
         ];
     }
 
@@ -53,8 +53,9 @@ class ModuleGrid extends Component
         if (! is_array($sections)) {
             $sections = [];
         }
-        $cols   = max(1, (int) $this->get('columns'));
-        $colCls = 'col-md-6 col-xl-' . (int) (12 / $cols);
+        // columns 夹紧到 1-12：避免 12/$cols 整除为 0 产生非法列类（非法值回退为整行 12 列）
+        $cols = max(1, min(12, (int) $this->get('columns')));
+        $colCls = 'col-md-6 col-xl-'.(int) (12 / $cols);
 
         $body = '';
         foreach ($sections as $section => $mods) {
@@ -66,27 +67,28 @@ class ModuleGrid extends Component
                 $icon = $this->e($mod['icon'] ?? 'ti ti-box');
                 $name = $this->e($mod['name'] ?? '');
                 $desc = $this->e($mod['desc'] ?? '');
-                $url  = $this->e($mod['url'] ?? '#');
-                $items .= '<a href="' . $url . '" class="col-12 ' . $colCls . ' text-decoration-none mb-3">'
-                    . '<div class="card border h-100 hover-shadow"><div class="card-body">'
-                    . '<div class="d-flex align-items-center mb-2">'
-                    . '<span class="avatar avatar-sm bg-primary-subtle text-primary me-2"><i class="' . $icon . '"></i></span>'
-                    . '<h6 class="mb-0">' . $name . '</h6></div>'
-                    . '<div class="small text-muted">' . $desc . '</div>'
-                    . '</div></div></a>';
+                $url = $this->e($this->safeUrl($mod['url'] ?? '#', '#'));
+                $items .= '<a href="'.$url.'" class="col-12 '.$colCls.' text-decoration-none mb-3">'
+                    .'<div class="card border h-100 hover-shadow"><div class="card-body">'
+                    .'<div class="d-flex align-items-center mb-2">'
+                    .'<span class="avatar avatar-sm bg-primary-subtle text-primary me-2"><i class="'.$icon.'"></i></span>'
+                    .'<h6 class="mb-0">'.$name.'</h6></div>'
+                    .'<div class="small text-muted">'.$desc.'</div>'
+                    .'</div></div></a>';
             }
-            $head = is_int($section) ? '' : '<h5 class="mt-4 mb-0">' . $this->e($section) . '</h5>'
-                . '<div class="text-muted small mb-2">' . count($mods) . ' 个应用</div>';
-            $body .= $head . '<div class="row g-3">' . $items . '</div>';
+            $head = is_int($section) ? '' : '<h5 class="mt-4 mb-0">'.$this->e($section).'</h5>'
+                .'<div class="text-muted small mb-2">'.count($mods).' 个应用</div>';
+            $body .= $head.'<div class="row g-3">'.$items.'</div>';
         }
         $header = '';
         if ($this->get('title') !== '') {
-            $header .= '<div class="text-center py-4"><h2>' . $this->e($this->get('title')) . '</h2>';
+            $header .= '<div class="text-center py-4"><h2>'.$this->e($this->get('title')).'</h2>';
             if ($this->get('subtitle') !== '') {
-                $header .= '<p class="text-muted">' . $this->e($this->get('subtitle')) . '</p>';
+                $header .= '<p class="text-muted">'.$this->e($this->get('subtitle')).'</p>';
             }
             $header .= '</div>';
         }
-        return '<div class="' . $this->e($this->get('class')) . '">' . $header . '<div class="row g-3">' . $body . '</div></div>';
+
+        return '<div class="'.$this->e($this->get('class')).'">'.$header.'<div class="row g-3">'.$body.'</div></div>';
     }
 }

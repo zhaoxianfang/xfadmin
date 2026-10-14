@@ -71,7 +71,7 @@ echo XfAdmin::invoiceDetail(['invoice' => \$invoice, 'items' => \$items]);
 商品卡（图/标题/价格/角标）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductCard`
-> **文件**：`src/Components/Data/ProductCard.php`（76 行）
+> **文件**：`src/Components/Data/ProductCard.php`（100 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -136,7 +136,7 @@ echo XfAdmin::productCard([
 商品网格（卡片墙）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductsGrid`
-> **文件**：`src/Components/Data/ProductsGrid.php`（115 行）
+> **文件**：`src/Components/Data/ProductsGrid.php`（136 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -193,7 +193,7 @@ echo XfAdmin::productsGrid([
 商品分类管理（树形分类）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductCategories`
-> **文件**：`src/Components/Data/ProductCategories.php`（84 行）
+> **文件**：`src/Components/Data/ProductCategories.php`（116 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -254,7 +254,7 @@ echo XfAdmin::productCategories([
 商品添加表单。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductAdd`
-> **文件**：`src/Components/Data/ProductAdd.php`（115 行）
+> **文件**：`src/Components/Data/ProductAdd.php`（139 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -321,7 +321,7 @@ echo XfAdmin::productAdd([
 商品详情（图集/规格/评价）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductDetails`
-> **文件**：`src/Components/Data/ProductDetails.php`（165 行）
+> **文件**：`src/Components/Data/ProductDetails.php`（190 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -372,7 +372,7 @@ echo XfAdmin::productDetails([
 商品浏览统计（热度图表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductViews`
-> **文件**：`src/Components/Data/ProductViews.php`（71 行）
+> **文件**：`src/Components/Data/ProductViews.php`（91 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -425,7 +425,7 @@ echo XfAdmin::productViews([
 购物车（商品+数量+合计）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ShoppingCart`
-> **文件**：`src/Components/Data/ShoppingCart.php`（124 行）
+> **文件**：`src/Components/Data/ShoppingCart.php`（148 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -488,7 +488,7 @@ echo XfAdmin::shoppingCart([
 购物车摘要（结算侧栏小计）。
 
 > **类**：`zxf\XfAdmin\Components\Data\CartSummary`
-> **文件**：`src/Components/Data/CartSummary.php`（59 行）
+> **文件**：`src/Components/Data/CartSummary.php`（81 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -549,7 +549,7 @@ echo XfAdmin::cartSummary([
 结算页（地址/支付/提交）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Checkout`
-> **文件**：`src/Components/Data/Checkout.php`（142 行）
+> **文件**：`src/Components/Data/Checkout.php`（171 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -617,7 +617,7 @@ echo XfAdmin::checkout([
 订单列表（电商订单管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Orders`
-> **文件**：`src/Components/Data/Orders.php`（160 行）
+> **文件**：`src/Components/Data/Orders.php`（204 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -683,7 +683,7 @@ echo XfAdmin::orders([
 订单详情（商品/收货/金额）。
 
 > **类**：`zxf\XfAdmin\Components\Data\OrderDetails`
-> **文件**：`src/Components/Data/OrderDetails.php`（121 行）
+> **文件**：`src/Components/Data/OrderDetails.php`（144 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -732,7 +732,7 @@ echo XfAdmin::orderDetails([
 订单追踪时间线（物流状态流）。
 
 > **类**：`zxf\XfAdmin\Components\Data\OrderTrackingTimeline`
-> **文件**：`src/Components/Data/OrderTrackingTimeline.php`（48 行）
+> **文件**：`src/Components/Data/OrderTrackingTimeline.php`（71 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -779,7 +779,7 @@ echo XfAdmin::orderTrackingTimeline([
 已购订单（买家视图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PurchasedOrders`
-> **文件**：`src/Components/Data/PurchasedOrders.php`（70 行）
+> **文件**：`src/Components/Data/PurchasedOrders.php`（89 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -829,7 +829,7 @@ echo XfAdmin::purchasedOrders([
 退款管理（退款单列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Refunds`
-> **文件**：`src/Components/Data/Refunds.php`（75 行）
+> **文件**：`src/Components/Data/Refunds.php`（94 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -879,7 +879,7 @@ echo XfAdmin::refunds([
 销售数据（图表+列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Sales`
-> **文件**：`src/Components/Data/Sales.php`（105 行）
+> **文件**：`src/Components/Data/Sales.php`（135 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -943,7 +943,7 @@ echo XfAdmin::sales([
 客户列表（电商客户管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Customers`
-> **文件**：`src/Components/Data/Customers.php`（146 行）
+> **文件**：`src/Components/Data/Customers.php`（170 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1000,7 +1000,7 @@ echo XfAdmin::customers([
 卖家列表（电商卖家管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Sellers`
-> **文件**：`src/Components/Data/Sellers.php`（96 行）
+> **文件**：`src/Components/Data/Sellers.php`（125 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1062,7 +1062,7 @@ echo XfAdmin::sellers([
 卖家详情（店铺/商品/评价）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SellerDetails`
-> **文件**：`src/Components/Data/SellerDetails.php`（148 行）
+> **文件**：`src/Components/Data/SellerDetails.php`（177 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1118,7 +1118,7 @@ echo XfAdmin::sellerDetails([
 评价列表（星级+内容+晒图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ReviewList`
-> **文件**：`src/Components/Data/ReviewList.php`（143 行）
+> **文件**：`src/Components/Data/ReviewList.php`（185 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1191,7 +1191,7 @@ echo XfAdmin::reviewList([
 商品属性管理（规格键值）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Attributes`
-> **文件**：`src/Components/Data/Attributes.php`（71 行）
+> **文件**：`src/Components/Data/Attributes.php`（90 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1239,7 +1239,7 @@ echo XfAdmin::attributes([
 电商设置（通用配置表单）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EcommerceSettings`
-> **文件**：`src/Components/Data/EcommerceSettings.php`（61 行）
+> **文件**：`src/Components/Data/EcommerceSettings.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1294,7 +1294,7 @@ echo XfAdmin::ecommerceSettings([
 电商仪表盘（销售/订单/库存概览）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EcommerceDashboard`
-> **文件**：`src/Components/Data/EcommerceDashboard.php`（247 行）
+> **文件**：`src/Components/Data/EcommerceDashboard.php`（279 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1361,7 +1361,7 @@ echo XfAdmin::ecommerceDashboard([
 应用市场（插件/模板网格）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Marketplace`
-> **文件**：`src/Components/Data/Marketplace.php`（210 行）
+> **文件**：`src/Components/Data/Marketplace.php`（238 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1431,7 +1431,7 @@ echo XfAdmin::marketplace([
 仓库管理（库存/出入库）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Warehouse`
-> **文件**：`src/Components/Data/Warehouse.php`（80 行）
+> **文件**：`src/Components/Data/Warehouse.php`（101 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1484,7 +1484,7 @@ echo XfAdmin::warehouse([
 发票创建表单。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceCreate`
-> **文件**：`src/Components/Data/InvoiceCreate.php`（84 行）
+> **文件**：`src/Components/Data/InvoiceCreate.php`（106 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1533,7 +1533,7 @@ echo XfAdmin::invoiceCreate([
 发票详情整页。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceDetail`
-> **文件**：`src/Components/Data/InvoiceDetail.php`（121 行）
+> **文件**：`src/Components/Data/InvoiceDetail.php`（149 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1612,7 +1612,7 @@ echo XfAdmin::invoiceDetail([
 发票列表（列表+状态+金额）。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceList`
-> **文件**：`src/Components/Data/InvoiceList.php`（75 行）
+> **文件**：`src/Components/Data/InvoiceList.php`（103 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1672,7 +1672,7 @@ echo XfAdmin::invoiceList([
 发票明细表格。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceTable`
-> **文件**：`src/Components/Data/InvoiceTable.php`（62 行）
+> **文件**：`src/Components/Data/InvoiceTable.php`（84 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1726,7 +1726,7 @@ echo XfAdmin::invoiceTable([
 发票查看（打印友好视图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceView`
-> **文件**：`src/Components/Data/InvoiceView.php`（94 行）
+> **文件**：`src/Components/Data/InvoiceView.php`（120 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1791,7 +1791,7 @@ echo XfAdmin::invoiceView([
 筛选侧栏（分类/价格/标签过滤）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FilterSidebar`
-> **文件**：`src/Components/Data/FilterSidebar.php`（87 行）
+> **文件**：`src/Components/Data/FilterSidebar.php`（110 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1845,7 +1845,7 @@ echo XfAdmin::filterSidebar([
 功能对比表（方案×特性矩阵）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FeatureComparisonTable`
-> **文件**：`src/Components/Data/FeatureComparisonTable.php`（54 行）
+> **文件**：`src/Components/Data/FeatureComparisonTable.php`（77 行）
 > **依赖插件**：无
 
 **用法示例**

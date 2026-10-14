@@ -5,26 +5,26 @@ declare(strict_types=1);
 use zxf\XfAdmin\XfAdmin;
 
 echo XfAdmin::page([
-    'title'       => '表单 - XfAdmin Demo',
-    'menu'        => $menu,
+    'title' => '表单 - XfAdmin Demo',
+    'menu' => $menu,
     'current_url' => '/forms',
-    'topbar'      => ['user' => $user],
-    'page_title'  => ['title' => '表单组件', 'breadcrumb' => [['text' => '首页', 'url' => '/'], ['text' => '表单']]],
-    'content'     => [
+    'topbar' => ['user' => $user],
+    'page_title' => ['title' => '表单组件', 'breadcrumb' => [['text' => '首页', 'url' => '/'], ['text' => '表单']]],
+    'content' => [
         XfAdmin::row(['gutter' => 3, 'cols' => [
             ['width' => ['lg' => 6], 'content' => XfAdmin::card([
                 'title' => '基础字段 + 客户端校验',
-                'body'  => XfAdmin::form([
-                    'action'     => '/api/demo/form/save',
-                    'remote'     => true,
+                'body' => XfAdmin::form([
+                    'action' => '/api/demo/form/save',
+                    'remote' => true,
                     'validation' => true,
-                    'fields'     => [
+                    'fields' => [
                         XfAdmin::input(['name' => 'name', 'label' => '姓名', 'required' => true, 'placeholder' => '请输入姓名', 'feedback' => ['invalid' => '姓名不能为空']]),
                         XfAdmin::input(['name' => 'email', 'type' => 'email', 'label' => '邮箱', 'required' => true, 'prepend' => '@']),
                         XfAdmin::input(['name' => 'phone', 'label' => '手机号（输入掩码）', 'mask' => '999-9999-9999']),
                         XfAdmin::select(['name' => 'city', 'label' => '城市（Choices 增强/可搜索）', 'enhance' => 'choices', 'placeholder' => '请选择', 'groups' => [
                             '直辖市' => ['bj' => '北京', 'sh' => '上海', 'tj' => '天津', 'cq' => '重庆'],
-                            '省会'   => ['gz' => '广州', 'hz' => '杭州', 'cd' => '成都'],
+                            '省会' => ['gz' => '广州', 'hz' => '杭州', 'cd' => '成都'],
                         ]]),
                         XfAdmin::select(['name' => 'tags', 'label' => '标签（多选）', 'enhance' => 'choices', 'multiple' => true, 'options' => ['php' => 'PHP', 'js' => 'JavaScript', 'go' => 'Go'], 'value' => ['php']]),
                         XfAdmin::dateRange(['name' => 'period', 'label' => '统计时段（快捷区间）', 'ranges' => true]),
@@ -36,9 +36,9 @@ echo XfAdmin::page([
             ])],
             ['width' => ['lg' => 6], 'content' => XfAdmin::card([
                 'title' => '高级控件',
-                'body'  => XfAdmin::form([
-                    'action'     => '/api/demo/form/advanced',
-                    'remote'     => true,
+                'body' => XfAdmin::form([
+                    'action' => '/api/demo/form/advanced',
+                    'remote' => true,
                     'fields' => [
                         XfAdmin::slider(['name' => 'price', 'label' => '价格区间（noUiSlider）', 'min' => 0, 'max' => 1000, 'value' => [200, 600], 'tooltips' => true]),
                         XfAdmin::colorPicker(['name' => 'color', 'label' => '主题色（Pickr）', 'value' => '#3e60d5']),
@@ -46,22 +46,28 @@ echo XfAdmin::page([
                         XfAdmin::upload(['driver' => 'dropzone', 'label' => '拖拽上传（Dropzone）', 'url' => '/upload', 'text' => '点击或拖拽文件到此处']),
                     ],
                 ]),
-            ]) . XfAdmin::card([
+            ]).XfAdmin::card([
                 'title' => '交互组件',
-                'body'  => '<div class="d-flex flex-wrap gap-2">'
-                    . XfAdmin::button(['text' => '打开模态框', 'toggle' => 'modal', 'target' => '#demo-modal'])
-                    . XfAdmin::button(['text' => '打开抽屉', 'variant' => 'info', 'toggle' => 'offcanvas', 'target' => '#demo-offcanvas'])
-                    . XfAdmin::sweetAlert(['trigger' => 'SweetAlert 确认', 'trigger_variant' => 'danger', 'title' => '确定删除？', 'text' => '此操作不可恢复', 'icon' => 'warning', 'cancel_text' => '取消', 'confirm_text' => '删除'])
-                    . XfAdmin::clipboard(['text' => 'XfAdmin 复制内容示例', 'label' => '复制文本'])
-                    . XfAdmin::button(['text' => 'Ladda 加载按钮', 'variant' => 'success', 'ladda' => true])
-                    . '</div>'
-                    . XfAdmin::modal(['id' => 'demo-modal', 'title' => '模态框', 'centered' => true, 'body' => XfAdmin::alert(['variant' => 'info', 'text' => '模态框里可以嵌套任何组件', 'soft' => true]), 'footer' => '<button class="btn btn-light" data-bs-dismiss="modal">关闭</button>'])
-                    . XfAdmin::offcanvas(['id' => 'demo-offcanvas', 'title' => '抽屉面板', 'body' => XfAdmin::listGroup(['items' => ['抽屉内容一', '抽屉内容二']])]),
+                'body' => '<div class="d-flex flex-wrap gap-2">'
+                    .XfAdmin::button(['text' => '打开模态框', 'toggle' => 'modal', 'target' => '#demo-modal'])
+                    .XfAdmin::button(['text' => '打开抽屉', 'variant' => 'info', 'toggle' => 'offcanvas', 'target' => '#demo-offcanvas'])
+                    .XfAdmin::sweetAlert(['trigger' => 'SweetAlert 确认', 'trigger_variant' => 'danger', 'title' => '确定删除？', 'text' => '此操作不可恢复', 'icon' => 'warning', 'cancel_text' => '取消', 'confirm_text' => '删除'])
+                    .XfAdmin::clipboard(['text' => 'XfAdmin 复制内容示例', 'label' => '复制文本'])
+                    .XfAdmin::button(['text' => 'Ladda 加载按钮', 'variant' => 'success', 'ladda' => true])
+                    .XfAdmin::loadingButton(['text' => '保存（2.5s 自动恢复）', 'variant' => 'primary', 'restore_ms' => 2500])
+                    .'</div>'
+                    .'<div class="d-flex flex-wrap gap-4 align-items-end mt-3 pt-3 border-top">'
+                    .XfAdmin::quantityStepper(['name' => 'qty_sm', 'label' => '小号', 'size' => 'sm', 'value' => 1, 'min' => 1, 'max' => 9])
+                    .XfAdmin::quantityStepper(['name' => 'qty_md', 'label' => '默认', 'value' => 2, 'min' => 1, 'max' => 99, 'step' => 1])
+                    .XfAdmin::quantityStepper(['name' => 'qty_lg', 'label' => '大号', 'size' => 'lg', 'value' => 5, 'min' => 0, 'max' => 20, 'step' => 5])
+                    .'</div>'
+                    .XfAdmin::modal(['id' => 'demo-modal', 'title' => '模态框', 'centered' => true, 'body' => XfAdmin::alert(['variant' => 'info', 'text' => '模态框里可以嵌套任何组件', 'soft' => true]), 'footer' => '<button class="btn btn-light" data-bs-dismiss="modal">关闭</button>'])
+                    .XfAdmin::offcanvas(['id' => 'demo-offcanvas', 'title' => '抽屉面板', 'body' => XfAdmin::listGroup(['items' => ['抽屉内容一', '抽屉内容二']])]),
             ])],
         ]]),
         XfAdmin::card([
             'title' => 'Tabs / 手风琴 / 进度条 / 头像 / 徽章 混排',
-            'body'  => XfAdmin::tabs(['items' => [
+            'body' => XfAdmin::tabs(['items' => [
                 ['title' => '手风琴', 'icon' => 'ti ti-layout-rows', 'content' => XfAdmin::accordion(['items' => [
                     ['title' => '面板一', 'content' => '内容一', 'open' => true],
                     ['title' => '面板二', 'content' => XfAdmin::progress(['bars' => [['value' => 40, 'variant' => 'success'], ['value' => 25, 'variant' => 'warning']]])],
@@ -72,11 +78,11 @@ echo XfAdmin::page([
                     ['text' => '+8', 'variant' => 'primary'],
                 ]])],
                 ['title' => '徽章', 'icon' => 'ti ti-tag', 'content' => '<div class="d-flex gap-2">'
-                    . XfAdmin::badge(['text' => '默认'])
-                    . XfAdmin::badge(['text' => '柔和', 'variant' => 'success', 'soft' => true])
-                    . XfAdmin::badge(['text' => '圆角', 'variant' => 'danger', 'pill' => true])
-                    . XfAdmin::badge(['text' => '描边', 'variant' => 'info', 'outline' => true])
-                    . '</div>'],
+                    .XfAdmin::badge(['text' => '默认'])
+                    .XfAdmin::badge(['text' => '柔和', 'variant' => 'success', 'soft' => true])
+                    .XfAdmin::badge(['text' => '圆角', 'variant' => 'danger', 'pill' => true])
+                    .XfAdmin::badge(['text' => '描边', 'variant' => 'info', 'outline' => true])
+                    .'</div>'],
             ]]),
         ]),
     ],

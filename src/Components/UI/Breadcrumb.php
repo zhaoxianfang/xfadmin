@@ -21,7 +21,7 @@ class Breadcrumb extends Component
     protected function defaults(): array
     {
         return [
-            'items'   => [],
+            'items' => [],
             'divider' => null,   // 自定义分隔符字符
         ];
     }
@@ -37,19 +37,20 @@ class Breadcrumb extends Component
         if ($this->get('divider') !== null) {
             // CSS 字符串值：单引号应转义为 \27（非 SQL 的 addslashes），并剔除 ; 防止注入其他声明
             $divider = str_replace([';', "'"], ['', '\\27'], (string) $this->get('divider'));
-            $navAttrs['style'] = "--bs-breadcrumb-divider: '" . $divider . "';";
+            $navAttrs['style'] = "--bs-breadcrumb-divider: '".$divider."';";
         }
         $items = (array) $this->get('items', []);
-        $last  = array_key_last($items);
+        $last = array_key_last($items);
 
-        $html = '<nav' . $this->attrs($navAttrs) . '><ol class="breadcrumb mb-0">';
+        $html = '<nav'.$this->attrs($navAttrs).'><ol class="breadcrumb mb-0">';
         foreach ($items as $i => $item) {
-            $item   = is_array($item) ? $item : ['text' => $item];
+            $item = is_array($item) ? $item : ['text' => $item];
             $active = ($item['active'] ?? false) || $i === $last;
-            $html  .= $active || empty($item['url'])
-                ? '<li class="breadcrumb-item active" aria-current="page">' . $this->e($item['text'] ?? '') . '</li>'
-                : '<li class="breadcrumb-item"><a href="' . $this->e($this->safeUrl($item['url'])) . '">' . $this->e($item['text'] ?? '') . '</a></li>';
+            $html .= $active || empty($item['url'])
+                ? '<li class="breadcrumb-item active" aria-current="page">'.$this->e($item['text'] ?? '').'</li>'
+                : '<li class="breadcrumb-item"><a href="'.$this->e($this->safeUrl($item['url'])).'">'.$this->e($item['text'] ?? '').'</a></li>';
         }
-        return $html . '</ol></nav>';
+
+        return $html.'</ol></nav>';
     }
 }

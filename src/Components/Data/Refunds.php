@@ -44,11 +44,11 @@ class Refunds extends Component
         $currency = (string) $this->get('currency', '¥');
         $title = (string) $this->get('title', '退款管理');
 
-        $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">' . $this->e($title) . '</h5>';
+        $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">'.$this->e($title).'</h5>';
         $html .= '<div class="d-flex gap-2"><select class="form-select form-select-sm" style="width:auto"><option>全部状态</option>'
-            . '<option>待处理</option><option>已批准</option><option>已拒绝</option><option>已完成</option></select>';
+            .'<option>待处理</option><option>已批准</option><option>已拒绝</option><option>已完成</option></select>';
         $html .= '<div class="input-group input-group-sm" style="width:250px"><input type="text" class="form-control" placeholder="搜索...">'
-            . '<button class="btn btn-outline-secondary"><i class="ti ti-search"></i></button></div></div></div>';
+            .'<button class="btn btn-outline-secondary"><i class="ti ti-search"></i></button></div></div></div>';
         $html .= '<div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0">';
         $html .= '<thead><tr><th class="ps-3">退款编号</th><th>订单号</th><th>客户</th><th>金额</th><th>商品数</th><th>原因</th><th>日期</th><th>状态</th><th class="text-end pe-3">操作</th></tr></thead>';
         $html .= '<tbody>';
@@ -69,14 +69,14 @@ class Refunds extends Component
                 'approved' => '<span class="badge text-bg-info">已批准</span>',
                 'rejected' => '<span class="badge text-bg-danger">已拒绝</span>',
                 'completed' => '<span class="badge text-bg-success">已完成</span>',
-                default => '<span class="badge text-bg-secondary">' . $this->e($status) . '</span>',
+                default => '<span class="badge text-bg-secondary">'.$this->e($status).'</span>',
             };
 
-            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">' . $this->e($id) . '</a></td>';
-            $html .= '<td>' . $this->e($orderId) . '</td><td>' . $this->e($customer) . '</td>';
-            $html .= '<td class="fw-semibold text-danger">' . $currency . number_format($amount, 2) . '</td>';
-            $html .= '<td>' . $items . '</td><td>' . $this->e($reason) . '</td><td>' . $this->e($date) . '</td>';
-            $html .= '<td>' . $statusBadge . '</td>';
+            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">'.$this->e($id).'</a></td>';
+            $html .= '<td>'.$this->e($orderId).'</td><td>'.$this->e($customer).'</td>';
+            $html .= '<td class="fw-semibold text-danger">'.$this->e($currency).number_format($amount, 2).'</td>';
+            $html .= '<td>'.$items.'</td><td>'.$this->e($reason).'</td><td>'.$this->e($date).'</td>';
+            $html .= '<td>'.$statusBadge.'</td>';
             $html .= '<td class="text-end pe-3"><div class="btn-group btn-group-sm">';
             if ($status === 'pending') {
                 $html .= '<button class="btn btn-outline-success" title="批准"><i class="ti ti-check"></i></button>';

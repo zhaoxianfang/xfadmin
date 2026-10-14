@@ -27,12 +27,12 @@ class SearchBox extends Component
     protected function defaults(): array
     {
         return [
-            'name'        => 'q',
-            'value'       => '',
+            'name' => 'q',
+            'value' => '',
             'placeholder' => '搜索...',
-            'size'        => '',
-            'class'       => '',
-            'id'          => null,
+            'size' => '',
+            'class' => '',
+            'id' => null,
         ];
     }
 
@@ -46,18 +46,21 @@ class SearchBox extends Component
         $id = $this->resolveId('xf-search');
 
         $igClass = 'input-group xf-search';
-        if ($this->get('size') !== '') {
-            $igClass .= ' input-group-' . $this->get('size');
+        // size 白名单（sm|lg）：非法/空值都不加尺寸类，防止任意 class 注入
+        $size = $this->get('size') !== '' ? $this->enum($this->get('size'), self::ENUM_SIZE, '') : '';
+        if ($size !== '') {
+            $igClass .= ' input-group-'.$size;
         }
         if ($this->get('class') !== '') {
-            $igClass .= ' ' . $this->get('class');
+            $igClass .= ' '.$this->get('class');
         }
-        return '<div' . $this->attrs(['class' => $igClass]) . '>'
-            . '<span class="input-group-text"><i class="ti ti-search"></i></span>'
-            . '<input type="search" class="form-control" id="' . $this->e($id) . '"'
-            . ' name="' . $this->e($this->get('name')) . '"'
-            . ' value="' . $this->e((string) $this->get('value')) . '"'
-            . ' placeholder="' . $this->e($this->get('placeholder')) . '">'
-            . '</div>';
+
+        return '<div'.$this->attrs(['class' => $igClass]).'>'
+            .'<span class="input-group-text"><i class="ti ti-search"></i></span>'
+            .'<input type="search" class="form-control" id="'.$this->e($id).'"'
+            .' name="'.$this->e($this->get('name')).'"'
+            .' value="'.$this->e((string) $this->get('value')).'"'
+            .' placeholder="'.$this->e($this->get('placeholder')).'">'
+            .'</div>';
     }
 }

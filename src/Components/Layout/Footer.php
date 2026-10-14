@@ -22,7 +22,7 @@ class Footer extends Component
     protected function defaults(): array
     {
         return [
-            'text'  => null,
+            'text' => null,
             'right' => null,
         ];
     }
@@ -34,18 +34,18 @@ class Footer extends Component
      */
     protected function html(): string
     {
-        $text  = $this->get('text') ?? XfAdmin::setting('footer.text');
+        $text = $this->get('text') ?? XfAdmin::setting('footer.text');
         $right = $this->get('right') ?? XfAdmin::setting('footer.right');
 
         if ($text === null) {
             $brand = XfAdmin::setting('brand.name', 'XfAdmin');
-            $text  = '© ' . date('Y') . ' ' . $brand;
+            $text = '© '.date('Y').' '.$brand;
         }
-        $html  = '<footer' . $this->attrs(['class' => 'footer']) . '><div class="container-fluid"><div class="row">';
+        $html = '<footer'.$this->attrs(['class' => 'footer']).'><div class="container-fluid"><div class="row">';
         // text 是版权/说明文本（默认 "© YYYY 品牌"），语义为纯文本 → 转义；
         // right 常放链接等 HTML → 保持原样输出（调用方需保证可信）
-        $html .= '<div class="col-md-6 text-center text-md-start">' . $this->text($text) . '</div>';
-        $html .= '<div class="col-md-6"><div class="text-md-end d-none d-md-block">' . $this->raw($right) . '</div></div>';
+        $html .= '<div class="col-md-6 text-center text-md-start">'.$this->text($text).'</div>';
+        $html .= '<div class="col-md-6"><div class="text-md-end d-none d-md-block">'.$this->raw($right).'</div></div>';
         $html .= '</div></div></footer>';
 
         return $html;

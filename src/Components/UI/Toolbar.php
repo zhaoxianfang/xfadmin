@@ -25,10 +25,10 @@ class Toolbar extends Component
     protected function defaults(): array
     {
         return [
-            'left'   => '',
-            'right'  => '',
-            'class'  => '',
-            'id'     => null,
+            'left' => '',
+            'right' => '',
+            'class' => '',
+            'id' => null,
         ];
     }
 
@@ -41,16 +41,17 @@ class Toolbar extends Component
     {
         $id = $this->resolveId('xf-toolbar');
 
-        $left = $this->get('left') !== '' && $this->get('left') !== null ? '<div class="xf-toolbar-left d-flex align-items-center gap-2 flex-wrap">' . $this->raw($this->get('left')) . '</div>' : '';
-        $right = $this->get('right') !== '' && $this->get('right') !== null ? '<div class="xf-toolbar-right d-flex align-items-center gap-2 flex-wrap">' . $this->raw($this->get('right')) . '</div>' : '';
+        $left = $this->get('left') !== '' && $this->get('left') !== null ? '<div class="xf-toolbar-left d-flex align-items-center gap-2 flex-wrap">'.$this->raw($this->get('left')).'</div>' : '';
+        $right = $this->get('right') !== '' && $this->get('right') !== null ? '<div class="xf-toolbar-right d-flex align-items-center gap-2 flex-wrap">'.$this->raw($this->get('right')).'</div>' : '';
 
         if ($left === '' && $right === '') {
             return '';
         }
-        return '<div' . $this->attrs([
-            'id'    => $id,
+
+        return '<div'.$this->attrs([
+            'id' => $id,
             'class' => 'xf-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2'
-                . ($this->get('class') !== '' ? ' ' . $this->get('class') : ''),
-        ]) . '>' . $left . $right . '</div>';
+                .($this->get('class') !== '' ? ' '.$this->get('class') : ''),
+        ]).'>'.$left.$right.'</div>';
     }
 }

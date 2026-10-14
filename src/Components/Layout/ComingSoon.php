@@ -27,12 +27,12 @@ class ComingSoon extends AuthPage
     protected function defaults(): array
     {
         return array_replace(parent::defaults(), [
-            'heading'  => '即将上线',
-            'message'  => '我们正在努力打造精彩内容，敬请期待。',
+            'heading' => '即将上线',
+            'message' => '我们正在努力打造精彩内容，敬请期待。',
             'deadline' => null,
-            'image'    => null,
-            'subscribe'=> true,
-            'card'     => false,
+            'image' => null,
+            'subscribe' => true,
+            'card' => false,
         ]);
     }
 
@@ -47,25 +47,28 @@ class ComingSoon extends AuthPage
 
         $content = '<div class="text-center">';
         if ($this->get('image')) {
-            $content .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('image'))) . '" class="img-fluid mb-3" alt="">';
+            $content .= '<img src="'.$this->e(XfAdmin::img((string) $this->get('image'))).'" class="img-fluid mb-3" alt="">';
         }
-        $content .= '<h2 class="fw-bold">' . $this->e($this->get('heading')) . '</h2>';
-        $content .= '<p class="text-muted">' . $this->e($this->get('message')) . '</p>';
+        $content .= '<h2 class="fw-bold">'.$this->e($this->get('heading')).'</h2>';
+        $content .= '<p class="text-muted">'.$this->e($this->get('message')).'</p>';
 
         if ($this->get('deadline')) {
-            $ts = strtotime((string) $this->get('deadline')) * 1000;
-            $content .= '<div class="d-flex justify-content-center gap-3 my-4" data-xf="countdown" data-deadline="' . $ts . '" id="' . $id . '">';
+            // strtotime 解析失败返回 false，直接乘 1000 会得到 0（1970 起点）导致倒计时异常；
+            // 解析失败时按 0 处理并加注释说明：前端 data-deadline="0" 表示无有效截止时间
+            $ts = strtotime((string) $this->get('deadline'));
+            $ms = $ts === false ? 0 : $ts * 1000;
+            $content .= '<div class="d-flex justify-content-center gap-3 my-4" data-xf="countdown" data-deadline="'.$ms.'" id="'.$id.'">';
             foreach (['days' => '天', 'hours' => '时', 'minutes' => '分', 'seconds' => '秒'] as $unit => $label) {
                 $content .= '<div class="card mb-0"><div class="card-body px-3 py-2 text-center">'
-                    . '<h2 class="mb-0" data-unit="' . $unit . '">00</h2><small class="text-muted">' . $label . '</small>'
-                    . '</div></div>';
+                    .'<h2 class="mb-0" data-unit="'.$unit.'">00</h2><small class="text-muted">'.$label.'</small>'
+                    .'</div></div>';
             }
             $content .= '</div>';
         }
         if ($this->get('subscribe')) {
             $content .= '<form class="d-flex gap-2 justify-content-center mt-3" style="max-width:420px;margin:0 auto;">'
-                . '<input type="email" class="form-control" placeholder="输入邮箱订阅上线通知">'
-                . '<button class="btn btn-primary" type="submit">订阅</button></form>';
+                .'<input type="email" class="form-control" placeholder="输入邮箱订阅上线通知">'
+                .'<button class="btn btn-primary" type="submit">订阅</button></form>';
         }
         $content .= '</div>';
 
@@ -73,6 +76,7 @@ class ComingSoon extends AuthPage
         if (! $this->get('title')) {
             $this->set('title', $this->get('heading'));
         }
+
         return parent::html();
     }
 }

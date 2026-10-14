@@ -31,9 +31,9 @@ class ListGroup extends Component
     protected function defaults(): array
     {
         return [
-            'items'      => [],
-            'flush'      => false,
-            'numbered'   => false,
+            'items' => [],
+            'flush' => false,
+            'numbered' => false,
             'horizontal' => false,
         ];
     }
@@ -46,8 +46,8 @@ class ListGroup extends Component
     protected function html(): string
     {
         $class = Html::cls('list-group', [
-            'list-group-flush'      => $this->get('flush'),
-            'list-group-numbered'   => $this->get('numbered'),
+            'list-group-flush' => $this->get('flush'),
+            'list-group-numbered' => $this->get('numbered'),
             'list-group-horizontal' => $this->get('horizontal'),
         ]);
 
@@ -58,28 +58,31 @@ class ListGroup extends Component
                 break;
             }
         }
-        $tag  = $hasLinks ? 'div' : 'ul';
-        $html = '<' . $tag . $this->attrs(['class' => $class]) . '>';
+        $tag = $hasLinks ? 'div' : 'ul';
+        $html = '<'.$tag.$this->attrs(['class' => $class]).'>';
 
         foreach ((array) $this->get('items', []) as $item) {
-            $item    = is_array($item) ? $item : ['text' => $item];
-            $variant = isset($item['variant']) ? ' list-group-item-' . $this->e($item['variant']) : '';
-            $cls     = Html::cls('list-group-item' . $variant, [
-                'active'                => ! empty($item['active']),
-                'disabled'              => ! empty($item['disabled']),
+            $item = is_array($item) ? $item : ['text' => $item];
+            // item variant 白名单（拼 list-group-item-* 类），非法值不加类
+            $itemVariant = isset($item['variant']) ? $this->enum($item['variant'], self::ENUM_VARIANT, '') : '';
+            $variant = $itemVariant !== '' ? ' list-group-item-'.$itemVariant : '';
+            $cls = Html::cls('list-group-item'.$variant, [
+                'active' => ! empty($item['active']),
+                'disabled' => ! empty($item['disabled']),
                 'list-group-item-action' => isset($item['url']),
                 'd-flex justify-content-between align-items-center' => isset($item['badge']),
             ]);
 
             $content = isset($item['content']) ? $this->raw($item['content']) : $this->e($item['text'] ?? '');
             if (isset($item['badge'])) {
-                $badge    = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
-                $content .= '<span class="badge ' . $this->e($badge['class'] ?? 'bg-primary') . ' rounded-pill">' . $this->e($badge['text'] ?? '') . '</span>';
+                $badge = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
+                $content .= '<span class="badge '.$this->e($badge['class'] ?? 'bg-primary').' rounded-pill">'.$this->e($badge['text'] ?? '').'</span>';
             }
             $html .= isset($item['url'])
-                ? '<a href="' . $this->e($this->safeUrl($item['url'])) . '" class="' . $cls . '">' . $content . '</a>'
-                : '<li class="' . $cls . '">' . $content . '</li>';
+                ? '<a href="'.$this->e($this->safeUrl($item['url'])).'" class="'.$cls.'">'.$content.'</a>'
+                : '<li class="'.$cls.'">'.$content.'</li>';
         }
-        return $html . '</' . $tag . '>';
+
+        return $html.'</'.$tag.'>';
     }
 }

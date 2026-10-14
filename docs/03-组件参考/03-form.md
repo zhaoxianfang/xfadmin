@@ -87,7 +87,7 @@ echo XfAdmin::form([
 表单容器（统一字段包装与提交处理）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Form`
-> **文件**：`src/Components/Form/Form.php`（110 行）
+> **文件**：`src/Components/Form/Form.php`（138 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -167,7 +167,7 @@ echo XfAdmin::form([
 文本输入框（含前后缀/帮助/校验态）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Input`
-> **文件**：`src/Components/Form/Input.php`（92 行）
+> **文件**：`src/Components/Form/Input.php`（119 行）
 > **依赖插件**：`inputmask`、`tagify`
 
 **用法示例**
@@ -248,7 +248,7 @@ echo XfAdmin::input([
 多行文本域。
 
 > **类**：`zxf\XfAdmin\Components\Form\Textarea`
-> **文件**：`src/Components/Form/Textarea.php`（41 行）
+> **文件**：`src/Components/Form/Textarea.php`（60 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -306,7 +306,7 @@ echo XfAdmin::textarea([
 下拉选择框（原生/select2/tom-select）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Select`
-> **文件**：`src/Components/Form/Select.php`（113 行）
+> **文件**：`src/Components/Form/Select.php`（145 行）
 > **依赖插件**：`choices`、`select2`
 
 **用法示例**
@@ -389,7 +389,7 @@ echo XfAdmin::select([
 多选/单选框（check/radio 统一封装）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Check`
-> **文件**：`src/Components/Form/Check.php`（87 行）
+> **文件**：`src/Components/Form/Check.php`（167 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -454,7 +454,7 @@ echo XfAdmin::check([
 滑块/范围选择器（ion-rangeSlider/noUiSlider）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Slider`
-> **文件**：`src/Components/Form/Slider.php`（64 行）
+> **文件**：`src/Components/Form/Slider.php`（81 行）
 > **依赖插件**：`nouislider`
 
 **用法示例**
@@ -524,7 +524,7 @@ echo XfAdmin::slider([
 日期范围选择器（daterangepicker）。
 
 > **类**：`zxf\XfAdmin\Components\Form\DateRangePicker` 等 `dateRange` / `dateRangePicker`
-> **文件**：`src/Components/Form/DateRangePicker.php`（63 行）
+> **文件**：`src/Components/Form/DateRangePicker.php`（83 行）
 > **依赖插件**：`daterangepicker`
 
 **用法示例**
@@ -609,7 +609,7 @@ echo XfAdmin::dateRangePicker([              // 等价 XfAdmin::dateRange()
 单日期/日期时间选择器（singleDatePicker 模式）。
 
 > **类**：`zxf\XfAdmin\Components\Form\DatePicker`
-> **文件**：`src/Components/Form/DatePicker.php`（68 行）
+> **文件**：`src/Components/Form/DatePicker.php`（97 行）
 > **依赖插件**：`daterangepicker`
 
 **用法示例**
@@ -682,7 +682,7 @@ echo XfAdmin::datePicker([
 富文本编辑器（TinyMCE/Quill 等）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Editor`
-> **文件**：`src/Components/Form/Editor.php`（69 行）
+> **文件**：`src/Components/Form/Editor.php`（100 行）
 > **依赖插件**：`quill`、`summernote`
 
 **用法示例**
@@ -748,7 +748,7 @@ echo XfAdmin::editor([
 文件上传（native/dropzone/filepond 驱动）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Upload`
-> **文件**：`src/Components/Form/Upload.php`（94 行）
+> **文件**：`src/Components/Form/Upload.php`（144 行）
 > **依赖插件**：`dropzone`、`filepond`
 
 **用法示例**
@@ -824,7 +824,7 @@ echo XfAdmin::upload([
 颜色选择器（pickr）。
 
 > **类**：`zxf\XfAdmin\Components\Form\ColorPicker`
-> **文件**：`src/Components/Form/ColorPicker.php`（49 行）
+> **文件**：`src/Components/Form/ColorPicker.php`（71 行）
 > **依赖插件**：`pickr`
 
 **用法示例**
@@ -888,7 +888,7 @@ echo XfAdmin::colorPicker([
 标签输入（Tagify 多标签）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Tags`
-> **文件**：`src/Components/Form/Tags.php`（67 行）
+> **文件**：`src/Components/Form/Tags.php`（95 行）
 > **依赖插件**：`tagify`
 
 **用法示例**
@@ -949,7 +949,7 @@ echo XfAdmin::tags([
 输入掩码（电话/日期格式约束）。
 
 > **类**：`zxf\XfAdmin\Components\Form\MaskedInput`
-> **文件**：`src/Components/Form/MaskedInput.php`（63 行）
+> **文件**：`src/Components/Form/MaskedInput.php`（91 行）
 > **依赖插件**：`inputmask`
 
 **用法示例**
@@ -1005,7 +1005,7 @@ echo XfAdmin::maskedInput([
 向导（多步表单分步导航）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Wizard`
-> **文件**：`src/Components/Form/Wizard.php`（94 行）
+> **文件**：`src/Components/Form/Wizard.php`（136 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1074,7 +1074,7 @@ echo XfAdmin::wizard([
 密码强度计（实时弱/中/强提示）。
 
 > **类**：`zxf\XfAdmin\Components\Form\PasswordStrength`
-> **文件**：`src/Components/Form/PasswordStrength.php`（107 行）
+> **文件**：`src/Components/Form/PasswordStrength.php`（146 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1128,7 +1128,7 @@ echo XfAdmin::passwordStrength([
 验证码（image/math/slide 三种模式）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Captcha`
-> **文件**：`src/Components/Form/Captcha.php`（96 行）
+> **文件**：`src/Components/Form/Captcha.php`（190 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1187,7 +1187,7 @@ echo XfAdmin::captcha([
 两步验证 / OTP 验证码输入框 6 格独立输入，自动跳格、退格回退、粘贴自动填充， 复刻 inspinia auth-two-factor.html 的验证码交互。 'length'    => 6, 'name'      => 'code', 'value'     => '', 'mask'      => 'name@example.com',  // 展示邮箱掩码提示 'autofocus' => true, ])。
 
 > **类**：`zxf\XfAdmin\Components\Form\TwoFactorInput`
-> **文件**：`src/Components/Form/TwoFactorInput.php`（54 行）
+> **文件**：`src/Components/Form/TwoFactorInput.php`（76 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1239,7 +1239,7 @@ echo XfAdmin::twoFactorInput([
 数量步进器 − 数字 + 按钮组，含 min / max / step，复刻电商购物车数量控件。 'name'  => 'qty', 'value' => 1, 'min'   => 1, 'max'   => 99, 'step'  => 1, 'size'  => 'md',   // sm | md | lg ])。
 
 > **类**：`zxf\XfAdmin\Components\Form\QuantityStepper`
-> **文件**：`src/Components/Form/QuantityStepper.php`（46 行）
+> **文件**：`src/Components/Form/QuantityStepper.php`（68 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1290,7 +1290,7 @@ echo XfAdmin::quantityStepper([
 表单元素集合（所有输入控件演示）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormElements`
-> **文件**：`src/Components/Form/FormElements.php`（148 行）
+> **文件**：`src/Components/Form/FormElements.php`（171 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1329,7 +1329,7 @@ echo XfAdmin::formElements([
 表单布局（水平/垂直/网格排布）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormLayout`
-> **文件**：`src/Components/Form/FormLayout.php`（175 行）
+> **文件**：`src/Components/Form/FormLayout.php`（194 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1371,7 +1371,7 @@ echo XfAdmin::formLayout([
 其它表单插件（掩码/校验等组合）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormOtherPlugin`
-> **文件**：`src/Components/Form/FormOtherPlugin.php`（73 行）
+> **文件**：`src/Components/Form/FormOtherPlugin.php`（130 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1419,7 +1419,7 @@ echo XfAdmin::formOtherPlugin([
 表单校验（实时反馈示例）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormValidation`
-> **文件**：`src/Components/Form/FormValidation.php`（108 行）
+> **文件**：`src/Components/Form/FormValidation.php`（151 行）
 > **依赖插件**：无
 
 **用法示例**

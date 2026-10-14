@@ -73,7 +73,7 @@ echo XfAdmin::page([
 整页布局容器：组装 head/body/scripts，所有后台页面入口。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Page`
-> **文件**：`src/Components/Layout/Page.php`（199 行）
+> **文件**：`src/Components/Layout/Page.php`（229 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -168,7 +168,7 @@ echo XfAdmin::page([
 左侧导航菜单（支持多级子菜单与 Mega Menu）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Sidenav`
-> **文件**：`src/Components/Layout/Sidenav.php`（125 行）
+> **文件**：`src/Components/Layout/Sidenav.php`（144 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -221,7 +221,7 @@ echo XfAdmin::sidenav([
 顶部导航栏（搜索/通知/用户菜单等）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Topbar`
-> **文件**：`src/Components/Layout/Topbar.php`（363 行）
+> **文件**：`src/Components/Layout/Topbar.php`（394 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -301,7 +301,7 @@ echo XfAdmin::topbar([
 水平顶部导航（无限级子菜单 + Mega 面板）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\TopNav` 等 `topNav` / `topnav`
-> **文件**：`src/Components/Layout/TopNav.php`（616 行）
+> **文件**：`src/Components/Layout/TopNav.php`（656 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -402,7 +402,7 @@ echo XfAdmin::topnav(['menu' => $menu, 'current_url' => '/admin']);
 页面标题区（标题 + 面包屑 + 操作按钮）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\PageTitle`
-> **文件**：`src/Components/Layout/PageTitle.php`（51 行）
+> **文件**：`src/Components/Layout/PageTitle.php`（68 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -450,7 +450,7 @@ echo XfAdmin::pageTitle([
 页面底部版权/链接区。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Footer`
-> **文件**：`src/Components/Layout/Footer.php`（39 行）
+> **文件**：`src/Components/Layout/Footer.php`（53 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -488,7 +488,7 @@ echo XfAdmin::footer([
 右侧主题定制面板（明暗/配色/布局切换）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Customizer`
-> **文件**：`src/Components/Layout/Customizer.php`（107 行）
+> **文件**：`src/Components/Layout/Customizer.php`（120 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -535,7 +535,7 @@ echo XfAdmin::customizer([
 认证页统一入口（type+layout 控制 9 种语义×3 种布局）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\AuthPage` 等 `authPage` / `signIn` / `signUp` / `resetPass` / `newPass` / `twoFactor` / `deleteAccount` / `successMail` / `loginPin`
-> **文件**：`src/Components/Layout/AuthPage.php`（1524 行）
+> **文件**：`src/Components/Layout/AuthPage.php`（1592 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -771,7 +771,7 @@ echo XfAdmin::twoFactor([                    // 等价 authPage(['type' => 'two-
 锁屏页（auth lock-screen，密码解锁）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\LockScreen`
-> **文件**：`src/Components/Layout/LockScreen.php`（103 行）
+> **文件**：`src/Components/Layout/LockScreen.php`（123 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -892,7 +892,7 @@ echo XfAdmin::loginPin([                     // 等价 authPage(['type' => 'logi
 错误页（400/401/403/404/408/500 + maintenance）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\ErrorPage`
-> **文件**：`src/Components/Layout/ErrorPage.php`（56 行）
+> **文件**：`src/Components/Layout/ErrorPage.php`（75 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1035,7 +1035,7 @@ echo XfAdmin::errorPage([
 即将上线页（倒计时 + 订阅）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\ComingSoon`
-> **文件**：`src/Components/Layout/ComingSoon.php`（59 行）
+> **文件**：`src/Components/Layout/ComingSoon.php`（81 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1177,7 +1177,7 @@ echo XfAdmin::comingSoon([
 系统维护页（503 风格）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Maintenance`
-> **文件**：`src/Components/Layout/Maintenance.php`（45 行）
+> **文件**：`src/Components/Layout/Maintenance.php`（63 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1316,7 +1316,7 @@ echo XfAdmin::maintenance([
 空状态页（无数据占位插画+文案）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\EmptyState`
-> **文件**：`src/Components/Layout/EmptyState.php`（42 行）
+> **文件**：`src/Components/Layout/EmptyState.php`（61 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1366,7 +1366,7 @@ echo XfAdmin::emptyState([
 落地页/营销首页（英雄区+特性+CTA）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Landing`
-> **文件**：`src/Components/Layout/Landing.php`（211 行）
+> **文件**：`src/Components/Layout/Landing.php`（235 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1435,7 +1435,7 @@ echo XfAdmin::landing([
 账户设置面板（头像/密码/通知等卡片组）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\AccountSettingsPanel`
-> **文件**：`src/Components/Layout/AccountSettingsPanel.php`（64 行）
+> **文件**：`src/Components/Layout/AccountSettingsPanel.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1486,7 +1486,7 @@ echo XfAdmin::accountSettingsPanel([
 菜单数据组件（导航菜单 DSL，供 sidenav/topnav 使用）。
 
 > **类**：`zxf\XfAdmin\Components\Navigation\Menu`
-> **文件**：`src/Components/Navigation/Menu.php`（148 行）
+> **文件**：`src/Components/Navigation/Menu.php`（198 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1539,7 +1539,7 @@ echo XfAdmin::menu([
 栅格行容器（Bootstrap row 封装）。
 
 > **类**：`zxf\XfAdmin\Components\Grid\Row`
-> **文件**：`src/Components/Grid/Row.php`（55 行）
+> **文件**：`src/Components/Grid/Row.php`（95 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1592,7 +1592,7 @@ echo XfAdmin::row([
 栅格列（Bootstrap col 封装，支持响应式断点）。
 
 > **类**：`zxf\XfAdmin\Components\Grid\Col`
-> **文件**：`src/Components/Grid/Col.php`（45 行）
+> **文件**：`src/Components/Grid/Col.php`（118 行）
 > **依赖插件**：无
 
 **用法示例**

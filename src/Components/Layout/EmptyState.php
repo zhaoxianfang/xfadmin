@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace zxf\XfAdmin\Components\Layout;
 
 use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 空状态占位（pages-empty.html / pages-search-results.html 无结果）
@@ -27,10 +28,10 @@ class EmptyState extends Component
     protected function defaults(): array
     {
         return [
-            'icon'   => 'ti ti-inbox',
-            'image'  => null,
-            'title'  => '暂无数据',
-            'text'   => null,
+            'icon' => 'ti ti-inbox',
+            'image' => null,
+            'title' => '暂无数据',
+            'text' => null,
             'action' => null,
         ];
     }
@@ -42,20 +43,21 @@ class EmptyState extends Component
      */
     protected function html(): string
     {
-        $html = '<div' . $this->attrs(['class' => 'text-center py-5']) . '>';
+        $html = '<div'.$this->attrs(['class' => 'text-center py-5']).'>';
         if ($this->get('image')) {
-            $html .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('image'))) . '" alt="" style="max-height:180px;" class="mb-3">';
+            $html .= '<img src="'.$this->e(XfAdmin::img((string) $this->get('image'))).'" alt="" style="max-height:180px;" class="mb-3">';
         } elseif ($this->get('icon')) {
-            $html .= '<i class="' . $this->e($this->get('icon')) . '" style="font-size:64px;line-height:1;" ></i>';
+            $html .= '<i class="'.$this->iconClass($this->get('icon')).'" style="font-size:64px;line-height:1;" ></i>';
         }
-        $html .= '<h4 class="mt-3">' . $this->e($this->get('title')) . '</h4>';
+        $html .= '<h4 class="mt-3">'.$this->e($this->get('title')).'</h4>';
         if ($this->get('text')) {
             // 与同库 UI/EmptyState 保持一致：text 是纯文本槽位（需要富文本请用 action）
-            $html .= '<p class="text-muted">' . $this->e($this->get('text')) . '</p>';
+            $html .= '<p class="text-muted">'.$this->e($this->get('text')).'</p>';
         }
         if ($this->get('action')) {
-            $html .= '<div class="mt-3">' . $this->raw($this->get('action')) . '</div>';
+            $html .= '<div class="mt-3">'.$this->raw($this->get('action')).'</div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

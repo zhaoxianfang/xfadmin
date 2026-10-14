@@ -28,8 +28,8 @@ class EChart extends Component
     protected function defaults(): array
     {
         return [
-            'height'  => 350,
-            'theme'   => null,
+            'height' => 350,
+            'theme' => null,
             'options' => [],
         ];
     }
@@ -58,15 +58,15 @@ class EChart extends Component
             $options = (array) $this->get('option', []);
         }
         $config = [
-            'theme'   => $this->get('theme'),
+            'theme' => $this->get('theme'),
             'options' => (object) $options,
         ];
 
-        return '<div' . $this->attrs([
-            'id'             => $id,
-            'style'          => 'height:' . (int) $this->get('height') . 'px;',
-            'data-xf'        => 'echart',
-            'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '></div>';
+        // 与其它图表组件统一走 initAttrs 生成 data-xf / data-xf-config（输出等价）
+        // height 显式传 null 时回退文档默认 350，避免渲染出 height:0px
+        return '<div'.$this->attrs([
+            'id' => $id,
+            'style' => 'height:'.(int) ($this->get('height') ?? 350).'px;',
+        ] + $this->initAttrs('echart', $config)).'></div>';
     }
 }

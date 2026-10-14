@@ -28,9 +28,9 @@ class Maintenance extends AuthPage
         return array_replace(parent::defaults(), [
             'heading' => '网站维护中',
             'message' => '我们正在进行例行维护，请稍后再访问。',
-            'image'   => null,
+            'image' => null,
             'contact' => null,
-            'card'    => false,
+            'card' => false,
         ]);
     }
 
@@ -43,14 +43,14 @@ class Maintenance extends AuthPage
     {
         $content = '<div class="text-center">';
         if ($this->get('image')) {
-            $content .= '<img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('image'))) . '" class="img-fluid mb-3" alt="">';
+            $content .= '<img src="'.$this->e(XfAdmin::img((string) $this->get('image'))).'" class="img-fluid mb-3" alt="">';
         } else {
             $content .= '<i class="ti ti-settings" style="font-size:72px;"></i>';
         }
-        $content .= '<h2 class="fw-bold mt-3">' . $this->e($this->get('heading')) . '</h2>';
-        $content .= '<p class="text-muted">' . $this->e($this->get('message')) . '</p>';
+        $content .= '<h2 class="fw-bold mt-3">'.$this->e($this->get('heading')).'</h2>';
+        $content .= '<p class="text-muted">'.$this->e($this->get('message')).'</p>';
         if ($this->get('contact')) {
-            $content .= '<p class="mb-0">如需帮助请联系 <a href="mailto:' . $this->e($this->get('contact')) . '">' . $this->e($this->get('contact')) . '</a></p>';
+            $content .= '<p class="mb-0">如需帮助请联系 <a href="mailto:'.$this->e($this->get('contact')).'">'.$this->e($this->get('contact')).'</a></p>';
         }
         $content .= '</div>';
 
@@ -58,6 +58,7 @@ class Maintenance extends AuthPage
         if (! $this->get('title')) {
             $this->set('title', $this->get('heading'));
         }
+
         return parent::html();
     }
 }

@@ -53,7 +53,7 @@ echo XfAdmin::importExport(['export_url' => '/api/export', 'import_url' => '/api
 通用小部件卡（标题+内容+数值）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Widget`
-> **文件**：`src/Components/Data/Widget.php`（63 行）
+> **文件**：`src/Components/Data/Widget.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -112,7 +112,7 @@ echo XfAdmin::widget([
 迷你指标卡（数字+图标+同比）。
 
 > **类**：`zxf\XfAdmin\Components\Data\MetricCard`
-> **文件**：`src/Components/Data/MetricCard.php`（98 行）
+> **文件**：`src/Components/Data/MetricCard.php`（129 行）
 > **依赖插件**：`echarts`
 
 **用法示例**
@@ -194,7 +194,7 @@ echo XfAdmin::metricCard([
 迷你指标+火花线（数字+趋势迷你图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\StatMiniSparkline`
-> **文件**：`src/Components/Data/StatMiniSparkline.php`（96 行）
+> **文件**：`src/Components/Data/StatMiniSparkline.php`（121 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -247,7 +247,7 @@ echo XfAdmin::statMiniSparkline([
 小部件仪表盘（多 widget 汇总）。
 
 > **类**：`zxf\XfAdmin\Components\Data\WidgetsDashboard`
-> **文件**：`src/Components/Data/WidgetsDashboard.php`（250 行）
+> **文件**：`src/Components/Data/WidgetsDashboard.php`（267 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -299,7 +299,7 @@ echo XfAdmin::widgetsDashboard([
 数据分析仪表盘（多图表汇总）。
 
 > **类**：`zxf\XfAdmin\Components\Data\AnalyticsDashboard`
-> **文件**：`src/Components/Data/AnalyticsDashboard.php`（98 行）
+> **文件**：`src/Components/Data/AnalyticsDashboard.php`（125 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -353,7 +353,7 @@ echo XfAdmin::analyticsDashboard([
 仪表盘网格（可拖拽 widget 布局）。
 
 > **类**：`zxf\XfAdmin\Components\Data\DashboardGrid`
-> **文件**：`src/Components/Data/DashboardGrid.php`（85 行）
+> **文件**：`src/Components/Data/DashboardGrid.php`（113 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -408,7 +408,7 @@ echo XfAdmin::dashboardGrid([
 设置中心（分组设置入口）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SettingsCenter`
-> **文件**：`src/Components/Data/SettingsCenter.php`（57 行）
+> **文件**：`src/Components/Data/SettingsCenter.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -463,7 +463,7 @@ echo XfAdmin::settingsCenter([
 报表页（数据报表展示）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ReportPage`
-> **文件**：`src/Components/Data/ReportPage.php`（55 行）
+> **文件**：`src/Components/Data/ReportPage.php`（81 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -518,7 +518,7 @@ echo XfAdmin::reportPage([
 模块导航（企业级模块菜单）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ModuleNav`
-> **文件**：`src/Components/Data/ModuleNav.php`（65 行）
+> **文件**：`src/Components/Data/ModuleNav.php`（93 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -576,7 +576,7 @@ echo XfAdmin::moduleNav([
 模块网格（功能模块卡片墙）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ModuleGrid`
-> **文件**：`src/Components/Data/ModuleGrid.php`（67 行）
+> **文件**：`src/Components/Data/ModuleGrid.php`（93 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -631,7 +631,7 @@ echo XfAdmin::moduleGrid([
 API 密钥管理（密钥列表+创建/撤销）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ApiKeys`
-> **文件**：`src/Components/Data/ApiKeys.php`（95 行）
+> **文件**：`src/Components/Data/ApiKeys.php`（118 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -679,7 +679,7 @@ echo XfAdmin::apiKeys([
 应用管理列表（apps-manage）。
 
 > **类**：`zxf\XfAdmin\Components\Data\AppManage`
-> **文件**：`src/Components/Data/AppManage.php`（198 行）
+> **文件**：`src/Components/Data/AppManage.php`（225 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -736,7 +736,7 @@ echo XfAdmin::appManage([
 批量导入/导出工具条（DataTable / 管理页通用） 对标后台高频「导出 CSV/Excel/JSON + 导入文件」操作区，自我包含（Bootstrap 下拉 + 模态框）， 不依赖额外前端插件。导出项为真链接（指向后端导出端点），导入为带文件域的模态表单 （action 指向后端导入端点，CSRF 由宿主通过 csrf 选项注入）。 'exports' => [ ['label' => 'CSV',  'format' => 'csv',  'url' => '/admin/users/export?fmt=csv'], ['label' => 'Excel','format' => 'xlsx', 'url' => '/admin/users/export?fmt=xlsx'], ['label' => 'JSON', 'format' => 'json', 'url' => '/admin/users/export?fmt=json'], ], // 简写：export_url + formats 自动生成上述 exports // 'export_url' => '/admin/users/export?fmt=', 'formats' => ['csv','xlsx','json'], 'import' => [ 'url'    => '/admin/users/import', 'accept' => '.csv,.xlsx', 'title'  => '导入用户', ], 'csrf' => csrf_field(),   // 宿主注入隐藏域（如 Laravel csrf_field()） ])。
 
 > **类**：`zxf\XfAdmin\Components\Data\ImportExport`
-> **文件**：`src/Components/Data/ImportExport.php`（118 行）
+> **文件**：`src/Components/Data/ImportExport.php`（156 行）
 > **依赖插件**：无
 
 **用法示例**

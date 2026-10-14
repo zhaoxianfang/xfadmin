@@ -27,8 +27,8 @@ class Tour extends Component
     protected function defaults(): array
     {
         return [
-            'steps'   => [],
-            'auto'    => false,
+            'steps' => [],
+            'auto' => false,
             'options' => [],
         ];
     }
@@ -50,16 +50,19 @@ class Tour extends Component
      */
     protected function html(): string
     {
+        // options 传入 list 数组时 (object) 强转会得到 {"0":...}，JS 端按名取不到值；
+        // 因此 list 数组按空对象处理，仅关联数组转为对象
+        $o = (array) $this->get('options', []);
         $config = [
-            'steps'   => array_values((array) $this->get('steps', [])),
-            'auto'    => (bool) $this->get('auto'),
-            'options' => (object) $this->get('options', []),
+            'steps' => array_values((array) $this->get('steps', [])),
+            'auto' => (bool) $this->get('auto'),
+            'options' => array_is_list($o) ? (object) [] : (object) $o,
         ];
 
-        return '<span' . $this->attrs([
-            'data-xf'        => 'tour',
+        return '<span'.$this->attrs([
+            'data-xf' => 'tour',
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-            'hidden'         => true,
-        ]) . '></span>';
+            'hidden' => true,
+        ]).'></span>';
     }
 }

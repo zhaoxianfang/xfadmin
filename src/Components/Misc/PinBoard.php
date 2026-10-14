@@ -42,23 +42,24 @@ class PinBoard extends Component
         }
         $html = '<div class="pin-board">';
         foreach ($notes as $n) {
-            $n     = (array) $n;
+            $n = (array) $n;
             $color = $this->enum($n['color'] ?? 'warning', self::ENUM_VARIANT, 'warning');
-            $html .= '<div class="pin-note pin-' . $color . '">';
+            $html .= '<div class="pin-note pin-'.$color.'">';
             $html .= '<div class="pin-note-head"><i class="ti ti-pin"></i>';
             if (! empty($n['title'])) {
-                $html .= '<span class="fw-semibold">' . $this->e($n['title']) . '</span>';
+                $html .= '<span class="fw-semibold">'.$this->e($n['title']).'</span>';
             }
-            $html .= '<button class="btn btn-sm btn-icon ms-auto text-dark"><i class="ti ti-x"></i></button></div>';
-            $html .= '<div class="pin-note-body">' . nl2br($this->e($n['text'] ?? '')) . '</div>';
+            $html .= '<button class="btn btn-sm btn-icon ms-auto text-dark" type="button" aria-label="移除便利贴"><i class="ti ti-x"></i></button></div>';
+            $html .= '<div class="pin-note-body">'.nl2br($this->e($n['text'] ?? '')).'</div>';
             if (! empty($n['author']) || ! empty($n['time'])) {
-                $html .= '<div class="pin-note-foot"><small class="text-muted">' . $this->e($n['author'] ?? '') . ' · ' . $this->e($n['time'] ?? '') . '</small></div>';
+                $html .= '<div class="pin-note-foot"><small class="text-muted">'.$this->e($n['author'] ?? '').' · '.$this->e($n['time'] ?? '').'</small></div>';
             }
             $html .= '</div>';
         }
         if ($this->get('addable')) {
             $html .= '<div class="pin-note pin-add"><button class="btn btn-light w-100 h-100"><i class="ti ti-plus"></i> 添加便利贴</button></div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

@@ -46,26 +46,29 @@ class MailList extends Component
         $items = (array) $this->get('items', []);
 
         $html = '<div class="card"><div class="card-header bg-light bg-opacity-25">';
-        $html .= '<h5 class="mb-0">' . $this->e($title) . '</h5>';
-        if (!empty($action)) {
-            $html .= '<a href="' . $this->e($action['url'] ?? '#') . '" class="link-reset fs-sm fw-medium">' . $this->e($action['text'] ?? '查看全部') . ' <i class="ti ti-chevron-right"></i></a>';
+        $html .= '<h5 class="mb-0">'.$this->e($title).'</h5>';
+        if (! empty($action)) {
+            $actionUrl = $this->safeUrl($action['url'] ?? '#', '#');
+            $html .= '<a href="'.$this->e($actionUrl).'" class="link-reset fs-sm fw-medium">'.$this->e($action['text'] ?? '查看全部').' <i class="ti ti-chevron-right"></i></a>';
         }
         $html .= '</div>';
         $html .= '<div class="card-body p-0"><div class="table-responsive"><table class="table table-hover table-select align-middle mb-0 email-table"><tbody>';
         foreach ($items as $m) {
             $m = (array) $m;
-            $unread = !empty($m['unread']) ? ' unread' : '';
-            $star = !empty($m['starred']) ? 'ti ti-star-filled text-warning' : 'ti ti-star text-muted';
-            $av = !empty($m['avatar']) ? XfAdmin::img((string) $m['avatar']) : '';
-            $badge = !empty($m['badge']) ? ' <span class="badge bg-' . $this->e($m['badgeVariant'] ?? 'primary') . '-subtle text-' . $this->e($m['badgeVariant'] ?? 'primary') . ' ms-1">' . $this->e($m['badge']) . '</span>' : '';
-            $att = !empty($m['attachments']) ? '<td class="text-center" style="width:40px"><i class="ti ti-paperclip text-muted"></i></td>' : '';
-            $html .= '<tr class="' . ltrim($unread) . '">';
+            $unread = ! empty($m['unread']) ? ' unread' : '';
+            $star = ! empty($m['starred']) ? 'ti ti-star-filled text-warning' : 'ti ti-star text-muted';
+            $av = ! empty($m['avatar']) ? XfAdmin::img((string) $m['avatar']) : '';
+            // badgeVariant 走白名单校验，防止任意值拼入 class 属性
+            $badgeVariant = $this->enum($m['badgeVariant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
+            $badge = ! empty($m['badge']) ? ' <span class="badge bg-'.$badgeVariant.'-subtle text-'.$badgeVariant.' ms-1">'.$this->e($m['badge']).'</span>' : '';
+            $att = ! empty($m['attachments']) ? '<td class="text-center" style="width:40px"><i class="ti ti-paperclip text-muted"></i></td>' : '';
+            $html .= '<tr class="'.ltrim($unread).'">';
             $html .= '<td style="width:40px"><div class="form-check email-item-check"><input class="form-check-input" type="checkbox"></div></td>';
-            $html .= '<td style="width:40px"><button class="btn btn-icon btn-sm btn-ghost-light rounded-circle email-action-btn' . (!empty($m['starred']) ? ' active' : '') . '"><i class="' . $star . '"></i></button></td>';
-            $html .= '<td style="width:45px"><div class="avatar"><img src="' . $this->e($av) . '" class="rounded-circle avatar-xs" alt=""></div></td>';
-            $html .= '<td class="text-nowrap"><h5 class="fs-base fw-medium mb-0">' . $this->e($m['from'] ?? '') . $badge . '</h5></td>';
-            $html .= '<td><a href="#" class="link-reset fs-base' . (!empty($m['unread']) ? ' fw-semibold' : '') . ' stretched-link">' . $this->e($m['subject'] ?? '') . '</a><div class="text-muted text-truncate">' . $this->e($m['preview'] ?? '') . '</div></td>';
-            $html .= '<td class="text-nowrap" style="width:90px"><span class="fs-sm text-muted">' . $this->e($m['time'] ?? '') . '</span></td>';
+            $html .= '<td style="width:40px"><button class="btn btn-icon btn-sm btn-ghost-light rounded-circle email-action-btn'.(! empty($m['starred']) ? ' active' : '').'"><i class="'.$star.'"></i></button></td>';
+            $html .= '<td style="width:45px"><div class="avatar"><img src="'.$this->e($av).'" class="rounded-circle avatar-xs" alt=""></div></td>';
+            $html .= '<td class="text-nowrap"><h5 class="fs-base fw-medium mb-0">'.$this->e($m['from'] ?? '').$badge.'</h5></td>';
+            $html .= '<td><a href="#" class="link-reset fs-base'.(! empty($m['unread']) ? ' fw-semibold' : '').' stretched-link">'.$this->e($m['subject'] ?? '').'</a><div class="text-muted text-truncate">'.$this->e($m['preview'] ?? '').'</div></td>';
+            $html .= '<td class="text-nowrap" style="width:90px"><span class="fs-sm text-muted">'.$this->e($m['time'] ?? '').'</span></td>';
             $html .= $att;
             $html .= '</tr>';
         }

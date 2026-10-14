@@ -44,17 +44,24 @@ class Tinycon extends Component
     {
         $id = $this->resolveId('tinycon');
         $this->set('id', $id);
-        $this->set('data-count', (int) $this->get('count'));
-        $this->set('data-color', $this->get('color'));
-        $this->set('data-bg', $this->get('background'));
-        $html = '<span' . $this->attrs(['id' => $id, 'style' => 'display:none']) . '></span>';
+        // data-* 必须直接放入 attrs() 数组才会输出到 DOM（此前仅 set() 写入配置，JS 端 getAttribute 取不到）；
+        // attrs() 内部会对值做 HTML 转义，data-count 走 (int) 强转，颜色值直接传入即可。
+        // data-xf="tinycon" 是前端扫描入口（XFAdmin.scan 只处理 [data-xf] 元素），缺失会导致注册的处理器永不触发。
+        $html = '<span'.$this->attrs([
+            'id' => $id,
+            'data-xf' => 'tinycon',
+            'style' => 'display:none',
+            'data-count' => (int) $this->get('count'),
+            'data-color' => $this->e($this->get('color')),
+            'data-bg' => $this->e($this->get('background')),
+        ]).'></span>';
 
         $js = 'XFAdmin.register("tinycon",function(el){if(!window.Tinycon)return;'
-            . 'var c=parseInt(el.getAttribute("data-count")||"0",10);'
-            . 'var color=el.getAttribute("data-color"),bg=el.getAttribute("data-bg");'
-            . 'if(color)Tinycon.setBubbleColor(color);if(bg)Tinycon.setBubbleBackgroundColor(bg);'
-            . 'if(c>0)Tinycon.setBubble(c);'
-            . 'XFAdmin.tinycon={set:function(n){Tinycon.setBubble(n);}};});';
+            .'var c=parseInt(el.getAttribute("data-count")||"0",10);'
+            .'var color=el.getAttribute("data-color"),bg=el.getAttribute("data-bg");'
+            .'if(color)Tinycon.setBubbleColor(color);if(bg)Tinycon.setBubbleBackgroundColor(bg);'
+            .'if(c>0)Tinycon.setBubble(c);'
+            .'XFAdmin.tinycon={set:function(n){Tinycon.setBubble(n);}};});';
         XfAdmin::assets()->inlineJs($js, 'xf-tinycon');
 
         return $html;

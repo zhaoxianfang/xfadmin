@@ -56,9 +56,9 @@ class PrivacyPolicy extends Component
 
         // 标题区
         $html .= '<div class="text-center my-4">';
-        $html .= '<h1 class="fw-bold">' . $this->e($title) . '</h1>';
+        $html .= '<h1 class="fw-bold">'.$this->e($title).'</h1>';
         if ($effectiveDate) {
-            $html .= '<p class="text-muted">Effective Date: ' . $this->e($effectiveDate) . '</p>';
+            $html .= '<p class="text-muted">Effective Date: '.$this->e($effectiveDate).'</p>';
         }
         $html .= '</div>';
 
@@ -66,7 +66,7 @@ class PrivacyPolicy extends Component
         $html .= '<div class="card"><div class="card-body">';
 
         if ($intro) {
-            $html .= '<p class="fst-italic fs-sm">' . $this->e($intro) . '</p>';
+            $html .= '<p class="fst-italic fs-sm">'.$this->e($intro).'</p>';
         }
         foreach ($sections as $i => $section) {
             $section = (array) $section;
@@ -76,32 +76,32 @@ class PrivacyPolicy extends Component
 
             if ($sTitle) {
                 $mtClass = $i === 0 ? 'mt-3' : 'mt-4';
-                $html .= '<h4 class="fw-bold ' . $mtClass . '">' . $this->e($sTitle) . '</h4>';
+                $html .= '<h4 class="fw-bold '.$mtClass.'">'.$this->e($sTitle).'</h4>';
             }
             if ($sBody) {
                 // 允许 body 包含一些安全的 HTML（如 <p>, <a>, <strong> 等）
                 $html .= $this->raw($sBody);
             }
-            if (!empty($sList)) {
+            if (! empty($sList)) {
                 $html .= '<ul>';
                 foreach ($sList as $item) {
-                    $html .= '<li>' . $this->e((string) $item) . '</li>';
+                    $html .= '<li>'.$this->e((string) $item).'</li>';
                 }
                 $html .= '</ul>';
             }
         }
         if ($contactEmail) {
             $html .= '<h4 class="fw-bold mt-4">Contact Us</h4>';
-            $html .= '<p>If you have any questions or concerns about this ' . $this->e($title)
-                . ', please contact us at <a href="mailto:' . $this->e($contactEmail) . '">'
-                . $this->e($contactEmail) . '</a>.</p>';
+            $html .= '<p>If you have any questions or concerns about this '.$this->e($title)
+                .', please contact us at <a href="mailto:'.$this->e($contactEmail).'">'
+                .$this->e($contactEmail).'</a>.</p>';
         }
         $html .= '</div></div>';
 
         // 最后更新
         if ($effectiveDate) {
             $html .= '<div class="text-center mt-4 mb-2"><small class="text-muted">Last updated: '
-                . $this->e($effectiveDate) . '</small></div>';
+                .$this->e($effectiveDate).'</small></div>';
         }
         $html .= '</div></div>';
 

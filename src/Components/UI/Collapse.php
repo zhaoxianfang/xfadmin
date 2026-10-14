@@ -29,13 +29,13 @@ class Collapse extends Component
     protected function defaults(): array
     {
         return [
-            'trigger'       => '展开/收起',
-            'body'          => '',
-            'open'          => false,
-            'trigger_tag'   => 'button',
+            'trigger' => '展开/收起',
+            'body' => '',
+            'open' => false,
+            'trigger_tag' => 'button',
             'trigger_class' => 'btn btn-primary',
-            'horizontal'    => false,
-            'card'          => true,
+            'horizontal' => false,
+            'card' => true,
         ];
     }
 
@@ -46,36 +46,36 @@ class Collapse extends Component
      */
     protected function html(): string
     {
-        $id  = $this->resolveId('collapse');
+        $id = $this->resolveId('collapse');
         $open = (bool) $this->get('open');
 
         $triggerTag = $this->get('trigger_tag') === 'a' ? 'a' : 'button';
         $triggerAttrs = [
-            'class'          => Html::cls($this->get('trigger_class')),
+            'class' => Html::cls($this->get('trigger_class')),
             'data-bs-toggle' => 'collapse',
-            'aria-expanded'  => $open ? 'true' : 'false',
-            'aria-controls'  => $id,
+            'aria-expanded' => $open ? 'true' : 'false',
+            'aria-controls' => $id,
         ];
         if ($triggerTag === 'a') {
-            $triggerAttrs['href'] = '#' . $id;
+            $triggerAttrs['href'] = '#'.$id;
             $triggerAttrs['role'] = 'button';
         } else {
-            $triggerAttrs['type']            = 'button';
-            $triggerAttrs['data-bs-target']  = '#' . $id;
+            $triggerAttrs['type'] = 'button';
+            $triggerAttrs['data-bs-target'] = '#'.$id;
         }
         // 触发按钮文案是纯文本语义（可传组件实例，传字符串时转义）
-        $html  = '<' . $triggerTag . Html::attrs($triggerAttrs) . '>' . $this->text($this->get('trigger')) . '</' . $triggerTag . '>';
+        $html = '<'.$triggerTag.Html::attrs($triggerAttrs).'>'.$this->text($this->get('trigger')).'</'.$triggerTag.'>';
 
         $collapseClass = Html::cls('collapse', [
-            'show'                => $open,
+            'show' => $open,
             'collapse-horizontal' => (bool) $this->get('horizontal'),
         ]);
 
         $inner = $this->get('card')
-            ? '<div class="card card-body mt-2 mb-0">' . $this->raw($this->get('body')) . '</div>'
+            ? '<div class="card card-body mt-2 mb-0">'.$this->raw($this->get('body')).'</div>'
             : $this->raw($this->get('body'));
 
-        $html .= '<div class="' . $collapseClass . '" id="' . $this->e($id) . '">' . $inner . '</div>';
+        $html .= '<div class="'.$collapseClass.'" id="'.$this->e($id).'">'.$inner.'</div>';
 
         return $html;
     }

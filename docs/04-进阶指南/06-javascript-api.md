@@ -338,9 +338,35 @@ XFAdmin.viewRow(row, {
 | `countdown` | — | 倒计时（返回 `{destroy}`） |
 | `backtotop` | — | 回到顶部 |
 | `codeCopy` | — | 代码块复制 |
-| `twoFactor` | — | OTP（由 `bindTwoFactor` 绑定） |
-| `qtyStepper` | — | 数量步进（由 `bindQtyStepper`） |
-| `print` | — | 打印（由 `bindInvoicePrint`） |
+| `twoFactor` | — | OTP 输入（`querySelectorAll` 直接绑定） |
+| `qtyStepper` | — | 数量步进器（min/max/step clamp，±按钮与输入过滤） |
+| `print` | — | 打印按钮（`target` 选择器存在时局部打印，隐藏 iframe 隔离样式） |
+| `loading-btn` | Ladda（可选） | 加载按钮（点击禁用+spinner；`restoreMs` 自动恢复；`XFAdmin.get(el)` 取 `{start,stop}` 句柄） |
+| `fmMaxlength` | — | 最大字符计数器（已输入/上限徽标，聚焦显示或 `alwaysShow` 常驻） |
+| `form` | — | 遗留：原生校验 + AJAX（新代码用 `data-xf-remote`） |
+| `wizard` | — | 分步向导 |
+| `kanban` | Sortable（可选） | 看板 |
+| `email` | — | 邮件列表搜索过滤 |
+| `chat-scroll` / `chat-form` | — | 聊天滚动与发送 |
+| `issues` | — | 问题列表搜索 |
+| `votelist` | — | 投票 |
+| `todo` | — | 待办 |
+| `animate` | animate.css | 入场动画 |
+| `countdown` | — | 倒计时（返回 `{destroy}`） |
+| `backtotop` | — | 回到顶部 |
+| `perm-tree` | jQuery+jsTree | 权限树（预留 widget，按 `data-perm-tree` 结构消费） |
+| `pw-strength` | — | 密码强度计（`PasswordStrength` 组件 inlineJs 动态注册，`xf.pw.score` 事件） |
+| `pw-toggle` | — | 密码显隐切换（`LockScreen` 组件 inlineJs 动态注册） |
+| `fmMask` | Inputmask | 输入掩码简写（`FormOtherPlugin` 组件 inlineJs 动态注册） |
+| `formValidation` | — | 表单客户端校验（`FormValidation` 组件 inlineJs 动态注册，Bootstrap 5 `needs-validation` 模式） |
+| `leaflet-map` | Leaflet | Leaflet 地图（`LeafletMap` 组件 inlineJs 动态注册，markers/circles/polygons/lines） |
+| `tinycon` | Tinycon | favicon 未读角标（`Tinycon` 组件 inlineJs 动态注册，`XFAdmin.tinycon.set(n)` 更新） |
+| `idle-timer` | — | 空闲检测（`IdleTimer` 组件 inlineJs 动态注册，`xf.idle`/`xf.idle.warn` 事件） |
+| `diff` | jsdiff | 文本对比（`TextDiff` 组件 inlineJs 动态注册，inline/split 双模式） |
+| `comment-form` | — | 评论发表（`CommentThread` 组件 inlineJs 动态注册，`xf.comment.post`/`xf.comment.reply` 事件） |
+| `key-toggle` | — | API 密钥显隐（`ApiKeys` 组件 inlineJs 动态注册） |
+| `gallery-search` | — | 画廊搜索过滤（`Gallery` 组件 onReady 内 querySelector 直接消费） |
+| `diy` | — | DIY 可视化布局器（`xfadmin-diy.js` 以 `XF.register` 注册，舞台拖拽/属性面板/设备预览） |
 
 ## 12. 事件全表
 

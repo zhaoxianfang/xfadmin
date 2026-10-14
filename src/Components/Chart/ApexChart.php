@@ -28,14 +28,14 @@ class ApexChart extends Component
     protected function defaults(): array
     {
         return [
-            'type'      => 'line',
-            'height'    => 350,
-            'width'     => null,
-            'series'    => [],
-            'labels'    => null,
-            'colors'    => null,
+            'type' => 'line',
+            'height' => 350,
+            'width' => null,
+            'series' => [],
+            'labels' => null,
+            'colors' => null,
             'sparkline' => false,
-            'options'   => [],
+            'options' => [],
         ];
     }
 
@@ -56,17 +56,17 @@ class ApexChart extends Component
      */
     protected function html(): string
     {
-        $id   = $this->resolveId('xf-apex');
+        $id = $this->resolveId('xf-apex');
         $type = (string) $this->get('type');
 
         $options = [
             'chart' => array_filter([
-                'type'      => $type,
-                'height'    => $this->get('height'),
-                'width'     => $this->get('width') ?? '100%', // 默认 100% 确保响应式
+                'type' => $type,
+                'height' => $this->get('height'),
+                'width' => $this->get('width') ?? '100%', // 默认 100% 确保响应式
                 'sparkline' => $this->get('sparkline') ? ['enabled' => true] : null,
             ], fn ($v) => $v !== null),
-            'series' => $this->get('series'),
+            'series' => $this->get('series') ?? [],
         ];
 
         if ($this->get('labels') !== null) {
@@ -81,10 +81,7 @@ class ApexChart extends Component
         }
         $options = array_replace_recursive($options, (array) $this->get('options', []));
 
-        return '<div' . $this->attrs([
-            'id'             => $id,
-            'data-xf'        => 'apexchart',
-            'data-xf-config' => json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '></div>';
+        // 与其它图表组件统一走 initAttrs 生成 data-xf / data-xf-config（输出等价）
+        return '<div'.$this->attrs(['id' => $id] + $this->initAttrs('apexchart', $options)).'></div>';
     }
 }

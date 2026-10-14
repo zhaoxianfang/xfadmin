@@ -53,7 +53,7 @@ echo XfAdmin::fileManager(['folders' => [...], 'files' => [...]]);
 文章详情（通用内容页）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Article`
-> **文件**：`src/Components/Data/Article.php`（109 行）
+> **文件**：`src/Components/Data/Article.php`（154 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -104,7 +104,7 @@ echo XfAdmin::article([
 博客文章详情（正文+作者+评论）。
 
 > **类**：`zxf\XfAdmin\Components\Data\BlogArticle`
-> **文件**：`src/Components/Data/BlogArticle.php`（69 行）
+> **文件**：`src/Components/Data/BlogArticle.php`（99 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -153,7 +153,7 @@ echo XfAdmin::blogArticle([
 博客列表（文章卡片流）。
 
 > **类**：`zxf\XfAdmin\Components\Data\BlogList`
-> **文件**：`src/Components/Data/BlogList.php`（166 行）
+> **文件**：`src/Components/Data/BlogList.php`（202 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -214,7 +214,7 @@ echo XfAdmin::blogList([
 评论线程（嵌套回复列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\CommentThread`
-> **文件**：`src/Components/Data/CommentThread.php`（106 行）
+> **文件**：`src/Components/Data/CommentThread.php`（129 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -267,7 +267,7 @@ echo XfAdmin::commentThread([
 常见问题（问答卡片列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Faq`
-> **文件**：`src/Components/Data/Faq.php`（51 行）
+> **文件**：`src/Components/Data/Faq.php`（74 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -321,7 +321,7 @@ echo XfAdmin::faq([
 FAQ 手风琴（折叠问答）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FaqAccordion`
-> **文件**：`src/Components/Data/FaqAccordion.php`（53 行）
+> **文件**：`src/Components/Data/FaqAccordion.php`（74 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -369,7 +369,7 @@ echo XfAdmin::faqAccordion([
 论坛帖子（主题+回复线程）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ForumThread`
-> **文件**：`src/Components/Data/ForumThread.php`（88 行）
+> **文件**：`src/Components/Data/ForumThread.php`（122 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -419,7 +419,7 @@ echo XfAdmin::forumThread([
 图片画廊（网格+灯箱）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Gallery`
-> **文件**：`src/Components/Data/Gallery.php`（182 行）
+> **文件**：`src/Components/Data/Gallery.php`（219 行）
 > **依赖插件**：`masonry`、`glightbox`
 
 **用法示例**
@@ -487,7 +487,7 @@ echo XfAdmin::gallery([
 服务条款页（长文本条款）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Terms`
-> **文件**：`src/Components/Data/Terms.php`（79 行）
+> **文件**：`src/Components/Data/Terms.php`（106 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -547,7 +547,7 @@ echo XfAdmin::terms([
 隐私政策页（长文本）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PrivacyPolicy`
-> **文件**：`src/Components/Data/PrivacyPolicy.php`（87 行）
+> **文件**：`src/Components/Data/PrivacyPolicy.php`（110 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -605,7 +605,7 @@ echo XfAdmin::privacyPolicy([
 站点地图（层级链接导航）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Sitemap`
-> **文件**：`src/Components/Data/Sitemap.php`（91 行）
+> **文件**：`src/Components/Data/Sitemap.php`（123 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -664,7 +664,7 @@ echo XfAdmin::sitemap([
 社交动态流（朋友圈式信息流）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SocialFeed`
-> **文件**：`src/Components/Data/SocialFeed.php`（68 行）
+> **文件**：`src/Components/Data/SocialFeed.php`（104 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -727,7 +727,7 @@ echo XfAdmin::socialFeed([
 文件管理器（目录/文件网格）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FileManager`
-> **文件**：`src/Components/Data/FileManager.php`（96 行）
+> **文件**：`src/Components/Data/FileManager.php`（116 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -779,7 +779,7 @@ echo XfAdmin::fileManager([
 搜索结果列表（标题+摘要+链接）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SearchResults`
-> **文件**：`src/Components/Data/SearchResults.php`（95 行）
+> **文件**：`src/Components/Data/SearchResults.php`（122 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -841,7 +841,7 @@ echo XfAdmin::searchResults([
 富搜索结果（分组+缩略图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SearchResultsRich`
-> **文件**：`src/Components/Data/SearchResultsRich.php`（59 行）
+> **文件**：`src/Components/Data/SearchResultsRich.php`（81 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -889,7 +889,7 @@ echo XfAdmin::searchResultsRich([
 价格方案卡（推荐标记/功能列表/按钮）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PricingCard`
-> **文件**：`src/Components/Data/PricingCard.php`（68 行）
+> **文件**：`src/Components/Data/PricingCard.php`（95 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -964,7 +964,7 @@ echo XfAdmin::pricingCard([
 用户证言（头像+评语+星标）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Testimonial`
-> **文件**：`src/Components/Data/Testimonial.php`（87 行）
+> **文件**：`src/Components/Data/Testimonial.php`（109 行）
 > **依赖插件**：无
 
 **用法示例**

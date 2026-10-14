@@ -31,16 +31,17 @@ class PasswordStrength extends Component
      */
     protected function defaults(): array
     {
+        // 复用 fieldDefaults 补齐通用键（mb-3 外层包装 / required / feedback 等）；
+        // 注意 + 运算符左侧优先：组件自身取值必须写在左边，fieldDefaults 只兜底
         return [
             'name' => 'password',
-            'id' => null,
             'label' => '密码',
             'value' => '',
             'showRules' => true,
             'minScore' => 0,
             'hint' => '',
             'state' => null,     // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
-        ];
+        ] + $this->fieldDefaults();
     }
 
     /**
@@ -72,9 +73,12 @@ class PasswordStrength extends Component
             'data-min' => (int) $this->get('minScore'),
         ];
         foreach ($this->attributes as $k => $v) {
-            if (! in_array($k, ['name', 'id', 'class', 'value', 'type'], true)) {
-                $attrs[$k] = $v;
+            // name/id/value/type 已被组件消费，自定义属性不得覆盖
+            if (in_array($k, ['name', 'id', 'value', 'type'], true)) {
+                continue;
             }
+            // class 必须走合并而非覆盖，否则 addClass() 追加的类会丢失
+            $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'] ?? '', $v) : $v;
         }
         // 无障碍接线：校验失败语义 + hint/help/feedback 的 aria-describedby
         $attrs = array_merge($attrs, $this->stateAria());

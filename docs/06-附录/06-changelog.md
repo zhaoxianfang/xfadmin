@@ -4,6 +4,149 @@
 
 ---
 
+## v2.2.15 全包深度审计与全面修复（2026-10-14）
+
+本轮为全包体检（216 个组件 + 核心框架 + 前端运行时 + demo），覆盖错误、异常、逻辑缺陷、
+兼容性、功能失效、性能与链式操作等问题，共修复约 130 项，全部经 PHP 8.5 实测与回归验证。
+
+### 安全修复（XSS / 注入 / CSRF）
+
+- **`javascript:` 伪协议链接拦截**：全库约 90 处 `href` / `action` / `src` 仅经 `e()` 转义、
+  未过 `safeUrl()` 的链接类选项统一补齐（Layout / UI / Form / Chart / Table / Data / Misc /
+  Navigation 各组件），数据库驱动的菜单 / 列表 / 按钮不再有点击式 XSS 风险。
+- **CSS 声明注入拦截**：`Skeleton.width`、`Table` 列宽、`DataTable` 表头 `minWidth/width`、
+  `ChatApp.height`、`ProductDetails` 变体背景、`VideoPlayer.width` 等改走 `cssLen()` /
+  `cssColor()` / `cssBackground()`，杜绝 `10px;position:fixed;inset:0` 类分号注入。
+- **currency 未转义 XSS**：`Sales` / `Refunds` / `PurchasedOrders` 的货币符号输出补 `e()`。
+- **属性注入**：`EcommerceDashboard` / `WidgetsDashboard` 的 `data-xf-config` 手工拼接补
+  `JSON_HEX_APOS|JSON_HEX_QUOT` 并整体 `e()`；`CommandPalette` / `DropzoneUpload` 消除
+  id「先 e() 后 json_encode」双重编码；`FormValidation` 的 formId 进 JS 字符串上下文改
+  `json_encode()`。
+- **属性名白名单**：`Html::attrs()` 新增属性名合法性校验（`data-*` / `aria-*` / `:prop` 等
+  常见形态放行），非法属性名直接跳过，作为属性结构的最后一道护栏。
+- **CSRF 默认值失效**：`Form` 的 `csrf` 默认值由 `[]` 改 `true`（文档承诺的默认注入 `_token`
+  实际从未生效）；`Wizard` 补 CSRF 令牌注入与 `_method` 方法伪装（PUT/PATCH/DELETE）。
+- **验证码可校验**：`Captcha` 的 math/image 模式题目与答案落入 session（同题复用），
+  无 session 环境降级并注明；img src 过 `safeUrl()`。
+
+### 功能失效修复（前后端契约）
+
+- **Tinycon 角标完全失效**：`data-count/data-color/data-bg` 此前只写入 options 未输出到 DOM，
+  且根元素缺 `data-xf="tinycon"` 扫描入口——两者补齐后 favicon 角标恢复。
+- **DataTable `row_url` 整行跳转 100% 失效**：PHP 侧 `rowUrl` 在被整体覆盖前写入而丢失，
+  且前端无消费端——PHP 移入 `$xfConfig` 初始化后，`xfadmin.js` 新增行点击处理器
+  （`{field}` 占位符按行数据替换，行内链接/按钮/表单控件不拦截）。
+- **Scrollspy 锚点错位**：nav 与 body 两次循环各自生成不同 uid，锚点永不匹配——改为渲染前
+  一次性预处理，两循环共用同一份 id。
+- **FormValidation 校验逻辑不执行**：`XFAdmin.register("formValidation", <字符串id>)` 误用
+  （第二参须为函数，且前端无该 widget）——改为按表单 id 绑定的 Bootstrap 5 标准
+  `needs-validation` 模式（经 `Assets::inlineJs` 输出）。
+- **FormOtherPlugin 掩码/计数器不执行**：`fmMask`/`fmMaxlength` 同类误用——掩码输入改走
+  标准 `data-xf="inputmask"` 契约（widget 同时支持 mask 与 alias 形态），计数器新增
+  `fmMaxlength` widget（已输入/上限徽标，临近与达标分级配色）。
+- **VideoPlayer width 失效**：除 `'100%'` 外全部被静默丢弃——改 `cssLen()` 后任意合法
+  CSS 长度生效。
+- **CommandPalette / DropzoneUpload 重复渲染**：内联 `<script>` 绕过去重机制，同一实例
+  render 两次会重复绑定——统一改 `Assets::inlineJs($js, $key)`；默认 id 改 `resolveId()`
+  避免同页多实例 id 冲突。
+- **CodeBlock 死契约**：根元素 `data-xf="codeblock"` 无对应 widget（scan 静默跳过），
+  复制功能由 `data-xf="codeCopy"` 承载——移除死标记。
+
+### 运行时错误 / 健壮性
+
+- **ThinkPHP `xfadmin()` 助手致命错误**：返回类型 `Component` 未导入（解析到
+  `ThinkPHP\Component` 不存在）——补 `use` 导入，助手可正常调用。
+- **DataTable `show_detail` 传闭包致命 Error**：`(string) Closure` 强转崩溃——判断顺序
+  重排（布尔/字符串优先，闭包转 `'true'`）。
+- **Testimonial 标量项 TypeError**：`card(array $t)` 调用处补 `(array)` 强转。
+- **TablesCustom 列错位**：表体按行数据全部字段输出、不按 columns 映射——改为按列定义
+  一一对应取格。
+- **AuthPage 错误提示被吞**：`formErrorsAlert()` 循环内字段判断与当前消息无关，存在任一
+  字段错误即跳过全部提示——改为按错误包键遍历（`getBag()`+`keys()`），仅跳过字段级错误。
+- **Topbar/TopNav 关联键 languages**：`$languages[0]` 未定义告警——改 `array_values()[0]`；
+  Topbar 语言旗标图片补 `img()` 解析（此前输出相对 URL 破图）。
+- **Captcha math 模式 session 复用**、**ComingSoon 非法 deadline**、**AccountSettingsPanel
+  字符串 tabs**、**DatePicker 闭包插槽**、**FormElements 非字符串 content 静默丢弃**、
+  **FormLayout selected 比较用转义后值失配**、**Upload 空值边界**、**QuantityStepper id
+  未使用**、**Check 复选框组 name 不补 `[]`**、**Pagination 负 window**、**Rating/Skeleton
+  lines 无上界**、**UserProfile 占位 GIF 致分支死代码**、**SettingsCenter 双重转义**、
+  **ApiKeys 短 key 掩码反转**、**进度条/列宽未 clamp**、**多处 author/avatar 键未定义
+  告警**等边界问题逐一修复。
+
+### 性能与一致性
+
+- **DataTable `columns()` 重复归一化**：单次渲染调用 3+ 次——改为一次计算多处复用。
+- **DiyLayoutPage 重复 `catalog()`**：整页构建两遍 200+ 组件 schema——复用单次结果。
+- **FormElements colClass 移出循环**；**DataSet 分页口径对齐**（`length<=0` 时数组管线与
+  查询构造器管线一致按单页上限兜底）；文档移除未实现的 `columns_map` 选项说明。
+- **Assets::url() 归一化边界**：仅当路径以资源基址开头时截断，避免
+  `images/zxf/xfadmin/logo.png` 类合法路径被误截。
+- **XfAdmin::img() 与 Component::img() 行为对齐**：静态方法此前不放行协议相对 URL
+  （`//cdn/...` 被拼坏），现已一致。
+- **组件注册表 `lockScreen` 重复键**：AuthPage/LockScreen 两条映射互相覆盖——收敛为专用
+  `LockScreen` 组件（auth 语义页经 `authPage(['type'=>'lock-screen'])` 使用），
+  `AUTH_TYPE_ALIASES` 常量移至类顶部并移除失效的 lockScreen 注入。
+- **版本号对齐**：`XfAdmin::VERSION` / config `version` / demo / 前端 `XFAdmin.version`
+  统一为 `2.2.14`+（README 计数同步为 216 组件 / 228 注册别名）。
+- **composer.json**：声明 `ext-mbstring` 硬依赖（`mb_substr`/`mb_strtolower` 等在多处使用，
+  裸库环境无 mbstring 会致命）。
+
+### 枚举白名单统一（约 60 处）
+
+Button/Alert/Badge/Callout/Divider/Ribbon/Rating/ListGroup/Tabs/Stepper/SearchBox/Toggle/
+CodeBlock/Icon/VideoEmbed/Spinner/AvatarGroup/Popover/Tooltip 及 Data/Misc/Grid 各组件的
+variant/size/placement/status/theme/language/color 等枚举值统一走 `enum()` 白名单或格式
+校验，非法值回退默认，与既有契约一致。
+
+### 前后端契约反向校验闭环（注册点 ↔ 消费端双向对齐）
+
+- **校验体系升级**：契约检查从「注册点必有 `data-xf`」单向扩展为双向——`data-xf` 必有消费端。
+  消费端识别覆盖三种形态：静态 JS `XFAdmin.register` / `XF.register`（diy）、PHP `inlineJs`
+  动态注册（pw-toggle / pw-strength / leaflet-map / tinycon / idle-timer / diff / comment-form）、
+  `querySelector('[data-xf=...]')` 直接消费（gallery-search / twoFactor）。
+- **LoadingButton 点击无响应（功能失效）**：`data-xf="loading-btn"` 无任何消费端，spinner DOM
+  与禁用逻辑从未执行——`xfadmin.js` 新增 `loading-btn` widget（driver=ladda 时优先 Ladda，
+  缺失自动降级内置 spinner；`XFAdmin.get(el)` 返回 `{start, stop}` 句柄；`restoreMs` 支持自动恢复）。
+- **QuantityStepper 加减无响应（功能失效）**：`data-xf="qtyStepper"` 无消费端——新增
+  `qtyStepper` widget（± 按 step 调整、min/max clamp、输入过滤非法字符、变更派发 `input` 事件）。
+- **InvoicePrintButton 打印失效（功能失效）**：`data-xf="print"` 无消费端——新增 `print` widget
+  （默认整页打印；`target` 选择器存在时复制页面样式进隐藏 iframe 仅打印目标区域，打印完自动清理）；
+  PHP 侧 `target` 增加选择器字符白名单，非法值退回整页打印。
+- **空数据保护确认**：Toolbar / Orders / Roles / Companies / Sitemap 等组件无数据时输出空字符串
+  为设计行为（避免空壳卡片），已用带数据渲染逐组验证非空，排除组件损坏可能。
+
+### 验证
+
+- `php -l` 全部 231 个文件通过；`node --check` 前端 JS 通过。
+- `tests/run-all.sh` 全绿（PHP 语法 / JS 语法 / 静态审计 50 项 / 冒烟 / 回归）。
+- 新增全组件默认渲染验证（228 注册项零致命错误）与前后端 widget 契约双向校验
+  （注册点必有 `data-xf`，`data-xf` 必有已注册 widget）——本机脚本执行通过。
+- demo 全路由（home/widgets/tables/forms/charts/apps/topnav/landing/login/auth/diy）
+  HTTP 200，资源自托管与路径穿越防护实测正常。
+- 数据驱动渲染专项：51 个组件 items 数据路径 + XSS 断言（`javascript:` / `position:fixed` /
+  `<script>` / 事件处理器注入均未泄漏）全部通过。
+
+### 补充完善（v2.2.15 收尾：文档对齐 / 可访问性 / 全包 Pint 格式化）
+
+- **文档对齐**：`docs/03-组件参考/*.md` 共 215 处「（N 行）」标注按 `src/` 实际行数批量修正；`docs/04-进阶指南/06-javascript-api.md` 补齐全部 64 个 widget 说明（静态 53 + inlineJs 动态 11）；`demo/pages/widgets.php`、`forms.php` 新增 `loadingButton` / `quantityStepper` / `invoicePrintButton` 三个新组件示例。
+- **LoadingButton 增强**：新增 `restore_ms`（自动恢复毫秒数）选项并透传额外 HTML 属性（`data-xf-config` 输出 `restoreMs`，JS 端已支持），支撑「加载后自动恢复」场景。
+- **可访问性（a11y）修复**：Topbar（菜单 / 搜索 / 设置 / 全屏 / 主题 / 语言 / 通知 / 消息 8 处）、Customizer（关闭）、EmailApp（筛选 / 星标 / 行操作）、Outlook（行操作）、InvoiceCreate（删除明细行）、PinBoard（移除便利贴）、Customers（更多操作）共 9 个文件的纯图标按钮补 `aria-label` + `type="button"`，消除屏幕阅读器无法识别的图标按钮。
+- **全包 Pint 格式化**：使用 `/Users/aha/www/yoc/vendor/bin/pint` 对 `src/` `demo/` `config/` `tools/` `tests/` 共 246 个 PHP 文件统一 Laravel 风格格式化（仅重排空白，不改变逻辑）。
+- **回归测试正则容错**：因 `demo/index.php` 经 Pint 格式化后 `require __DIR__.'/pages/...'`（去除拼接符空格），原回归测试对该空格强依赖的正则失配；已改为对空白容错（`#require __DIR__\s*\.\s*'(/pages/[^']+)'#`），未改动测试逻辑、不掩盖真实回归。
+- **最终回归**：全量 `php -l` 通过；`tests/run-all.sh` ALL GREEN；数据驱动渲染 51/51、前后端契约双向校验、空数据组件抽查全部 PASS，整包现为统一 Pint 格式且测试全绿状态。
+
+### 第三轮补充审计（v2.2.15 持续打磨：运行时告警巡检 / 防御性加固 / Toast 契约闭环）
+
+- **运行时告警巡检（新方法论）**：将 `E_WARNING`/`E_NOTICE`（含 `Undefined array key`）升级为异常遍历全部组件。216 组件默认渲染 **0 告警**；items 类组件「误用形态」（关联数组误当列表、元素为标量、缺键）专项巡检，发现并修复 3 处真实缺陷：
+  - `Form\Check`：`options` 元素为非法嵌套数组时 `(string)$v` 触发 *Array to string conversion* → 加固为 `is_scalar($v) ? (string)$v : ''` 安全降级。
+  - `Navigation\Menu`：`items` 元素非数组时 `isActive(array $item)` 抛 `TypeError` → 循环体补 `if (!is_array($item)) continue;`，递归 `children` 同步补 `is_array($child)` 守卫。
+  - `Data\AccountSettings`：`tabs` 误传关联数组时键名变 string 导致 `renderDefaultTab(int $idx, ...)` `TypeError` → 两处 tabs 循环补 `if (!is_int($i) || !is_array($tab)) continue;`。
+  - 修复后两类误用形态巡检均 **0 问题**。
+- **Toast 契约半失效缺口闭环（扩展）**：`UI\Toast` 此前仅渲染静态 `.toast` DOM 却不注册 `data-xf`，而 Bootstrap 5 Toast 不自动初始化，关闭按钮（`data-bs-dismiss="toast"`）与自动消失（`data-bs-autohide`/`data-bs-delay`）均依赖 JS 接管。修复：组件补 `data-xf="toast"`，`xfadmin.js` 新增 `toast` widget（`new bootstrap.Toast(el)` + `hidden.bs.toast` 自移除），与既有动态 API `XFAdmin.toast()` 互补。契约反向校验 65 注册点 + 5 直接消费 **ALL data-xf HAVE CONSUMERS**。
+- **兼容性专项确认**：PHP 8.4「隐式可空参数」弃用（`Type $x = null` 未标 `?Type`）扫描 **0 处**；包内未使用 `Reflection*::setAccessible()`（PHP 8.5 弃用）；无超全局未兜底、无已弃用 API —— 包在 PHP 8.2–8.5 兼容性完整。
+- **demo 扩展**：`demo/pages/widgets.php` 新增 Toast 示例（动态触发按钮 + 服务端静态 Toast），可视化验证本轮扩展。
+- **验证**：`tests/run-all.sh` ALL GREEN；`data_render` 51/51；契约双向校验全过；误用形态巡检 0 问题；`pint --test` 257 files PASS（全包统一格式）。
+
 ## v2.2.14 DIY 可视化布局器：预览关闭按钮修复与体验优化（2026-09-17）
 
 - **修复预览浮层关闭按钮在窄屏被裁切**：预览栏原为单行 `flex` 且不换行，设备切换 + 宽度输入 + 关闭按钮总宽超出视口时，关闭按钮被挤出屏幕右侧，用户无法返回舞台。改为 `flex-wrap: wrap`，并让关闭按钮 `flex: 0 0 auto; margin-left: auto` 始终贴右、换行后也可见；按钮文案改为「← 退出预览」（带返回箭头图标），按 **Esc** 亦可关闭。

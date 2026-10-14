@@ -42,8 +42,8 @@ class Attributes extends Component
         $attributes = (array) $this->get('attributes', []);
         $title = (string) $this->get('title', '产品属性');
 
-        $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">' . $this->e($title) . '</h5>'
-            . '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>添加属性</button></div>';
+        $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">'.$this->e($title).'</h5>'
+            .'<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>添加属性</button></div>';
         $html .= '<div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0">';
         $html .= '<thead><tr><th class="ps-3">属性名称</th><th>标识符</th><th>类型</th><th>可选值</th><th>关联产品数</th><th class="text-end pe-3">操作</th></tr></thead>';
         $html .= '<tbody>';
@@ -64,21 +64,21 @@ class Attributes extends Component
                 default => $this->e($type),
             };
 
-            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">' . $this->e($name) . '</a></td>';
-            $html .= '<td><code>' . $this->e($slug) . '</code></td>';
-            $html .= '<td><span class="badge bg-secondary-subtle text-secondary">' . $typeLabel . '</span></td>';
+            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">'.$this->e($name).'</a></td>';
+            $html .= '<td><code>'.$this->e($slug).'</code></td>';
+            $html .= '<td><span class="badge bg-secondary-subtle text-secondary">'.$typeLabel.'</span></td>';
             $html .= '<td><div class="d-flex flex-wrap gap-1">';
             foreach (array_slice($values, 0, 4) as $v) {
-                $html .= '<span class="badge bg-light text-dark border">' . $this->e((string) $v) . '</span>';
+                $html .= '<span class="badge bg-light text-dark border">'.$this->e((string) $v).'</span>';
             }
             if (count($values) > 4) {
-                $html .= '<span class="badge bg-light text-muted">+' . (count($values) - 4) . '</span>';
+                $html .= '<span class="badge bg-light text-muted">+'.(count($values) - 4).'</span>';
             }
             $html .= '</div></td>';
-            $html .= '<td>' . $products . '</td>';
+            $html .= '<td>'.$products.'</td>';
             $html .= '<td class="text-end pe-3"><div class="btn-group btn-group-sm">'
-                . '<button class="btn btn-outline-secondary"><i class="ti ti-pencil"></i></button>'
-                . '<button class="btn btn-outline-secondary"><i class="ti ti-trash"></i></button></div></td></tr>';
+                .'<button class="btn btn-outline-secondary"><i class="ti ti-pencil"></i></button>'
+                .'<button class="btn btn-outline-secondary"><i class="ti ti-trash"></i></button></div></td></tr>';
         }
         if (empty($attributes)) {
             $html .= '<tr><td colspan="6" class="text-center text-muted py-4">暂无属性数据</td></tr>';

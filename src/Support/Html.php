@@ -34,6 +34,10 @@ final class Html
      * 属性数组转字符串
      * ['class' => 'a b', 'disabled' => true, 'data-x' => 1, 'hidden' => false]
      * => ' class="a b" disabled data-x="1"'
+     *
+     * 属性名做白名单校验（字母开头，允许数字/下划线/连字符/点/冒号，覆盖
+     * data-*、aria-*、xlink:href、@click、:prop 等常见形态）：非法名直接跳过，
+     * 防止调用方把用户可控字符串当作属性名注入时破坏属性结构。
      */
     public static function attrs(array $attrs): string
     {
@@ -42,8 +46,12 @@ final class Html
             if ($value === null || $value === false) {
                 continue;
             }
+            if (! is_string($name) || preg_match('/^[a-zA-Z_][a-zA-Z0-9_:.-]*$/', $name) !== 1) {
+                continue;
+            }
             if ($value === true) {
-                $html .= ' ' . $name;
+                $html .= ' '.$name;
+
                 continue;
             }
             if (is_array($value)) {
@@ -51,7 +59,7 @@ final class Html
                     ? self::cls($value)
                     : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
             }
-            $html .= ' ' . $name . '="' . self::e($value) . '"';
+            $html .= ' '.$name.'="'.self::e($value).'"';
         }
 
         return $html;
@@ -67,6 +75,7 @@ final class Html
             }
             if (is_string($group)) {
                 $classes = array_merge($classes, preg_split('/\s+/', trim($group)) ?: []);
+
                 continue;
             }
             if (is_array($group)) {
@@ -119,10 +128,11 @@ final class Html
     public static function set(array &$array, string $key, mixed $value): void
     {
         $keys = explode('.', $key);
-        $ref  = &$array;
+        $ref = &$array;
         foreach ($keys as $i => $segment) {
             if ($i === count($keys) - 1) {
                 $ref[$segment] = $value;
+
                 return;
             }
             if (! isset($ref[$segment]) || ! is_array($ref[$segment])) {

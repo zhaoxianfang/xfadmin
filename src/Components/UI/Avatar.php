@@ -38,51 +38,52 @@ class Avatar extends Component
     protected function defaults(): array
     {
         return [
-            'src'     => null,
-            'text'    => null,
-            'icon'    => null,
-            'alt'     => '',
-            'size'    => 'md',       // xs | sm | md | lg | xl | xxl
+            'src' => null,
+            'text' => null,
+            'icon' => null,
+            'alt' => '',
+            'size' => 'md',       // xs | sm | md | lg | xl | xxl
             'rounded' => 'circle',   // circle | 0 | 1 | 2 | 3
             'variant' => 'primary',
-            'soft'    => true,
-            'group'   => [],
+            'soft' => true,
+            'group' => [],
         ];
     }
 
     /**
      * 渲染单个头像（图片或文字/图标），统一包 .avatar 结构。
-     * @param array  $opts   单项配置
-     * @param string $extra  仅分组/根级需要附加到 .avatar 的属性串（本组件统一用外层包裹承载根属性，故通常为空）
+     *
+     * @param  array  $opts  单项配置
+     * @param  string  $extra  仅分组/根级需要附加到 .avatar 的属性串（本组件统一用外层包裹承载根属性，故通常为空）
      */
     protected function one(array $opts): string
     {
         // 尺寸类恒挂包裹元素 .avatar（INSPINIA 规范：.avatar-xxs…xxl 设 width/height，内部 img/title 占满 100%）
-        $size    = 'avatar-' . $this->enum($opts['size'] ?? 'md', ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'], 'md');
+        $size = 'avatar-'.$this->enum($opts['size'] ?? 'md', ['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'], 'md');
         $rounded = $this->enum($opts['rounded'] ?? 'circle', ['circle', '0', '1', '2', '3', '4', '5', 'pill'], 'circle');
-        $rounded = $rounded === 'circle' ? 'rounded-circle' : 'rounded-' . $rounded;
+        $rounded = $rounded === 'circle' ? 'rounded-circle' : 'rounded-'.$rounded;
 
         // —— 图片头像 ——
         if (! empty($opts['src'])) {
-            return '<span class="' . Html::cls('avatar', $size) . '">'
-                . '<img src="' . $this->e($this->img($opts['src'])) . '"'
-                . ' alt="' . $this->e($opts['alt'] ?? '') . '"'
-                . ' class="' . Html::cls('img-fluid', $rounded) . '">'
-                . '</span>';
+            return '<span class="'.Html::cls('avatar', $size).'">'
+                .'<img src="'.$this->e($this->img($opts['src'])).'"'
+                .' alt="'.$this->e($opts['alt'] ?? '').'"'
+                .' class="'.Html::cls('img-fluid', $rounded).'">'
+                .'</span>';
         }
         // —— 文字缩写 / 图标头像 ——
         $variant = $this->enum($opts['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
         // soft：浅底深字（与后台模板 card 上的状态徽标观感一致）；否则实底白字
-        $bg      = ($opts['soft'] ?? true)
+        $bg = ($opts['soft'] ?? true)
             ? "bg-{$variant}-subtle text-{$variant}"
             : "bg-{$variant} text-white";
-        $inner   = ! empty($opts['icon'])
-            ? '<i class="' . $this->e($opts['icon']) . '"></i>'
+        $inner = ! empty($opts['icon'])
+            ? '<i class="'.$this->e($opts['icon']).'"></i>'
             : $this->e($opts['text'] ?? '');
 
-        return '<span class="' . Html::cls('avatar', $size) . '">'
-            . '<span class="' . Html::cls('avatar-title', $bg, $rounded, 'fw-bold') . '">' . $inner . '</span>'
-            . '</span>';
+        return '<span class="'.Html::cls('avatar', $size).'">'
+            .'<span class="'.Html::cls('avatar-title', $bg, $rounded, 'fw-bold').'">'.$inner.'</span>'
+            .'</span>';
     }
 
     /**
@@ -96,15 +97,17 @@ class Avatar extends Component
 
         // 分组堆叠：外层 .avatar-group（xfadmin.css 负责负边距+描边+hover 上移，对齐 INSPINIA）
         if ($group !== []) {
-            $html = '<div' . $this->attrs(['class' => 'avatar-group']) . '>';
+            $html = '<div'.$this->attrs(['class' => 'avatar-group']).'>';
             foreach ($group as $item) {
                 // 子项继承根 size，未单独指定时使用
                 $item = (array) $item + ['size' => $this->get('size')];
                 $html .= $this->one($item);
             }
-            return $html . '</div>';
+
+            return $html.'</div>';
         }
+
         // 单头像：根级 class/id/style/data 挂到外层内联块容器，.avatar 在内部保持纯净结构
-        return '<div' . $this->attrs(['class' => 'd-inline-block']) . '>' . $this->one($this->options) . '</div>';
+        return '<div'.$this->attrs(['class' => 'd-inline-block']).'>'.$this->one($this->options).'</div>';
     }
 }

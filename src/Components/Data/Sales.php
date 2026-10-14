@@ -59,25 +59,26 @@ class Sales extends Component
         $html = '';
 
         // 统计卡片
-        if (!empty($stats)) {
-            $colClass = 'col-md-' . (12 / max(1, min(4, count($stats))));
+        if (! empty($stats)) {
+            $colClass = 'col-md-'.(12 / max(1, min(4, count($stats))));
             $html .= '<div class="row mb-4">';
             foreach ($stats as $stat) {
                 $stat = (array) $stat;
-                $color = (string) ($stat['color'] ?? 'primary');
+                // color 走白名单校验，防止任意值拼入 class 属性
+                $color = $this->enum((string) ($stat['color'] ?? 'primary'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark'], 'primary');
                 $icon = (string) ($stat['icon'] ?? 'ti-trending-up');
-                $html .= '<div class="' . $colClass . '"><div class="card"><div class="card-body">';
+                $html .= '<div class="'.$colClass.'"><div class="card"><div class="card-body">';
                 $html .= '<div class="d-flex justify-content-between align-items-start">';
-                $html .= '<div><span class="text-muted small">' . $this->e($stat['title'] ?? '') . '</span>';
-                $html .= '<h3 class="mt-2 mb-0">' . $this->e($stat['value'] ?? '') . '</h3>';
-                if (!empty($stat['change'])) {
+                $html .= '<div><span class="text-muted small">'.$this->e($stat['title'] ?? '').'</span>';
+                $html .= '<h3 class="mt-2 mb-0">'.$this->e($stat['value'] ?? '').'</h3>';
+                if (! empty($stat['change'])) {
                     $changeClass = str_starts_with((string) $stat['change'], '+') ? 'success' : 'danger';
-                    $html .= '<small class="text-' . $changeClass . '"><i class="ti ti-arrow-' . ($changeClass === 'success' ? 'up' : 'down') . '-right"></i> '
-                        . $this->e($stat['change']) . ' vs上月</small>';
+                    $html .= '<small class="text-'.$changeClass.'"><i class="ti ti-arrow-'.($changeClass === 'success' ? 'up' : 'down').'-right"></i> '
+                        .$this->e($stat['change']).' vs上月</small>';
                 }
                 $html .= '</div>';
-                $html .= '<div class="bg-' . $this->e($color) . ' bg-opacity-10 rounded p-2">'
-                    . '<i class="ti ' . $this->e($icon) . ' fs-24 text-' . $this->e($color) . '"></i></div>';
+                $html .= '<div class="bg-'.$this->e($color).' bg-opacity-10 rounded p-2">'
+                    .'<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($color).'"></i></div>';
                 $html .= '</div></div></div></div>';
             }
             $html .= '</div>';
@@ -94,13 +95,13 @@ class Sales extends Component
                 'completed' => '<span class="badge text-bg-success">已完成</span>',
                 'pending' => '<span class="badge text-bg-warning">待处理</span>',
                 'cancelled' => '<span class="badge text-bg-danger">已取消</span>',
-                default => '<span class="badge text-bg-secondary">' . $this->e($status) . '</span>',
+                default => '<span class="badge text-bg-secondary">'.$this->e($status).'</span>',
             };
 
-            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)">' . $this->e($order['id'] ?? '') . '</a></td>';
-            $html .= '<td>' . $this->e($order['customer'] ?? '') . '</td>';
-            $html .= '<td>' . $currency . number_format((float) ($order['amount'] ?? 0), 2) . '</td>';
-            $html .= '<td>' . $this->e($order['date'] ?? '') . '</td><td>' . $statusBadge . '</td></tr>';
+            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)">'.$this->e($order['id'] ?? '').'</a></td>';
+            $html .= '<td>'.$this->e($order['customer'] ?? '').'</td>';
+            $html .= '<td>'.$this->e($currency).number_format((float) ($order['amount'] ?? 0), 2).'</td>';
+            $html .= '<td>'.$this->e($order['date'] ?? '').'</td><td>'.$statusBadge.'</td></tr>';
         }
         if (empty($recentOrders)) {
             $html .= '<tr><td colspan="5" class="text-center text-muted py-3">暂无近期订单</td></tr>';
@@ -118,11 +119,11 @@ class Sales extends Component
             $growth = (int) ($p['growth'] ?? 0);
             $growthClass = $growth >= 0 ? 'text-success' : 'text-danger';
 
-            $html .= '<tr><td class="ps-3 text-muted">' . $rank . '</td>';
-            $html .= '<td>' . $this->e($p['name'] ?? '') . '</td>';
-            $html .= '<td>' . number_format((int) ($p['sold'] ?? 0)) . '</td>';
-            $html .= '<td>' . $currency . number_format((float) ($p['revenue'] ?? 0), 2) . '</td>';
-            $html .= '<td class="' . $growthClass . '"><i class="ti ti-arrow-' . ($growth >= 0 ? 'up' : 'down') . '-right"></i> ' . abs($growth) . '%</td></tr>';
+            $html .= '<tr><td class="ps-3 text-muted">'.$rank.'</td>';
+            $html .= '<td>'.$this->e($p['name'] ?? '').'</td>';
+            $html .= '<td>'.number_format((int) ($p['sold'] ?? 0)).'</td>';
+            $html .= '<td>'.$this->e($currency).number_format((float) ($p['revenue'] ?? 0), 2).'</td>';
+            $html .= '<td class="'.$growthClass.'"><i class="ti ti-arrow-'.($growth >= 0 ? 'up' : 'down').'-right"></i> '.abs($growth).'%</td></tr>';
         }
         if (empty($topProducts)) {
             $html .= '<tr><td colspan="5" class="text-center text-muted py-3">暂无数据</td></tr>';

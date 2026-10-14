@@ -59,9 +59,8 @@ class I18n extends Component
     /**
      * render Builtin（private实例方法）
      *
-     * @param string $currentLocale current Locale
-     * @param array $locales locales
-     *
+     * @param  string  $currentLocale  current Locale
+     * @param  array  $locales  locales
      * @return string result
      */
     private function renderBuiltin(string $currentLocale, array $locales): string
@@ -99,7 +98,7 @@ class I18n extends Component
 
         // 左侧：语言列表
         $html .= '<div class="col-lg-4"><div class="card"><div class="card-header"><h5 class="card-title mb-0">支持语言</h5></div>'
-            . '<div class="list-group list-group-flush">';
+            .'<div class="list-group list-group-flush">';
 
         foreach ($defaultLocales as $code => $info) {
             $info = (array) $info;
@@ -110,29 +109,29 @@ class I18n extends Component
             $active = $code === $currentLocale ? ' active' : '';
             $check = $code === $currentLocale ? ' <i class="ti ti-check text-success ms-auto"></i>' : '';
 
-            $html .= '<div class="list-group-item list-group-item-action' . $active . ' d-flex align-items-center">';
+            $html .= '<div class="list-group-item list-group-item-action'.$active.' d-flex align-items-center">';
             if ($flag) {
-                $html .= '<img src="' . $flag . '" class="me-2" width="20" height="14" alt="">';
+                $html .= '<img src="'.$flag.'" class="me-2" width="20" height="14" alt="">';
             }
-            $html .= $name . $check . '</div>';
+            $html .= $name.$check.'</div>';
         }
         $html .= '</div></div></div>';
 
         // 右侧：翻译键值对
         $html .= '<div class="col-lg-8"><div class="card"><div class="card-header d-flex justify-content-between">'
-            . '<h5 class="card-title mb-0">翻译键值 · ' . $this->e($currentLocale) . '</h5>'
-            . '<button class="btn btn-sm btn-outline-primary"><i class="ti ti-plus me-1"></i>添加</button></div>'
-            . '<div class="table-responsive"><table class="table table-hover mb-0"><thead><tr>'
-            . '<th style="width:35%">键 (Key)</th><th>翻译值 (Value)</th><th style="width:80px"></th>'
-            . '</tr></thead><tbody>';
+            .'<h5 class="card-title mb-0">翻译键值 · '.$this->e($currentLocale).'</h5>'
+            .'<button class="btn btn-sm btn-outline-primary"><i class="ti ti-plus me-1"></i>添加</button></div>'
+            .'<div class="table-responsive"><table class="table table-hover mb-0"><thead><tr>'
+            .'<th style="width:35%">键 (Key)</th><th>翻译值 (Value)</th><th style="width:80px"></th>'
+            .'</tr></thead><tbody>';
 
         foreach ($defaultKeys as $key => $value) {
-            $html .= '<tr><td><code>' . $this->e($key) . '</code></td>'
-                . '<td><input type="text" class="form-control form-control-sm" value="' . $this->e($value) . '"></td>'
-                . '<td><button class="btn btn-sm btn-ghost-danger"><i class="ti ti-trash"></i></button></td></tr>';
+            $html .= '<tr><td><code>'.$this->e($key).'</code></td>'
+                .'<td><input type="text" class="form-control form-control-sm" value="'.$this->e($value).'"></td>'
+                .'<td><button class="btn btn-sm btn-ghost-danger"><i class="ti ti-trash"></i></button></td></tr>';
         }
         $html .= '</tbody></table></div><div class="card-footer text-end">'
-            . '<button class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>保存翻译</button></div></div></div>';
+            .'<button class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>保存翻译</button></div></div></div>';
 
         $html .= '</div>';
 
@@ -142,33 +141,32 @@ class I18n extends Component
     /**
      * render Custom（private实例方法）
      *
-     * @param string $currentLocale current Locale
-     * @param array $locales locales
-     * @param array $demoKeys demo Keys
-     *
+     * @param  string  $currentLocale  current Locale
+     * @param  array  $locales  locales
+     * @param  array  $demoKeys  demo Keys
      * @return string result
      */
     private function renderCustom(string $currentLocale, array $locales, array $demoKeys): string
     {
         $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center">'
-            . '<h5 class="card-title mb-0">多语言管理</h5><div class="btn-group btn-group-sm">';
+            .'<h5 class="card-title mb-0">多语言管理</h5><div class="btn-group btn-group-sm">';
 
         foreach ($locales as $code => $info) {
             $info = (array) $info;
             $name = $this->e($info['name'] ?? $code);
             $active = $code === $currentLocale ? ' btn-primary' : ' btn-outline-secondary';
-            $html .= '<button class="btn' . $active . '">' . $name . '</button>';
+            $html .= '<button class="btn'.$active.'">'.$name.'</button>';
         }
         $html .= '</div></div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr>'
-            . '<th>键</th><th>翻译值</th><th>状态</th></tr></thead><tbody>';
+            .'<th>键</th><th>翻译值</th><th>状态</th></tr></thead><tbody>';
 
         foreach ($demoKeys as $key => $value) {
-            $html .= '<tr><td><code>' . $this->e($key) . '</code></td>'
-                . '<td><input type="text" class="form-control form-control-sm" value="' . $this->e((string) $value) . '"></td>'
-                . '<td><span class="badge text-bg-success">已翻译</span></td></tr>';
+            $html .= '<tr><td><code>'.$this->e($key).'</code></td>'
+                .'<td><input type="text" class="form-control form-control-sm" value="'.$this->e((string) $value).'"></td>'
+                .'<td><span class="badge text-bg-success">已翻译</span></td></tr>';
         }
         $html .= '</tbody></table></div><div class="card-footer text-end">'
-            . '<button class="btn btn-primary">保存</button></div></div>';
+            .'<button class="btn btn-primary">保存</button></div></div>';
 
         return $html;
     }

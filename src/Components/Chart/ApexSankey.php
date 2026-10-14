@@ -39,13 +39,13 @@ class ApexSankey extends Component
     protected function defaults(): array
     {
         return [
-            'height'     => 400,
-            'nodes'      => [],
-            'edges'      => [],
+            'height' => 400,
+            'nodes' => [],
+            'edges' => [],
             'node_width' => 20,
-            'toolbar'    => true,
-            'order'      => null,
-            'options'    => [],
+            'toolbar' => true,
+            'order' => null,
+            'options' => [],
         ];
     }
 
@@ -56,7 +56,8 @@ class ApexSankey extends Component
      */
     protected function assets(): array
     {
-        // apexsankey 声明了 svgdotjs 依赖，Assets 会自动按序注入 svg.min.js
+        // apexsankey 在 Assets::PLUGINS 中未声明 deps：svg.min.js（svg.js v3）与前后置护栏
+        // 一起内联于该插件的 js 列表中，Assets 会按序注入，无需单独依赖 svgdotjs
         return ['apexsankey'];
     }
 
@@ -74,27 +75,31 @@ class ApexSankey extends Component
         foreach ((array) $this->get('nodes', []) as $n) {
             if (is_string($n)) {
                 $nodes[] = ['id' => $n, 'title' => $n];
+
                 continue;
             }
-            $n          = (array) $n;
-            $n['title'] = (string) ($n['title'] ?? $n['id'] ?? '');
-            $nodes[]    = $n;
+            $n = (array) $n;
+            // id/title 非标量（数组/对象等）时降级 ''，避免 (string) 强转触发数组转换警告
+            $nId = is_scalar($n['id'] ?? null) ? (string) $n['id'] : '';
+            $n['title'] = is_scalar($n['title'] ?? null) ? (string) $n['title'] : $nId;
+            $n['id'] = $nId;
+            $nodes[] = $n;
         }
         $cfg = array_filter([
-            'nodes'     => $nodes,
-            'edges'     => array_values((array) $this->get('edges', [])),
-            'height'    => (int) $this->get('height', 400),
+            'nodes' => $nodes,
+            'edges' => array_values((array) $this->get('edges', [])),
+            'height' => (int) $this->get('height', 400),
             'nodeWidth' => (int) $this->get('node_width', 20),
-            'toolbar'   => (bool) $this->get('toolbar', true),
-            'order'     => $this->get('order'),
-            'options'   => (array) $this->get('options', []) ?: null,
+            'toolbar' => (bool) $this->get('toolbar', true),
+            'order' => $this->get('order'),
+            'options' => (array) $this->get('options', []) ?: null,
         ], fn ($v) => $v !== null);
 
-        return '<div' . $this->attrs([
-            'class'          => 'xf-apexsankey',
-            'id'             => $id,
-            'data-xf'        => 'apexsankey',
-            'data-xf-config' => json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP),
-        ]) . '></div>';
+        return '<div'.$this->attrs([
+            'class' => 'xf-apexsankey',
+            'id' => $id,
+            'data-xf' => 'apexsankey',
+            'data-xf-config' => json_encode($cfg, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
+        ]).'></div>';
     }
 }

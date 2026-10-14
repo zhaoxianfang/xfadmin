@@ -11,7 +11,7 @@
     'use strict';
 
     var XFAdmin = {
-        version: '1.0.0',
+        version: '2.2.14',
         widgets: {},
         destroyers: {},          // 组件名 => 销毁函数（见 XFAdmin.register 第三参）
         instances: new WeakMap(), // el => 组件实例
@@ -1827,6 +1827,26 @@
             console.error('[XfAdmin] 初始化表格失败:', err);
             XFAdmin.toast({ body: '表格初始化失败：' + (err && err.message ? err.message : err), variant: 'danger' });
             return null;
+        }
+
+        // row_url：整行点击跳转（config.rowUrl 存在时生效）。
+        // URL 支持 {field} 占位符（按行数据替换并 encodeURIComponent，如 '/order/detail/{id}'）；
+        // 点击行内链接 / 按钮 / 表单控件 / 单元格事件锚点时不拦截，避免与行内交互冲突。
+        if (config.rowUrl) {
+            var _xfRowUrl = String(config.rowUrl);
+            el.addEventListener('click', function (ev) {
+                var tr = ev.target && ev.target.closest ? ev.target.closest('tbody tr') : null;
+                if (!tr || !el.contains(tr)) return;
+                if (ev.target.closest('a,button,input,select,textarea,label,.dropdown-menu,[data-xf-cell-event]')) return;
+                var rowData = null;
+                try { rowData = table.row(tr).data(); } catch (e) { return; }
+                if (!rowData || typeof rowData !== 'object') return;
+                var url = _xfRowUrl.replace(/\{(\w+)\}/g, function (_m, key) {
+                    var v = rowData[key];
+                    return v === undefined || v === null ? '' : encodeURIComponent(String(v));
+                });
+                if (url) global.location.href = url;
+            });
         }
 
         // 补充列头中文名到列元信息，并挂到表格元素供 viewRow 使用
@@ -4535,12 +4555,174 @@
 
     XFAdmin.register('inputmask', function (el, config) {
         if (!global.Inputmask) return;
-        return global.Inputmask({ mask: config.mask }).mask(el);
+        // 透传整个配置：既支持 {mask:'9999-99-99'}，也支持 Inputmask 的 alias 形式
+        // （{alias:'email'}/{alias:'currency'}/{alias:'ip'} 等）
+        return global.Inputmask(Object.assign({}, config)).mask(el);
+    });
+
+    /* 最大字符数计数器：为带 maxlength 的输入框显示「已输入/上限」徽标。
+     * 配置：alwaysShow（常驻显示，默认聚焦时显示）、warningClass（临近上限类名）、
+     *       limitReachedClass（达到上限类名）。原生 maxlength 属性始终兜底限制输入。 */
+    XFAdmin.register('fmMaxlength', function (el, config) {
+        if (!el || !el.getAttribute) return;
+        var max = parseInt(el.getAttribute('maxlength'), 10);
+        if (!max || max <= 0) return;
+        config = config || {};
+        var alwaysShow = !!config.alwaysShow;
+        var warningClass = config.warningClass || 'badge text-bg-warning';
+        var limitReachedClass = config.limitReachedClass || 'badge text-bg-danger';
+        var counter = document.createElement('div');
+        counter.className = 'xf-maxlength-counter form-text text-end';
+        counter.style.display = alwaysShow ? '' : 'none';
+        if (el.parentNode) el.parentNode.insertBefore(counter, el.nextSibling);
+        function update() {
+            var len = (el.value || '').length;
+            var remaining = max - len;
+            counter.textContent = len + ' / ' + max;
+            counter.className = 'xf-maxlength-counter form-text text-end '
+                + (remaining <= 0 ? limitReachedClass : (remaining <= Math.max(1, Math.floor(max * 0.1)) ? warningClass : 'text-muted'));
+        }
+        el.addEventListener('focus', function () { counter.style.display = ''; update(); });
+        el.addEventListener('blur', function () { if (!alwaysShow) counter.style.display = 'none'; });
+        el.addEventListener('input', update);
+        update();
+        return { update: update };
+    });
+
+    /* 加载/忙碌按钮（LoadingButton 组件）：点击后禁用按钮并显示 spinner，防止重复提交。
+     * 配置：driver=spinner|ladda（Ladda 插件可用时优先，缺失自动降级为内置 spinner）、
+     *       restoreMs（>0 时 N 毫秒后自动恢复，便于演示/无后端场景）。
+     * 句柄：XFAdmin.get(el) 返回 {start, stop}，供 XHR/fetch 提交结束后手动恢复。 */
+    XFAdmin.register('loading-btn', function (el, config) {
+        if (!el || el.tagName !== 'BUTTON') return;
+        config = config || {};
+        var driver = el.getAttribute('data-driver') || config.driver || 'spinner';
+        var spin = el.querySelector('.xf-lbtn-spinner');
+        var ladda = null;
+        if (driver === 'ladda' && global.Ladda) {
+            try { ladda = global.Ladda.create(el); } catch (e) { ladda = null; }
+        }
+        function start() {
+            if (el.disabled) return;
+            el.disabled = true;
+            if (ladda) ladda.start();
+            else if (spin) spin.classList.remove('d-none');
+        }
+        function stop() {
+            el.disabled = false;
+            if (ladda) ladda.stop();
+            else if (spin) spin.classList.add('d-none');
+        }
+        el.addEventListener('click', function () {
+            start();
+            var ms = parseInt(config.restoreMs || el.getAttribute('data-restore') || '0', 10);
+            if (ms > 0) setTimeout(stop, ms);
+            el.dispatchEvent(new CustomEvent('xf.loading.start', { bubbles: true }));
+        });
+        return { start: start, stop: stop };
+    });
+
+    /* 数量步进器（QuantityStepper 组件）：−/+ 按钮按 step 调整，遵守 min/max，手动输入即 clamp。
+     * DOM 约定：容器 data-min/data-max/data-step，.xf-qty-dec 减、.xf-qty-inc 加、.xf-qty-input 输入框。 */
+    XFAdmin.register('qtyStepper', function (el) {
+        var input = el.querySelector('.xf-qty-input');
+        if (!input) return;
+        var min = parseFloat(el.getAttribute('data-min'));
+        var max = parseFloat(el.getAttribute('data-max'));
+        var step = parseFloat(el.getAttribute('data-step'));
+        if (isNaN(min)) min = null;
+        if (isNaN(max)) max = null;
+        if (isNaN(step) || step <= 0) step = 1;
+        function clamp(v) {
+            if (isNaN(v)) v = 0;
+            if (min !== null && v < min) v = min;
+            if (max !== null && v > max) v = max;
+            return v;
+        }
+        function setVal(v, fire) {
+            v = clamp(v);
+            if (String(v) !== input.value) {
+                input.value = v;
+                if (fire !== false) input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+        var dec = el.querySelector('.xf-qty-dec');
+        var inc = el.querySelector('.xf-qty-inc');
+        if (dec) dec.addEventListener('click', function () { setVal(parseFloat(input.value || '0') - step); });
+        if (inc) inc.addEventListener('click', function () { setVal(parseFloat(input.value || '0') + step); });
+        input.addEventListener('change', function () { setVal(parseFloat(input.value || '0')); });
+        // 输入过滤：仅保留数字/小数点/负号（min 通常 >= 0，负号兼容温度等负值场景）
+        input.addEventListener('input', function () {
+            var v = (input.value || '').replace(/[^\d.\-]/g, '');
+            if (v !== input.value) input.value = v;
+        });
+        setVal(parseFloat(input.value || '0'), false);
+        return { set: setVal };
+    });
+
+    /* 打印按钮（InvoicePrintButton 组件）：默认触发整页打印；
+     * 配置 target（CSS 选择器）存在时仅打印目标区域——将页面样式复制进隐藏 iframe 后打印，打印完成自动清理。 */
+    XFAdmin.register('print', function (el, config) {
+        el.addEventListener('click', function () {
+            var sel = (config && config.target) || el.getAttribute('data-xf-target') || '';
+            var target = null;
+            if (sel) {
+                try { target = document.querySelector(sel); } catch (e) { target = null; }
+            }
+            if (!target) { global.print(); return; }
+            // 隐藏 iframe：隔离打印区域并继承页面样式（about:blank iframe 的 baseURI 继承父文档，相对路径可用）
+            var frame = document.createElement('iframe');
+            frame.setAttribute('aria-hidden', 'true');
+            frame.style.cssText = 'position:fixed;width:0;height:0;border:0;visibility:hidden;';
+            document.body.appendChild(frame);
+            var printed = false;
+            function doPrint() {
+                if (printed) return;
+                printed = true;
+                try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch (e) { global.print(); }
+                setTimeout(function () { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 800);
+            }
+            try {
+                var doc = frame.contentWindow.document;
+                var head = '';
+                document.querySelectorAll('link[rel="stylesheet"], style').forEach(function (s) { head += s.outerHTML; });
+                doc.open();
+                doc.write('<!DOCTYPE html><html><head><meta charset="utf-8">' + head + '</head><body>' + target.innerHTML + '</body></html>');
+                doc.close();
+                frame.onload = doPrint;
+                setTimeout(doPrint, 400); // doc.write 的同步文档 onload 可能不触发，兜底（printed 去重）
+            } catch (e) {
+                if (frame.parentNode) frame.parentNode.removeChild(frame);
+                global.print();
+            }
+        });
     });
 
     XFAdmin.register('tagify', function (el, config) {
         if (!global.Tagify) return;
         return new global.Tagify(el, config);
+    });
+
+    // ---------- 静态 Toast 初始化（配合 XfAdmin::toast() 服务端渲染的 .toast 元素） ----------
+    // Bootstrap 5 的 Toast 不自动初始化，关闭按钮（data-bs-dismiss="toast"）与自动消失
+    // （data-bs-autohide / data-bs-delay）都必须经由 new bootstrap.Toast(el).show() 接管。
+    // 该 widget 仅处理扫描入口，参数全部读取元素自带的 data-bs-* 属性，无需额外配置。
+    XFAdmin.register('toast', function (el) {
+        if (!global.bootstrap || !global.bootstrap.Toast) {
+            return;
+        }
+        if (el.__xfToastBound) {
+            return;
+        }
+        el.__xfToastBound = true;
+        var toast = new global.bootstrap.Toast(el);
+        el.addEventListener('hidden.bs.toast', function () {
+            if (el.parentNode) {
+                el.parentNode.removeChild(el);
+            }
+        });
+        toast.show();
+        return toast;
     });
 
     // ---------- 交互 ----------
@@ -5592,11 +5774,29 @@
         initPasswordStrength(document);
         initCaptcha(document);
         XFAdmin.bindInvoicePrint(document);
+        XFAdmin.bindAutosize(document);
         XFAdmin._readyQueue.forEach(function (fn) {
             try { fn(); } catch (e) { console.error('[XFAdmin] onReady', e); }
         });
         XFAdmin._readyQueue = [];
     }
+
+    /* ------------------------------------------------------------------
+     * 自适应高度文本域：textarea.autosize 随内容自动增高（事件委派，兼容 AJAX 插入）
+     * ---------------------------------------------------------------- */
+    XFAdmin.bindAutosize = function (root) {
+        root = root || document;
+        function grow(ta) {
+            ta.style.height = 'auto';
+            ta.style.height = (ta.scrollHeight + 2) + 'px';
+        }
+        Array.prototype.forEach.call(root.querySelectorAll('textarea.autosize'), function (ta) {
+            if (ta.__xfAutosizeBound) return;
+            ta.__xfAutosizeBound = true;
+            ta.addEventListener('input', function () { grow(ta); });
+            grow(ta);
+        });
+    };
 
     /* ------------------------------------------------------------------
      * 通用「页内弹窗链接」：[data-xf-page] 点击后用可最大化弹窗加载服务端页面。

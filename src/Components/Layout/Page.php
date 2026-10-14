@@ -38,29 +38,29 @@ class Page extends Component
     protected function defaults(): array
     {
         return [
-            'lang'        => 'zh-CN',
-            'title'       => '',
+            'lang' => 'zh-CN',
+            'title' => '',
             'description' => null,
-            'keywords'    => null,
-            'author'      => null,
-            'favicon'     => null,
-            'layout'      => 'vertical',
-            'theme'       => [],
-            'menu'        => [],
+            'keywords' => null,
+            'author' => null,
+            'favicon' => null,
+            'layout' => 'vertical',
+            'theme' => [],
+            'menu' => [],
             'current_url' => null,
-            'sidenav'     => [],
-            'topbar'      => [],
-            'topnav'      => null,   // 水平布局顶部导航（layout=horizontal 时启用）
-            'page_title'  => null,
-            'content'     => '',
-            'container'   => 'container-fluid',
-            'footer'      => [],
-            'customizer'  => true,
-            'preloader'   => false,  // 页面加载动画（true = 启用）
-            'head'        => null,   // <head> 附加内容
-            'scripts'     => null,   // </body> 前附加内容
-            'body_class'  => null,
-            'csrf'        => null,   // CSRF Token（Laravel 下自动注入 csrf_token()）
+            'sidenav' => [],
+            'topbar' => [],
+            'topnav' => null,   // 水平布局顶部导航（layout=horizontal 时启用）
+            'page_title' => null,
+            'content' => '',
+            'container' => 'container-fluid',
+            'footer' => [],
+            'customizer' => true,
+            'preloader' => false,  // 页面加载动画（true = 启用）
+            'head' => null,   // <head> 附加内容
+            'scripts' => null,   // </body> 前附加内容
+            'body_class' => null,
+            'csrf' => null,   // CSRF Token（Laravel 下自动注入 csrf_token()）
         ];
     }
 
@@ -79,13 +79,13 @@ class Page extends Component
         // 因此这些属性不能按「等于某值就省略」处理 —— 省略会被模板脚本回落成 modern/gradient，
         // 与服务端渲染的 CSS 变量不一致，导致首屏观感与配置不符。这里统一显式输出。
         $themeDefaults = [
-            'skin'            => 'modern',
-            'mode'            => 'light',
+            'skin' => 'modern',
+            'mode' => 'light',
             'layout_position' => 'fixed',
-            'layout_width'    => 'fluid',
-            'topbar_color'    => 'light',
-            'menu_color'      => 'gradient',
-            'sidenav_size'    => 'default',
+            'layout_width' => 'fluid',
+            'topbar_color' => 'light',
+            'menu_color' => 'gradient',
+            'sidenav_size' => 'default',
         ];
         $theme = array_replace(
             $themeDefaults,
@@ -155,7 +155,7 @@ class Page extends Component
             }
         }
         // 内容区
-        $body .= '<div class="content-page"><div class="' . $this->e($this->get('container')) . '">';
+        $body .= '<div class="content-page"><div class="'.$this->e($this->get('container')).'">';
         $pageTitle = $this->get('page_title');
         if ($pageTitle) {
             // 字符串形态的页面标题来自调用方数据 → 转义；仍允许直接传组件实例
@@ -179,18 +179,18 @@ class Page extends Component
         // ---------- 组装文档 ----------
         $favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url('images/favicon.ico');
 
-        $doc  = "<!DOCTYPE html>\n<html" . Html::attrs($htmlAttrs) . ">\n<head>\n";
-        $doc .= '<meta charset="utf-8">' . "\n";
-        $doc .= '<title>' . $this->e($this->get('title')) . '</title>' . "\n";
-        $doc .= '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n";
+        $doc = "<!DOCTYPE html>\n<html".Html::attrs($htmlAttrs).">\n<head>\n";
+        $doc .= '<meta charset="utf-8">'."\n";
+        $doc .= '<title>'.$this->e($this->get('title')).'</title>'."\n";
+        $doc .= '<meta name="viewport" content="width=device-width, initial-scale=1">'."\n";
         if ($this->get('description')) {
-            $doc .= '<meta name="description" content="' . $this->e($this->get('description')) . '">' . "\n";
+            $doc .= '<meta name="description" content="'.$this->e($this->get('description')).'">'."\n";
         }
         if ($this->get('keywords')) {
-            $doc .= '<meta name="keywords" content="' . $this->e($this->get('keywords')) . '">' . "\n";
+            $doc .= '<meta name="keywords" content="'.$this->e($this->get('keywords')).'">'."\n";
         }
         if ($this->get('author')) {
-            $doc .= '<meta name="author" content="' . $this->e($this->get('author')) . '">' . "\n";
+            $doc .= '<meta name="author" content="'.$this->e($this->get('author')).'">'."\n";
         }
         // CSRF meta：显式传入 csrf 或 Laravel 环境自动注入（前端 AJAX 自动携带）
         $csrf = $this->get('csrf');
@@ -202,20 +202,20 @@ class Page extends Component
             }
         }
         if (is_string($csrf) && $csrf !== '') {
-            $doc .= '<meta name="csrf-token" content="' . $this->e($csrf) . '">' . "\n";
+            $doc .= '<meta name="csrf-token" content="'.$this->e($csrf).'">'."\n";
         }
-        $doc .= '<link rel="shortcut icon" href="' . $this->e($favicon) . '">' . "\n";
+        $doc .= '<link rel="shortcut icon" href="'.$this->e($this->safeUrl($favicon, '')).'">'."\n";
         $doc .= $assets->head();
         $doc .= $this->raw($this->get('head'));
-        $doc .= "</head>\n<body" . ($this->get('body_class') ? ' class="' . $this->e($this->get('body_class')) . '"' : '') . ">\n";
+        $doc .= "</head>\n<body".($this->get('body_class') ? ' class="'.$this->e($this->get('body_class')).'"' : '').">\n";
 
         // 页面加载动画（preloader）
         if ($this->get('preloader')) {
             $doc .= '<div id="preloader"><div id="status"><div class="spinner">'
-                . '<div class="double-bounce1"></div><div class="double-bounce2"></div>'
-                . '</div></div></div>';
+                .'<div class="double-bounce1"></div><div class="double-bounce2"></div>'
+                .'</div></div></div>';
         }
-        $doc .= $body . "\n";
+        $doc .= $body."\n";
         $doc .= $assets->scripts();
         $doc .= $this->raw($this->get('scripts'));
         $doc .= "\n</body>\n</html>";

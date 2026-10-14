@@ -52,6 +52,27 @@ class Upload extends Component
     }
 
     /**
+     * max_size → FilePond maxFileSize 文案（如 '2MB'）。
+     *
+     * 仅「正数」才输出限制值；0 / '0' / 空值 / null / 非数字 / 负数一律视为
+     * 「不限制」，返回 null 不输出该配置——旧写法用真值判断，会把 -5、'abc'
+     * 这类非法值也拼成 '-5MB' / 'abcMB' 透传给插件。
+     */
+    private function maxFileSizeLabel(): ?string
+    {
+        $v = $this->get('max_size');
+        if ($v === null || $v === '') {
+            return null;
+        }
+        $s = trim((string) $v);
+        if (! is_numeric($s) || (float) $s <= 0) {
+            return null;
+        }
+
+        return $s.'MB';
+    }
+
+    /**
      * html（protected实例方法）
      *
      * @return string result
@@ -62,11 +83,13 @@ class Upload extends Component
         $driver = $this->get('driver');
 
         if ($driver === 'dropzone') {
+            // name 为空串时回退通用字段名 file，避免 dropzone 提交空 paramName
+            $paramName = (string) $this->get('name') ?: 'file';
             $config = array_replace_recursive([
                 'url' => $this->get('url'),
                 'maxFilesize' => $this->get('max_size'),
                 'acceptedFiles' => $this->get('accept'),
-                'paramName' => $this->get('name') ?? 'file',
+                'paramName' => $paramName,
             ], (array) $this->get('options', []));
             // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义（落到拖拽容器）
             $dzAttrs = $this->controlAttrs([
@@ -83,8 +106,12 @@ class Upload extends Component
             $config = array_replace_recursive([
                 'allowMultiple' => (bool) $this->get('multiple'),
                 'server' => $this->get('url'),
-                'maxFileSize' => $this->get('max_size') ? $this->get('max_size').'MB' : null,
+                'maxFileSize' => $this->maxFileSizeLabel(),
             ], (array) $this->get('options', []));
+            // 不限制时整个移除 maxFileSize 键：输出 "maxFileSize":null 不如不输出
+            if (($config['maxFileSize'] ?? null) === null) {
+                unset($config['maxFileSize']);
+            }
             $fpAttrs = [
                 'type' => 'file',
                 'id' => $id,

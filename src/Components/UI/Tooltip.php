@@ -32,13 +32,13 @@ class Tooltip extends Component
     protected function defaults(): array
     {
         return [
-            'text'      => '',
-            'title'     => '',
+            'text' => '',
+            'title' => '',
             'placement' => 'top',
-            'tag'       => 'button',
-            'class'     => 'btn btn-secondary',
-            'html'      => false,
-            'trigger'   => null,
+            'tag' => 'button',
+            'class' => 'btn btn-secondary',
+            'html' => false,
+            'trigger' => null,
             'custom_class' => null,
         ];
     }
@@ -50,12 +50,13 @@ class Tooltip extends Component
      */
     protected function html(): string
     {
-        $tag  = preg_replace('/[^a-z0-9]/i', '', (string) $this->get('tag')) ?: 'button';
+        $tag = preg_replace('/[^a-z0-9]/i', '', (string) $this->get('tag')) ?: 'button';
         $attrs = [
-            'class'            => Html::cls($this->get('class')),
-            'data-bs-toggle'   => 'tooltip',
-            'data-bs-placement'=> $this->e($this->get('placement')),
-            'title'            => $this->e($this->get('title')),
+            'class' => Html::cls($this->get('class')),
+            'data-bs-toggle' => 'tooltip',
+            // placement 白名单（Bootstrap data-bs-placement），非法值回退默认 top
+            'data-bs-placement' => $this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'top'),
+            'title' => $this->e($this->get('title')),
         ];
         if ($this->get('html')) {
             $attrs['data-bs-html'] = 'true';
@@ -70,6 +71,6 @@ class Tooltip extends Component
             $attrs['type'] = 'button';
         }
 
-        return '<' . $tag . $this->attrs($attrs) . '>' . $this->raw($this->get('text')) . '</' . $tag . '>';
+        return '<'.$tag.$this->attrs($attrs).'>'.$this->raw($this->get('text')).'</'.$tag.'>';
     }
 }

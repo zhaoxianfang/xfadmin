@@ -23,33 +23,32 @@ class Progress extends Component
     protected function defaults(): array
     {
         return [
-            'value'    => 0,
-            'variant'  => 'primary',
-            'height'   => null,     // px
-            'striped'  => false,
+            'value' => 0,
+            'variant' => 'primary',
+            'height' => null,     // px
+            'striped' => false,
             'animated' => false,
-            'label'    => null,
-            'bars'     => [],
+            'label' => null,
+            'bars' => [],
         ];
     }
 
     /**
      * bar（protected实例方法）
      *
-     * @param array $bar bar
-     *
+     * @param  array  $bar  bar
      * @return string result
      */
     protected function bar(array $bar): string
     {
         $value = (float) ($bar['value'] ?? 0);
-        $class = Html::cls('progress-bar', 'bg-' . $this->enum($bar['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary'), [
-            'progress-bar-striped'  => $bar['striped'] ?? $this->get('striped'),
+        $class = Html::cls('progress-bar', 'bg-'.$this->enum($bar['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary'), [
+            'progress-bar-striped' => $bar['striped'] ?? $this->get('striped'),
             'progress-bar-animated' => $bar['animated'] ?? $this->get('animated'),
         ]);
 
-        return '<div class="' . $class . '" role="progressbar" style="width: ' . $value . '%" aria-valuenow="' . $value . '" aria-valuemin="0" aria-valuemax="100">'
-            . $this->e($bar['label'] ?? '') . '</div>';
+        return '<div class="'.$class.'" role="progressbar" style="width: '.$value.'%" aria-valuenow="'.$value.'" aria-valuemin="0" aria-valuemax="100">'
+            .$this->e($bar['label'] ?? '').'</div>';
     }
 
     /**
@@ -62,16 +61,17 @@ class Progress extends Component
         $bars = (array) $this->get('bars', []);
         if ($bars === []) {
             $bars = [[
-                'value'   => $this->get('value'),
+                'value' => $this->get('value'),
                 'variant' => $this->get('variant'),
-                'label'   => $this->get('label'),
+                'label' => $this->get('label'),
             ]];
         }
-        $style = $this->get('height') !== null ? 'height: ' . (int) $this->get('height') . 'px;' : null;
-        $html  = '<div' . $this->attrs(array_filter(['class' => 'progress', 'style' => $style])) . '>';
+        $style = $this->get('height') !== null ? 'height: '.(int) $this->get('height').'px;' : null;
+        $html = '<div'.$this->attrs(array_filter(['class' => 'progress', 'style' => $style])).'>';
         foreach ($bars as $bar) {
             $html .= $this->bar((array) $bar);
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

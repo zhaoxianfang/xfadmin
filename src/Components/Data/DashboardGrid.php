@@ -34,7 +34,7 @@ class DashboardGrid extends Component
     protected function defaults(): array
     {
         return [
-            'stats'  => [],
+            'stats' => [],
             'charts' => [],
             'bottom' => '',
         ];
@@ -47,7 +47,7 @@ class DashboardGrid extends Component
      */
     protected function html(): string
     {
-        $stats  = (array) $this->get('stats', []);
+        $stats = (array) $this->get('stats', []);
         $charts = (array) $this->get('charts', []);
         $bottom = $this->get('bottom', '');
 
@@ -65,47 +65,49 @@ class DashboardGrid extends Component
             $html .= '<div class="row g-3">';
             foreach ($charts as $c) {
                 $c = (array) $c;
-                $width = (int) ($c['width'] ?? 6);
-                $body  = $this->raw($c['body'] ?? '');
+                // width 夹紧 1-12：非法值回退整行 12 列，避免产生 col-xl-0 等非法列类
+                $w = (int) ($c['width'] ?? 6);
+                $width = ($w >= 1 && $w <= 12) ? $w : 12;
+                $body = $this->raw($c['body'] ?? '');
                 $title = $this->e($c['title'] ?? '');
-                $html .= '<div class="col-xl-' . $width . '">'
-                    . '<div class="card h-100"><div class="card-header"><h5 class="mb-0">' . $title . '</h5></div>'
-                    . '<div class="card-body">' . $body . '</div></div></div>';
+                $html .= '<div class="col-xl-'.$width.'">'
+                    .'<div class="card h-100"><div class="card-header"><h5 class="mb-0">'.$title.'</h5></div>'
+                    .'<div class="card-body">'.$body.'</div></div></div>';
             }
             $html .= '</div>';
         }
         if ($bottom !== '' && $bottom !== null) {
             $html .= '<div class="mt-3">'
-                . '<div class="card"><div class="card-header"><h5 class="mb-0">' . $this->e($this->get('bottom_title', '综合看板')) . '</h5></div>'
+                .'<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->e($this->get('bottom_title', '综合看板')).'</h5></div>'
                 // bottom 是 HTML 内容槽位（Tabs 等组件实例渲染出的字符串 / 开发者自定义 HTML），按 raw 原样输出
-                . '<div class="card-body">' . $this->raw($bottom) . '</div></div></div>';
+                .'<div class="card-body">'.$this->raw($bottom).'</div></div></div>';
         }
+
         return $html;
     }
 
     /**
      * stat Card（private实例方法）
      *
-     * @param array $s s
-     *
+     * @param  array  $s  s
      * @return string result
      */
     private function statCard(array $s): string
     {
         $variant = $this->enum((string) ($s['variant'] ?? 'primary'),
             self::ENUM_VARIANT, 'primary');
-        $icon    = (string) ($s['icon'] ?? 'ti-chart-line');
-        $trend   = (float) ($s['trend'] ?? 0);
+        $icon = (string) ($s['icon'] ?? 'ti-chart-line');
+        $trend = (float) ($s['trend'] ?? 0);
         $trendClass = $trend >= 0 ? 'text-success' : 'text-danger';
         $trendArrow = $trend >= 0 ? 'ti-arrow-up-right' : 'ti-arrow-down-right';
-        $trendText   = ($trend >= 0 ? '+' : '') . $trend . '%';
+        $trendText = ($trend >= 0 ? '+' : '').$trend.'%';
 
         return '<div class="col-sm-6 col-xl-3">'
-            . '<div class="card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start">'
-            . '<div><span class="text-muted small">' . $this->e($s['title'] ?? '') . '</span>'
-            . '<h3 class="mt-1 mb-1">' . $this->e($s['value'] ?? '') . '</h3>'
-            . '<span class="' . $trendClass . ' small"><i class="ti ' . $trendArrow . ' me-1"></i>' . $trendText . '</span></div>'
-            . '<i class="ti ' . $this->e($icon) . ' fs-24 text-' . $this->e($variant) . ' bg-' . $this->e($variant) . ' bg-opacity-10 rounded p-2"></i>'
-            . '</div></div></div></div>';
+            .'<div class="card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start">'
+            .'<div><span class="text-muted small">'.$this->e($s['title'] ?? '').'</span>'
+            .'<h3 class="mt-1 mb-1">'.$this->e($s['value'] ?? '').'</h3>'
+            .'<span class="'.$trendClass.' small"><i class="ti '.$trendArrow.' me-1"></i>'.$trendText.'</span></div>'
+            .'<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($variant).' bg-'.$this->e($variant).' bg-opacity-10 rounded p-2"></i>'
+            .'</div></div></div></div>';
     }
 }

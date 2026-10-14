@@ -30,16 +30,15 @@ class PublishCommand extends Command
     /**
      * execute（protected实例方法）
      *
-     * @param Input $input input
-     * @param Output $output output
-     *
+     * @param  Input  $input  input
+     * @param  Output  $output  output
      * @return int result
      */
     protected function execute(Input $input, Output $output): int
     {
-        $source = realpath(__DIR__ . '/../../resources/assets');
-        $target = $this->app->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'zxf' . DIRECTORY_SEPARATOR . 'xfadmin';
-        $force  = (bool) $input->getOption('force');
+        $source = realpath(__DIR__.'/../../resources/assets');
+        $target = $this->app->getRootPath().'public'.DIRECTORY_SEPARATOR.'zxf'.DIRECTORY_SEPARATOR.'xfadmin';
+        $force = (bool) $input->getOption('force');
 
         if ($source === false) {
             $output->error('未找到资源目录');
@@ -54,7 +53,7 @@ class PublishCommand extends Command
             return 0;
         }
         $this->copyDir($source, $target, $force);
-        $output->info("XfAdmin 资源已发布到: {$target}" . ($force ? '（已覆盖）' : ''));
+        $output->info("XfAdmin 资源已发布到: {$target}".($force ? '（已覆盖）' : ''));
 
         return 0;
     }
@@ -62,10 +61,9 @@ class PublishCommand extends Command
     /**
      * copy Dir（private实例方法）
      *
-     * @param string $source source
-     * @param string $target target
-     * @param bool $force force
-     *
+     * @param  string  $source  source
+     * @param  string  $target  target
+     * @param  bool  $force  force
      * @return void result
      */
     private function copyDir(string $source, string $target, bool $force = false): void
@@ -78,7 +76,7 @@ class PublishCommand extends Command
             \RecursiveIteratorIterator::SELF_FIRST
         );
         foreach ($iterator as $item) {
-            $dest = $target . DIRECTORY_SEPARATOR . $iterator->getSubPathname();
+            $dest = $target.DIRECTORY_SEPARATOR.$iterator->getSubPathname();
             if ($item->isDir()) {
                 if (! is_dir($dest)) {
                     mkdir($dest, 0755, true);
@@ -95,8 +93,7 @@ class PublishCommand extends Command
     /**
      * dir Has Files（private实例方法）
      *
-     * @param string $dir dir
-     *
+     * @param  string  $dir  dir
      * @return bool result
      */
     private function dirHasFiles(string $dir): bool
@@ -105,8 +102,10 @@ class PublishCommand extends Command
             if ($item === '.' || $item === '..') {
                 continue;
             }
+
             return true;
         }
+
         return false;
     }
 }

@@ -22,9 +22,9 @@ class ClipboardButton extends Component
     protected function defaults(): array
     {
         return [
-            'text'    => null,
-            'target'  => null,
-            'label'   => '复制',
+            'text' => null,
+            'target' => null,
+            'label' => '复制',
             'variant' => 'light',
             'success' => '已复制！',
         ];
@@ -48,9 +48,9 @@ class ClipboardButton extends Component
     protected function html(): string
     {
         $attrs = [
-            'type'     => 'button',
-            'class'    => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
-            'data-xf'  => 'clipboard',
+            'type' => 'button',
+            'class' => 'btn btn-sm btn-'.$this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
+            'data-xf' => 'clipboard',
             'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
         ];
         if ($this->get('text') !== null) {
@@ -59,6 +59,7 @@ class ClipboardButton extends Component
         if ($this->get('target') !== null) {
             $attrs['data-clipboard-target'] = $this->get('target');
         }
-        return '<button' . $this->attrs($attrs) . '><i class="ti ti-copy me-1"></i>' . $this->e($this->get('label')) . '</button>';
+
+        return '<button'.$this->attrs($attrs).'><i class="ti ti-copy me-1"></i>'.$this->e($this->get('label')).'</button>';
     }
 }

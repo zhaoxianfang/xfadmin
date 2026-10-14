@@ -50,10 +50,11 @@ class Input extends Component
     protected function assets(): array
     {
         $assets = [];
+        // mask 与 tags 同时配置时与 html() 的优先级保持一致：只启用 mask（inputmask），
+        // 避免把用不到的插件（tagify）也注册进页面
         if ($this->get('mask')) {
             $assets[] = 'inputmask';
-        }
-        if ($this->get('tags')) {
+        } elseif ($this->get('tags')) {
             $assets[] = 'tagify';
         }
 
@@ -68,9 +69,12 @@ class Input extends Component
     protected function html(): string
     {
         $id = $this->resolveId('xf-input');
+        // size 白名单兜底 ''（无尺寸类）：非法值不再回落成 lg，也不输出 "form-control-" 残类
+        $size = $this->enum($this->get('size'), self::ENUM_SIZE, '');
+        $sizeCls = $size !== '' ? 'form-control-'.$size : '';
         $attrs = [
             'type' => $this->get('type'),
-            'class' => Html::cls('form-control', $this->get('size') ? 'form-control-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '', $this->controlStateClass()),
+            'class' => Html::cls('form-control', $sizeCls, $this->controlStateClass()),
             'id' => $id,
             'name' => $this->get('name'),
             'value' => $this->get('value'),
@@ -85,6 +89,7 @@ class Input extends Component
             'autocomplete' => $this->get('autocomplete'),
         ];
 
+        // mask 与 tags 二选一，mask 优先（与 assets() 注册逻辑保持一致）
         if ($this->get('mask')) {
             $attrs['data-xf'] = 'inputmask';
             $attrs['data-xf-config'] = json_encode(['mask' => $this->get('mask')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);

@@ -116,7 +116,7 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\Layout\ComingSoon comingSoon(array $options = []) // 即将上线页（倒计时 + 订阅）
  * @method static Components\Layout\Maintenance maintenance(array $options = []) // 系统维护页（503 风格）
  * @method static Components\Layout\EmptyState emptyState(array $options = []) // 空状态页（无数据占位插画+文案）
- *                                                                             //method static Components\Layout\LockScreen  lockScreen(array $options = [])  // 锁屏页（auth lock-screen，密码解锁）
+ * @method static Components\Layout\LockScreen lockScreen(array $options = []) // 锁屏页（auth lock-screen，密码解锁）
  * @method static Components\Layout\AccountSettingsPanel accountSettingsPanel(array $options = []) // 账户设置面板（头像/密码/通知等卡片组）
  * @method static Components\Form\Tags tags(array $options = []) // 标签输入（Tagify 多标签）
  * @method static Components\Form\MaskedInput maskedInput(array $options = []) // 输入掩码（电话/日期格式约束）
@@ -255,8 +255,20 @@ use zxf\XfAdmin\Components\Component;
  */
 final class XfAdmin
 {
-    /** 扩展包版本号（与 config/xfadmin.php 的 version 同步，用于运行时自检） */
-    public const VERSION = '2.0.0';
+    /** 扩展包版本号（与 config/xfadmin.php 的 version 及 docs 更新日志保持同步，用于运行时自检） */
+    public const VERSION = '2.2.15';
+
+    /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
+    private const AUTH_TYPE_ALIASES = [
+        'signIn' => 'sign-in',
+        'signUp' => 'sign-up',
+        'resetPass' => 'reset-pass',
+        'newPass' => 'new-pass',
+        'twoFactor' => 'two-factor',
+        'deleteAccount' => 'delete-account',
+        'successMail' => 'success-mail',
+        'loginPin' => 'login-pin',
+    ];
 
     /** 组件注册表：alias => class */
     private static array $components = [
@@ -276,7 +288,6 @@ final class XfAdmin
         'resetPass' => Components\Layout\AuthPage::class,
         'newPass' => Components\Layout\AuthPage::class,
         'twoFactor' => Components\Layout\AuthPage::class,
-        'lockScreen' => Components\Layout\AuthPage::class,
         'deleteAccount' => Components\Layout\AuthPage::class,
         'successMail' => Components\Layout\AuthPage::class,
         'loginPin' => Components\Layout\AuthPage::class,
@@ -284,6 +295,7 @@ final class XfAdmin
         'comingSoon' => Components\Layout\ComingSoon::class,
         'maintenance' => Components\Layout\Maintenance::class,
         'emptyState' => Components\Layout\EmptyState::class,
+        // 锁屏页使用专用 LockScreen 组件（auth lock-screen 语义页可经 authPage(['type'=>'lock-screen']) 使用）
         'lockScreen' => Components\Layout\LockScreen::class,
         'landing' => Components\Layout\Landing::class,
         // DIY 可视化布局器（拖拽组件 + 属性面板 + 服务端实时预览，对标 LayoutIt）
@@ -691,7 +703,7 @@ final class XfAdmin
     /**
      * 返回扩展包版本号（等同于 XfAdmin::VERSION 常量）
      *
-     * @return string 语义化版本号，如 '1.0.0'
+     * @return string 语义化版本号，如 '2.1.0'
      */
     public static function version(): string
     {
@@ -764,11 +776,22 @@ final class XfAdmin
      */
     public static function img(string $path): string
     {
-        if (preg_match('#^(https?:|data:)#i', $path)) {
+        // 协议相对（//host/...）、绝对 http(s) 原样返回
+        if (preg_match('#^(?:https?:)?//#i', $path)) {
             return $path;
         }
         if ($path === '') {
             // 空路径返回透明 1x1 GIF，避免组件输出 src="" 触发破图请求
+            return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        }
+        // 放行：仅 data:image/*（拒绝 data:text/html 等可承载脚本的 XSS 载体）
+        if (preg_match('#^data:image/#i', $path)) {
+            return $path;
+        }
+        // 拦截：javascript:/vbscript:/data: 非图片 等显式伪协议。
+        // 必须在 asset() 拼接基址之前拦截，否则 javascript:alert(1) 经 asset 变为
+        // /base/javascript:alert(1) 后会因「以 / 开头」绕过 safeUrl 检测。
+        if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $path)) {
             return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
         }
 
@@ -825,26 +848,6 @@ final class XfAdmin
      * @return Component 组件实例（Stringable，可直接输出）
      *
      * @throws InvalidArgumentException 别名未注册时抛出
-     */
-    /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
-    private const AUTH_TYPE_ALIASES = [
-        'signIn' => 'sign-in',
-        'signUp' => 'sign-up',
-        'resetPass' => 'reset-pass',
-        'newPass' => 'new-pass',
-        'twoFactor' => 'two-factor',
-        'lockScreen' => 'lock-screen',
-        'deleteAccount' => 'delete-account',
-        'successMail' => 'success-mail',
-        'loginPin' => 'login-pin',
-    ];
-
-    /**
-     * call Static（public静态方法）
-     *
-     * @param  string  $name  name
-     * @param  array  $arguments  arguments
-     * @return Component result
      */
     public static function __callStatic(string $name, array $arguments): Component
     {

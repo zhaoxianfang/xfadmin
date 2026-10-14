@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin\Components\Layout;
 
+use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\Components\Component;
 
 /**
@@ -57,25 +58,25 @@ class AuthPage extends Component
 
     /** 顶部链接文案的默认映射（按 type 自动生成“去/回”导航） */
     protected const DEFAULT_LINKS = [
-        'sign-in'        => ['registerRedirect', 'loginRedirect'],
-        'sign-up'        => ['loginRedirect'],
-        'reset-pass'     => ['loginRedirect'],
-        'new-pass'       => [],
-        'lock-screen'    => ['loginRedirect'],
-        'login-pin'      => ['loginRedirect'],
-        'two-factor'     => ['loginRedirect'],
+        'sign-in' => ['registerRedirect', 'loginRedirect'],
+        'sign-up' => ['loginRedirect'],
+        'reset-pass' => ['loginRedirect'],
+        'new-pass' => [],
+        'lock-screen' => ['loginRedirect'],
+        'login-pin' => ['loginRedirect'],
+        'two-factor' => ['loginRedirect'],
         'delete-account' => [],
-        'success-mail'   => ['loginRedirect'],
+        'success-mail' => ['loginRedirect'],
     ];
 
     /** card / split 布局表单输入框的辅助图标（按字段名） */
     protected const FIELD_ICONS = [
-        'email'                => 'ti ti-mail',
-        'password'             => 'ti ti-lock',
-        'password_confirmation'=> 'ti ti-lock',
-        'name'                 => 'ti ti-user',
-        'pin'                  => 'ti ti-key',
-        'code'                 => 'ti ti-shield-lock',
+        'email' => 'ti ti-mail',
+        'password' => 'ti ti-lock',
+        'password_confirmation' => 'ti ti-lock',
+        'name' => 'ti ti-user',
+        'pin' => 'ti ti-key',
+        'code' => 'ti ti-shield-lock',
     ];
 
     /**
@@ -88,75 +89,74 @@ class AuthPage extends Component
     {
         return [
             // —— 布局与外观 ——
-            'layout'        => 'base',   // base | card | split（basic 视为 base）
-            'class'         => '',       // 附加到根容器 class
-            'id'            => '',       // 根容器 id
-            'bodyClass'     => '',       // 卡片 / 主体区域附加 class
-            'theme'         => 'light', // light | dark（split/card 侧栏风格）
+            'layout' => 'base',   // base | card | split（basic 视为 base）
+            'class' => '',       // 附加到根容器 class
+            'id' => '',       // 根容器 id
+            'bodyClass' => '',       // 卡片 / 主体区域附加 class
 
             // —— 品牌 / 文案 ——
-            'brand'         => [
+            'brand' => [
                 'name' => 'XfAdmin',
-                'url'  => '/',
+                'url' => '/',
                 'logo' => null,          // 图片地址（http(s):/data:/包内 images/ 相对路径）
             ],
-            'title'         => '',       // <title>
-            'heading'       => '',       // 主标题
-            'subheading'    => '',       // 副标题（历史字段名 subtitle 兼容）
-            'copyright'     => '',       // 底部版权
-            'status'        => '',       // 顶部状态提示（绿，通常由控制器 with('status') 注入）
-            'message'       => '',       // 说明性文本（如 new-pass 的提示语）
+            'title' => '',       // <title>
+            'heading' => '',       // 主标题
+            'subheading' => '',       // 副标题（历史字段名 subtitle 兼容）
+            'copyright' => '',       // 底部版权
+            'status' => '',       // 顶部状态提示（绿，通常由控制器 with('status') 注入）
+            'message' => '',       // 说明性文本（如 new-pass 的提示语）
 
             // —— 表单配置 ——
-            'action'        => '',       // 表单提交地址（核心字段；formAttrs.action 兼容）
-            'method'        => 'POST',
-            'ajax'          => true,     // 表单以 AJAX 方式提交（data-xf-remote，组件内置支持）
+            'action' => '',       // 表单提交地址（核心字段；formAttrs.action 兼容）
+            'method' => 'POST',
+            'ajax' => true,     // 表单以 AJAX 方式提交（data-xf-remote，组件内置支持）
             'redirectDelay' => null,     // 成功后携带 data.url 时的跳转延迟（毫秒）；null 用默认 3 秒
-            'fields'        => [],       // 关联数组：['email' => [...], 'password' => [...]]
-            'buttons'       => [],       // 按钮数组（label/variant/type/...）
-            'submit'        => '提交',    // 默认提交按钮文案（未传 buttons 时使用）
-            'content'       => '',       // 自定义主体内容（raw，覆盖默认表单）
-            'below'         => '',       // 表单下方补充内容（raw，如提示文案 / 链接）
+            'fields' => [],       // 关联数组：['email' => [...], 'password' => [...]]
+            'buttons' => [],       // 按钮数组（label/variant/type/...）
+            'submit' => '提交',    // 默认提交按钮文案（未传 buttons 时使用）
+            'content' => '',       // 自定义主体内容（raw，覆盖默认表单）
+            'below' => '',       // 表单下方补充内容（raw，如提示文案 / 链接）
             // 自定义插槽（raw HTML）
-            'beforeForm'    => '',       // 插入到 <form> 之前
-            'afterForm'     => '',       // 插入到 </form> 之后
-            'prepend'       => '',       // 插入到卡片标题之后（表单之前）
-            'append'        => '',       // 插入到卡片底部（links 之前）
-            'links'         => [],       // 顶部 / 底部导航链接（[['text'=>..., 'href'=>...], ...]）
+            'beforeForm' => '',       // 插入到 <form> 之前
+            'afterForm' => '',       // 插入到 </form> 之后
+            'prepend' => '',       // 插入到卡片标题之后（表单之前）
+            'append' => '',       // 插入到卡片底部（links 之前）
+            'links' => [],       // 顶部 / 底部导航链接（[['text'=>..., 'href'=>...], ...]）
 
             // —— 导航链接（均会经 e() 转义，配置时请确保传入可信地址）——
-            'loginRedirect'   => '/login',    // “已有账号？去登录” 链接
-            'registerRedirect'=> '/register', // “还没有账号？去注册” 链接
-            'backLink'        => null,        // 返回链接（['url'=>..., 'text'=>...] 或 null 隐藏）
-            'footerLinks'     => [],          // 底部链接列表（[['url'=>..., 'text'=>...], ...]）
+            'loginRedirect' => '/login',    // “已有账号？去登录” 链接
+            'registerRedirect' => '/register', // “还没有账号？去注册” 链接
+            'backLink' => null,        // 返回链接（['url'=>..., 'text'=>...] 或 null 隐藏）
+            'footerLinks' => [],          // 底部链接列表（[['url'=>..., 'text'=>...], ...]）
 
             // —— 社交登录 ——
-            'socialButtons'   => [],          // [['icon'=>..., 'url'=>..., 'label'=>...], ...]
+            'socialButtons' => [],          // [['icon'=>..., 'url'=>..., 'label'=>...], ...]
 
             // —— split / card 布局侧栏 ——
             // 背景图地址：默认包内 auth.jpg（与后台模板 auth-split-* / auth-card-* 的
             // assets/images/auth.jpg 一致，未传时也自动有背景图）；传 '' / false / null
             // 可显式关闭，回退为 sideVariant 纯色渐变。
-            'sideImage'       => 'auth.jpg',
-            'sideImageAlt'    => '',       // 背景图 alt
-            'sideImageSize'   => 'cover',  // 背景尺寸（CSS background-size：cover/contain/100% 100%...）
+            'sideImage' => 'auth.jpg',
+            'sideImageAlt' => '',       // 背景图 alt
+            'sideImageSize' => 'cover',  // 背景尺寸（CSS background-size：cover/contain/100% 100%...）
             'sideImagePosition' => 'center', // 背景定位（CSS background-position：center/top left...）
-            'sideOverlay'     => true,     // 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角）
-            'sideTitle'       => '企业级后台管理平台', // 侧栏标题（默认官方文案，可按需覆盖）
-            'sideText'        => 'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。', // 侧栏文案
-            'sideList'        => [
+            'sideOverlay' => true,     // 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角）
+            'sideTitle' => '企业级后台管理平台', // 侧栏标题（默认官方文案，可按需覆盖）
+            'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。', // 侧栏文案
+            'sideList' => [
                 ['icon' => 'ti ti-check', 'text' => '150+ 标准化业务组件，覆盖主流企业管理场景'],
                 ['icon' => 'ti ti-check', 'text' => '数据可视化与权限治理体系，保障业务安全合规'],
                 ['icon' => 'ti ti-check', 'text' => '多框架适配、开箱即用，支持企业级快速交付'],
             ], // 侧栏要点列表（[['icon'=>..., 'text'=>...], ...]，card/split 通用）
-            'sideVariant'     => 'primary',// 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变）
+            'sideVariant' => 'primary', // 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变）
 
             // —— 锁屏 / 用户 ——
-            'user'          => [],       // ['name'=>..., 'avatar'=>..., 'email'=>...]
+            'user' => [],       // ['name'=>..., 'avatar'=>..., 'email'=>...]
 
             // —— 杂项 ——
             'showBackToTop' => false,
-            'captcha'       => false,    // bool=渲染占位；string=原样输出（如 web component HTML）
+            'captcha' => false,    // bool=渲染占位；string=原样输出（如 web component HTML）
         ];
     }
 
@@ -183,19 +183,20 @@ class AuthPage extends Component
         if ($layout === 'basic') {
             $layout = 'base'; // 历史别名
         }
-        $type   = $this->enum($this->get('type', 'sign-in'), self::TYPES, 'sign-in');
+        $type = $this->enum($this->get('type', 'sign-in'), self::TYPES, 'sign-in');
 
         $this->set('layout', $layout);
         $this->set('type', $type);
 
         // 兼容历史字段名 subtitle → subheading
-        if (($this->get('subheading') === '') && ($this->get('subtitle') !== '')) {
-            $this->set('subheading', $this->get('subtitle'));
+        // 注意：未传 subtitle 时 get() 返回 null，与 '' 比较恒不相等，需先判 null 再比空串
+        if (($s = $this->get('subtitle')) !== null && $s !== '' && $this->get('subheading') === '') {
+            $this->set('subheading', $s);
         }
 
         // 根据布局拼装完整文档
         return match ($layout) {
-            'card'  => $this->docCard($type),
+            'card' => $this->docCard($type),
             'split' => $this->docSplit($type),
             default => $this->docBase($type),
         };
@@ -209,40 +210,39 @@ class AuthPage extends Component
      * doc Base（protected实例方法）
      * base 布局（对齐 auth-sign-in.html 等单卡片居中结构）
      *
-     * @param string $type 语义类型
-     *
+     * @param  string  $type  语义类型
      * @return string result
      */
     protected function docBase(string $type): string
     {
-        $brand  = $this->brandBlock('text-center');
-        $form   = $this->renderForm($type, false);
-        $copy   = $this->copyrightBlock();
+        $brand = $this->brandBlock('text-center');
+        $form = $this->renderForm($type, false);
+        $copy = $this->copyrightBlock();
 
         // 对齐 auth-sign-in.html：品牌下方追加 Welcome 标题 + 副标题 + 分隔线
         $welcome = '<div class="text-center mt-3 mb-4">';
         if (($h = (string) $this->get('heading')) !== '') {
-            $welcome .= '<h4 class="mb-1 fw-semibold">' . $this->e($h) . '</h4>';
+            $welcome .= '<h4 class="mb-1 fw-semibold">'.$this->e($h).'</h4>';
         } else {
             $welcome .= '<h4 class="mb-1 fw-semibold">Welcome !</h4>';
         }
         if (($s = (string) $this->get('subheading')) !== '') {
-            $welcome .= '<p class="mb-0 text-muted">' . $this->e($s) . '</p>';
+            $welcome .= '<p class="mb-0 text-muted">'.$this->e($s).'</p>';
         }
         $welcome .= '<div class="auth-line"></div></div>';
 
-        $body = '<div class="auth-box overflow-hidden align-items-center d-flex">' . "\n"
-            . '  <div class="container">' . "\n"
-            . '    <div class="row justify-content-center">' . "\n"
-            . '      <div class="col-xxl-4 col-md-6 col-sm-8">' . "\n"
-            . $brand . "\n"
-            . $welcome . "\n"
-            . $form . "\n"
-            . $copy . "\n"
-            . '      </div>' . "\n"
-            . '    </div>' . "\n"
-            . '  </div>' . "\n"
-            . '</div>';
+        $body = '<div class="auth-box overflow-hidden align-items-center d-flex">'."\n"
+            .'  <div class="container">'."\n"
+            .'    <div class="row justify-content-center">'."\n"
+            .'      <div class="col-xxl-4 col-md-6 col-sm-8">'."\n"
+            .$brand."\n"
+            .$welcome."\n"
+            .$form."\n"
+            .$copy."\n"
+            .'      </div>'."\n"
+            .'    </div>'."\n"
+            .'  </div>'."\n"
+            .'</div>';
 
         return $this->document($body);
     }
@@ -251,34 +251,33 @@ class AuthPage extends Component
      * doc Card（protected实例方法）
      * card 布局（对齐 auth-card-sign-in.html：左表单卡片 + 右侧宣传图）
      *
-     * @param string $type 语义类型
-     *
+     * @param  string  $type  语义类型
      * @return string result
      */
     protected function docCard(string $type): string
     {
         $brand = $this->brandBlock('d-flex align-items-center mb-4');
-        $form  = $this->renderForm($type, true);
+        $form = $this->renderForm($type, true);
 
         $side = $this->sidePanel(false);
 
-        $body = '<div class="auth-box d-flex align-items-center">' . "\n"
-            . '  <div class="container-xxl">' . "\n"
-            . '    <div class="row justify-content-center">' . "\n"
-            . '      <div class="col-xl-10">' . "\n"
-            . '        <div class="card rounded-4 overflow-hidden">' . "\n"
-            . '          <div class="row g-0">' . "\n"
-            . '            <div class="col-lg-6 card-body p-4 p-md-5">' . "\n"
-            . $brand . "\n"
-            . $form . "\n"
-            . '            </div>' . "\n"
-            . $side . "\n"
-            . '          </div>' . "\n"
-            . '        </div>' . "\n"
-            . '      </div>' . "\n"
-            . '    </div>' . "\n"
-            . '  </div>' . "\n"
-            . '</div>';
+        $body = '<div class="auth-box d-flex align-items-center">'."\n"
+            .'  <div class="container-xxl">'."\n"
+            .'    <div class="row justify-content-center">'."\n"
+            .'      <div class="col-xl-10">'."\n"
+            .'        <div class="card rounded-4 overflow-hidden">'."\n"
+            .'          <div class="row g-0">'."\n"
+            .'            <div class="col-lg-6 card-body p-4 p-md-5">'."\n"
+            .$brand."\n"
+            .$form."\n"
+            .'            </div>'."\n"
+            .$side."\n"
+            .'          </div>'."\n"
+            .'        </div>'."\n"
+            .'      </div>'."\n"
+            .'    </div>'."\n"
+            .'  </div>'."\n"
+            .'</div>';
 
         return $this->document($body);
     }
@@ -287,66 +286,65 @@ class AuthPage extends Component
      * doc Split（protected实例方法）
      * split 布局（对齐 auth-split-sign-in.html：左整幅背景图 + 右自动宽表单）
      *
-     * @param string $type 语义类型
-     *
+     * @param  string  $type  语义类型
      * @return string result
      */
     protected function docSplit(string $type): string
     {
         $brand = $this->brandBlock('mb-0 text-center');
-        $form  = $this->renderForm($type, true);
+        $form = $this->renderForm($type, true);
 
-        $img     = $this->sideImageUrl();
-        $imgAlt  = (string) $this->get('sideImageAlt');
+        $img = $this->sideImageUrl();
+        $imgAlt = (string) $this->get('sideImageAlt');
         $imgSize = $this->e((string) $this->get('sideImageSize', 'cover'));
-        $imgPos  = $this->e((string) $this->get('sideImagePosition', 'center'));
+        $imgPos = $this->e((string) $this->get('sideImagePosition', 'center'));
         $overlay = $this->get('sideOverlay') ? 'auth-overlay' : 'auth-overlay-plain';
         $variant = $this->e($this->get('sideVariant', 'primary'));
 
         // 侧栏（左）：对齐 auth-split-*.html —— 外层 col + 内层整幅背景图
         // （card-side-img + background-image），叠加 card-img-overlay 文案（标题/正文/要点列表），
         // 缺图时回退 sideVariant 纯色渐变。
-        $sideCls = 'h-100 position-relative card-side-img rounded-0 overflow-hidden auth-split-media--' . $variant;
-        $side = '<div class="col">' . "\n"
-            . '  <div class="' . $sideCls . '"'
-            . ($img
-                ? ' style="background-image: url(\'' . $this->e($img) . '\'); background-size: ' . $imgSize . '; background-position: ' . $imgPos . ';"'
+        $sideCls = 'h-100 position-relative card-side-img rounded-0 overflow-hidden auth-split-media--'.$variant;
+        $side = '<div class="col">'."\n"
+            .'  <div class="'.$sideCls.'"'
+            .($img
+                ? ' style="background-image: url(\''.$this->e($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"'
                 : ' data-solid="1"')
-            . '>' . "\n";
+            .'>'."\n";
         if ($imgAlt !== '') {
-            $side .= '    <span class="visually-hidden">' . $this->e($imgAlt) . '</span>' . "\n";
+            $side .= '    <span class="visually-hidden">'.$this->e($imgAlt).'</span>'."\n";
         }
-        $side .= '    <div class="p-4 card-img-overlay ' . $overlay . ' d-flex align-items-center justify-content-center">' . "\n";
+        $side .= '    <div class="p-4 card-img-overlay '.$overlay.' d-flex align-items-center justify-content-center">'."\n";
         $side .= $this->sideContent();
-        $side .= "\n" . '    </div>' . "\n"
-            . '  </div>' . "\n"
-            . '</div>';
+        $side .= "\n".'    </div>'."\n"
+            .'  </div>'."\n"
+            .'</div>';
 
         // 右侧表单卡片（对齐 auth-split-sign-in.html）：
         //   card auth-box-form border-0 mb-0 + card-body min-vh-100 d-flex flex-column justify-content-center
         //   品牌居中(mb-0) → 表单落入 mt-auto 区 → 底部“返回登录”链接 → 版权 mt-auto mb-0
         $links = $this->bottomLinksHtml($type);
-        $copy  = $this->copyrightInline();
+        $copy = $this->copyrightInline();
 
-        $main = '<div class="col-md-auto">' . "\n"
-            . '  <div class="card auth-box-form border-0 mb-0">' . "\n"
-            . '    <div class="card-body min-vh-100 d-flex flex-column justify-content-center">' . "\n"
-            . $brand . "\n"
-            . '      <div class="mt-auto text-center">' . "\n"
-            . $form . "\n"
-            . ($links !== '' ? '        <div class="mt-3">' . $links . '</div>' . "\n" : '')
-            . '      </div>' . "\n"
-            . ($copy !== '' ? '      <p class="mt-auto mb-0 text-muted text-center small">' . $copy . '</p>' . "\n" : '')
-            . '    </div>' . "\n"
-            . '  </div>' . "\n"
-            . '</div>';
+        $main = '<div class="col-md-auto">'."\n"
+            .'  <div class="card auth-box-form border-0 mb-0">'."\n"
+            .'    <div class="card-body min-vh-100 d-flex flex-column justify-content-center">'."\n"
+            .$brand."\n"
+            .'      <div class="mt-auto text-center">'."\n"
+            .$form."\n"
+            .($links !== '' ? '        <div class="mt-3">'.$links.'</div>'."\n" : '')
+            .'      </div>'."\n"
+            .($copy !== '' ? '      <p class="mt-auto mb-0 text-muted text-center small">'.$copy.'</p>'."\n" : '')
+            .'    </div>'."\n"
+            .'  </div>'."\n"
+            .'</div>';
 
-        $body = '<div class="auth-box p-0 w-100">' . "\n"
-            . '  <div class="row w-100 g-0">' . "\n"
-            . $side . "\n"
-            . $main . "\n"
-            . '  </div>' . "\n"
-            . '</div>';
+        $body = '<div class="auth-box p-0 w-100">'."\n"
+            .'  <div class="row w-100 g-0">'."\n"
+            .$side."\n"
+            .$main."\n"
+            .'  </div>'."\n"
+            .'</div>';
 
         return $this->document($body);
     }
@@ -355,39 +353,38 @@ class AuthPage extends Component
      * document（protected实例方法）
      * 包裹完整 HTML 文档骨架（head / meta / csrf-token / body / scripts）
      *
-     * @param string $body 主体内容
-     *
+     * @param  string  $body  主体内容
      * @return string result
      */
     protected function document(string $body): string
     {
         $title = $this->get('title') ?: ($this->get('heading') ?: 'XfAdmin');
-        $rootCls = 'auth-page auth-' . $this->e($this->get('type')) . ' auth-layout-' . $this->e($this->get('layout'));
+        $rootCls = 'auth-page auth-'.$this->e($this->get('type')).' auth-layout-'.$this->e($this->get('layout'));
         $extraCls = (string) $this->get('class');
         if ($extraCls !== '') {
-            $rootCls .= ' ' . $this->e($extraCls);
+            $rootCls .= ' '.$this->e($extraCls);
         }
 
         // 复用 XfAdmin 共享资产（与 INSPINIA 后台模板共用 app.min.css / xfadmin.css）
-        $head = \zxf\XfAdmin\Assets\Assets::instance()->head();
-        $scripts = \zxf\XfAdmin\Assets\Assets::instance()->scripts();
+        $head = Assets::instance()->head();
+        $scripts = Assets::instance()->scripts();
 
-        return '<!DOCTYPE html>' . "\n"
-            . '<html lang="zh-CN">' . "\n"
-            . '<head>' . "\n"
-            . '<meta charset="utf-8">' . "\n"
-            . '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n"
-            . '<meta name="csrf-token" content="' . $this->csrfToken() . '">' . "\n"
-            . '<title>' . $this->e($title) . '</title>' . "\n"
-            . $head . "\n"
-            . '</head>' . "\n"
-            . '<body class="' . $rootCls . '">' . "\n"
-            . $body . "\n"
-            . ($this->get('showBackToTop') ? '<a href="#" class="back-to-top"><i class="ti ti-chevron-up"></i></a>' : '')
-            . $this->footerLinksBlock()
-            . $scripts . "\n"
-            . '</body>' . "\n"
-            . '</html>';
+        return '<!DOCTYPE html>'."\n"
+            .'<html lang="zh-CN">'."\n"
+            .'<head>'."\n"
+            .'<meta charset="utf-8">'."\n"
+            .'<meta name="viewport" content="width=device-width, initial-scale=1">'."\n"
+            .'<meta name="csrf-token" content="'.$this->e($this->csrfToken()).'">'."\n"
+            .'<title>'.$this->e($title).'</title>'."\n"
+            .$head."\n"
+            .'</head>'."\n"
+            .'<body class="'.$rootCls.'">'."\n"
+            .$body."\n"
+            .($this->get('showBackToTop') ? '<a href="#" class="back-to-top"><i class="ti ti-chevron-up"></i></a>' : '')
+            .$this->footerLinksBlock()
+            .$scripts."\n"
+            .'</body>'."\n"
+            .'</html>';
     }
 
     // ------------------------------------------------------------------
@@ -398,27 +395,26 @@ class AuthPage extends Component
      * brand Block（protected实例方法）
      * 渲染品牌区（logo + 名称 + 可选副标题）
      *
-     * @param string $cls 附加 class
-     *
+     * @param  string  $cls  附加 class
      * @return string result
      */
     protected function brandBlock(string $cls): string
     {
         $brand = (array) $this->get('brand', []);
-        $name  = $brand['name'] ?? 'XfAdmin';
-        $url   = $this->safeUrl($brand['url'] ?? '/');
-        $logo  = $brand['logo'] ?? null;
+        $name = $brand['name'] ?? 'XfAdmin';
+        $url = $this->safeUrl($brand['url'] ?? '/');
+        $logo = $brand['logo'] ?? null;
 
         if ($logo) {
             // img() 对外链/data: 原样返回，必须再转义一次，否则 logo 可闭合 src 属性
-            $mark = '<img src="' . $this->e($this->img($logo)) . '" alt="' . $this->e($name) . '" class="auth-brand-logo">';
+            $mark = '<img src="'.$this->e($this->img($logo)).'" alt="'.$this->e($name).'" class="auth-brand-logo">';
         } else {
-            $mark = '<span class="auth-brand-text">' . $this->e($name) . '</span>';
+            $mark = '<span class="auth-brand-text">'.$this->e($name).'</span>';
         }
 
-        return '<div class="auth-brand ' . $this->e($cls) . '">'
-            . '<a href="' . $this->e($url) . '" class="auth-brand-link">' . $mark . '</a>'
-            . '</div>';
+        return '<div class="auth-brand '.$this->e($cls).'">'
+            .'<a href="'.$this->e($url).'" class="auth-brand-link">'.$mark.'</a>'
+            .'</div>';
     }
 
     /**
@@ -433,7 +429,8 @@ class AuthPage extends Component
         if ($copyright === '') {
             return '';
         }
-        return '<div class="mt-4 text-center auth-copyright">' . $this->e($copyright) . '</div>';
+
+        return '<div class="mt-4 text-center auth-copyright">'.$this->e($copyright).'</div>';
     }
 
     /**
@@ -451,14 +448,15 @@ class AuthPage extends Component
         $html = '<footer class="auth-footer"><div class="auth-footer-links">';
         foreach ($items as $item) {
             $item = (array) $item;
-            $url  = $item['url'] ?? '#';
+            $url = $item['url'] ?? '#';
             $text = $item['text'] ?? '';
             if ($text === '') {
                 continue;
             }
-            $html .= '<a href="' . $this->e($url) . '" class="auth-footer-link">' . $this->e($text) . '</a>';
+            $html .= '<a href="'.$this->e($this->safeUrl($url)).'" class="auth-footer-link">'.$this->e($text).'</a>';
         }
         $html .= '</div></footer>';
+
         return $html;
     }
 
@@ -466,8 +464,7 @@ class AuthPage extends Component
      * bottom Links Html（protected实例方法）
      * split 布局右侧卡片底部“返回登录”等导航链接（对齐 auth-split-* 末尾的 Return to Sign in）
      *
-     * @param string $type 语义类型
-     *
+     * @param  string  $type  语义类型
      * @return string result
      */
     protected function bottomLinksHtml(string $type): string
@@ -482,9 +479,10 @@ class AuthPage extends Component
                 if ($text === '' || $href === '') {
                     continue;
                 }
-                $html .= '<a href="' . $this->e($href) . '" class="auth-link">' . $this->e($text) . '</a>'
-                    . (isset($item['divider']) && $item['divider'] ? ' <span class="text-muted">/</span> ' : ' ');
+                $html .= '<a href="'.$this->e($href).'" class="auth-link">'.$this->e($text).'</a>'
+                    .(isset($item['divider']) && $item['divider'] ? ' <span class="text-muted">/</span> ' : ' ');
             }
+
             return trim($html);
         }
 
@@ -496,7 +494,8 @@ class AuthPage extends Component
         if ($url === '') {
             return '';
         }
-        return '<a href="' . $this->e($url) . '" class="auth-link">返回登录</a>';
+
+        return '<a href="'.$this->e($url).'" class="auth-link">返回登录</a>';
     }
 
     /**
@@ -511,6 +510,7 @@ class AuthPage extends Component
         if ($copyright === '') {
             return '';
         }
+
         // 数据本身已含 © 符号（如 “© 2026 XfAdmin 控制台”），不再额外加 &copy;
         return $this->e($copyright);
     }
@@ -536,6 +536,7 @@ class AuthPage extends Component
         if ($img !== '' && $img[0] === '/') {
             return $img;
         }
+
         return $this->img($img);               // 外链 / data: / 包内图片统一走 img()
     }
 
@@ -543,26 +544,25 @@ class AuthPage extends Component
      * side Panel（protected实例方法）
      * card 布局右侧宣传图面板（对齐 auth-card-* 的 col-lg-6 d-none d-lg-block）
      *
-     * @param bool $split 是否 split 布局（此处恒 false）
-     *
+     * @param  bool  $split  是否 split 布局（此处恒 false）
      * @return string result
      */
     protected function sidePanel(bool $split): string
     {
-        $img     = $this->sideImageUrl();
+        $img = $this->sideImageUrl();
         $imgSize = $this->e((string) $this->get('sideImageSize', 'cover'));
-        $imgPos  = $this->e((string) $this->get('sideImagePosition', 'center'));
+        $imgPos = $this->e((string) $this->get('sideImagePosition', 'center'));
         $overlay = $this->get('sideOverlay') ? 'auth-overlay' : 'auth-overlay-plain';
         $variant = $this->e($this->get('sideVariant', 'primary'));
 
-        $html = '<div class="col-lg-6 d-none d-lg-block card-side-img auth-card-media auth-card-media--' . $variant . '">';
+        $html = '<div class="col-lg-6 d-none d-lg-block card-side-img auth-card-media auth-card-media--'.$variant.'">';
         if ($img) {
             // 与模板 auth-card-*.html 一致：card-side-img 用 background-image 承载背景图，
             // 便于 sideImageSize/sideImagePosition 生效（而非 <img> 标签）。
             $html .= '<div class="h-100 position-relative auth-card-media-bg"'
-                . ' style="background-image: url(\'' . $this->e($img) . '\'); background-size: ' . $imgSize . '; background-position: ' . $imgPos . ';"></div>';
+                .' style="background-image: url(\''.$this->e($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"></div>';
         }
-        $html .= '<div class="p-4 card-img-overlay rounded-4 rounded-start-0 ' . $overlay . ' auth-overlay-card d-flex align-items-center justify-content-center">';
+        $html .= '<div class="p-4 card-img-overlay rounded-4 rounded-start-0 '.$overlay.' auth-overlay-card d-flex align-items-center justify-content-center">';
         $html .= $this->sideContent();
         $html .= '</div></div>';
 
@@ -578,34 +578,34 @@ class AuthPage extends Component
     protected function sideContent(): string
     {
         $title = (string) $this->get('sideTitle');
-        $text  = (string) $this->get('sideText');
-        $list  = $this->get('sideList');
+        $text = (string) $this->get('sideText');
+        $list = $this->get('sideList');
 
         $html = '';
         if ($title !== '') {
-            $html .= '<h2 class="auth-side-title">' . $this->e($title) . '</h2>';
+            $html .= '<h2 class="auth-side-title">'.$this->e($title).'</h2>';
         }
         if ($text !== '') {
-            $html .= '<p class="auth-side-text">' . $this->e($text) . '</p>';
+            $html .= '<p class="auth-side-text">'.$this->e($text).'</p>';
         }
         if (is_array($list) && $list !== []) {
             $html .= '<ul class="auth-side-list">';
             foreach ($list as $item) {
                 $item = (array) $item;
                 $icon = $item['icon'] ?? 'ti ti-circle-check';
-                $txt  = $item['text'] ?? '';
+                $txt = $item['text'] ?? '';
                 if ($txt === '') {
                     continue;
                 }
                 $html .= '<li>'
-                    . '<span class="auth-side-list-icon"><i class="' . $this->e($icon) . '"></i></span>'
-                    . '<span class="auth-side-list-text">' . $this->e($txt) . '</span>'
-                    . '</li>';
+                    .'<span class="auth-side-list-icon"><i class="'.$this->e($icon).'"></i></span>'
+                    .'<span class="auth-side-list-text">'.$this->e($txt).'</span>'
+                    .'</li>';
             }
             $html .= '</ul>';
         }
 
-        return $html !== '' ? '<div class="auth-side-content">' . $html . '</div>' : '';
+        return $html !== '' ? '<div class="auth-side-content">'.$html.'</div>' : '';
     }
 
     // ------------------------------------------------------------------
@@ -616,9 +616,8 @@ class AuthPage extends Component
      * render Form（protected实例方法）
      * 生成整张卡片 / 面板表单（含标题、主体、底部链接 + 开发者插槽）
      *
-     * @param string $type   语义类型
-     * @param bool   $withBg card/split 输入框带浅底样式
-     *
+     * @param  string  $type  语义类型
+     * @param  bool  $withBg  card/split 输入框带浅底样式
      * @return string result
      */
     protected function renderForm(string $type, bool $withBg): string
@@ -630,16 +629,16 @@ class AuthPage extends Component
         }
 
         $body = match ($type) {
-            'sign-in'     => $this->formSignIn($withBg),
-            'sign-up'     => $this->formSignUp($withBg),
-            'reset-pass'  => $this->formResetPass($withBg),
-            'new-pass'    => $this->formNewPass($withBg),
+            'sign-in' => $this->formSignIn($withBg),
+            'sign-up' => $this->formSignUp($withBg),
+            'reset-pass' => $this->formResetPass($withBg),
+            'new-pass' => $this->formNewPass($withBg),
             'lock-screen' => $this->formLockScreen($withBg),
-            'login-pin'   => $this->formPin($withBg),
-            'two-factor'  => $this->formTwoFactor($withBg),
-            'delete-account'=> $this->formDeleteAccount($withBg),
-            'success-mail'=> $this->formSuccessMail(),
-            default       => $this->formSignIn($withBg),
+            'login-pin' => $this->formPin($withBg),
+            'two-factor' => $this->formTwoFactor($withBg),
+            'delete-account' => $this->formDeleteAccount($withBg),
+            'success-mail' => $this->formSuccessMail(),
+            default => $this->formSignIn($withBg),
         };
 
         return $this->cardShell($body, $type, $withBg);
@@ -649,23 +648,22 @@ class AuthPage extends Component
      * card Shell（protected实例方法）
      * 包裹卡片：标题 / 副标题 / 主体 + 开发者插槽（prepend/append）
      *
-     * @param string $body 主体
-     * @param string $type 类型
-     * @param bool   $withBg 是否浅底输入框
-     *
+     * @param  string  $body  主体
+     * @param  string  $type  类型
+     * @param  bool  $withBg  是否浅底输入框
      * @return string result
      */
     protected function cardShell(string $body, string $type, bool $withBg): string
     {
-        $heading    = (string) ($this->get('heading') ?: $this->defaultHeading($type));
+        $heading = (string) ($this->get('heading') ?: $this->defaultHeading($type));
         $subheading = (string) ($this->get('subheading') ?: $this->defaultSubheading($type));
 
         $html = '';
         if ($heading !== '') {
-            $html .= '<h1 class="auth-heading h3 mb-1">' . $this->e($heading) . '</h1>';
+            $html .= '<h1 class="auth-heading h3 mb-1">'.$this->e($heading).'</h1>';
         }
         if ($subheading !== '') {
-            $html .= '<p class="auth-subheading text-muted mb-4">' . $this->e($subheading) . '</p>';
+            $html .= '<p class="auth-subheading text-muted mb-4">'.$this->e($subheading).'</p>';
         }
         // prepend 插槽（raw，标题之后、表单之前）
         $html .= $this->raw($this->get('prepend'));
@@ -678,17 +676,17 @@ class AuthPage extends Component
         // 社交登录按钮（socialButtons 配置时渲染）
         $social = $this->socialButtonsHtml();
         if ($social !== '') {
-            $html .= '<div class="mt-4 auth-social">' . $social . '</div>';
+            $html .= '<div class="mt-4 auth-social">'.$social.'</div>';
         }
 
         // 底部链接（sign-in 等类型默认生成，其余按配置）
         $below = $this->get('below');
         if ($below !== null && $below !== '') {
-            $html .= '<div class="mt-3 text-center auth-below">' . $this->raw($below) . '</div>';
+            $html .= '<div class="mt-3 text-center auth-below">'.$this->raw($below).'</div>';
         } else {
             $links = $this->defaultLinksHtml($type);
             if ($links !== '') {
-                $html .= '<div class="mt-3 text-center auth-below">' . $links . '</div>';
+                $html .= '<div class="mt-3 text-center auth-below">'.$links.'</div>';
             }
         }
 
@@ -699,23 +697,22 @@ class AuthPage extends Component
      * default Heading（protected实例方法）
      * 各类型默认主标题
      *
-     * @param string $type type
-     *
+     * @param  string  $type  type
      * @return string result
      */
     protected function defaultHeading(string $type): string
     {
         return match ($type) {
-            'sign-in'     => '欢迎回来',
-            'sign-up'     => '创建账号',
-            'reset-pass'  => '找回密码',
-            'new-pass'    => '设置新密码',
+            'sign-in' => '欢迎回来',
+            'sign-up' => '创建账号',
+            'reset-pass' => '找回密码',
+            'new-pass' => '设置新密码',
             'lock-screen' => '屏幕已锁定',
-            'login-pin'   => 'PIN 登录',
-            'two-factor'  => '两步验证',
-            'delete-account'=> '注销账户',
-            'success-mail'=> '邮件已发送',
-            default       => '',
+            'login-pin' => 'PIN 登录',
+            'two-factor' => '两步验证',
+            'delete-account' => '注销账户',
+            'success-mail' => '邮件已发送',
+            default => '',
         };
     }
 
@@ -723,23 +720,22 @@ class AuthPage extends Component
      * default Subheading（protected实例方法）
      * 各类型默认副标题
      *
-     * @param string $type type
-     *
+     * @param  string  $type  type
      * @return string result
      */
     protected function defaultSubheading(string $type): string
     {
         return match ($type) {
-            'sign-in'     => '请输入账号信息登录',
-            'sign-up'     => '填写信息以注册新账号',
-            'reset-pass'  => '输入邮箱以接收重置链接',
-            'new-pass'    => '请输入新的登录密码',
+            'sign-in' => '请输入账号信息登录',
+            'sign-up' => '填写信息以注册新账号',
+            'reset-pass' => '输入邮箱以接收重置链接',
+            'new-pass' => '请输入新的登录密码',
             'lock-screen' => '请输入密码以继续',
-            'login-pin'   => '请输入您的 PIN 码',
-            'two-factor'  => '请输入您的身份验证代码',
-            'delete-account'=> '此操作不可恢复，请输入密码确认',
-            'success-mail'=> '请查收邮件以继续',
-            default       => '',
+            'login-pin' => '请输入您的 PIN 码',
+            'two-factor' => '请输入您的身份验证代码',
+            'delete-account' => '此操作不可恢复，请输入密码确认',
+            'success-mail' => '请查收邮件以继续',
+            default => '',
         };
     }
 
@@ -750,8 +746,7 @@ class AuthPage extends Component
     /**
      * form Sign In（protected实例方法）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formSignIn(bool $withBg): string
@@ -760,11 +755,11 @@ class AuthPage extends Component
         // 后台登录通常使用账号(username)而非邮箱；username 字段优先，否则回退 email
         $account = $f['username'] ?? $f['email'] ?? ['label' => '账号', 'name' => 'username', 'type' => 'text', 'placeholder' => '请输入管理员账号', 'required' => true, 'autofocus' => true];
         $html = $this->formOpen()
-            . $this->field($account, $withBg)
-            . $this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请输入密码', 'required' => true], $withBg)
-            . $this->captchaField()
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->field($account, $withBg)
+            .$this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请输入密码', 'required' => true], $withBg)
+            .$this->captchaField()
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -772,21 +767,20 @@ class AuthPage extends Component
     /**
      * form Sign Up（protected实例方法）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formSignUp(bool $withBg): string
     {
         $f = (array) $this->get('fields', []);
         $html = $this->formOpen()
-            . $this->field($f['name'] ?? ['label' => '姓名', 'name' => 'name', 'placeholder' => '请输入姓名', 'required' => true], $withBg)
-            . $this->field($f['email'] ?? ['label' => '邮箱', 'name' => 'email', 'type' => 'email', 'placeholder' => '请输入邮箱', 'required' => true], $withBg)
-            . $this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请设置密码', 'required' => true], $withBg)
-            . $this->field($f['password_confirmation'] ?? ['label' => '确认密码', 'name' => 'password_confirmation', 'type' => 'password', 'placeholder' => '请再次输入密码', 'required' => true], $withBg)
-            . $this->captchaField()
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->field($f['name'] ?? ['label' => '姓名', 'name' => 'name', 'placeholder' => '请输入姓名', 'required' => true], $withBg)
+            .$this->field($f['email'] ?? ['label' => '邮箱', 'name' => 'email', 'type' => 'email', 'placeholder' => '请输入邮箱', 'required' => true], $withBg)
+            .$this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请设置密码', 'required' => true], $withBg)
+            .$this->field($f['password_confirmation'] ?? ['label' => '确认密码', 'name' => 'password_confirmation', 'type' => 'password', 'placeholder' => '请再次输入密码', 'required' => true], $withBg)
+            .$this->captchaField()
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -795,18 +789,17 @@ class AuthPage extends Component
      * form Reset Pass（protected实例方法）
      * 忘记密码（提交邮箱）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formResetPass(bool $withBg): string
     {
         $f = (array) $this->get('fields', []);
         $html = $this->formOpen()
-            . $this->field($f['email'] ?? ['label' => '邮箱', 'name' => 'email', 'type' => 'email', 'placeholder' => '请输入注册邮箱', 'required' => true, 'autofocus' => true], $withBg)
-            . $this->captchaField()
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->field($f['email'] ?? ['label' => '邮箱', 'name' => 'email', 'type' => 'email', 'placeholder' => '请输入注册邮箱', 'required' => true, 'autofocus' => true], $withBg)
+            .$this->captchaField()
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -815,8 +808,7 @@ class AuthPage extends Component
      * form New Pass（protected实例方法）
      * 设置新密码 / 重置密码（新密码 + 确认）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formNewPass(bool $withBg): string
@@ -828,52 +820,52 @@ class AuthPage extends Component
         // 注意：后台模板的 new-pass 页【不含】6 位验证码分格框（那是 login-pin/two-factor 才有的），
         // 故 newPassShowCode 默认 false；仅当调用方显式传 true 时才展示分格验证码。
         $showEmail = $this->get('newPassShowEmail', true);
-        $showCode  = $this->get('newPassShowCode', false);
+        $showCode = $this->get('newPassShowCode', false);
         $showAgree = $this->get('newPassShowAgree', true);
 
         $html = $this->formOpen()
-            . ($msg !== '' ? '<div class="alert alert-info">' . $this->e($msg) . '</div>' : '');
+            .($msg !== '' ? '<div class="alert alert-info">'.$this->e($msg).'</div>' : '');
 
         // 邮箱展示（disabled，来自 get('email') 或 user.email）
         if ($showEmail) {
             $email = (string) ($this->get('email') ?: (($this->get('user')['email'] ?? '') ?: ''));
-            $html .= '<div class="mb-3">' . $this->label('邮箱')
-                . '<input type="email" class="form-control py-2 px-3 bg-light bg-opacity-40 border-light" value="' . $this->e($email) . '" disabled></div>';
+            $html .= '<div class="mb-3">'.$this->label('邮箱')
+                .'<input type="email" class="form-control py-2 px-3 bg-light bg-opacity-40 border-light" value="'.$this->e($email).'" disabled></div>';
         }
 
         // 6 位验证码分格输入
         if ($showCode) {
-            $html .= '<div class="mb-3">' . $this->label('输入 6 位验证码')
-                . $this->pinCodeGroup(6)
-                . '</div>';
+            $html .= '<div class="mb-3">'.$this->label('输入 6 位验证码')
+                .$this->pinCodeGroup(6)
+                .'</div>';
         }
 
         // 新密码（带强度条）
         $html .= '<div class="mb-3" data-password="bar">'
-            . $this->label('新密码')
-            . $this->passwordInput($f['password'] ?? ['name' => 'password', 'placeholder' => '请设置新密码', 'required' => true, 'autofocus' => true], $withBg)
-            . '<div class="password-bar my-2"></div>'
-            . '<p class="text-muted fs-xs mb-0">使用 8 位以上，含字母、数字与符号</p>'
-            . '</div>';
+            .$this->label('新密码')
+            .$this->passwordInput($f['password'] ?? ['name' => 'password', 'placeholder' => '请设置新密码', 'required' => true, 'autofocus' => true], $withBg)
+            .'<div class="password-bar my-2"></div>'
+            .'<p class="text-muted fs-xs mb-0">使用 8 位以上，含字母、数字与符号</p>'
+            .'</div>';
 
         // 确认新密码
         $html .= '<div class="mb-3">'
-            . $this->label('确认新密码')
-            . $this->passwordInput($f['password_confirmation'] ?? ['name' => 'password_confirmation', 'placeholder' => '请再次输入新密码', 'required' => true], $withBg)
-            . '</div>';
+            .$this->label('确认新密码')
+            .$this->passwordInput($f['password_confirmation'] ?? ['name' => 'password_confirmation', 'placeholder' => '请再次输入新密码', 'required' => true], $withBg)
+            .'</div>';
 
         // 协议勾选
         if ($showAgree) {
             $html .= '<div class="mb-3"><div class="form-check">'
-                . '<input class="form-check-input form-check-input-light fs-14" type="checkbox" id="auth-agree" name="agree">'
-                . '<label class="form-check-label" for="auth-agree">我已阅读并同意《用户协议》与《隐私政策》</label>'
-                . '</div></div>';
+                .'<input class="form-check-input form-check-input-light fs-14" type="checkbox" id="auth-agree" name="agree">'
+                .'<label class="form-check-label" for="auth-agree">我已阅读并同意《用户协议》与《隐私政策》</label>'
+                .'</div></div>';
         }
 
         // 提交按钮前插入验证码组件（登录/注册/忘记密码已统一处理，此处补全“设置新密码”）
         $html .= $this->captchaField()
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -882,23 +874,21 @@ class AuthPage extends Component
      * label（protected实例方法）
      * 生成标准 form-label（含必填星号）
      *
-     * @param string $text     标签文本
-     * @param bool   $required 是否必填
-     *
+     * @param  string  $text  标签文本
+     * @param  bool  $required  是否必填
      * @return string result
      */
     protected function label(string $text, bool $required = true): string
     {
-        return '<label class="form-label">' . $this->e($text)
-            . ($required ? ' <span class="text-danger">*</span>' : '') . '</label>';
+        return '<label class="form-label">'.$this->e($text)
+            .($required ? ' <span class="text-danger">*</span>' : '').'</label>';
     }
 
     /**
      * pin Code Group（protected实例方法）
      * 渲染 N 位分格验证码输入（data-xf-pin-input，由 JS 串联）
      *
-     * @param int $len 位数
-     *
+     * @param  int  $len  位数
      * @return string result
      */
     protected function pinCodeGroup(int $len = 6, string $name = 'code[]', bool $withBg = false): string
@@ -907,10 +897,11 @@ class AuthPage extends Component
         for ($i = 0; $i < $len; $i++) {
             $cls = 'form-control form-control-lg text-center fs-3';
             $cls .= ' bg-light bg-opacity-40 border-light';
-            $html .= '<input type="password" class="' . $cls . '" inputmode="numeric" maxlength="1"'
-                . ' name="' . $this->e($name) . '" data-xf-pin-cell autocomplete="one-time-code"' . ($i === 0 ? ' autofocus' : '') . '>';
+            $html .= '<input type="password" class="'.$cls.'" inputmode="numeric" maxlength="1"'
+                .' name="'.$this->e($name).'" data-xf-pin-cell autocomplete="one-time-code"'.($i === 0 ? ' autofocus' : '').'>';
         }
         $html .= '</div>';
+
         return $html;
     }
 
@@ -918,46 +909,45 @@ class AuthPage extends Component
      * password Input（protected实例方法）
      * 渲染密码输入框（card/split 带图标 input-group，base 普通）
      *
-     * @param array $f     字段配置
-     * @param bool  $withBg 浅底
-     *
+     * @param  array  $f  字段配置
+     * @param  bool  $withBg  浅底
      * @return string result
      */
     protected function passwordInput(array $f, bool $withBg): string
     {
-        $name  = (string) ($f['name'] ?? 'password');
-        $ph    = (string) ($f['placeholder'] ?? '');
-        $req   = ! empty($f['required']);
+        $name = (string) ($f['name'] ?? 'password');
+        $ph = (string) ($f['placeholder'] ?? '');
+        $req = ! empty($f['required']);
         $focus = ! empty($f['autofocus']);
-        $cls   = 'form-control py-2 px-3';
-        $cls   .= ' bg-light bg-opacity-40 border-light';
+        $cls = 'form-control py-2 px-3';
+        $cls .= ' bg-light bg-opacity-40 border-light';
         if ($withBg) {
             return '<div class="input-group">'
-                . '<span class="input-group-text bg-transparent border-light">' . $this->icon('ti ti-lock') . '</span>'
-                . '<input type="password" class="' . $cls . '" name="' . $this->e($name) . '" placeholder="' . $this->e($ph) . '"'
-                . ($req ? ' required' : '') . ($focus ? ' autofocus' : '') . '></div>';
+                .'<span class="input-group-text bg-transparent border-light">'.$this->icon('ti ti-lock').'</span>'
+                .'<input type="password" class="'.$cls.'" name="'.$this->e($name).'" placeholder="'.$this->e($ph).'"'
+                .($req ? ' required' : '').($focus ? ' autofocus' : '').'></div>';
         }
-        return '<input type="password" class="' . $cls . '" name="' . $this->e($name) . '" placeholder="' . $this->e($ph) . '"'
-            . ($req ? ' required' : '') . ($focus ? ' autofocus' : '') . '>';
+
+        return '<input type="password" class="'.$cls.'" name="'.$this->e($name).'" placeholder="'.$this->e($ph).'"'
+            .($req ? ' required' : '').($focus ? ' autofocus' : '').'>';
     }
 
     /**
      * form Two Factor（protected实例方法）
      * 两步验证（OTP）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formTwoFactor(bool $withBg): string
     {
         $html = $this->formOpen()
-            . '<div class="mb-3">'
-            . $this->label('输入 6 位验证码')
-            . $this->pinCodeGroup(6)
-            . '</div>'
-            . $this->buttonsRow()
-            . $this->formClose();
+            .'<div class="mb-3">'
+            .$this->label('输入 6 位验证码')
+            .$this->pinCodeGroup(6)
+            .'</div>'
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -966,8 +956,7 @@ class AuthPage extends Component
      * form Lock Screen（protected实例方法）
      * 锁屏解锁（用户头像 + 密码）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formLockScreen(bool $withBg): string
@@ -984,10 +973,10 @@ class AuthPage extends Component
             $user['email'] = $this->get('email');
         }
         $html = $this->formOpen()
-            . $this->lockUserBadge($user)
-            . $this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请输入密码解锁', 'required' => true, 'autofocus' => true], $withBg)
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->lockUserBadge($user)
+            .$this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请输入密码解锁', 'required' => true, 'autofocus' => true], $withBg)
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -996,8 +985,7 @@ class AuthPage extends Component
      * lock User Badge（protected实例方法）
      * 锁屏页用户头像 + 名称徽标
      *
-     * @param array $user 用户信息
-     *
+     * @param  array  $user  用户信息
      * @return string result
      */
     protected function lockUserBadge(array $user): string
@@ -1006,34 +994,33 @@ class AuthPage extends Component
             return '';
         }
         $avatar = $user['avatar'] ?? null;
-        $img    = $avatar ? $this->img($avatar) : null;
-        $mark   = $img
-            ? '<img src="' . $this->e($img) . '" alt="' . $this->e($user['name'] ?? '') . '" class="auth-lock-avatar rounded-circle">'
-            : '<div class="auth-lock-avatar auth-lock-avatar--text rounded-circle">' . $this->e(mb_substr((string) ($user['name'] ?? '?'), 0, 1)) . '</div>';
+        $img = $avatar ? $this->img($avatar) : null;
+        $mark = $img
+            ? '<img src="'.$this->e($img).'" alt="'.$this->e($user['name'] ?? '').'" class="auth-lock-avatar rounded-circle">'
+            : '<div class="auth-lock-avatar auth-lock-avatar--text rounded-circle">'.$this->e(mb_substr((string) ($user['name'] ?? '?'), 0, 1)).'</div>';
 
         return '<div class="auth-lock-user d-flex align-items-center gap-3 mb-4">'
-            . $mark
-            . '<div class="auth-lock-meta">'
-            . ($user['name'] !== '' ? '<div class="auth-lock-name fw-semibold">' . $this->e($user['name']) . '</div>' : '')
-            . ($user['email'] !== '' ? '<div class="auth-lock-email small text-muted">' . $this->e($user['email']) . '</div>' : '')
-            . '</div></div>';
+            .$mark
+            .'<div class="auth-lock-meta">'
+            .(($user['name'] ?? '') !== '' ? '<div class="auth-lock-name fw-semibold">'.$this->e($user['name']).'</div>' : '')
+            .(($user['email'] ?? '') !== '' ? '<div class="auth-lock-email small text-muted">'.$this->e($user['email']).'</div>' : '')
+            .'</div></div>';
     }
 
     /**
      * form Delete Account（protected实例方法）
      * 注销账户确认（密码）
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formDeleteAccount(bool $withBg): string
     {
         $f = (array) $this->get('fields', []);
         $html = $this->formOpen()
-            . $this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请输入密码确认', 'required' => true, 'autofocus' => true], $withBg)
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->field($f['password'] ?? ['label' => '密码', 'name' => 'password', 'type' => 'password', 'placeholder' => '请输入密码确认', 'required' => true, 'autofocus' => true], $withBg)
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -1047,8 +1034,8 @@ class AuthPage extends Component
     protected function formSuccessMail(): string
     {
         $html = '<div class="auth-success-icon text-center mb-3"><i class="ti ti-mail fs-1 text-success"></i></div>'
-            . $this->statusAlert(true)
-            . $this->defaultLinksHtml('success-mail');
+            .$this->statusAlert(true)
+            .$this->defaultLinksHtml('success-mail');
 
         return $html;
     }
@@ -1057,8 +1044,7 @@ class AuthPage extends Component
      * form Pin（protected实例方法）
      * PIN 码登录
      *
-     * @param bool $withBg 浅底输入框
-     *
+     * @param  bool  $withBg  浅底输入框
      * @return string result
      */
     protected function formPin(bool $withBg): string
@@ -1067,10 +1053,10 @@ class AuthPage extends Component
         // 对齐 auth-split-login-pin.html：6 个分格密码框（form-control form-control-lg text-center fs-3）
         $pinGroup = $f['pin']['group'] ?? $this->get('pinGroup', 6);
         $html = $this->formOpen()
-            . $this->pinCodeGroup($pinGroup, 'pin[]', $withBg)
-            . $this->captchaField()
-            . $this->buttonsRow()
-            . $this->formClose();
+            .$this->pinCodeGroup($pinGroup, 'pin[]', $withBg)
+            .$this->captchaField()
+            .$this->buttonsRow()
+            .$this->formClose();
 
         return $html;
     }
@@ -1088,10 +1074,10 @@ class AuthPage extends Component
     protected function formOpen(): string
     {
         return $this->raw($this->get('beforeForm'))
-            . '<form' . $this->formAttrs() . '>'
-            . $this->csrfField()
-            . $this->formErrorsAlert()
-            . $this->formStatusAlert();
+            .'<form'.$this->formAttrs().'>'
+            .$this->csrfField()
+            .$this->formErrorsAlert()
+            .$this->formStatusAlert();
     }
 
     /**
@@ -1102,7 +1088,7 @@ class AuthPage extends Component
      */
     protected function formClose(): string
     {
-        return '</form>' . $this->raw($this->get('afterForm'));
+        return '</form>'.$this->raw($this->get('afterForm'));
     }
 
     /**
@@ -1124,24 +1110,24 @@ class AuthPage extends Component
         $action = (string) $this->get('action');
         // text-start：表单区标签/输入框强制左对齐（表单外层容器是 text-center，
         // label 会继承居中；Bootstrap .text-start 带 !important，比 CSS 覆盖更可靠）
-        $class  = 'auth-form text-start ' . $this->e($this->get('bodyClass'));
-        $id     = $this->get('id') ? ' id="' . $this->e($this->get('id')) . '"' : '';
+        $class = 'auth-form text-start '.$this->e($this->get('bodyClass'));
+        $id = $this->get('id') ? ' id="'.$this->e($this->get('id')).'"' : '';
 
         $remote = $this->get('ajax') ? ' data-xf-remote' : '';
 
         // 跳转延迟（毫秒）：登录/注册等成功后携带 data.url 时，覆盖默认的 3 秒等待，
         // 让跳转更顺滑（如设为 600）。透传到 data-xf-redirect-delay 由 handleFormResponse 读取。
         $redirectDelay = $this->get('redirectDelay');
-        $delayAttr = ($redirectDelay !== null && $redirectDelay !== '') ? ' data-xf-redirect-delay="' . (int) $redirectDelay . '"' : '';
+        $delayAttr = ($redirectDelay !== null && $redirectDelay !== '') ? ' data-xf-redirect-delay="'.(int) $redirectDelay.'"' : '';
 
-        return ' action="' . $this->e($action) . '"'
-            . ' method="POST"'
-            . ' class="' . trim($class) . '"'
-            . $id
-            . ' accept-charset="UTF-8"'
-            . ' novalidate'
-            . $remote
-            . $delayAttr;
+        return ' action="'.$this->e($this->safeUrl($action)).'"'
+            .' method="POST"'
+            .' class="'.trim($class).'"'
+            .$id
+            .' accept-charset="UTF-8"'
+            .' novalidate'
+            .$remote
+            .$delayAttr;
     }
 
     /**
@@ -1158,14 +1144,15 @@ class AuthPage extends Component
             foreach ($buttons as $b) {
                 $b = (array) $b;
                 // type/variant 必须受限：type 进属性、variant 进 class，二者都可控时会逃逸引号
-                $btnType    = $this->enum($b['type'] ?? 'submit', ['submit', 'button', 'reset'], 'submit');
+                $btnType = $this->enum($b['type'] ?? 'submit', ['submit', 'button', 'reset'], 'submit');
                 $btnVariant = $this->enum($b['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
-                $html .= '<button type="' . $btnType . '"'
-                    . ' class="btn btn-' . $btnVariant . ' ' . $this->e($b['class'] ?? '') . '"'
-                    . (($b['name'] ?? '') !== '' ? ' name="' . $this->e($b['name']) . '"' : '')
-                    . '>' . $this->e($b['label'] ?? '提交') . '</button>';
+                $html .= '<button type="'.$btnType.'"'
+                    .' class="btn btn-'.$btnVariant.' '.$this->e($b['class'] ?? '').'"'
+                    .(($b['name'] ?? '') !== '' ? ' name="'.$this->e($b['name']).'"' : '')
+                    .'>'.$this->e($b['label'] ?? '提交').'</button>';
             }
-            return '<div class="auth-buttons d-grid gap-2 mt-3">' . $html . '</div>';
+
+            return '<div class="auth-buttons d-grid gap-2 mt-3">'.$html.'</div>';
         }
 
         $submit = $this->get('submit');
@@ -1182,15 +1169,15 @@ class AuthPage extends Component
             $submitIcon = '';
         }
 
-        $iconHtml = $submitIcon !== '' ? $this->icon($submitIcon) . ' ' : '';
+        $iconHtml = $submitIcon !== '' ? $this->icon($submitIcon).' ' : '';
 
         // d-grid + w-100：提交按钮撑满整行（对齐后台模板 auth-*.html 的
         // <div class="d-grid"><button class="btn btn-primary fw-bold py-2"> 结构）
         return '<div class="auth-buttons d-grid gap-2 mt-3">'
-            . '<button type="submit" class="btn btn-' . $this->enum($submitVariant, self::ENUM_VARIANT, 'primary') . ' fw-bold py-2 w-100 '
-            . $this->e($submitClass) . '">'
-            . $iconHtml . $this->e($submitLabel)
-            . '</button></div>';
+            .'<button type="submit" class="btn btn-'.$this->enum($submitVariant, self::ENUM_VARIANT, 'primary').' fw-bold py-2 w-100 '
+            .$this->e($submitClass).'">'
+            .$iconHtml.$this->e($submitLabel)
+            .'</button></div>';
     }
 
     /**
@@ -1210,12 +1197,13 @@ class AuthPage extends Component
         foreach ($items as $item) {
             $item = (array) $item;
             $icon = $item['icon'] ?? 'ti ti-world';
-            $url  = $item['url'] ?? '#';
-            $label= $item['label'] ?? '';
-            $html .= '<a href="' . $this->e($url) . '" class="btn btn-outline-secondary" title="' . $this->e($label) . '">'
-                . $this->icon($icon) . '</a>';
+            $url = $item['url'] ?? '#';
+            $label = $item['label'] ?? '';
+            $html .= '<a href="'.$this->e($this->safeUrl($url)).'" class="btn btn-outline-secondary" title="'.$this->e($label).'">'
+                .$this->icon($icon).'</a>';
         }
         $html .= '</div>';
+
         return $html;
     }
 
@@ -1223,91 +1211,91 @@ class AuthPage extends Component
      * field（protected实例方法）
      * 渲染单个输入字段（含标签 / 错误 / 旧值回填 / 帮助文本 / 图标 / 前后插槽）
      *
-     * @param array $f     字段配置
-     * @param bool  $withBg 浅底输入框（card/split）
-     *
+     * @param  array  $f  字段配置
+     * @param  bool  $withBg  浅底输入框（card/split）
      * @return string result
      */
     protected function field(array $f, bool $withBg = false): string
     {
-        $name     = (string) ($f['name'] ?? '');
-        $type     = (string) ($f['type'] ?? 'text');
-        $label    = (string) ($f['label'] ?? '');
-        $ph       = (string) ($f['placeholder'] ?? '');
+        $name = (string) ($f['name'] ?? '');
+        $type = (string) ($f['type'] ?? 'text');
+        $label = (string) ($f['label'] ?? '');
+        $ph = (string) ($f['placeholder'] ?? '');
         $required = ! empty($f['required']);
-        $autofocus= ! empty($f['autofocus']);
+        $autofocus = ! empty($f['autofocus']);
         $disabled = ! empty($f['disabled']);
 
-        $old   = $this->oldInput($name);
+        $old = $this->oldInput($name);
         $value = ($old !== null && $old !== '') ? $old : ($f['value'] ?? '');
-        $value = (string) $value;
+        // 回填值可能是数组（如 name="tags[]" 的多选/分组输入），直接转字符串会触发
+        // "Array to string conversion" 警告，这里序列化为 JSON 展示
+        $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : (string) $value;
 
         $errMsg = $this->fieldError($name);
         $invalid = $errMsg !== '' ? ' is-invalid' : '';
 
-        $id = ($f['id'] ?? '') ?: ('auth-' . preg_replace('/[^a-zA-Z0-9_-]/', '', $name));
+        $id = ($f['id'] ?? '') ?: ('auth-'.preg_replace('/[^a-zA-Z0-9_-]/', '', $name));
 
         // 字段前后插槽（raw）
         $before = $this->raw($f['before'] ?? '');
-        $after  = $this->raw($f['after'] ?? '');
+        $after = $this->raw($f['after'] ?? '');
 
         $html = '<div class="mb-3 auth-field">';
         if ($label !== '') {
-            $html .= '<label for="' . $this->e($id) . '" class="form-label">'
-                . $this->e($label)
-                . ($required ? ' <span class="text-danger">*</span>' : '')
-                . '</label>';
+            $html .= '<label for="'.$this->e($id).'" class="form-label">'
+                .$this->e($label)
+                .($required ? ' <span class="text-danger">*</span>' : '')
+                .'</label>';
         }
 
         // 输入框样式：统一浅底背景 + 普通高度（对齐 INSPINIA auth-split-*：form-control py-2 px-3 bg-light bg-opacity-40 border-light）
-        $inpCls = 'form-control py-2 px-3' . $invalid;
+        $inpCls = 'form-control py-2 px-3'.$invalid;
         $inpCls .= ' bg-light bg-opacity-40 border-light';
 
         // 图标（card/split 用 input-group 包裹）
         $icon = self::FIELD_ICONS[$name] ?? ($f['icon'] ?? '');
         if ($withBg && $icon !== '') {
             $html .= '<div class="input-group">'
-                . '<span class="input-group-text bg-transparent border-light">' . $this->icon($icon) . '</span>'
-                . '<input type="' . $this->e($type) . '"'
-                . ' class="' . $inpCls . '"'
-                . ' id="' . $this->e($id) . '"'
-                . ' name="' . $this->e($name) . '"'
-                . ' placeholder="' . $this->e($ph) . '"'
-                . ' value="' . $this->e($value) . '"'
-                . ($required ? ' required' : '')
-                . ($autofocus ? ' autofocus' : '')
-                . ($disabled ? ' disabled' : '')
-                . '></div>';
+                .'<span class="input-group-text bg-transparent border-light">'.$this->icon($icon).'</span>'
+                .'<input type="'.$this->e($type).'"'
+                .' class="'.$inpCls.'"'
+                .' id="'.$this->e($id).'"'
+                .' name="'.$this->e($name).'"'
+                .' placeholder="'.$this->e($ph).'"'
+                .' value="'.$this->e($value).'"'
+                .($required ? ' required' : '')
+                .($autofocus ? ' autofocus' : '')
+                .($disabled ? ' disabled' : '')
+                .'></div>';
         } else {
-            $html .= '<input type="' . $this->e($type) . '"'
-                . ' class="' . $inpCls . '"'
-                . ' id="' . $this->e($id) . '"'
-                . ' name="' . $this->e($name) . '"'
-                . ' placeholder="' . $this->e($ph) . '"'
-                . ' value="' . $this->e($value) . '"'
-                . ($required ? ' required' : '')
-                . ($autofocus ? ' autofocus' : '')
-                . ($disabled ? ' disabled' : '')
-                . '>';
+            $html .= '<input type="'.$this->e($type).'"'
+                .' class="'.$inpCls.'"'
+                .' id="'.$this->e($id).'"'
+                .' name="'.$this->e($name).'"'
+                .' placeholder="'.$this->e($ph).'"'
+                .' value="'.$this->e($value).'"'
+                .($required ? ' required' : '')
+                .($autofocus ? ' autofocus' : '')
+                .($disabled ? ' disabled' : '')
+                .'>';
         }
 
         if ($errMsg !== '') {
-            $html .= '<div class="invalid-feedback d-block">' . $this->e($errMsg) . '</div>';
+            $html .= '<div class="invalid-feedback d-block">'.$this->e($errMsg).'</div>';
         } elseif (! empty($f['help'])) {
-            $html .= '<div class="form-text">' . $this->e($f['help']) . '</div>';
+            $html .= '<div class="form-text">'.$this->e($f['help']).'</div>';
         }
 
-        $html .= $after . '</div>';
+        $html .= $after.'</div>';
 
-        return $before . $html;
+        return $before.$html;
     }
 
     /**
      * icon（protected实例方法）
      * 渲染图标（自动补全 ti 前缀）
      *
-     * @param string $icon 图标类
-     *
+     * @param  string  $icon  图标类
      * @return string result
      */
     protected function icon(string $icon): string
@@ -1315,7 +1303,8 @@ class AuthPage extends Component
         if ($icon === '' || str_starts_with($icon, '<')) {
             return $icon;
         }
-        return '<i class="' . $this->e($icon) . '"></i>';
+
+        return '<i class="'.$this->iconClass($icon).'"></i>';
     }
 
     /**
@@ -1331,20 +1320,20 @@ class AuthPage extends Component
             return '';
         }
         if (is_string($captcha)) {
-            return '<div class="mb-3 auth-field">' . $captcha . '</div>';
+            return '<div class="mb-3 auth-field">'.$captcha.'</div>';
         }
+
         return '<div class="mb-3 auth-field">'
-            . '<div class="xf-captcha" data-xf="captcha"></div>'
-            . '<input type="hidden" name="xf_captcha_token" value="">'
-            . '</div>';
+            .'<div class="xf-captcha" data-xf="captcha"></div>'
+            .'<input type="hidden" name="xf_captcha_token" value="">'
+            .'</div>';
     }
 
     /**
      * default Links Html（protected实例方法）
      * 按 type 生成默认导航链接 + 兼容历史 'links' 配置（[['text','href']]）
      *
-     * @param string $type 语义类型
-     *
+     * @param  string  $type  语义类型
      * @return string result
      */
     protected function defaultLinksHtml(string $type): string
@@ -1359,15 +1348,16 @@ class AuthPage extends Component
                 if ($text === '' || $href === '') {
                     continue;
                 }
-                $html .= '<a href="' . $this->e($href) . '" class="auth-link">' . $this->e($text) . '</a>';
+                $html .= '<a href="'.$this->e($href).'" class="auth-link">'.$this->e($text).'</a>';
             }
+
             return $html;
         }
 
-        $map    = self::DEFAULT_LINKS[$type] ?? [];
-        $html   = '';
+        $map = self::DEFAULT_LINKS[$type] ?? [];
+        $html = '';
         $labels = [
-            'loginRedirect'    => '已有账号？去登录',
+            'loginRedirect' => '已有账号？去登录',
             'registerRedirect' => '还没有账号？去注册',
         ];
         foreach ($map as $key) {
@@ -1375,8 +1365,9 @@ class AuthPage extends Component
             if ($url === '') {
                 continue;
             }
-            $html .= '<a href="' . $this->e($url) . '" class="auth-link">' . $this->e($labels[$key] ?? '') . '</a>';
+            $html .= '<a href="'.$this->e($url).'" class="auth-link">'.$this->e($labels[$key] ?? '').'</a>';
         }
+
         return $html;
     }
 
@@ -1398,24 +1389,38 @@ class AuthPage extends Component
         }
         $fieldNames = $this->errorFieldNames();
         $messages = [];
-        foreach ($errors->all() as $msg) {
-            if ($this->isFieldError($fieldNames, $errors)) {
-                continue;
+        // 按错误包的「键」遍历：仅收集与表单字段无关的「非字段级」错误，
+        // 字段级错误已在 field() 内联显示，避免重复提示
+        if (is_callable([$errors, 'getBag'])) {
+            $inner = $errors->getBag();
+            if (is_callable([$inner, 'keys'])) {
+                foreach ($inner->keys() as $key) {
+                    if (in_array($key, $fieldNames, true)) {
+                        continue;
+                    }
+                    foreach ((array) $inner->get($key) as $m) {
+                        $messages[] = (string) $m;
+                    }
+                }
             }
-            $messages[] = $msg;
+        } else {
+            // 无 getBag 能力时回退：收集全部错误消息
+            foreach ($errors->all() as $m) {
+                $messages[] = (string) $m;
+            }
         }
         if ($messages === []) {
             return '';
         }
-        return '<div class="alert alert-danger">' . $this->e(implode(' ', $messages)) . '</div>';
+
+        return '<div class="alert alert-danger">'.$this->e(implode(' ', $messages)).'</div>';
     }
 
     /**
      * form Status Alert（protected实例方法）
      * 顶部绿色 alert 显示 session('status')（如邮件发送成功提示）
      *
-     * @param bool $force 是否强制渲染（success-mail 页用）
-     *
+     * @param  bool  $force  是否强制渲染（success-mail 页用）
      * @return string result
      */
     protected function formStatusAlert(bool $force = false): string
@@ -1429,14 +1434,14 @@ class AuthPage extends Component
         if ($status === '') {
             return '';
         }
-        return '<div class="alert alert-success">' . $this->e($status) . '</div>';
+
+        return '<div class="alert alert-success">'.$this->e($status).'</div>';
     }
 
     /**
      * status Alert（protected实例方法，别名）
      *
-     * @param bool $force force
-     *
+     * @param  bool  $force  force
      * @return string result
      */
     protected function statusAlert(bool $force = false): string
@@ -1458,6 +1463,7 @@ class AuthPage extends Component
         if ($errors !== null && is_callable([$errors, 'all'])) {
             return $errors;
         }
+
         return null;
     }
 
@@ -1478,15 +1484,15 @@ class AuthPage extends Component
                 $names[] = (string) $f['name'];
             }
         }
+
         return $names;
     }
 
     /**
      * is Field Error（protected实例方法）
      *
-     * @param array  $fieldNames 字段名列表
-     * @param mixed  $errors     ViewErrorBag
-     *
+     * @param  array  $fieldNames  字段名列表
+     * @param  mixed  $errors  ViewErrorBag
      * @return bool result
      */
     protected function isFieldError(array $fieldNames, mixed $errors): bool
@@ -1496,6 +1502,7 @@ class AuthPage extends Component
                 return true;
             }
         }
+
         return false;
     }
 
@@ -1504,8 +1511,7 @@ class AuthPage extends Component
      * 取单个字段的首条错误信息（Laravel ViewErrorBag 的 has()/first() 是 __call 魔术方法，
      * 必须用 is_callable 判断）。
      *
-     * @param string $name 字段名
-     *
+     * @param  string  $name  字段名
      * @return string result
      */
     protected function fieldError(string $name): string
@@ -1520,6 +1526,7 @@ class AuthPage extends Component
         if (! is_callable([$errors, 'first'])) {
             return '';
         }
+
         return (string) $errors->first($name);
     }
 
@@ -1527,9 +1534,8 @@ class AuthPage extends Component
      * old Input（protected实例方法）
      * 回填旧输入值
      *
-     * @param string $name    字段名
-     * @param mixed  $default 默认值
-     *
+     * @param  string  $name  字段名
+     * @param  mixed  $default  默认值
      * @return mixed result
      */
     protected function oldInput(string $name, mixed $default = null): mixed
@@ -1537,6 +1543,7 @@ class AuthPage extends Component
         if (! function_exists('old')) {
             return $default;
         }
+
         return old($name, $default);
     }
 
@@ -1556,8 +1563,9 @@ class AuthPage extends Component
             return (string) csrf_field();
         }
         if (function_exists('csrf_token')) {
-            return '<input type="hidden" name="_token" value="' . $this->e(csrf_token()) . '">';
+            return '<input type="hidden" name="_token" value="'.$this->e(csrf_token()).'">';
         }
+
         return '';
     }
 
@@ -1571,6 +1579,7 @@ class AuthPage extends Component
         if (function_exists('csrf_token')) {
             return (string) csrf_token();
         }
+
         return '';
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin\Components\Form;
 
+use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\Components\Component;
 
 /**
@@ -59,35 +60,38 @@ class FormValidation extends Component
 
         // HTML5 原生验证
         $html .= '<div class="card mb-3"><div class="card-header"><h5 class="card-title mb-0">HTML5 原生验证</h5></div><div class="card-body">'
-            . '<form novalidate><div class="row g-3">'
-            . '<div class="col-md-6"><label class="form-label">必填 *</label><input type="text" class="form-control" required><div class="invalid-feedback">此字段不能为空</div></div>'
-            . '<div class="col-md-6"><label class="form-label">邮箱 *</label><input type="email" class="form-control" required placeholder="name@example.com"><div class="invalid-feedback">请输入有效的邮箱地址</div></div>'
-            . '<div class="col-md-6"><label class="form-label">最小长度 (≥3)</label><input type="text" class="form-control" minlength="3"><div class="invalid-feedback">至少 3 个字符</div></div>'
-            . '<div class="col-md-6"><label class="form-label">数字范围 (1-100)</label><input type="number" class="form-control" min="1" max="100"><div class="invalid-feedback">必须在 1-100 之间</div></div>'
-            . '<div class="col-md-6"><label class="form-label">URL</label><input type="url" class="form-control" placeholder="https://"><div class="invalid-feedback">请输入有效的 URL</div></div>'
-            . '<div class="col-md-6"><label class="form-label">正则 (仅字母数字)</label><input type="text" class="form-control" pattern="[A-Za-z0-9]+"><div class="invalid-feedback">仅允许字母和数字</div></div>'
-            . '<div class="col-12"><button type="submit" class="btn btn-primary">提交验证</button></div></div></form></div></div>';
+            .'<form novalidate><div class="row g-3">'
+            .'<div class="col-md-6"><label class="form-label">必填 *</label><input type="text" class="form-control" required><div class="invalid-feedback">此字段不能为空</div></div>'
+            .'<div class="col-md-6"><label class="form-label">邮箱 *</label><input type="email" class="form-control" required placeholder="name@example.com"><div class="invalid-feedback">请输入有效的邮箱地址</div></div>'
+            .'<div class="col-md-6"><label class="form-label">最小长度 (≥3)</label><input type="text" class="form-control" minlength="3"><div class="invalid-feedback">至少 3 个字符</div></div>'
+            .'<div class="col-md-6"><label class="form-label">数字范围 (1-100)</label><input type="number" class="form-control" min="1" max="100"><div class="invalid-feedback">必须在 1-100 之间</div></div>'
+            .'<div class="col-md-6"><label class="form-label">URL</label><input type="url" class="form-control" placeholder="https://"><div class="invalid-feedback">请输入有效的 URL</div></div>'
+            .'<div class="col-md-6"><label class="form-label">正则 (仅字母数字)</label><input type="text" class="form-control" pattern="[A-Za-z0-9]+"><div class="invalid-feedback">仅允许字母和数字</div></div>'
+            .'<div class="col-12"><button type="submit" class="btn btn-primary">提交验证</button></div></div></form></div></div>';
 
         // 校验状态样式
         $html .= '<div class="card mb-3"><div class="card-header"><h5 class="card-title mb-0">校验状态样式</h5></div><div class="card-body"><div class="row g-3">'
-            . '<div class="col-md-6"><label class="form-label">成功</label><input type="text" class="form-control is-valid" value="有效值"><div class="valid-feedback">验证通过!</div></div>'
-            . '<div class="col-md-6"><label class="form-label">失败</label><input type="text" class="form-control is-invalid" value="无效值"><div class="invalid-feedback">请修正此字段</div></div>'
-            . '<div class="col-md-6"><label class="form-label">警告</label><div class="input-group has-validation"><input type="text" class="form-control is-invalid" value="待确认">'
-            . '<div class="invalid-feedback">需要进一步确认</div></div></div>'
-            . '<div class="col-md-6"><label class="form-label">选择框校验</label><select class="form-select is-invalid"><option selected>请选择...</option><option>选项 1</option></select>'
-            . '<div class="invalid-feedback">请选择一个选项</div></div></div></div></div>';
+            .'<div class="col-md-6"><label class="form-label">成功</label><input type="text" class="form-control is-valid" value="有效值"><div class="valid-feedback">验证通过!</div></div>'
+            .'<div class="col-md-6"><label class="form-label">失败</label><input type="text" class="form-control is-invalid" value="无效值"><div class="invalid-feedback">请修正此字段</div></div>'
+            .'<div class="col-md-6"><label class="form-label">警告</label><div class="input-group has-validation"><input type="text" class="form-control is-invalid" value="待确认">'
+            .'<div class="invalid-feedback">需要进一步确认</div></div></div>'
+            .'<div class="col-md-6"><label class="form-label">选择框校验</label><select class="form-select is-invalid"><option selected>请选择...</option><option>选项 1</option></select>'
+            .'<div class="invalid-feedback">请选择一个选项</div></div></div></div></div>';
 
         // JS 自定义验证示例表单
-        $uid = 'fv_' . $this->uid();
+        $uid = 'fv_'.$this->uid();
         $html .= '<div class="card"><div class="card-header"><h5 class="card-title mb-0">自定义 JS 验证</h5></div><div class="card-body">'
-            . '<form id="' . $uid . '" class="needs-validation" novalidate><div class="row g-3">'
-            . '<div class="col-md-4"><label class="form-label">姓名 *</label><input type="text" class="form-control" name="name" required><div class="invalid-feedback">请输入姓名</div></div>'
-            . '<div class="col-md-4"><label class="form-label">邮箱 *</label><input type="email" class="form-control" name="email" required><div class="invalid-feedback">请输入有效邮箱</div></div>'
-            . '<div class="col-md-4"><label class="form-label">手机号</label><input type="text" class="form-control" name="phone" pattern="[0-9]{11}"><div class="invalid-feedback">请输入 11 位手机号</div></div>'
-            . '<div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" name="agree" required>'
-            . '<label class="form-check-label">我同意 <a href="#">服务条款</a></label><div class="invalid-feedback">请先同意条款</div></div></div>'
-            . '<div class="col-12"><button type="submit" class="btn btn-primary">提交</button></div></div></form></div></div>';
-        $html .= '<script>document.addEventListener("DOMContentLoaded",function(){XFAdmin.register("formValidation","' . $uid . '")});</script>';
+            .'<form id="'.$uid.'" class="needs-validation" novalidate><div class="row g-3">'
+            .'<div class="col-md-4"><label class="form-label">姓名 *</label><input type="text" class="form-control" name="name" required><div class="invalid-feedback">请输入姓名</div></div>'
+            .'<div class="col-md-4"><label class="form-label">邮箱 *</label><input type="email" class="form-control" name="email" required><div class="invalid-feedback">请输入有效邮箱</div></div>'
+            .'<div class="col-md-4"><label class="form-label">手机号</label><input type="text" class="form-control" name="phone" pattern="[0-9]{11}"><div class="invalid-feedback">请输入 11 位手机号</div></div>'
+            .'<div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" name="agree" required>'
+            .'<label class="form-check-label">我同意 <a href="#">服务条款</a></label><div class="invalid-feedback">请先同意条款</div></div></div>'
+            .'<div class="col-12"><button type="submit" class="btn btn-primary">提交</button></div></div></form></div></div>';
+        // Bootstrap 5 标准校验模式：提交时拦截非法表单并打上 was-validated（此前误用
+        // XFAdmin.register("formValidation", <字符串id>)——register 第二参须为函数，且前端
+        // 并未注册该 widget，导致校验逻辑完全不执行）。这里按表单 id 直接绑定。
+        $this->validationScript($uid);
 
         return $html;
     }
@@ -95,14 +99,13 @@ class FormValidation extends Component
     /**
      * render Custom Form（private实例方法）
      *
-     * @param string $formId form Id
-     * @param array $fields fields
-     *
+     * @param  string  $formId  form Id
+     * @param  array  $fields  fields
      * @return string result
      */
     private function renderCustomForm(string $formId, array $fields): string
     {
-        $html = '<div class="card"><div class="card-body"><form id="' . $this->e($formId) . '" class="needs-validation" novalidate><div class="row g-3">';
+        $html = '<div class="card"><div class="card-body"><form id="'.$this->e($formId).'" class="needs-validation" novalidate><div class="row g-3">';
 
         foreach ($fields as $f) {
             $f = (array) $f;
@@ -111,18 +114,37 @@ class FormValidation extends Component
             $type = $this->e($f['type'] ?? 'text');
             $rules = (string) ($f['rules'] ?? '');
             $placeholder = $this->e($f['placeholder'] ?? '');
-            $col = 'col-md-' . (int) ($f['col'] ?? 6);
+            $col = 'col-md-'.(int) ($f['col'] ?? 6);
 
             $required = str_contains($rules, 'required') ? ' required' : '';
             $email = stripos($type, 'email') !== false ? ' type="email"' : '';
 
-            $html .= '<div class="' . $col . '"><label class="form-label">' . $label . ($required ? ' *' : '') . '</label>'
-                . '<input' . $email . ' class="form-control" name="' . $name . '" placeholder="' . $placeholder . '"' . $required . '>'
-                . '<div class="invalid-feedback">请填写有效的' . $label . '</div></div>';
+            $html .= '<div class="'.$col.'"><label class="form-label">'.$label.($required ? ' *' : '').'</label>'
+                .'<input'.$email.' class="form-control" name="'.$name.'" placeholder="'.$placeholder.'"'.$required.'>'
+                .'<div class="invalid-feedback">请填写有效的'.$label.'</div></div>';
         }
         $html .= '<div class="col-12"><button type="submit" class="btn btn-primary">提交</button></div></div></form></div></div>';
-        $html .= '<script>document.addEventListener("DOMContentLoaded",function(){XFAdmin.register("formValidation","' . $this->e($formId) . '")});</script>';
+        // 校验绑定脚本统一走 Assets::inlineJs（随 scripts() 在页尾输出，同内容只输出一次），
+        // 不再内联 <script>，避免 DOMContentLoaded 处理器重复绑定
+        $this->validationScript($formId);
 
         return $html;
+    }
+
+    /**
+     * 注册指定表单的 Bootstrap 5 客户端校验逻辑（按内容去重，同 id 只输出一次）
+     *
+     * @param  string  $formId  表单元素 id
+     */
+    private function validationScript(string $formId): void
+    {
+        // JS 字符串上下文：formId 必须用 json_encode 生成带引号的字面量，
+        // 直接拼接（含引号/反斜杠的 id）会破坏脚本语法甚至注入
+        $formIdJs = json_encode($formId, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        $js = 'document.addEventListener("DOMContentLoaded",function(){var f=document.getElementById('.$formIdJs.');'
+            .'if(!f)return;f.addEventListener("submit",function(ev){'
+            .'if(f.checkValidity()===false){ev.preventDefault();ev.stopPropagation();}'
+            .'f.classList.add("was-validated");},false);});';
+        Assets::instance()->inlineJs($js);
     }
 }

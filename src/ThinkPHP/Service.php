@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace zxf\XfAdmin\ThinkPHP;
 
 use think\Service as BaseService;
+use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\XfAdmin;
 
 /**
@@ -37,6 +38,7 @@ class Service extends BaseService
                 if ($component === null) {
                     return XfAdmin::class;
                 }
+
                 return XfAdmin::component($component, $options);
             }
         }
@@ -55,7 +57,7 @@ class Service extends BaseService
             $config = (array) config('xfadmin');
         }
         if ($config === []) {
-            $config = require __DIR__ . '/../../config/xfadmin.php';
+            $config = require __DIR__.'/../../config/xfadmin.php';
         }
         XfAdmin::config($config);
 

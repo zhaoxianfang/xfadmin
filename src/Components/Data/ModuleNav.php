@@ -35,12 +35,12 @@ class ModuleNav extends Component
     protected function defaults(): array
     {
         return [
-            'items'    => [],
+            'items' => [],
             'sections' => [],
-            'type'     => 'pills',   // pills | tabs | underline
-            'align'    => 'start',   // start | center | end
-            'class'    => 'xf-module-subnav',
-            'id'       => null,
+            'type' => 'pills',   // pills | tabs | underline
+            'align' => 'start',   // start | center | end
+            'class' => 'xf-module-subnav',
+            'id' => null,
         ];
     }
 
@@ -51,7 +51,7 @@ class ModuleNav extends Component
      */
     protected function html(): string
     {
-        $type  = $this->enum($this->get('type'), ['pills', 'tabs', 'underline'], 'pills');
+        $type = $this->enum($this->get('type'), ['pills', 'tabs', 'underline'], 'pills');
         $align = $this->enum($this->get('align'), ['start', 'center', 'end'], 'start');
 
         $items = $this->get('items');
@@ -66,7 +66,7 @@ class ModuleNav extends Component
         if ($sections === [] && $items !== []) {
             $sections = [['title' => '', 'items' => $items]];
         }
-        $navClass = 'nav nav-' . $type;
+        $navClass = 'nav nav-'.$type;
         if ($align === 'center') {
             $navClass .= ' justify-content-center';
         } elseif ($align === 'end') {
@@ -75,18 +75,20 @@ class ModuleNav extends Component
         $out = '';
         foreach ($sections as $sec) {
             $secItems = $sec['items'] ?? [];
-            $links    = '';
+            $links = '';
             foreach ($secItems as $it) {
                 $active = ! empty($it['active']) ? ' active' : '';
-                $icon   = ! empty($it['icon']) ? '<i class="' . $this->e($it['icon']) . ' me-1"></i>' : '';
-                $links .= '<a class="nav-link' . $active . '" href="' . $this->e($it['url'] ?? '#') . '">'
-                    . $icon . $this->e($it['label'] ?? '') . '</a>';
+                $icon = ! empty($it['icon']) ? '<i class="'.$this->e($it['icon']).' me-1"></i>' : '';
+                $itUrl = $this->safeUrl($it['url'] ?? '#', '#');
+                $links .= '<a class="nav-link'.$active.'" href="'.$this->e($itUrl).'">'
+                    .$icon.$this->e($it['label'] ?? '').'</a>';
             }
             if (($sec['title'] ?? '') !== '') {
-                $out .= '<div class="text-muted small fw-semibold mb-1">' . $this->e($sec['title']) . '</div>';
+                $out .= '<div class="text-muted small fw-semibold mb-1">'.$this->e($sec['title']).'</div>';
             }
-            $out .= '<ul class="' . $navClass . ' mb-3 ' . $this->e($this->get('class')) . '">' . $links . '</ul>';
+            $out .= '<ul class="'.$navClass.' mb-3 '.$this->e($this->get('class')).'">'.$links.'</ul>';
         }
+
         return $out;
     }
 }

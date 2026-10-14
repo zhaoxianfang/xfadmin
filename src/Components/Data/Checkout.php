@@ -6,7 +6,6 @@ namespace zxf\XfAdmin\Components\Data;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Support\Concerns\HasPriceFormat;
-use zxf\XfAdmin\XfAdmin;
 
 /**
  * 电商结算页（apps-ecommerce-checkout.html）
@@ -31,6 +30,7 @@ use zxf\XfAdmin\XfAdmin;
 class Checkout extends Component
 {
     use HasPriceFormat;
+
     /**
      * defaults（protected实例方法）
      *
@@ -80,17 +80,17 @@ class Checkout extends Component
             $icon = (string) ($step['icon'] ?? 'ti-circle');
             $label = (string) ($step['label'] ?? '');
             $isActive = $i === $currentStep;
-            $isDone = ($i < $currentStep) || !empty($step['done']);
+            $isDone = ($i < $currentStep) || ! empty($step['done']);
 
             if ($i > 0) {
                 $lineClass = $isDone ? ' bg-primary' : ' bg-light';
-                $html .= '<div class="flex-grow-1 mx-2" style="height:2px"><div class="h-100' . $lineClass . '"></div></div>';
+                $html .= '<div class="flex-grow-1 mx-2" style="height:2px"><div class="h-100'.$lineClass.'"></div></div>';
             }
             $badgeClass = $isDone ? 'bg-primary' : ($isActive ? 'bg-primary' : 'bg-light text-muted');
             $textClass = $isActive ? 'fw-semibold text-dark' : ($isDone ? 'text-primary' : 'text-muted');
             $html .= '<div class="d-flex flex-column align-items-center"><div class="rounded-circle d-inline-flex align-items-center justify-content-center '
-                . $badgeClass . '" style="width:36px;height:36px"><i class="ti ' . $this->e($icon) . '"></i></div>';
-            $html .= '<small class="mt-1 ' . $textClass . '">' . $this->e($label) . '</small></div>';
+                .$badgeClass.'" style="width:36px;height:36px"><i class="ti '.$this->e($icon).'"></i></div>';
+            $html .= '<small class="mt-1 '.$textClass.'">'.$this->e($label).'</small></div>';
         }
         $html .= '</div></div></div>';
 
@@ -128,9 +128,8 @@ class Checkout extends Component
     /**
      * render Order Summary（private实例方法）
      *
-     * @param array $summary summary
-     * @param string $currency currency
-     *
+     * @param  array  $summary  summary
+     * @param  string  $currency  currency
      * @return string result
      */
     private function renderOrderSummary(array $summary, string $currency): string
@@ -145,24 +144,24 @@ class Checkout extends Component
 
         // 简化的订单项
         $items = (array) ($summary['items'] ?? []);
-        if (!empty($items)) {
+        if (! empty($items)) {
             $html .= '<div class="mb-3">';
             foreach ($items as $item) {
                 $item = (array) $item;
                 $html .= '<div class="d-flex justify-content-between mb-2"><span class="small">'
-                    . $this->e($item['name'] ?? '') . ' x' . (int) ($item['qty'] ?? 1) . '</span>'
-                    . '<span>' . $this->formatPrice((float) ($item['price'] ?? 0), $currency) . '</span></div>';
+                    .$this->e($item['name'] ?? '').' x'.(int) ($item['qty'] ?? 1).'</span>'
+                    .'<span>'.$this->formatPrice((float) ($item['price'] ?? 0), $currency).'</span></div>';
             }
             $html .= '</div>';
         }
-        $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">小计</span><span>' . $this->formatPrice($subtotal, $currency) . '</span></div>';
-        $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">运费</span><span>' . ($shipping > 0 ? $this->formatPrice($shipping, $currency) : '免运费') . '</span></div>';
-        $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">税费</span><span>' . $this->formatPrice($tax, $currency) . '</span></div>';
+        $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">小计</span><span>'.$this->formatPrice($subtotal, $currency).'</span></div>';
+        $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">运费</span><span>'.($shipping > 0 ? $this->formatPrice($shipping, $currency) : '免运费').'</span></div>';
+        $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">税费</span><span>'.$this->formatPrice($tax, $currency).'</span></div>';
         if ($discount > 0) {
-            $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">优惠</span><span class="text-success">-' . $this->formatPrice($discount, $currency) . '</span></div>';
+            $html .= '<div class="d-flex justify-content-between mb-2"><span class="text-muted">优惠</span><span class="text-success">-'.$this->formatPrice($discount, $currency).'</span></div>';
         }
         $html .= '<hr>';
-        $html .= '<div class="d-flex justify-content-between mb-3"><span class="fw-bold">合计</span><span class="fw-bold fs-5">' . $this->formatPrice($total, $currency) . '</span></div>';
+        $html .= '<div class="d-flex justify-content-between mb-3"><span class="fw-bold">合计</span><span class="fw-bold fs-5">'.$this->formatPrice($total, $currency).'</span></div>';
 
         $html .= '<a href="javascript:void(0)" class="btn btn-primary w-100">确认支付</a>';
         $html .= '</div></div>';

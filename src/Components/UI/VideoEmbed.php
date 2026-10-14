@@ -47,7 +47,8 @@ class VideoEmbed extends Component
         $provider = (string) $this->get('provider', 'youtube');
         $title = (string) $this->get('title', '');
         $description = (string) $this->get('description', '');
-        $ratio = (string) $this->get('ratio', '16x9');
+        // ratio 白名单（Bootstrap ratio-* 预设类），非法值回退默认 16x9
+        $ratio = $this->enum($this->get('ratio', '16x9'), ['1x1', '4x3', '16x9', '21x9'], '16x9');
         $autoplay = (bool) $this->get('autoplay', false);
         $allow = (string) $this->get('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
 
@@ -56,34 +57,36 @@ class VideoEmbed extends Component
         if ($title || $description) {
             $html .= '<div class="mb-3">';
             if ($title) {
-                $html .= '<h5>' . $this->e($title) . '</h5>';
+                $html .= '<h5>'.$this->e($title).'</h5>';
             }
             if ($description) {
-                $html .= '<p class="text-muted">' . $this->e($description) . '</p>';
+                $html .= '<p class="text-muted">'.$this->e($description).'</p>';
             }
             $html .= '</div>';
         }
 
-        $html .= '<div class="ratio ratio-' . $this->e($ratio) . '">';
+        $html .= '<div class="ratio ratio-'.$ratio.'">';
 
         if ($src) {
             if ($provider === 'html5') {
                 $html .= '<video controls playsinline class="w-100">';
-                $html .= '<source src="' . $this->e($src) . '" type="video/mp4">';
+                // src 走 safeUrl 白名单，拦截 javascript: 等伪协议
+                $html .= '<source src="'.$this->e($this->safeUrl($src)).'" type="video/mp4">';
                 $html .= '您的浏览器不支持视频播放。';
                 $html .= '</video>';
             } else {
                 $embedUrl = $src;
                 if ($provider === 'youtube') {
-                    $embedUrl .= (str_contains($src, '?') ? '&' : '?') . 'rel=0' . ($autoplay ? '&autoplay=1' : '');
+                    $embedUrl .= (str_contains($src, '?') ? '&' : '?').'rel=0'.($autoplay ? '&autoplay=1' : '');
                 }
                 if ($provider === 'bilibili') {
-                    $embedUrl .= (str_contains($src, '?') ? '&' : '?') . 'danmaku=0';
+                    $embedUrl .= (str_contains($src, '?') ? '&' : '?').'danmaku=0';
                 }
 
-                $html .= '<iframe src="' . $this->e($embedUrl) . '" ';
+                // embedUrl 同样走 safeUrl 白名单后再转义
+                $html .= '<iframe src="'.$this->e($this->safeUrl($embedUrl)).'" ';
                 if ($allow) {
-                    $html .= 'allow="' . $this->e($allow) . '" ';
+                    $html .= 'allow="'.$this->e($allow).'" ';
                 }
                 $html .= 'allowfullscreen></iframe>';
             }

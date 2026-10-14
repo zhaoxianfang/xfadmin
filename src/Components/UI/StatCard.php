@@ -29,16 +29,16 @@ class StatCard extends Component
     protected function defaults(): array
     {
         return [
-            'title'   => '',
-            'value'   => '',
-            'icon'    => null,
+            'title' => '',
+            'value' => '',
+            'icon' => null,
             'variant' => 'primary',
-            'trend'   => null,
-            'url'     => null,
+            'trend' => null,
+            'url' => null,
             'counter' => null,
-            'prefix'  => '',
-            'suffix'  => '',
-            'width'   => null,   // 响应式列宽：null=不包裹；数组=['sm'=>6,'xl'=>3] 生成 col-sm-6 col-xl-3；整数=col-md-N col-xl-N
+            'prefix' => '',
+            'suffix' => '',
+            'width' => null,   // 响应式列宽：null=不包裹；数组=['sm'=>6,'xl'=>3] 生成 col-sm-6 col-xl-3；整数=col-md-N col-xl-N
         ];
     }
 
@@ -51,7 +51,7 @@ class StatCard extends Component
     {
         // variant 走基类白名单（含 link），防止任意类注入
         $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
-        $width   = $this->get('width');
+        $width = $this->get('width');
 
         $counterCfg = json_encode([
             'target' => $this->get('counter'),
@@ -59,37 +59,37 @@ class StatCard extends Component
             'suffix' => $this->get('suffix'),
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         $value = $this->get('counter') !== null
-            ? '<span data-xf="counter" data-xf-config="' . $this->e($counterCfg ?: '{}') . '">0</span>'
-            : $this->e($this->get('prefix')) . $this->e($this->get('value')) . $this->e($this->get('suffix'));
+            ? '<span data-xf="counter" data-xf-config="'.$this->e($counterCfg ?: '{}').'">0</span>'
+            : $this->e($this->get('prefix')).$this->e($this->get('value')).$this->e($this->get('suffix'));
 
-        $html  = '<div' . $this->attrs(['class' => 'card' . ($width ? ' h-100' : '')]) . '><div class="card-body">';
+        $html = '<div'.$this->attrs(['class' => 'card'.($width ? ' h-100' : '')]).'><div class="card-body">';
         $html .= '<div class="d-flex align-items-center justify-content-between">';
-        $html .= '<div><h5 class="text-muted fs-13 text-uppercase" title="' . $this->e($this->get('title')) . '">' . $this->e($this->get('title')) . '</h5>';
+        $html .= '<div><h5 class="text-muted fs-13 text-uppercase" title="'.$this->e($this->get('title')).'">'.$this->e($this->get('title')).'</h5>';
         $html .= '<div class="d-flex align-items-center gap-2 my-2 py-1">';
         if ($this->get('icon')) {
-            $html .= '<div class="avatar-sm flex-shrink-0"><span class="avatar-title bg-' . $variant . '-subtle text-' . $variant . ' rounded fs-22"><i class="' . $this->e($this->get('icon')) . '"></i></span></div>';
+            $html .= '<div class="avatar-sm flex-shrink-0"><span class="avatar-title bg-'.$variant.'-subtle text-'.$variant.' rounded fs-22"><i class="'.$this->iconClass($this->get('icon')).'"></i></span></div>';
         }
-        $html .= '<h3 class="mb-0 fw-bold">' . $value . '</h3>';
+        $html .= '<h3 class="mb-0 fw-bold">'.$value.'</h3>';
         $html .= '</div>';
 
         $trend = $this->get('trend');
         if ($trend) {
             $trend = is_array($trend) ? $trend : ['text' => $trend];
-            $up    = ($trend['direction'] ?? 'up') === 'up';
-            $html .= '<p class="mb-0 text-muted"><span class="text-' . ($up ? 'success' : 'danger') . ' me-1">'
-                . '<i class="ti ti-arrow-' . ($up ? 'up' : 'down') . '"></i> ' . $this->e($trend['text'] ?? '') . '</span>'
-                . '<span class="text-nowrap">' . $this->e($trend['label'] ?? '') . '</span></p>';
+            $up = ($trend['direction'] ?? 'up') === 'up';
+            $html .= '<p class="mb-0 text-muted"><span class="text-'.($up ? 'success' : 'danger').' me-1">'
+                .'<i class="ti ti-arrow-'.($up ? 'up' : 'down').'"></i> '.$this->e($trend['text'] ?? '').'</span>'
+                .'<span class="text-nowrap">'.$this->e($trend['label'] ?? '').'</span></p>';
         }
         $html .= '</div>';
 
         if ($this->get('url')) {
-            $html .= '<a href="' . $this->e($this->safeUrl($this->get('url'))) . '" class="link-secondary fs-24"><i class="ti ti-chevron-right"></i></a>';
+            $html .= '<a href="'.$this->e($this->safeUrl($this->get('url'))).'" class="link-secondary fs-24"><i class="ti ti-chevron-right"></i></a>';
         }
         $html .= '</div></div></div>';
 
         if ($width) {
             // 断点键走白名单、列数夹紧 1~12，避免数组键名逃逸出 class 属性
-            return '<div class="' . $this->gridCol($width) . '">' . $html . '</div>';
+            return '<div class="'.$this->gridCol($width).'">'.$html.'</div>';
         }
 
         return $html;

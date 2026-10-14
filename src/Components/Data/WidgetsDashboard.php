@@ -75,8 +75,7 @@ class WidgetsDashboard extends Component
     /**
      * render Stats（private实例方法）
      *
-     * @param string $currency currency
-     *
+     * @param  string  $currency  currency
      * @return string result
      */
     private function renderStats(string $currency): string
@@ -88,7 +87,7 @@ class WidgetsDashboard extends Component
             ['label' => '转化率', 'value' => 3.45, 'icon' => 'ti-trending-up', 'color' => 'warning', 'trend' => '-0.8%', 'suffix' => '%'],
         ];
 
-        $uid = 'ws_' . $this->uid();
+        $uid = 'ws_'.$this->uid();
 
         $html = '<div class="row g-2 mb-3">';
         foreach ($stats as $i => $stat) {
@@ -105,13 +104,13 @@ class WidgetsDashboard extends Component
                 : (is_float($value) ? number_format($value, 2) : number_format((int) $value));
 
             $html .= '<div class="col-sm-6 col-xxl-3"><div class="card"><div class="card-body p-3"><div class="d-flex align-items-center">'
-                . '<div class="flex-shrink-0"><span class="badge bg-' . $color . '-subtle text-' . $color . ' rounded-3 p-2">'
-                . '<i class="ti ' . $icon . ' fs-20"></i></span></div>'
-                . '<div class="flex-grow-1 ms-3"><h6 class="text-muted mb-0 small">' . $label . '</h6>'
-                . '<h5 class="mb-0 mt-1">' . $displayValue . $suffix . '</h5>'
+                .'<div class="flex-shrink-0"><span class="badge bg-'.$color.'-subtle text-'.$color.' rounded-3 p-2">'
+                .'<i class="ti '.$icon.' fs-20"></i></span></div>'
+                .'<div class="flex-grow-1 ms-3"><h6 class="text-muted mb-0 small">'.$label.'</h6>'
+                .'<h5 class="mb-0 mt-1">'.$displayValue.$suffix.'</h5>'
                 // 依次闭合：flex-grow-1 / d-flex / card-body / card / col（原少闭合 card 与 col，
                 // 导致后续小部件被错误嵌套进本卡片）
-                . '<small class="' . $trendClass . '">' . $trend . '</small></div></div></div></div></div>';
+                .'<small class="'.$trendClass.'">'.$trend.'</small></div></div></div></div></div>';
         }
         $html .= '</div>';
 
@@ -127,7 +126,7 @@ class WidgetsDashboard extends Component
     {
         // 声明式 ECharts：canvas 带 data-xf="echart" + data-xf-config，
         // 由 XFAdmin.scan() 在 DOM 就绪后统一初始化（避免内联脚本因 XFAdmin 未加载而失效）
-        $uid = 'wsc_' . $this->uid();
+        $uid = 'wsc_'.$this->uid();
         $cfg = json_encode([
             'options' => [
                 'grid' => ['left' => 48, 'right' => 16, 'top' => 40, 'bottom' => 30],
@@ -146,12 +145,12 @@ class WidgetsDashboard extends Component
                     ],
                 ],
             ],
-        ], JSON_HEX_TAG | JSON_HEX_AMP);
+        ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
         $html = '<div class="card mb-3"><div class="card-header"><h5 class="card-title mb-0">月度趋势</h5></div>'
-            . '<div class="card-body"><div style="height:250px">'
-            . '<canvas id="' . $uid . '" data-xf="echart" data-xf-config="' . $cfg . '"></canvas>'
-            . '</div></div></div>';
+            .'<div class="card-body"><div style="height:250px">'
+            .'<canvas id="'.$uid.'" data-xf="echart" data-xf-config="'.$this->e($cfg ?: '{}').'"></canvas>'
+            .'</div></div></div>';
 
         return $html;
     }
@@ -171,8 +170,8 @@ class WidgetsDashboard extends Component
         ];
 
         $html = '<div class="card mb-3"><div class="card-header d-flex justify-content-between">'
-            . '<h5 class="card-title mb-0">消息</h5><span class="badge text-bg-primary rounded-pill">4</span></div>'
-            . '<div class="list-group list-group-flush">';
+            .'<h5 class="card-title mb-0">消息</h5><span class="badge text-bg-primary rounded-pill">4</span></div>'
+            .'<div class="list-group list-group-flush">';
 
         foreach ($msgs as $m) {
             // 先解析 URL 再统一转义（顺序反了会把查询串 & 变成 &amp;，且外链可逃逸 src 属性）
@@ -183,12 +182,12 @@ class WidgetsDashboard extends Component
             $badge = $m['badge'] ?? '';
 
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
-                . ($avatar ? '<img src="' . $avatar . '" class="rounded-circle me-3" width="36" height="36" alt="">'
+                .($avatar ? '<img src="'.$avatar.'" class="rounded-circle me-3" width="36" height="36" alt="">'
                 : '<div class="rounded-circle bg-light me-3 d-flex align-items-center justify-content-center" style="width:36px;height:36px"><i class="ti ti-user text-muted"></i></div>')
-                . '<div class="flex-grow-1 min-w-0"><h6 class="mb-0 text-truncate">' . $name . '</h6>'
-                . '<small class="text-muted text-truncate d-block">' . $text . '</small></div>'
-                . ($badge ? '<span class="badge text-bg-danger rounded-pill ms-2">' . $this->e($badge) . '</span>' : '')
-                . '<small class="text-muted ms-2">' . $time . '</small></div></div>';
+                .'<div class="flex-grow-1 min-w-0"><h6 class="mb-0 text-truncate">'.$name.'</h6>'
+                .'<small class="text-muted text-truncate d-block">'.$text.'</small></div>'
+                .($badge ? '<span class="badge text-bg-danger rounded-pill ms-2">'.$this->e($badge).'</span>' : '')
+                .'<small class="text-muted ms-2">'.$time.'</small></div></div>';
         }
         $html .= '</div><div class="card-footer text-center"><a href="#">查看所有消息</a></div></div>';
 
@@ -211,8 +210,8 @@ class WidgetsDashboard extends Component
         ];
 
         $html = '<div class="card mb-3"><div class="card-header d-flex justify-content-between">'
-            . '<h5 class="card-title mb-0">待办事项</h5><small class="text-muted">' . count(array_filter($tasks, fn($t) => ! $t['done'])) . ' 项未完成</small></div>'
-            . '<div class="list-group list-group-flush">';
+            .'<h5 class="card-title mb-0">待办事项</h5><small class="text-muted">'.count(array_filter($tasks, fn ($t) => ! $t['done'])).' 项未完成</small></div>'
+            .'<div class="list-group list-group-flush">';
 
         foreach ($tasks as $t) {
             $checked = $t['done'] ? ' checked' : '';
@@ -224,13 +223,13 @@ class WidgetsDashboard extends Component
             };
 
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
-                . '<input class="form-check-input me-3" type="checkbox"' . $checked . '>'
-                . '<span class="flex-grow-1' . $textClass . '">' . $this->e($t['text']) . '</span>'
-                . $priorityBadge . '</div></div>';
+                .'<input class="form-check-input me-3" type="checkbox"'.$checked.'>'
+                .'<span class="flex-grow-1'.$textClass.'">'.$this->e($t['text']).'</span>'
+                .$priorityBadge.'</div></div>';
         }
         $html .= '</div><div class="card-footer"><div class="input-group input-group-sm">'
-            . '<input type="text" class="form-control" placeholder="添加新任务...">'
-            . '<button class="btn btn-primary"><i class="ti ti-plus"></i></button></div></div></div>';
+            .'<input type="text" class="form-control" placeholder="添加新任务...">'
+            .'<button class="btn btn-primary"><i class="ti ti-plus"></i></button></div></div></div>';
 
         return $html;
     }
@@ -251,14 +250,14 @@ class WidgetsDashboard extends Component
         ];
 
         $html = '<div class="card"><div class="card-header"><h5 class="card-title mb-0">最近动态</h5></div>'
-            . '<div class="list-group list-group-flush">';
+            .'<div class="list-group list-group-flush">';
 
         foreach ($activities as $a) {
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
-                . '<span class="badge bg-' . $this->e($a['color']) . '-subtle text-' . $this->e($a['color']) . ' rounded-3 p-2 me-3">'
-                . '<i class="ti ' . $this->e($a['icon']) . ' fs-16"></i></span>'
-                . '<div class="flex-grow-1"><small>' . $this->e($a['text']) . '</small></div>'
-                . '<small class="text-muted">' . $this->e($a['time']) . '</small></div></div>';
+                .'<span class="badge bg-'.$this->e($a['color']).'-subtle text-'.$this->e($a['color']).' rounded-3 p-2 me-3">'
+                .'<i class="ti '.$this->e($a['icon']).' fs-16"></i></span>'
+                .'<div class="flex-grow-1"><small>'.$this->e($a['text']).'</small></div>'
+                .'<small class="text-muted">'.$this->e($a['time']).'</small></div></div>';
         }
         $html .= '</div></div>';
 

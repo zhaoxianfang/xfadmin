@@ -48,20 +48,21 @@ class ColorPalette extends Component
             $title = (string) ($group['title'] ?? '');
             $colors = (array) ($group['colors'] ?? []);
 
-            $html .= '<h5 class="mb-3 mt-4">' . $this->e($title) . '</h5>';
+            $html .= '<h5 class="mb-3 mt-4">'.$this->e($title).'</h5>';
             $html .= '<div class="row g-3">';
             foreach ($colors as $name => $hex) {
                 $hex = (string) $hex;
                 // 校验 hex 颜色格式（#RGB / #RRGGBB），不合法则回退到 #ccc
                 $safeHex = preg_match('/^#[0-9a-fA-F]{3,6}$/', $hex) ? $hex : '#cccccc';
                 $html .= '<div class="col-md-3 col-sm-6"><div class="card"><div class="card-body p-0">';
-                $html .= '<div style="height:80px;background:' . $this->e($safeHex) . ';border-radius:8px 8px 0 0"></div>';
-                $html .= '<div class="p-2"><div class="fw-semibold">' . $this->e($name) . '</div>';
-                $html .= '<small class="text-muted">' . $this->e(strtoupper($safeHex)) . '</small></div>';
+                $html .= '<div style="height:80px;background:'.$this->e($safeHex).';border-radius:8px 8px 0 0"></div>';
+                $html .= '<div class="p-2"><div class="fw-semibold">'.$this->e($name).'</div>';
+                $html .= '<small class="text-muted">'.$this->e(strtoupper($safeHex)).'</small></div>';
                 $html .= '</div></div></div>';
             }
             $html .= '</div>';
         }
+
         return $html;
     }
 

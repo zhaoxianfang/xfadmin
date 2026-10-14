@@ -57,7 +57,7 @@ echo XfAdmin::profilePage(['user' => \$user, 'tabs' => [...]]);
 客户/客户端列表（apps-clients）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Clients`
-> **文件**：`src/Components/Data/Clients.php`（108 行）
+> **文件**：`src/Components/Data/Clients.php`（141 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -123,7 +123,7 @@ echo XfAdmin::clients([
 公司列表（apps-companies）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Companies`
-> **文件**：`src/Components/Data/Companies.php`（91 行）
+> **文件**：`src/Components/Data/Companies.php`（126 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -182,7 +182,7 @@ echo XfAdmin::companies([
 公司卡（logo/简介/链接）。
 
 > **类**：`zxf\XfAdmin\Components\Data\CompanyCard`
-> **文件**：`src/Components/Data/CompanyCard.php`（92 行）
+> **文件**：`src/Components/Data/CompanyCard.php`（122 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -241,7 +241,7 @@ echo XfAdmin::companyCard([
 联系人卡（头像/电话/邮件）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ContactCard`
-> **文件**：`src/Components/Data/ContactCard.php`（78 行）
+> **文件**：`src/Components/Data/ContactCard.php`（106 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -298,7 +298,7 @@ echo XfAdmin::contactCard([
 联系人列表（通讯录）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ContactList`
-> **文件**：`src/Components/Data/ContactList.php`（53 行）
+> **文件**：`src/Components/Data/ContactList.php`（74 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -346,7 +346,7 @@ echo XfAdmin::contactList([
 角色管理（角色列表+成员）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Roles`
-> **文件**：`src/Components/Data/Roles.php`（49 行）
+> **文件**：`src/Components/Data/Roles.php`（71 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -397,7 +397,7 @@ echo XfAdmin::roles([
 权限矩阵（角色×权限勾选表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PermissionMatrix`
-> **文件**：`src/Components/Data/PermissionMatrix.php`（53 行）
+> **文件**：`src/Components/Data/PermissionMatrix.php`（75 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -454,7 +454,7 @@ echo XfAdmin::permissionMatrix([
 团队成员卡（头像/职位/操作）。
 
 > **类**：`zxf\XfAdmin\Components\Data\TeamMember`
-> **文件**：`src/Components/Data/TeamMember.php`（63 行）
+> **文件**：`src/Components/Data/TeamMember.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -503,7 +503,7 @@ echo XfAdmin::teamMember([
 项目列表（卡片/列表视图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Projects`
-> **文件**：`src/Components/Data/Projects.php`（67 行）
+> **文件**：`src/Components/Data/Projects.php`（94 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -559,7 +559,7 @@ echo XfAdmin::projects([
 项目详情（概览/进度/成员）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProjectDetails`
-> **文件**：`src/Components/Data/ProjectDetails.php`（113 行）
+> **文件**：`src/Components/Data/ProjectDetails.php`（136 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -608,7 +608,7 @@ echo XfAdmin::projectDetails([
 项目活动流（动态时间线）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProjectActivity`
-> **文件**：`src/Components/Data/ProjectActivity.php`（61 行）
+> **文件**：`src/Components/Data/ProjectActivity.php`（96 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -656,7 +656,7 @@ echo XfAdmin::projectActivity([
 项目团队看板（成员任务分配）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProjectTeamBoard`
-> **文件**：`src/Components/Data/ProjectTeamBoard.php`（95 行）
+> **文件**：`src/Components/Data/ProjectTeamBoard.php`（126 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -718,7 +718,7 @@ echo XfAdmin::projectTeamBoard([
 任务清单（勾选/优先级）。
 
 > **类**：`zxf\XfAdmin\Components\Data\TaskList`
-> **文件**：`src/Components/Data/TaskList.php`（90 行）
+> **文件**：`src/Components/Data/TaskList.php`（129 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -783,7 +783,7 @@ echo XfAdmin::taskList([
 待办列表（添加/完成）。
 
 > **类**：`zxf\XfAdmin\Components\Data\TodoList`
-> **文件**：`src/Components/Data/TodoList.php`（55 行）
+> **文件**：`src/Components/Data/TodoList.php`（76 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -834,7 +834,7 @@ echo XfAdmin::todoList([
 问题追踪（看板式缺陷管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\IssueTracker`
-> **文件**：`src/Components/Data/IssueTracker.php`（112 行）
+> **文件**：`src/Components/Data/IssueTracker.php`（146 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -899,7 +899,7 @@ echo XfAdmin::issueTracker([
 看板（拖拽列/卡片，项目与工单管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Kanban`
-> **文件**：`src/Components/Data/Kanban.php`（164 行）
+> **文件**：`src/Components/Data/Kanban.php`（197 行）
 > **依赖插件**：`sortablejs`、`simplebar`
 
 **用法示例**
@@ -955,7 +955,7 @@ echo XfAdmin::kanban([
 交易/商机列表（CRM 看板式）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Deals`
-> **文件**：`src/Components/Data/Deals.php`（91 行）
+> **文件**：`src/Components/Data/Deals.php`（126 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1013,7 +1013,7 @@ echo XfAdmin::deals([
 用户资料卡（详情展示）。
 
 > **类**：`zxf\XfAdmin\Components\Data\UserProfile`
-> **文件**：`src/Components/Data/UserProfile.php`（80 行）
+> **文件**：`src/Components/Data/UserProfile.php`（105 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1077,7 +1077,7 @@ echo XfAdmin::userProfile([
 个人资料头部（封面+头像+统计）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProfileHeader`
-> **文件**：`src/Components/Data/ProfileHeader.php`（86 行）
+> **文件**：`src/Components/Data/ProfileHeader.php`（113 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1146,7 +1146,7 @@ echo XfAdmin::profileHeader([
 个人资料页（头部+标签页+动态）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProfilePage`
-> **文件**：`src/Components/Data/ProfilePage.php`（103 行）
+> **文件**：`src/Components/Data/ProfilePage.php`（127 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1216,7 +1216,7 @@ echo XfAdmin::profilePage([
 账户设置整页（tabs+表单）。
 
 > **类**：`zxf\XfAdmin\Components\Data\AccountSettings`
-> **文件**：`src/Components/Data/AccountSettings.php`（230 行）
+> **文件**：`src/Components/Data/AccountSettings.php`（259 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1276,7 +1276,7 @@ echo XfAdmin::accountSettings([
 投票列表（选项+进度条）。
 
 > **类**：`zxf\XfAdmin\Components\Data\VoteList`
-> **文件**：`src/Components/Data/VoteList.php`（81 行）
+> **文件**：`src/Components/Data/VoteList.php`（116 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1336,7 +1336,7 @@ echo XfAdmin::voteList([
 活动动态流（时间线式操作记录）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ActivityFeed`
-> **文件**：`src/Components/Data/ActivityFeed.php`（53 行）
+> **文件**：`src/Components/Data/ActivityFeed.php`（74 行）
 > **依赖插件**：无
 
 **用法示例**

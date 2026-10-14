@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Components\UI;
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\XfAdmin;
 
 /**
  * 标签/胶囊（Chip / Tag）—— 可带头像、图标、关闭按钮
@@ -29,12 +30,12 @@ class Chip extends Component
     protected function defaults(): array
     {
         return [
-            'label'       => '',
-            'avatar'      => null,
-            'icon'        => null,
-            'variant'     => 'light',
+            'label' => '',
+            'avatar' => null,
+            'icon' => null,
+            'variant' => 'light',
             'dismissible' => false,
-            'href'        => null,
+            'href' => null,
         ];
     }
 
@@ -52,21 +53,22 @@ class Chip extends Component
         if ($this->get('href') === null && $this->get('url') !== null) {
             $this->options['href'] = $this->get('url');
         }
-        $tag   = $this->get('href') ? 'a' : 'span';
-        $attrs = ['class' => Html::cls('badge bg-' . $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary') . ' text-body d-inline-flex align-items-center gap-1 p-1 pe-2 rounded-pill')];
+        $tag = $this->get('href') ? 'a' : 'span';
+        $attrs = ['class' => Html::cls('badge bg-'.$this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary').' text-body d-inline-flex align-items-center gap-1 p-1 pe-2 rounded-pill')];
         if ($this->get('href')) {
             $attrs['href'] = $this->safeUrl($this->get('href'));
         }
-        $html = '<' . $tag . $this->attrs($attrs) . '>';
+        $html = '<'.$tag.$this->attrs($attrs).'>';
         if ($this->get('avatar')) {
-            $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="' . $this->e(\zxf\XfAdmin\XfAdmin::img((string) $this->get('avatar'))) . '" class="img-fluid rounded-circle" alt=""></span>';
+            $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle" alt=""></span>';
         } elseif ($this->get('icon')) {
-            $html .= '<i class="' . $this->e($this->get('icon')) . '"></i>';
+            $html .= '<i class="'.$this->iconClass($this->get('icon')).'"></i>';
         }
-        $html .= '<span>' . $this->e($this->get('label')) . '</span>';
+        $html .= '<span>'.$this->e($this->get('label')).'</span>';
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close btn-close-sm ms-1" data-xf="chip-close" aria-label="关闭"></button>';
         }
-        return $html . '</' . $tag . '>';
+
+        return $html.'</'.$tag.'>';
     }
 }

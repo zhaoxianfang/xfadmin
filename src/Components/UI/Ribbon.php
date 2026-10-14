@@ -27,11 +27,11 @@ class Ribbon extends Component
     protected function defaults(): array
     {
         return [
-            'text'     => '',
-            'variant'  => 'primary',
+            'text' => '',
+            'variant' => 'primary',
             'position' => 'left',
-            'body'     => '',
-            'shape'    => null,   // null|round
+            'body' => '',
+            'shape' => null,   // null|round
         ];
     }
 
@@ -42,13 +42,14 @@ class Ribbon extends Component
      */
     protected function html(): string
     {
-        $pos     = $this->get('position') === 'right' ? 'end' : 'start';
-        $variant = $this->e($this->get('variant'));
-        $round   = $this->get('shape') === 'round' ? ' ribbon-round' : '';
+        $pos = $this->get('position') === 'right' ? 'end' : 'start';
+        // variant 白名单（拼 bg-* 类），非法值回退默认 primary
+        $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
+        $round = $this->get('shape') === 'round' ? ' ribbon-round' : '';
 
-        $html  = '<div' . $this->attrs(['class' => 'position-relative']) . '>';
-        $html .= '<div class="ribbon ribbon-' . $pos . ' bg-' . $variant . ' text-white' . $round . '">' . $this->e($this->get('text')) . '</div>';
-        $html .= '<div class="ribbon-content">' . $this->raw($this->get('body')) . '</div>';
+        $html = '<div'.$this->attrs(['class' => 'position-relative']).'>';
+        $html .= '<div class="ribbon ribbon-'.$pos.' bg-'.$variant.' text-white'.$round.'">'.$this->e($this->get('text')).'</div>';
+        $html .= '<div class="ribbon-content">'.$this->raw($this->get('body')).'</div>';
         $html .= '</div>';
 
         return $html;

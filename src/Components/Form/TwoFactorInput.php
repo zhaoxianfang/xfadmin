@@ -30,12 +30,12 @@ class TwoFactorInput extends Component
     protected function defaults(): array
     {
         return [
-            'length'    => 6,
-            'name'      => 'code',
-            'value'     => '',
-            'mask'      => null,
+            'length' => 6,
+            'name' => 'code',
+            'value' => '',
+            'mask' => null,
             'autofocus' => true,
-            'disabled'  => false,
+            'disabled' => false,
         ];
     }
 
@@ -46,31 +46,32 @@ class TwoFactorInput extends Component
      */
     protected function html(): string
     {
-        $length   = max(4, min(8, (int) $this->get('length')));
-        $name     = $this->get('name');
-        $value    = (string) $this->get('value');
-        $chars    = preg_split('//u', $value, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $mask     = $this->get('mask');
+        $length = max(4, min(8, (int) $this->get('length')));
+        $name = $this->get('name');
+        $value = (string) $this->get('value');
+        $chars = preg_split('//u', $value, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $mask = $this->get('mask');
         $autofocus = $this->get('autofocus') ? ' data-xf-autofocus' : '';
         $disabled = $this->get('disabled') ? ' disabled' : '';
 
-        $html = '<div class="xf-2fa d-flex gap-2 justify-content-center"' . $autofocus . ' data-xf="twoFactor"' . $disabled . '>';
+        $html = '<div class="xf-2fa d-flex gap-2 justify-content-center"'.$autofocus.' data-xf="twoFactor"'.$disabled.'>';
         for ($i = 0; $i < $length; $i++) {
-            $ch   = $chars[$i] ?? '';
+            $ch = $chars[$i] ?? '';
             $html .= '<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1"'
-                . ' class="xf-2fa-cell form-control text-center fs-3 fw-bold"'
-                . ' aria-label="' . $this->e($name) . ' 第 ' . ($i + 1) . ' 位"'
-                . ' data-xf-index="' . $i . '"'
-                . ($i === 0 && $autofocus ? ' autofocus' : '')
-                . $disabled
-                . ' value="' . $this->e($ch) . '">';
+                .' class="xf-2fa-cell form-control text-center fs-3 fw-bold"'
+                .' aria-label="'.$this->e($name).' 第 '.($i + 1).' 位"'
+                .' data-xf-index="'.$i.'"'
+                .($i === 0 && $autofocus ? ' autofocus' : '')
+                .$disabled
+                .' value="'.$this->e($ch).'">';
         }
-        $html .= '<input type="hidden" name="' . $this->e($name) . '" class="xf-2fa-value" value="' . $this->e($value) . '">';
+        $html .= '<input type="hidden" name="'.$this->e($name).'" class="xf-2fa-value" value="'.$this->e($value).'">';
         $html .= '</div>';
 
         if ($mask !== null) {
-            $html .= '<p class="text-center text-muted small mt-2 mb-0">验证码已发送至 <span class="fw-semibold">' . $this->e($mask) . '</span></p>';
+            $html .= '<p class="text-center text-muted small mt-2 mb-0">验证码已发送至 <span class="fw-semibold">'.$this->e($mask).'</span></p>';
         }
+
         return $html;
     }
 }

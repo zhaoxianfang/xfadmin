@@ -125,7 +125,7 @@ echo XfAdmin::dataTable([
 | `width` | `width` + `<th style>` | 列宽 |
 | `minWidth` | `minWidth` + `<th style>` | 注意**驼峰** |
 | `class` | `className` + `<th class>` | 前端靠 `thead th.xf-dt-select-col` 定位全选框 |
-| `style` | `<th style>` | 自定义内联样式（经 `e()`，但非 CSS 白名单） |
+| ~~`style`~~ | — | **已移除**（v2.2.15）：任意 CSS 声明串是「分号注入」向量（可追加 `position:fixed` 等声明），列级样式请用 `width` / `minWidth` / `class` |
 | `template` | `xfTemplate` | `{field}` 占位模板，自动 `orderable=false` |
 | `badges` | `xfBadges` | `值 => 颜色名`，渲染 `<span class="badge bg-x-subtle text-x">` |
 | `render` | `xfRender` | 渲染器（见 §4） |

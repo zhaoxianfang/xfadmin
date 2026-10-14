@@ -43,24 +43,24 @@ class OrderTrackingTimeline extends Component
     protected function html(): string
     {
         $steps = (array) $this->get('steps', []);
-        $html  = '<div class="xf-order-track d-flex justify-content-between position-relative">';
+        $html = '<div class="xf-order-track d-flex justify-content-between position-relative">';
         $n = count($steps);
         $html .= '<div class="xf-order-track-line position-absolute top-0 start-0 end-0 mx-4" style="height:2px;background:var(--bs-border-color);top:18px;"></div>';
 
         foreach ($steps as $i => $s) {
             $s = (array) $s;
-            $done    = ! empty($s['done']);
+            $done = ! empty($s['done']);
             $current = ! empty($s['current']);
-            $state   = $current ? 'current' : ($done ? 'done' : 'todo');
-            $dotCls  = $done ? 'bg-success' : ($current ? 'bg-primary' : 'bg-light border');
+            $state = $current ? 'current' : ($done ? 'done' : 'todo');
+            $dotCls = $done ? 'bg-success' : ($current ? 'bg-primary' : 'bg-light border');
             $titleCls = $done || $current ? 'fw-semibold' : 'text-muted';
 
             $html .= '<div class="xf-order-track-step text-center position-relative" style="flex:1;">';
-            $html .= '<div class="rounded-circle ' . $dotCls . ' mx-auto d-flex align-items-center justify-content-center" style="width:36px;height:36px;z-index:1;">'
-                . '<i class="ti ' . ($done ? 'ti-check' : ($current ? 'ti-truck' : 'ti-circle')) . ' ' . ($done || $current ? 'text-white' : 'text-muted') . '"></i></div>';
-            $html .= '<div class="mt-2 ' . $titleCls . '">' . $this->e($s['title'] ?? '') . '</div>';
+            $html .= '<div class="rounded-circle '.$dotCls.' mx-auto d-flex align-items-center justify-content-center" style="width:36px;height:36px;z-index:1;">'
+                .'<i class="ti '.($done ? 'ti-check' : ($current ? 'ti-truck' : 'ti-circle')).' '.($done || $current ? 'text-white' : 'text-muted').'"></i></div>';
+            $html .= '<div class="mt-2 '.$titleCls.'">'.$this->e($s['title'] ?? '').'</div>';
             if (! empty($s['desc'])) {
-                $html .= '<small class="text-muted d-block">' . $this->e($s['desc']) . '</small>';
+                $html .= '<small class="text-muted d-block">'.$this->e($s['desc']).'</small>';
             }
             $html .= '</div>';
         }

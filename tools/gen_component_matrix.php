@@ -16,7 +16,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 use zxf\XfAdmin\Components\Component;
 use zxf\XfAdmin\XfAdmin;
@@ -34,6 +34,7 @@ function parseMethodDocs(string $file): array
             $docs[$x[1]] = trim($x[2]);
         }
     }
+
     return $docs;
 }
 
@@ -59,6 +60,7 @@ function classSummary(string $class): string
         }
         $lines[] = $l;
     }
+
     return implode(' ', $lines);
 }
 
@@ -75,7 +77,8 @@ function dumpValue(mixed $v, int $depth = 0): string
         if ($v === '') {
             return "''";
         }
-        return mb_strlen($v) > 40 ? "'" . mb_substr($v, 0, 40) . "…'" : "'" . $v . "'";
+
+        return mb_strlen($v) > 40 ? "'".mb_substr($v, 0, 40)."…'" : "'".$v."'";
     }
     if (is_int($v) || is_float($v)) {
         return (string) $v;
@@ -86,7 +89,8 @@ function dumpValue(mixed $v, int $depth = 0): string
         }
         if ($depth >= 1) {
             $keys = array_slice(array_keys($v), 0, 6);
-            return '[' . implode(', ', array_map(fn ($k) => (is_int($k) ? '' : $k . ':'), $keys)) . '…]';
+
+            return '['.implode(', ', array_map(fn ($k) => (is_int($k) ? '' : $k.':'), $keys)).'…]';
         }
         $parts = [];
         $i = 0;
@@ -95,16 +99,18 @@ function dumpValue(mixed $v, int $depth = 0): string
                 $parts[] = '…';
                 break;
             }
-            $parts[] = (is_int($k) ? '' : $k . ': ') . dumpValue($vv, $depth + 1);
+            $parts[] = (is_int($k) ? '' : $k.': ').dumpValue($vv, $depth + 1);
         }
-        return '[' . implode(', ', $parts) . ']';
+
+        return '['.implode(', ', $parts).']';
     }
     if ($v instanceof Closure) {
         return 'Closure';
     }
     if (is_object($v)) {
-        return '\\' . $v::class;
+        return '\\'.$v::class;
     }
+
     return gettype($v);
 }
 
@@ -127,35 +133,37 @@ function guessType(mixed $v): string
         if ($v === []) {
             return 'array';
         }
+
         return array_is_list($v) ? 'array(索引)' : 'array(关联)';
     }
+
     return is_object($v) ? 'object' : 'mixed';
 }
 
-$methodDocs = parseMethodDocs(__DIR__ . '/../src/XfAdmin.php');
+$methodDocs = parseMethodDocs(__DIR__.'/../src/XfAdmin.php');
 $list = XfAdmin::componentList();
 
 $out = [
     'generated_at' => date('Y-m-d H:i:s'),
-    'version'      => XfAdmin::VERSION,
-    'total'        => count($list),
-    'components'   => [],
+    'version' => XfAdmin::VERSION,
+    'total' => count($list),
+    'components' => [],
 ];
 
 foreach ($list as $alias => $class) {
     $row = [
-        'alias'   => $alias,
-        'class'   => ltrim($class, '\\'),
+        'alias' => $alias,
+        'class' => ltrim($class, '\\'),
         'summary' => $methodDocs[$alias] ?? classSummary($class),
-        'assets'  => [],
-        'params'  => [],
+        'assets' => [],
+        'params' => [],
         'methods' => [],
     ];
 
     // 文件路径
     try {
-        $rc       = new ReflectionClass($class);
-        $row['file'] = str_replace(dirname(__DIR__) . '/', '', (string) $rc->getFileName());
+        $rc = new ReflectionClass($class);
+        $row['file'] = str_replace(dirname(__DIR__).'/', '', (string) $rc->getFileName());
         $row['lines'] = $rc->getEndLine() - $rc->getStartLine() + 1;
         // 分类：Components 下的第一段目录
         if (preg_match('#Components\\\\(\w+)\\\\#', (string) $class, $mm)) {
@@ -172,9 +180,9 @@ foreach ($list as $alias => $class) {
         $am = $rc->getMethod('assets');
         $row['assets'] = array_values(array_filter((array) $am->invoke($rc->newInstanceWithoutConstructor())));
     } catch (Throwable $e) {
-        $row['file']   = '';
-        $row['lines']  = 0;
-        $row['group']  = 'Other';
+        $row['file'] = '';
+        $row['lines'] = 0;
+        $row['group'] = 'Other';
     }
 
     // defaults（通过实例化取 options，即 defaults() 合并结果）
@@ -184,7 +192,7 @@ foreach ($list as $alias => $class) {
         foreach ($opts as $k => $v) {
             $row['params'][$k] = [
                 'default' => dumpValue($v),
-                'type'    => guessType($v),
+                'type' => guessType($v),
             ];
         }
     } catch (Throwable $e) {
@@ -206,4 +214,4 @@ foreach ($byGroup as $g => $n) {
     echo "  {$g}: {$n}\n";
 }
 echo "已导出: {$target}\n";
-echo '大小: ' . round(filesize($target) / 1024, 1) . " KB\n";
+echo '大小: '.round(filesize($target) / 1024, 1)." KB\n";

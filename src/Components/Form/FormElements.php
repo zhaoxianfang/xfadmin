@@ -44,6 +44,7 @@ class FormElements extends Component
         if ($sections !== null) {
             return $this->renderSections((array) $sections);
         }
+
         return $this->renderBuiltin();
     }
 
@@ -59,14 +60,16 @@ class FormElements extends Component
             $items = (array) ($section['items'] ?? []);
             $cols = (int) ($section['cols'] ?? 2);
 
-            $html .= '<div class="col-12"><div class="card"><div class="card-header"><h5 class="card-title mb-0">' . $title . '</h5></div>'
-                . '<div class="card-body"><div class="row g-3">';
+            $html .= '<div class="col-12"><div class="card"><div class="card-header"><h5 class="card-title mb-0">'.$title.'</h5></div>'
+                .'<div class="card-body"><div class="row g-3">';
+
+            // max(1,...) 兜底：cols=0/负数时 min(0,4)===0 会触发 DivisionByZeroError（致命）
+            // 列宽与 items 无关，提到循环外只算一次
+            $colClass = 'col-md-'.(int) (12 / max(1, min($cols, 4)));
 
             foreach ($items as $item) {
                 $item = (array) $item;
-                // max(1,...) 兜底：cols=0/负数时 min(0,4)===0 会触发 DivisionByZeroError（致命）
-                $colClass = 'col-md-' . (int) (12 / max(1, min($cols, 4)));
-                $html .= '<div class="' . $colClass . '">' . $this->renderFormItem($item) . '</div>';
+                $html .= '<div class="'.$colClass.'">'.$this->renderFormItem($item).'</div>';
             }
             $html .= '</div></div></div></div>';
         }
@@ -103,13 +106,13 @@ class FormElements extends Component
         $html .= $this->formGroup('下拉选择', '<select class="form-select"><option selected>请选择...</option><option>选项 1</option><option>选项 2</option><option>选项 3</option></select>', 6);
         $html .= $this->formGroup('多选', '<select class="form-select" multiple size="4"><option>选项 1</option><option selected>选项 2</option><option selected>选项 3</option><option>选项 4</option></select>', 6);
         $html .= $this->formGroup('复选框', '<div class="form-check"><input class="form-check-input" type="checkbox" checked><label class="form-check-label">默认选中</label></div>'
-            . '<div class="form-check"><input class="form-check-input" type="checkbox"><label class="form-check-label">未选中</label></div>'
-            . '<div class="form-check"><input class="form-check-input" type="checkbox" disabled><label class="form-check-label">禁用</label></div>', 6);
+            .'<div class="form-check"><input class="form-check-input" type="checkbox"><label class="form-check-label">未选中</label></div>'
+            .'<div class="form-check"><input class="form-check-input" type="checkbox" disabled><label class="form-check-label">禁用</label></div>', 6);
         $html .= $this->formGroup('单选按钮', '<div class="form-check"><input class="form-check-input" type="radio" name="demoRadio" checked><label class="form-check-label">选项 A</label></div>'
-            . '<div class="form-check"><input class="form-check-input" type="radio" name="demoRadio"><label class="form-check-label">选项 B</label></div>'
-            . '<div class="form-check"><input class="form-check-input" type="radio" name="demoRadio" disabled><label class="form-check-label">选项 C (禁用)</label></div>', 6);
+            .'<div class="form-check"><input class="form-check-input" type="radio" name="demoRadio"><label class="form-check-label">选项 B</label></div>'
+            .'<div class="form-check"><input class="form-check-input" type="radio" name="demoRadio" disabled><label class="form-check-label">选项 C (禁用)</label></div>', 6);
         $html .= $this->formGroup('开关', '<div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked><label class="form-check-label">启用通知</label></div>'
-            . '<div class="form-check form-switch"><input class="form-check-input" type="checkbox"><label class="form-check-label">暗色模式</label></div>', 6);
+            .'<div class="form-check form-switch"><input class="form-check-input" type="checkbox"><label class="form-check-label">暗色模式</label></div>', 6);
         $html .= '</div></div></div>';
 
         // Section 3: 文本区域 & 富文本控件
@@ -128,7 +131,7 @@ class FormElements extends Component
         $html .= $this->formGroup('后缀文本', '<div class="input-group"><input type="number" class="form-control" value="100"><span class="input-group-text">件</span></div>', 6);
         $html .= $this->formGroup('前后组合', '<div class="input-group"><span class="input-group-text"><i class="ti ti-mail"></i></span><input type="email" class="form-control"><button class="btn btn-primary">发送</button></div>', 6);
         $html .= $this->formGroup('按钮下拉', '<div class="input-group"><input type="text" class="form-control"><button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">操作</button>'
-            . '<ul class="dropdown-menu"><li><a class="dropdown-item" href="#">导出</a></li><li><a class="dropdown-item" href="#">导入</a></li></ul></div>', 6);
+            .'<ul class="dropdown-menu"><li><a class="dropdown-item" href="#">导出</a></li><li><a class="dropdown-item" href="#">导入</a></li></ul></div>', 6);
         $html .= '</div></div></div>';
 
         // Section 5: 尺寸 & 布局
@@ -150,11 +153,13 @@ class FormElements extends Component
         $content = $item['content'] ?? '';
         $help = $this->e($item['help'] ?? '');
 
-        $html = '<label class="form-label">' . $label . '</label>';
-        $html .= is_string($content) ? $content : '';
+        $html = '<label class="form-label">'.$label.'</label>';
+        // content 支持组件实例/闭包：非字符串走 raw() 渲染，不再静默丢弃
+        $html .= is_string($content) ? $content : $this->raw($content);
         if ($help) {
-            $html .= '<div class="form-text">' . $help . '</div>';
+            $html .= '<div class="form-text">'.$help.'</div>';
         }
+
         return $html;
     }
 
@@ -163,6 +168,6 @@ class FormElements extends Component
      */
     private function formGroup(string $label, string $content, int $colMd = 6): string
     {
-        return '<div class="col-md-' . $colMd . '"><label class="form-label">' . $this->e($label) . '</label>' . $content . '</div>';
+        return '<div class="col-md-'.$colMd.'"><label class="form-label">'.$this->e($label).'</label>'.$content.'</div>';
     }
 }

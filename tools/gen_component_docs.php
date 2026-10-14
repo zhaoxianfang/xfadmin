@@ -16,8 +16,9 @@ declare(strict_types=1);
 
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
+use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\XfAdmin;
 
 $root = dirname(__DIR__);
@@ -28,7 +29,7 @@ $root = dirname(__DIR__);
 $GROUPS = [
     '01-layout.md' => [
         'title' => '布局 · 导航 · 栅格',
-        'desc'  => '整页骨架、认证页、错误页、侧边栏、顶栏、水平导航、页脚、定制面板、面包屑与栅格系统。',
+        'desc' => '整页骨架、认证页、错误页、侧边栏、顶栏、水平导航、页脚、定制面板、面包屑与栅格系统。',
         'intro' => [
             '## 本章导读',
             '',
@@ -72,7 +73,7 @@ $GROUPS = [
     ],
     '02-ui.md' => [
         'title' => 'UI 基础组件',
-        'desc'  => '卡片、按钮、徽章、模态框、选项卡、进度、头像、时间线、轮播等通用界面元素，共 55 个。',
+        'desc' => '卡片、按钮、徽章、模态框、选项卡、进度、头像、时间线、轮播等通用界面元素，共 55 个。',
         'intro' => [
             '## 本章导读',
             '',
@@ -117,7 +118,7 @@ $GROUPS = [
     ],
     '03-form.md' => [
         'title' => '表单组件',
-        'desc'  => '表单容器与全部输入控件（输入/选择/复选/滑块/日期/编辑器/上传/颜色/标签/掩码/验证码/向导等）。',
+        'desc' => '表单容器与全部输入控件（输入/选择/复选/滑块/日期/编辑器/上传/颜色/标签/掩码/验证码/向导等）。',
         'intro' => [
             '## 本章导读',
             '',
@@ -177,7 +178,7 @@ $GROUPS = [
     ],
     '04-table.md' => [
         'title' => '表格组件',
-        'desc'  => '静态表格、DataTables 数据表格（服务端/客户端）、自定义表格与列表工具条。',
+        'desc' => '静态表格、DataTables 数据表格（服务端/客户端）、自定义表格与列表工具条。',
         'intro' => [
             '## 本章导读',
             '',
@@ -225,7 +226,7 @@ $GROUPS = [
     ],
     '05-chart.md' => [
         'title' => '图表与地图',
-        'desc'  => 'ApexCharts 通用图表 / 树图 / 桑基图、ECharts、矢量地图、Leaflet 与 Google 地图。',
+        'desc' => 'ApexCharts 通用图表 / 树图 / 桑基图、ECharts、矢量地图、Leaflet 与 Google 地图。',
         'intro' => [
             '## 本章导读',
             '',
@@ -259,7 +260,7 @@ $GROUPS = [
     ],
     '06-data-ecommerce.md' => [
         'title' => '业务组件（一）电商 · 商品 · 订单 · 发票',
-        'desc'  => '商品、分类、购物车、结算、订单、退款、库存、销售、发票与电商仪表盘。',
+        'desc' => '商品、分类、购物车、结算、订单、退款、库存、销售、发票与电商仪表盘。',
         'intro' => [
             '## 本章导读',
             '',
@@ -298,7 +299,7 @@ $GROUPS = [
     ],
     '07-data-content.md' => [
         'title' => '业务组件（二）内容 · 社区 · 文件',
-        'desc'  => '文章、博客、评论、论坛、FAQ、画廊、文件管理、搜索结果、条款与隐私政策。',
+        'desc' => '文章、博客、评论、论坛、FAQ、画廊、文件管理、搜索结果、条款与隐私政策。',
         'intro' => [
             '## 本章导读',
             '',
@@ -329,7 +330,7 @@ $GROUPS = [
     ],
     '08-data-people.md' => [
         'title' => '业务组件（三）用户 · 组织 · 项目协作',
-        'desc'  => '客户/公司/联系人、角色权限、团队成员、项目与任务、看板、商机、用户档案与账户设置。',
+        'desc' => '客户/公司/联系人、角色权限、团队成员、项目与任务、看板、商机、用户档案与账户设置。',
         'intro' => [
             '## 本章导读',
             '',
@@ -360,7 +361,7 @@ $GROUPS = [
     ],
     '09-data-comm.md' => [
         'title' => '业务组件（四）沟通 · 邮件',
-        'desc'  => '聊天应用与会话面板、邮件应用、邮件撰写、邮件列表与 Outlook 风格客户端。',
+        'desc' => '聊天应用与会话面板、邮件应用、邮件撰写、邮件列表与 Outlook 风格客户端。',
         'intro' => [
             '## 本章导读',
             '',
@@ -388,7 +389,7 @@ $GROUPS = [
     ],
     '10-data-dashboard.md' => [
         'title' => '业务组件（五）仪表盘 · 模块 · 通用',
-        'desc'  => '仪表盘网格、小部件、指标卡、分析报表、设置中心、模块导航/网格、API 密钥、应用管理与导入导出。',
+        'desc' => '仪表盘网格、小部件、指标卡、分析报表、设置中心、模块导航/网格、API 密钥、应用管理与导入导出。',
         'intro' => [
             '## 本章导读',
             '',
@@ -423,7 +424,7 @@ $GROUPS = [
     ],
     '11-misc.md' => [
         'title' => '杂项与交互增强',
-        'desc'  => '日历、树形、拖拽排序、灯箱、引导漫游、剪贴板、SweetAlert、PDF 预览、文本对比、瀑布流、动画等。',
+        'desc' => '日历、树形、拖拽排序、灯箱、引导漫游、剪贴板、SweetAlert、PDF 预览、文本对比、瀑布流、动画等。',
         'intro' => [
             '## 本章导读',
             '',
@@ -475,6 +476,7 @@ function parseMethodDocs(string $file): array
             $docs[$x[1]] = trim($x[2]);
         }
     }
+
     return $docs;
 }
 
@@ -498,6 +500,7 @@ function classSummary(string $class): string
         }
         $lines[] = $l;
     }
+
     return implode(' ', $lines);
 }
 
@@ -546,13 +549,14 @@ function classExamples(string $class): array
         }
         $code = trim(substr($text, $start, $end - $start));
         if ($code !== '' && ! str_contains($code, "\n\n")) {
-            $out[] = rtrim($code, ';') . ';';
+            $out[] = rtrim($code, ';').';';
         }
         $offset = max($end, $pos + 1);
         if (count($out) >= 6) {
             break;
         }
     }
+
     // 去重
     return array_values(array_unique($out));
 }
@@ -585,11 +589,12 @@ function parseDefaults(string $file): array
     foreach (explode("\n", $body) as $line) {
         if (preg_match("/^\s*'([^']+)'\s*=>\s*(.+?)\s*,?\s*(?:\/\/\s*(.*))?$/", $line, $mm)) {
             $rows[$mm[1]] = [
-                'value'   => rtrim(trim($mm[2]), ','),
+                'value' => rtrim(trim($mm[2]), ','),
                 'comment' => isset($mm[3]) ? trim($mm[3]) : '',
             ];
         }
     }
+
     return $rows;
 }
 
@@ -610,6 +615,7 @@ function guessType(mixed $v): string
     if (is_array($v)) {
         return $v === [] ? 'array' : (array_is_list($v) ? 'array' : 'array');
     }
+
     return 'mixed';
 }
 
@@ -622,7 +628,7 @@ function dumpDefault(mixed $v): string
         return $v ? 'true' : 'false';
     }
     if (is_string($v)) {
-        return $v === '' ? "''" : "'" . $v . "'";
+        return $v === '' ? "''" : "'".$v."'";
     }
     if (is_int($v) || is_float($v)) {
         return (string) $v;
@@ -634,9 +640,10 @@ function dumpDefault(mixed $v): string
         if (array_is_list($v)) {
             $parts = [];
             foreach (array_slice($v, 0, 6) as $vv) {
-                $parts[] = is_array($vv) ? '{…}' : (is_string($vv) ? "'" . $vv . "'" : json_encode($vv, JSON_UNESCAPED_UNICODE));
+                $parts[] = is_array($vv) ? '{…}' : (is_string($vv) ? "'".$vv."'" : json_encode($vv, JSON_UNESCAPED_UNICODE));
             }
-            return '[' . implode(', ', $parts) . (count($v) > 6 ? ', …' : '') . ']';
+
+            return '['.implode(', ', $parts).(count($v) > 6 ? ', …' : '').']';
         }
         $parts = [];
         $n = 0;
@@ -645,10 +652,12 @@ function dumpDefault(mixed $v): string
                 $parts[] = '…';
                 break;
             }
-            $parts[] = "'" . $k . "'=>" . (is_scalar($vv) ? (is_string($vv) ? "'" . $vv . "'" : var_export($vv, true)) : '{…}');
+            $parts[] = "'".$k."'=>".(is_scalar($vv) ? (is_string($vv) ? "'".$vv."'" : var_export($vv, true)) : '{…}');
         }
-        return '[' . implode(', ', $parts) . ']';
+
+        return '['.implode(', ', $parts).']';
     }
+
     return 'mixed';
 }
 
@@ -669,20 +678,20 @@ $STRUCT_NOTES = [
         'items' => '字符串（图片 URL）或数组：`src`（图片）、`name`（名称，用于 title 与首字母回退）',
     ],
     'permissionMatrix' => [
-        'roles'  => '`id`、`name`（角色名），也可直接传 `[\'admin\' => \'管理员\']` 键值形式',
+        'roles' => '`id`、`name`（角色名），也可直接传 `[\'admin\' => \'管理员\']` 键值形式',
         'groups' => '`name`（权限组名）、`permissions`（该组权限数组，元素为 `id`+`name` 或键=>文案）',
         'values' => '已勾选矩阵：`[角色id => [权限id => true]]`，用于回填',
     ],
     'metricCard' => [
-        'data'   => '图表数值数组（配合 `chart` 类型：donut/pie/bar/line/area）',
+        'data' => '图表数值数组（配合 `chart` 类型：donut/pie/bar/line/area）',
         'labels' => '与 `data` 一一对应的标签数组',
-        'trend'  => '趋势值（正数为上升、负数为下降）',
+        'trend' => '趋势值（正数为上升、负数为下降）',
     ],
     'moduleGrid' => [
         'modules' => '`name`（模块名）、`icon`、`url`、`desc`（描述）',
     ],
     'treeView' => [
-        'data'    => '`id`、`text`（节点文案）、`children`（子节点数组，递归）、`icon`、`disabled`',
+        'data' => '`id`、`text`（节点文案）、`children`（子节点数组，递归）、`icon`、`disabled`',
         'options' => '透传 jsTree 原生配置',
     ],
     'dropzoneUpload' => [
@@ -719,12 +728,12 @@ $STRUCT_NOTES = [
         'options' => '透传 daterangepicker 原生配置（singleDatePicker 恒为 true）',
     ],
     'select' => [
-        'options'          => '`值 => 文案` 或 `[[\'value\'=>..,\'label\'=>..,\'disabled\'=>..]]`',
-        'groups'           => '`组名 => [值 => 文案]`；非空时忽略 `options`',
-        'enhance_options'  => '透传 choices / select2 原生配置',
+        'options' => '`值 => 文案` 或 `[[\'value\'=>..,\'label\'=>..,\'disabled\'=>..]]`',
+        'groups' => '`组名 => [值 => 文案]`；非空时忽略 `options`',
+        'enhance_options' => '透传 choices / select2 原生配置',
     ],
     'apexTree' => [
-        'data'    => '`id`、`name`、`role`、`avatar`、`color`、`children`（子节点数组）',
+        'data' => '`id`、`name`、`role`、`avatar`、`color`、`children`（子节点数组）',
         'options' => '透传 ApexTree 原生配置',
     ],
     'echart' => [
@@ -742,21 +751,21 @@ $STRUCT_NOTES = [
         'options' => '透传 Google Maps 原生配置',
     ],
     'dataTable' => [
-        'columns'    => '`key`/`data`（字段名）、`label`/`title`（表头）、`width`、`minWidth`、`class`、`sortable`、`searchable`、`visible`、`render`、`badges`、`template`、`actions`',
-        'data'       => '本地行数据（每行字段与列 `key` 对应）',
+        'columns' => '`key`/`data`（字段名）、`label`/`title`（表头）、`width`、`minWidth`、`class`、`sortable`、`searchable`、`visible`、`render`、`badges`、`template`、`actions`',
+        'data' => '本地行数据（每行字段与列 `key` 对应）',
         'filter_bar' => '`name`、`label`、`type`、`options`、`width`、`placeholder`、`min`/`max`/`step`、`html`',
-        'buttons'    => '`copy`/`csv`/`excel`/`pdf`/`print`/`colvis`/`refresh`/`fullscreen`/`density`，或原生按钮配置数组',
-        'order'      => '`[[列索引, \'asc\'|\'desc\']]`（启用 bulk/row_detail 后索引会被辅助列顶偏）',
-        'options'    => '透传 DataTables 原生配置（递归合并，优先级最高）',
+        'buttons' => '`copy`/`csv`/`excel`/`pdf`/`print`/`colvis`/`refresh`/`fullscreen`/`density`，或原生按钮配置数组',
+        'order' => '`[[列索引, \'asc\'|\'desc\']]`（启用 bulk/row_detail 后索引会被辅助列顶偏）',
+        'options' => '透传 DataTables 原生配置（递归合并，优先级最高）',
     ],
     'table' => [
         'columns' => '`键名 => 标题` 或 `[[\'key\'=>..,\'label\'=>..,\'class\'=>..,\'format\'=>闭包,\'raw\'=>bool]]`',
-        'data'    => '行数据数组（数组或对象均可）',
+        'data' => '行数据数组（数组或对象均可）',
     ],
     'tablesCustom' => [
         'columns' => '字符串（直接作表头）或 `[\'label\'=>..,\'class\'=>..]`',
-        'rows'    => '按**位置顺序**输出单元格：字符串（转义）或 `[\'class\'=>..,\'html\'=>..]`（原样）',
-        'footable'=> '表尾行，规则同 `rows`',
+        'rows' => '按**位置顺序**输出单元格：字符串（转义）或 `[\'class\'=>..,\'html\'=>..]`（原样）',
+        'footable' => '表尾行，规则同 `rows`',
     ],
     'form' => [
         'fields' => '组件实例 / HTML 字符串 / 数组的混合列表（逐个原样输出）',
@@ -787,7 +796,7 @@ $STRUCT_NOTES = [
  */
 $USAGE_EXAMPLES = [
     'dataTable' => [
-        "// ① 客户端模式（本地数据）",
+        '// ① 客户端模式（本地数据）',
         'echo XfAdmin::dataTable([',
         "    'id'      => 'user-table',",
         "    'columns' => [",
@@ -804,7 +813,7 @@ $USAGE_EXAMPLES = [
         "    'data'    => \$rows,",
         ']);',
         '',
-        "// ② 服务端模式（配合 XfAdmin::dataResponse()）",
+        '// ② 服务端模式（配合 XfAdmin::dataResponse()）',
         'echo XfAdmin::dataTable([',
         "    'id'          => 'user-table',",
         "    'ajax'        => '/admin/api/users',",
@@ -824,15 +833,15 @@ $USAGE_EXAMPLES = [
         ']);',
     ],
     'customizer' => [
-        "// 主题定制面板：默认由 Page 自动渲染，也可单独使用",
+        '// 主题定制面板：默认由 Page 自动渲染，也可单独使用',
         'echo XfAdmin::customizer([',
         "    'title'    => '界面定制',",
         "    'subtitle' => '快速配置布局、皮肤与偏好',",
         ']);',
         '',
         "// 关闭定制面板：XfAdmin::page(['customizer' => false, …])",
-        "// 面板内的 radio name 与 <html data-*> 属性一一对应：",
-        "//   data-skin / data-bs-theme / data-topbar-color / data-menu-color / data-sidenav-size / data-layout-position",
+        '// 面板内的 radio name 与 <html data-*> 属性一一对应：',
+        '//   data-skin / data-bs-theme / data-topbar-color / data-menu-color / data-sidenav-size / data-layout-position',
         "//   配置持久化在 sessionStorage['__INSPINIA_CONFIG__']（由 config.js 管理）",
     ],
 ];
@@ -932,7 +941,7 @@ $ALIAS_EXAMPLES = [
     ],
     // —— 同类别名 ——
     'topnav' => [
-        "echo XfAdmin::page([",
+        'echo XfAdmin::page([',
         "    'layout' => 'horizontal',                 // 或 'topnav'",
         "    'topnav' => ['menu' => \$menu, 'search' => true],",
         ']);',
@@ -940,7 +949,7 @@ $ALIAS_EXAMPLES = [
         "echo XfAdmin::topnav(['menu' => \$menu, 'current_url' => '/admin']);",
     ],
     'dateRangePicker' => [
-        "echo XfAdmin::dateRangePicker([              // 等价 XfAdmin::dateRange()",
+        'echo XfAdmin::dateRangePicker([              // 等价 XfAdmin::dateRange()',
         "    'name'     => 'range',",
         "    'label'    => '下单时间',",
         "    'ranges'   => true,                      // 今天/昨天/最近7天/最近30天/本月/上月",
@@ -949,7 +958,7 @@ $ALIAS_EXAMPLES = [
         ']);',
     ],
     'clipboardButton' => [
-        "echo XfAdmin::clipboardButton([              // 等价 XfAdmin::clipboard()",
+        'echo XfAdmin::clipboardButton([              // 等价 XfAdmin::clipboard()',
         "    'text'  => 'https://example.com/invite/abc123',",
         "    'label' => '复制邀请链接',",
         "    'icon'  => 'ti ti-copy',",
@@ -1372,11 +1381,11 @@ const PARAM_DICT = [
  * 当组件源码使用 `enum($this->get('x'), self::ENUM_X, 'default')` 时，据此列出全部可选项。
  */
 const ENUM_VALUES = [
-    'ENUM_VARIANT'          => ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'],
-    'ENUM_VARIANT_OUTLINE'  => ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'],
-    'ENUM_SIZE'             => ['sm', 'lg'],
-    'ENUM_PLACEMENT'        => ['top', 'bottom', 'left', 'right', 'start', 'end'],
-    'ENUM_BREAKPOINT'       => ['sm', 'md', 'lg', 'xl', 'xxl'],
+    'ENUM_VARIANT' => ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'],
+    'ENUM_VARIANT_OUTLINE' => ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'],
+    'ENUM_SIZE' => ['sm', 'lg'],
+    'ENUM_PLACEMENT' => ['top', 'bottom', 'left', 'right', 'start', 'end'],
+    'ENUM_BREAKPOINT' => ['sm', 'md', 'lg', 'xl', 'xxl'],
 ];
 
 /**
@@ -1385,17 +1394,17 @@ const ENUM_VALUES = [
  * 取值为 XfAdmin 全组件的通用约定（Bootstrap / Tabler），可在「全参数示例」基础上进一步明确。
  */
 const PARAM_OPTIONS = [
-    'variant'    => ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'],
+    'variant' => ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'],
     'variant_outline' => ['outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark'],
-    'size'       => ['sm', 'lg'],
-    'placement'  => ['top', 'bottom', 'left', 'right', 'start', 'end'],
+    'size' => ['sm', 'lg'],
+    'placement' => ['top', 'bottom', 'left', 'right', 'start', 'end'],
     'breakpoint' => ['sm', 'md', 'lg', 'xl', 'xxl'],
-    'align'      => ['start', 'center', 'end'],
-    'trigger'    => ['hover', 'click', 'focus'],
-    'position'   => ['top', 'bottom', 'left', 'right'],
-    'direction'  => ['horizontal', 'vertical', 'up', 'down', 'left', 'right'],
-    'theme'      => ['light', 'dark', 'auto'],
-    'orientation'=> ['horizontal', 'vertical'],
+    'align' => ['start', 'center', 'end'],
+    'trigger' => ['hover', 'click', 'focus'],
+    'position' => ['top', 'bottom', 'left', 'right'],
+    'direction' => ['horizontal', 'vertical', 'up', 'down', 'left', 'right'],
+    'theme' => ['light', 'dark', 'auto'],
+    'orientation' => ['horizontal', 'vertical'],
 ];
 
 /**
@@ -1412,8 +1421,8 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
 {
     $hints = [];
     // $this->get('key') 的各种书写形式
-    $get = "\\\\?\\\$this->get\(\s*'" . preg_quote($key, '#') . "'\s*\)";
-    $get = "\\\$\s*this\s*->\s*get\s*\(\s*'" . preg_quote($key, '#') . "'\s*\)";
+    $get = "\\\\?\\\$this->get\(\s*'".preg_quote($key, '#')."'\s*\)";
+    $get = "\\\$\s*this\s*->\s*get\s*\(\s*'".preg_quote($key, '#')."'\s*\)";
 
     // enum 白名单：enum($this->get('x'), self::ENUM_X | [...], 'default')
     if (preg_match("#enum\(\s*{$get}\s*,\s*(self::(\w+)|\[([^\]]*)\])\s*,\s*'([^']*)'#", $methodSrc, $m)) {
@@ -1421,22 +1430,22 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
         if (! empty($m[3])) {
             // self::ENUM_X：解析为实际允许值（见 ENUM_VALUES），列出全部可选项
             $const = $m[3];
-            $vals  = ENUM_VALUES[$const] ?? null;
+            $vals = ENUM_VALUES[$const] ?? null;
             if ($vals !== null) {
-                $hints[] = '可选值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', $vals))
-                    . '（白名单 `' . $const . '`'
-                    . ($fallback !== '' ? '，非法值回退 `' . $fallback . '`' : '') . '）';
+                $hints[] = '可选值：'.implode(' / ', array_map(fn ($v) => '`'.$v.'`', $vals))
+                    .'（白名单 `'.$const.'`'
+                    .($fallback !== '' ? '，非法值回退 `'.$fallback.'`' : '').'）';
             } else {
-                $hints[] = '枚举白名单 `' . $const . '`'
-                    . ($fallback !== '' ? '，非法值回退 `' . $fallback . '`' : '');
+                $hints[] = '枚举白名单 `'.$const.'`'
+                    .($fallback !== '' ? '，非法值回退 `'.$fallback.'`' : '');
             }
         } else {
             $vals = array_filter(array_map('trim', explode(',', (string) $m[4])),
-                fn ($v) => $v !== '' && $v !== "'" );
+                fn ($v) => $v !== '' && $v !== "'");
             $vals = array_map(fn ($v) => trim($v, "'\" "), $vals);
             if ($vals !== []) {
-                $hints[] = '可选值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', array_slice($vals, 0, 12)))
-                    . ($fallback !== '' ? '，其它值回退 `' . $fallback . '`' : '');
+                $hints[] = '可选值：'.implode(' / ', array_map(fn ($v) => '`'.$v.'`', array_slice($vals, 0, 12)))
+                    .($fallback !== '' ? '，其它值回退 `'.$fallback.'`' : '');
             }
         }
     }
@@ -1446,7 +1455,7 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
         if (preg_match_all("#^\s*'([^']+)'\s*=>#m", $mm[1], $cases)) {
             $cases = array_values(array_unique($cases[1]));
             if ($cases !== []) {
-                $hints[] = '分支取值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', array_slice($cases, 0, 12)));
+                $hints[] = '分支取值：'.implode(' / ', array_map(fn ($v) => '`'.$v.'`', array_slice($cases, 0, 12)));
             }
         }
     }
@@ -1483,26 +1492,26 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
     }
 
     // 开关语义
-    if (preg_match("#if\s*\(\s*!?\s*\\\$\s*this\s*->\s*get\s*\(\s*'" . preg_quote($key, '#') . "'\s*\)#", $methodSrc)) {
+    if (preg_match("#if\s*\(\s*!?\s*\\\$\s*this\s*->\s*get\s*\(\s*'".preg_quote($key, '#')."'\s*\)#", $methodSrc)) {
         $hints[] = '开关：非空 / 真值时启用对应区块';
     }
-    if (preg_match("#\\\$\s*this\s*->\s*get\s*\(\s*'" . preg_quote($key, '#') . "'\s*\)\s*!==\s*(?:null|''|\w+)#", $methodSrc)) {
+    if (preg_match("#\\\$\s*this\s*->\s*get\s*\(\s*'".preg_quote($key, '#')."'\s*\)\s*!==\s*(?:null|''|\w+)#", $methodSrc)) {
         $hints[] = '为 `null` 时不渲染该区块';
     }
     // 参与属性输出
     if (preg_match("#'((?:class|style|width|height|id|href|src|type|name|value|title|alt|target|role|data-[\w-]*))'\s*=>\s*{$get}#", $methodSrc, $am)) {
-        $hints[] = '输出到 `' . $am[1] . '` 属性';
+        $hints[] = '输出到 `'.$am[1].'` 属性';
     }
 
     // 兜底：无任何语义命中时，给出源码中的实际用法行（压缩空白后截断，全文搜索）
     if ($withUsage && $hints === []) {
-        if (preg_match_all('#^.*?\$this->get\(\s*\'' . preg_quote($key, '#') . '\'\s*\).*$#m', $src, $ln)) {
+        if (preg_match_all('#^.*?\$this->get\(\s*\''.preg_quote($key, '#').'\'\s*\).*$#m', $src, $ln)) {
             $snippet = trim((string) preg_replace('#\s+#', ' ', $ln[0][0]));
             if ($snippet !== '') {
                 if (mb_strlen($snippet) > 88) {
-                    $snippet = mb_substr($snippet, 0, 85) . '…';
+                    $snippet = mb_substr($snippet, 0, 85).'…';
                 }
-                $hints[] = '源码用法：`' . $snippet . '`';
+                $hints[] = '源码用法：`'.$snippet.'`';
             }
         }
     }
@@ -1517,13 +1526,13 @@ function methodSource(string $file, string $method = 'html'): string
     if ($src === '') {
         return '';
     }
-    if (! preg_match('/function\s+' . $method . '\s*\([^)]*\)\s*(?::\s*\w+\s*)?\{/', $src, $m, PREG_OFFSET_CAPTURE)) {
+    if (! preg_match('/function\s+'.$method.'\s*\([^)]*\)\s*(?::\s*\w+\s*)?\{/', $src, $m, PREG_OFFSET_CAPTURE)) {
         return $src;
     }
     $start = $m[0][1] + strlen($m[0][0]);
     $depth = 1;
-    $i     = $start;
-    $len   = strlen($src);
+    $i = $start;
+    $len = strlen($src);
     while ($i < $len && $depth > 0) {
         if ($src[$i] === '{') {
             $depth++;
@@ -1532,6 +1541,7 @@ function methodSource(string $file, string $method = 'html'): string
         }
         $i++;
     }
+
     return substr($src, $start, $i - $start);
 }
 
@@ -1555,20 +1565,20 @@ function arrayItemKeys(string $src, string $optionKey): array
     $loopVars = [];
 
     // A. 直接遍历：foreach (... $this->get('KEY') ... as [$k =>] $v)
-    if (preg_match_all('#foreach\s*\(.*?\$this->get\(\s*\'' . $qk . '\'\s*[,)].*?as\s*(?:\$\w+\s*=>\s*)?(\$\w+)\s*\)#',
+    if (preg_match_all('#foreach\s*\(.*?\$this->get\(\s*\''.$qk.'\'\s*[,)].*?as\s*(?:\$\w+\s*=>\s*)?(\$\w+)\s*\)#',
         $src, $m)) {
         $loopVars = $m[1];
     }
 
     // B. 先赋值再遍历：$x = ... $this->get('KEY') ...;  foreach ($x as [$k =>] $v)
-    if (preg_match_all('#\$(\w+)\s*=[^;\n]*\$this->get\(\s*\'' . $qk . '\'\s*[,)]#', $src, $m2)) {
+    if (preg_match_all('#\$(\w+)\s*=[^;\n]*\$this->get\(\s*\''.$qk.'\'\s*[,)]#', $src, $m2)) {
         foreach (array_unique($m2[1]) as $name) {
-            if (preg_match_all('#foreach\s*\(\s*\$' . preg_quote($name, '#') . '\s+as\s*(?:\$\w+\s*=>\s*)?(\$\w+)\s*\)#',
+            if (preg_match_all('#foreach\s*\(\s*\$'.preg_quote($name, '#').'\s+as\s*(?:\$\w+\s*=>\s*)?(\$\w+)\s*\)#',
                 $src, $fm)) {
                 $loopVars = array_merge($loopVars, $fm[1]);
             }
             // 变量本身也可能直接被下标访问（$x['k']）
-            $loopVars[] = '$' . $name;
+            $loopVars[] = '$'.$name;
         }
     }
     if ($loopVars === []) {
@@ -1585,20 +1595,20 @@ function arrayItemKeys(string $src, string $optionKey): array
         }
         $lv = preg_quote($loopVar, '#');
         // $v['key'] ?? '默认'
-        if (preg_match_all('#' . $lv . '\[\s*\'([^\']+)\'\s*\]\s*(?:\?\?|\?\?)?\s*(?:\'([^\']*)\')?#',
+        if (preg_match_all('#'.$lv.'\[\s*\'([^\']+)\'\s*\]\s*(?:\?\?|\?\?)?\s*(?:\'([^\']*)\')?#',
             $body, $sm, PREG_SET_ORDER)) {
             foreach ($sm as $s) {
                 $sub[$s[1]] = $s[2] ?? ($sub[$s[1]] ?? '');
             }
         }
         // Html::get($v, 'key')
-        if (preg_match_all('#Html::get\(\s*' . $lv . '\s*,\s*\'([^\']+)\'#', $body, $gm)) {
+        if (preg_match_all('#Html::get\(\s*'.$lv.'\s*,\s*\'([^\']+)\'#', $body, $gm)) {
             foreach ($gm[1] as $g) {
                 $sub[$g] = $sub[$g] ?? '';
             }
         }
         // $v->key（对象属性）
-        if (preg_match_all('#' . $lv . '->(\w+)#', $body, $om)) {
+        if (preg_match_all('#'.$lv.'->(\w+)#', $body, $om)) {
             foreach ($om[1] as $o) {
                 if (! in_array($o, ['count', 'length'], true)) {
                     $sub[$o] = $sub[$o] ?? '';
@@ -1606,9 +1616,9 @@ function arrayItemKeys(string $src, string $optionKey): array
             }
         }
         // 委托渲染：$this->card($v) / $this->row((array) $v) —— 元素结构在私有方法里
-        if (preg_match_all('#\$this->(\w+)\(\s*(?:\(array\)\s*)?' . $lv . '\s*[,)]#', $body, $dm)) {
+        if (preg_match_all('#\$this->(\w+)\(\s*(?:\(array\)\s*)?'.$lv.'\s*[,)]#', $body, $dm)) {
             foreach (array_unique($dm[1]) as $method) {
-                if (! preg_match('#function\s+' . preg_quote($method, '#') . '\s*\(\s*(?:array\s+)?(\$\w+)#',
+                if (! preg_match('#function\s+'.preg_quote($method, '#').'\s*\(\s*(?:array\s+)?(\$\w+)#',
                     $src, $pdef)) {
                     continue;
                 }
@@ -1617,13 +1627,13 @@ function arrayItemKeys(string $src, string $optionKey): array
                     continue;
                 }
                 $pv = preg_quote($pdef[1], '#');
-                if (preg_match_all('#' . $pv . '\[\s*\'([^\']+)\'\s*\]\s*(?:\?\?)?\s*(?:\'([^\']*)\')?#',
+                if (preg_match_all('#'.$pv.'\[\s*\'([^\']+)\'\s*\]\s*(?:\?\?)?\s*(?:\'([^\']*)\')?#',
                     $mb, $pm, PREG_SET_ORDER)) {
                     foreach ($pm as $p) {
                         $sub[$p[1]] = $p[2] ?? ($sub[$p[1]] ?? '');
                     }
                 }
-                if (preg_match_all('#' . $pv . '->(\w+)#', $mb, $po)) {
+                if (preg_match_all('#'.$pv.'->(\w+)#', $mb, $po)) {
                     foreach ($po[1] as $o) {
                         $sub[$o] = $sub[$o] ?? '';
                     }
@@ -1633,17 +1643,18 @@ function arrayItemKeys(string $src, string $optionKey): array
     }
     // 去掉明显不是数据键的噪音
     unset($sub['_xf'], $sub['class']);
+
     return $sub;
 }
 
 /** 取某个方法的方法体（按括号配对） */
 function functionBody(string $src, string $method): string
 {
-    if (! preg_match('#function\s+' . preg_quote($method, '#') . '\s*\(#', $src, $m, PREG_OFFSET_CAPTURE)) {
+    if (! preg_match('#function\s+'.preg_quote($method, '#').'\s*\(#', $src, $m, PREG_OFFSET_CAPTURE)) {
         return '';
     }
-    $i    = $m[0][1] + strlen($m[0][0]);
-    $len  = strlen($src);
+    $i = $m[0][1] + strlen($m[0][0]);
+    $len = strlen($src);
     $depth = 1;
     while ($i < $len && $depth > 0) {
         if ($src[$i] === '(') {
@@ -1658,7 +1669,7 @@ function functionBody(string $src, string $method): string
     }
     $start = $i + 1;
     $depth = 1;
-    $i     = $start;
+    $i = $start;
     while ($i < $len && $depth > 0) {
         if ($src[$i] === '{') {
             $depth++;
@@ -1667,6 +1678,7 @@ function functionBody(string $src, string $method): string
         }
         $i++;
     }
+
     return substr($src, $start, max(0, $i - $start - 1));
 }
 
@@ -1675,15 +1687,15 @@ function loopBody(string $src, string $loopVar): string
 {
     // 注意：foreach 头部可能自带 `)`（如 foreach ((array) $this->get('x', []) as $v)），
     // 因此不能用 [^)]*，改用非贪婪 .*?（不匹配换行，安全）
-    if (! preg_match('#foreach\s*\(.*?as\s*(?:\$\w+\s*=>\s*)?' . preg_quote($loopVar, '#') . '\s*\)\s*(?::|{)#',
+    if (! preg_match('#foreach\s*\(.*?as\s*(?:\$\w+\s*=>\s*)?'.preg_quote($loopVar, '#').'\s*\)\s*(?::|{)#',
         $src, $m, PREG_OFFSET_CAPTURE)) {
         return '';
     }
     $pos = $m[0][1] + strlen($m[0][0]);
     if (substr($m[0][0], -1) === '{') {
         $depth = 1;
-        $i     = $pos;
-        $len   = strlen($src);
+        $i = $pos;
+        $len = strlen($src);
         while ($i < $len && $depth > 0) {
             if ($src[$i] === '{') {
                 $depth++;
@@ -1692,12 +1704,14 @@ function loopBody(string $src, string $loopVar): string
             }
             $i++;
         }
+
         return substr($src, $pos, $i - $pos - 1);
     }
     // foreach(…): … endforeach;
     if (preg_match('#endforeach#', $src, $em, PREG_OFFSET_CAPTURE, $pos)) {
         return substr($src, $pos, $em[0][1] - $pos);
     }
+
     return '';
 }
 
@@ -1725,6 +1739,7 @@ function domClasses(string $methodSrc): array
             }
         }
     }
+
     return array_slice(array_keys($cls), 0, 8);
 }
 
@@ -1742,9 +1757,10 @@ function phpLiteral(mixed $v, int $level = 0): string
     }
     if (is_string($v)) {
         if (strlen($v) > 60) {
-            return "'" . str_replace(["\\", "'"], ["\\\\", "\\'"], substr($v, 0, 57)) . "…'";
+            return "'".str_replace(['\\', "'"], ['\\\\', "\\'"], substr($v, 0, 57))."…'";
         }
-        return "'" . str_replace(["\\", "'"], ["\\\\", "\\'"], $v) . "'";
+
+        return "'".str_replace(['\\', "'"], ['\\\\', "\\'"], $v)."'";
     }
     if (is_array($v)) {
         if ($v === []) {
@@ -1753,18 +1769,20 @@ function phpLiteral(mixed $v, int $level = 0): string
         if ($level >= 2) {
             return '[/* … */]';
         }
-        $pad  = str_repeat('    ', $level + 1);
-        $out  = "[\n";
-        $n    = 0;
+        $pad = str_repeat('    ', $level + 1);
+        $out = "[\n";
+        $n = 0;
         foreach ($v as $k => $vv) {
             if ($n++ >= 10) {
-                $out .= $pad . "// …\n";
+                $out .= $pad."// …\n";
                 break;
             }
-            $out .= $pad . (is_int($k) ? '' : phpLiteral((string) $k) . ' => ') . phpLiteral($vv, $level + 1) . ",\n";
+            $out .= $pad.(is_int($k) ? '' : phpLiteral((string) $k).' => ').phpLiteral($vv, $level + 1).",\n";
         }
-        return $out . str_repeat('    ', $level) . ']';
+
+        return $out.str_repeat('    ', $level).']';
     }
+
     return 'null';
 }
 
@@ -1777,24 +1795,24 @@ function cell(string $s): string
 // ------------------------------------------------------------------
 // 3. 生成
 // ------------------------------------------------------------------
-$methodDocs = parseMethodDocs($root . '/src/XfAdmin.php');
-$list       = XfAdmin::componentList();
+$methodDocs = parseMethodDocs($root.'/src/XfAdmin.php');
+$list = XfAdmin::componentList();
 
-$outDir = $root . '/docs/03-组件参考';
+$outDir = $root.'/docs/03-组件参考';
 if (! is_dir($outDir)) {
     mkdir($outDir, 0755, true);
 }
 
 $assigned = [];
-$stats    = [];
-$index    = [];   // 用于生成 00-总览.md
+$stats = [];
+$index = [];   // 用于生成 00-总览.md
 
 foreach ($GROUPS as $file => $group) {
-    $md             = [];
+    $md = [];
     $printedClasses = [];
-    $md[] = '# ' . $group['title'];
+    $md[] = '# '.$group['title'];
     $md[] = '';
-    $md[] = '> ' . $group['desc'];
+    $md[] = '> '.$group['desc'];
     $md[] = '';
     $md[] = '<!-- 本文件由 `php tools/gen_component_docs.php` 自动生成，请勿手工编辑组件参数表；';
     $md[] = '     如需修改请改源码注释后重新生成。章节说明可手工维护。 -->';
@@ -1828,11 +1846,11 @@ foreach ($GROUPS as $file => $group) {
         }
         // 同类别名（如 topNav / topnav）只输出一次完整条目，其余折叠为别名提示
         if (isset($printedClasses[$class])) {
-            $toc[] = '- `' . $alias . '` — 等价于 `' . $printedClasses[$class] . '`（同一组件类的别名）';
-            $md[]  = '### `' . $alias . '`';
-            $md[]  = '';
-            $md[]  = '`' . $alias . '` 是 `' . $printedClasses[$class] . '` 的别名，指向同一个组件类 `' . ltrim($class, '\\') . '`，参数与用法完全一致。';
-            $md[]  = '';
+            $toc[] = '- `'.$alias.'` — 等价于 `'.$printedClasses[$class].'`（同一组件类的别名）';
+            $md[] = '### `'.$alias.'`';
+            $md[] = '';
+            $md[] = '`'.$alias.'` 是 `'.$printedClasses[$class].'` 的别名，指向同一个组件类 `'.ltrim($class, '\\').'`，参数与用法完全一致。';
+            $md[] = '';
             if (isset($ALIAS_EXAMPLES[$alias])) {
                 $md[] = '**用法示例**（该别名的典型写法）';
                 $md[] = '';
@@ -1845,36 +1863,37 @@ foreach ($GROUPS as $file => $group) {
             }
             $stats[$file] = ($stats[$file] ?? 0) + 1;
             $assigned[$alias] = true;
+
             continue;
         }
         $printedClasses[$class] = $alias;
 
-        $fileRel = str_replace($root . '/', '', (string) $rc->getFileName());
+        $fileRel = str_replace($root.'/', '', (string) $rc->getFileName());
         $summary = $methodDocs[$alias] ?? classSummary($class);
         if ($summary === '') {
             $summary = '（未提供说明）';
         }
         // 同类别名提示（同一类被多个别名引用）
         $sameClassAliases = array_keys($list, $class, true);
-        $aliasNote        = '';
+        $aliasNote = '';
         if (count($sameClassAliases) > 1) {
-            $aliasNote = ' 等 ' . implode(' / ', array_map(fn ($a) => '`' . $a . '`', $sameClassAliases));
+            $aliasNote = ' 等 '.implode(' / ', array_map(fn ($a) => '`'.$a.'`', $sameClassAliases));
         }
 
         // assets
         $assets = [];
         try {
-            $am     = $rc->getMethod('assets');
+            $am = $rc->getMethod('assets');
             $assets = array_values(array_filter((array) $am->invoke($rc->newInstanceWithoutConstructor())));
         } catch (Throwable) {
         }
         // 带条件的 assets（源码里出现 'xxx' 字符串）
-        $srcText   = (string) (is_file((string) $rc->getFileName()) ? file_get_contents((string) $rc->getFileName()) : '');
+        $srcText = (string) (is_file((string) $rc->getFileName()) ? file_get_contents((string) $rc->getFileName()) : '');
         $condAsset = [];
         if (preg_match('/function\s+assets\s*\(\s*\)\s*(?::\s*array\s*)?\{(.*?)\n    \}/s', $srcText, $am2)) {
             if (preg_match_all("/'([a-z0-9\-]+)'/i", $am2[1], $mm)) {
                 foreach ($mm[1] as $a) {
-                    if (isset(\zxf\XfAdmin\Assets\Assets::PLUGINS[$a])) {
+                    if (isset(Assets::PLUGINS[$a])) {
                         $condAsset[] = $a;
                     }
                 }
@@ -1884,27 +1903,27 @@ foreach ($GROUPS as $file => $group) {
 
         // defaults
         $defaultsRows = parseDefaults((string) $rc->getFileName());
-        $options      = [];
+        $options = [];
         try {
             $options = XfAdmin::component($alias, [])->options();
         } catch (Throwable) {
         }
 
-        $toc[] = '- [`' . $alias . '`](#' . strtolower(str_replace(['_'], '-', $alias)) . ') — ' . cell(explode('。', $summary)[0]);
+        $toc[] = '- [`'.$alias.'`](#'.strtolower(str_replace(['_'], '-', $alias)).') — '.cell(explode('。', $summary)[0]);
 
         $md[] = '---';
         $md[] = '';
-        $md[] = '### `' . $alias . '`';
+        $md[] = '### `'.$alias.'`';
         $md[] = '';
-        $md[] = $summary . '。';
+        $md[] = $summary.'。';
         $md[] = '';
-        $md[] = '> **类**：`' . ltrim($class, '\\') . '`' . $aliasNote;
-        $md[] = '> **文件**：`' . $fileRel . '`（' . ($rc->getEndLine() - $rc->getStartLine() + 1) . ' 行）';
-        $md[] = '> **依赖插件**：' . ($allAssets === [] ? '无' : implode('、', array_map(fn ($a) => '`' . $a . '`', $allAssets)));
+        $md[] = '> **类**：`'.ltrim($class, '\\').'`'.$aliasNote;
+        $md[] = '> **文件**：`'.$fileRel.'`（'.($rc->getEndLine() - $rc->getStartLine() + 1).' 行）';
+        $md[] = '> **依赖插件**：'.($allAssets === [] ? '无' : implode('、', array_map(fn ($a) => '`'.$a.'`', $allAssets)));
         $md[] = '';
 
         $methodSrc = methodSource((string) $rc->getFileName(), 'html');
-        $fullSrc   = (string) (is_file((string) $rc->getFileName()) ? file_get_contents((string) $rc->getFileName()) : '');
+        $fullSrc = (string) (is_file((string) $rc->getFileName()) ? file_get_contents((string) $rc->getFileName()) : '');
 
         // ① 用法示例（源码 docblock，无则用手写补充示例）
         $examples = classExamples($class);
@@ -1936,11 +1955,11 @@ foreach ($GROUPS as $file => $group) {
                 }
                 if (str_contains($line, "\n")) {
                     // 多行数组：注释写在键前
-                    $md[] = '    // ' . $k . ($note !== '' ? '：' . $note : '');
-                    $md[] = '    ' . "'" . $k . "' => " . $line . ',';
+                    $md[] = '    // '.$k.($note !== '' ? '：'.$note : '');
+                    $md[] = '    '."'".$k."' => ".$line.',';
                 } else {
-                    $md[] = "    '" . $k . "' => " . $line . ','
-                        . ($note !== '' ? '    // ' . $note : '');
+                    $md[] = "    '".$k."' => ".$line.','
+                        .($note !== '' ? '    // '.$note : '');
                 }
             }
             $md[] = ']);';
@@ -1956,7 +1975,7 @@ foreach ($GROUPS as $file => $group) {
             if (! is_array($v)) {
                 continue;
             }
-            $sub  = arrayItemKeys($fullSrc, $k);
+            $sub = arrayItemKeys($fullSrc, $k);
             $note = $STRUCT_NOTES[$alias][$k] ?? '';
             if ($sub === [] && $note === '') {
                 continue;
@@ -1964,15 +1983,15 @@ foreach ($GROUPS as $file => $group) {
             if ($sub !== []) {
                 $parts = [];
                 foreach ($sub as $sk => $sv) {
-                    $parts[] = '`' . $sk . '`' . ($sv !== '' ? '（默认 `' . $sv . '`）' : '');
+                    $parts[] = '`'.$sk.'`'.($sv !== '' ? '（默认 `'.$sv.'`）' : '');
                 }
-                $line = '- `' . $k . '[]` 元素键：' . implode('、', array_slice($parts, 0, 24));
+                $line = '- `'.$k.'[]` 元素键：'.implode('、', array_slice($parts, 0, 24));
                 if ($note !== '') {
-                    $line .= '；补充：' . $note;
+                    $line .= '；补充：'.$note;
                 }
                 $structLines[] = $line;
             } else {
-                $structLines[] = '- `' . $k . '[]`：' . $note;
+                $structLines[] = '- `'.$k.'[]`：'.$note;
             }
         }
         if ($structLines !== []) {
@@ -1987,7 +2006,7 @@ foreach ($GROUPS as $file => $group) {
         // ②c 渲染骨架（外层 class，便于自定义样式）
         $domCls = domClasses($methodSrc);
         if ($domCls !== []) {
-            $md[] = '> **渲染骨架**：主要 class `' . implode('` `', $domCls) . '`';
+            $md[] = '> **渲染骨架**：主要 class `'.implode('` `', $domCls).'`';
             $md[] = '';
         }
 
@@ -1999,8 +2018,8 @@ foreach ($GROUPS as $file => $group) {
             $md[] = '|---|---|---|---|';
             foreach ($options as $k => $v) {
                 $comment = $defaultsRows[$k]['comment'] ?? '';
-                $rawVal  = $defaultsRows[$k]['value'] ?? null;
-                $defTxt  = dumpDefault($v);
+                $rawVal = $defaultsRows[$k]['value'] ?? null;
+                $defTxt = dumpDefault($v);
                 if ($comment === '' && $rawVal !== null && strlen($rawVal) > 40) {
                     $comment = '';
                 }
@@ -2014,7 +2033,7 @@ foreach ($GROUPS as $file => $group) {
                 // 当源码给出精确枚举时，以源码为准（比通用词典更准确）
                 // 说明来自「通用词典」或为空时，追加源码真实用法，避免词典语义与组件不符
                 $fromDict = $comment !== '' && ($defaultsRows[$k]['comment'] ?? '') === '';
-                $hints    = paramHints($fullSrc, $k, $methodSrc, $comment === '' || $fromDict);
+                $hints = paramHints($fullSrc, $k, $methodSrc, $comment === '' || $fromDict);
                 $strong = false;
                 foreach ($hints as $h) {
                     if (str_contains($h, '枚举白名单') || str_contains($h, '可选值') || str_contains($h, '分支取值')) {
@@ -2025,44 +2044,49 @@ foreach ($GROUPS as $file => $group) {
                 // 通用「全部可选项」注入：源码未给出枚举/分支时，用 PARAM_OPTIONS 补全全部可选项；
                 // 源码已给出枚举白名单（如 self::ENUM_X）则把具体值附在其后，避免只显示常量名。
                 if (isset(PARAM_OPTIONS[$k])) {
-                    $fullOpts = '可选值：' . implode(' / ', array_map(fn ($v) => '`' . $v . '`', PARAM_OPTIONS[$k]));
-                    $hints    = array_values(array_filter($hints, fn ($h) => ! str_starts_with($h, '可选值：')));
-                    $hasEnum  = false;
+                    $fullOpts = '可选值：'.implode(' / ', array_map(fn ($v) => '`'.$v.'`', PARAM_OPTIONS[$k]));
+                    $hints = array_values(array_filter($hints, fn ($h) => ! str_starts_with($h, '可选值：')));
+                    $hasEnum = false;
                     foreach ($hints as &$h) {
-                        if (str_contains($h, '枚举白名单')) { $h .= '；' . $fullOpts; $hasEnum = true; }
+                        if (str_contains($h, '枚举白名单')) {
+                            $h .= '；'.$fullOpts;
+                            $hasEnum = true;
+                        }
                     }
                     unset($h);
-                    if (! $hasEnum) { $hints[] = $fullOpts; }
+                    if (! $hasEnum) {
+                        $hints[] = $fullOpts;
+                    }
                     $strong = $strong || true;
                 }
                 if ($hints !== []) {
                     $comment = $strong
                         ? implode('；', $hints)
-                        : trim(($comment !== '' ? $comment . '；' : '') . implode('；', $hints), '；');
+                        : trim(($comment !== '' ? $comment.'；' : '').implode('；', $hints), '；');
                 }
-                $md[] = '| `' . $k . '` | ' . guessType($v) . ' | `' . cell($defTxt) . '` | ' . cell($comment) . ' |';
+                $md[] = '| `'.$k.'` | '.guessType($v).' | `'.cell($defTxt).'` | '.cell($comment).' |';
             }
             $md[] = '';
             $md[] = '> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）'
-                . '见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。';
+                .'见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。';
             $md[] = '';
         }
 
         $stats[$file] = ($stats[$file] ?? 0) + 1;
         $index[$file][] = [
-            'alias'   => $alias,
+            'alias' => $alias,
             'summary' => $summary,
-            'class'   => ltrim($class, '\\'),
-            'assets'  => $allAssets,
-            'file'    => $fileRel,
-            'group'   => $group['title'],
-            'doc'     => $file,
+            'class' => ltrim($class, '\\'),
+            'assets' => $allAssets,
+            'file' => $fileRel,
+            'group' => $group['title'],
+            'doc' => $file,
         ];
     }
 
     // 组装：标题/描述 → 目录(TOC) → 手写导读(intro) → 组件条目
-    $pos   = array_search('## 目录', $md, true);
-    $pos   = $pos === false ? 6 : $pos;
+    $pos = array_search('## 目录', $md, true);
+    $pos = $pos === false ? 6 : $pos;
     $final = array_merge(
         array_slice($md, 0, $pos + 1),
         [''],
@@ -2071,25 +2095,25 @@ foreach ($GROUPS as $file => $group) {
         $group['intro'] ?? [],
         array_slice($md, $pos + 1)
     );
-    file_put_contents($outDir . '/' . $file, implode("\n", $final) . "\n");
-    echo "生成: docs/03-组件参考/{$file} (" . ($stats[$file] ?? 0) . " 个组件)\n";
+    file_put_contents($outDir.'/'.$file, implode("\n", $final)."\n");
+    echo "生成: docs/03-组件参考/{$file} (".($stats[$file] ?? 0)." 个组件)\n";
 }
 
 // ------------------------------------------------------------------
 // 4. 生成 00-总览.md（全组件索引）
 // ------------------------------------------------------------------
-$ov   = [];
+$ov = [];
 $ov[] = '# 组件总览';
 $ov[] = '';
 $ov[] = '> 本文件由 `php tools/gen_component_docs.php` 自动生成。';
-$ov[] = '> 组件别名共 **' . count($list) . '** 个（对应 **' . count(array_unique($list)) . '** 个组件类，部分类别名重复指向同一类）。';
+$ov[] = '> 组件别名共 **'.count($list).'** 个（对应 **'.count(array_unique($list)).'** 个组件类，部分类别名重复指向同一类）。';
 $ov[] = '';
 $ov[] = '## 分类统计';
 $ov[] = '';
 $ov[] = '| 分类文档 | 组件数 |';
 $ov[] = '|---|---|';
 foreach ($GROUPS as $file => $group) {
-    $ov[] = '| [' . $group['title'] . '](' . $file . ') | ' . ($stats[$file] ?? 0) . ' |';
+    $ov[] = '| ['.$group['title'].']('.$file.') | '.($stats[$file] ?? 0).' |';
 }
 $ov[] = '';
 $ov[] = '## 命名约定';
@@ -2104,7 +2128,7 @@ $ov[] = '';
 foreach ($GROUPS as $file => $group) {
     $ov[] = '---';
     $ov[] = '';
-    $ov[] = '## [' . $group['title'] . '](' . $file . ')';
+    $ov[] = '## ['.$group['title'].']('.$file.')';
     $ov[] = '';
     $ov[] = $group['desc'];
     $ov[] = '';
@@ -2113,19 +2137,19 @@ foreach ($GROUPS as $file => $group) {
     foreach ($index[$file] ?? [] as $row) {
         $short = explode('。', $row['summary'])[0];
         $short = explode('（', $short)[0];
-        $ov[]  = '| [`' . $row['alias'] . '`](' . $file . '#' . strtolower($row['alias']) . ') | '
-            . cell($short) . ' | `' . str_replace('zxf\\XfAdmin\\Components\\', '', $row['class']) . '` | '
-            . ($row['assets'] === [] ? '—' : implode(' ', array_map(fn ($a) => '`' . $a . '`', $row['assets']))) . ' |';
+        $ov[] = '| [`'.$row['alias'].'`]('.$file.'#'.strtolower($row['alias']).') | '
+            .cell($short).' | `'.str_replace('zxf\\XfAdmin\\Components\\', '', $row['class']).'` | '
+            .($row['assets'] === [] ? '—' : implode(' ', array_map(fn ($a) => '`'.$a.'`', $row['assets']))).' |';
     }
     $ov[] = '';
 }
-file_put_contents($outDir . '/00-总览.md', implode("\n", $ov) . "\n");
+file_put_contents($outDir.'/00-总览.md', implode("\n", $ov)."\n");
 echo "生成: docs/03-组件参考/00-总览.md（全组件索引）\n";
 
 // ------------------------------------------------------------------
 // 5. 生成 06-附录/01-component-index.md（按字母序速查）
 // ------------------------------------------------------------------
-$appendixDir = $root . '/docs/06-附录';
+$appendixDir = $root.'/docs/06-附录';
 if (! is_dir($appendixDir)) {
     mkdir($appendixDir, 0755, true);
 }
@@ -2138,29 +2162,29 @@ foreach ($index as $rows) {
 }
 usort($flat, fn ($a, $b) => strcasecmp($a['alias'], $b['alias']));
 
-$ci   = [];
+$ci = [];
 $ci[] = '# 组件索引（按别名排序）';
 $ci[] = '';
 $ci[] = '> 本文件由 `php tools/gen_component_docs.php` 自动生成。';
-$ci[] = '> 共 **' . count($flat) . '** 个组件条目（注册表别名 **' . count($list) . '** 个，'
-    . (count($list) - count($flat)) . ' 个为指向同一组件类的重复别名）。';
+$ci[] = '> 共 **'.count($flat).'** 个组件条目（注册表别名 **'.count($list).'** 个，'
+    .(count($list) - count($flat)).' 个为指向同一组件类的重复别名）。';
 $ci[] = '> 按分类浏览见 [组件总览](../03-组件参考/00-总览.md)。';
 $ci[] = '';
 $ci[] = '| 别名 | 一句话说明 | 组件类 | 源文件 | 分类文档 |';
 $ci[] = '|---|---|---|---|---|';
 foreach ($flat as $r) {
     $short = trim(explode('。', explode('（', $r['summary'])[0])[0]);
-    $ci[]  = '| `' . $r['alias'] . '` | ' . cell($short) . ' | `'
-        . str_replace('zxf\\XfAdmin\\Components\\', '', $r['class']) . '` | `'
-        . $r['file'] . '` | [' . $r['group'] . '](../03-组件参考/' . $r['doc'] . ') |';
+    $ci[] = '| `'.$r['alias'].'` | '.cell($short).' | `'
+        .str_replace('zxf\\XfAdmin\\Components\\', '', $r['class']).'` | `'
+        .$r['file'].'` | ['.$r['group'].'](../03-组件参考/'.$r['doc'].') |';
 }
-file_put_contents($appendixDir . '/01-component-index.md', implode("\n", $ci) . "\n");
-echo '生成: docs/06-附录/01-component-index.md（' . count($flat) . " 条）\n";
+file_put_contents($appendixDir.'/01-component-index.md', implode("\n", $ci)."\n");
+echo '生成: docs/06-附录/01-component-index.md（'.count($flat)." 条）\n";
 
 // ------------------------------------------------------------------
 // 6. 生成 06-附录/02-option-index.md（高频参数字典）
 // ------------------------------------------------------------------
-$oi   = [];
+$oi = [];
 $oi[] = '# 参数字典';
 $oi[] = '';
 $oi[] = '> 本文件由 `php tools/gen_component_docs.php` 自动生成（源自生成器内的 `PARAM_DICT`）。';
@@ -2171,15 +2195,15 @@ $oi[] = '|---|---|';
 $dict = PARAM_DICT;
 ksort($dict, SORT_NATURAL | SORT_FLAG_CASE);
 foreach ($dict as $k => $v) {
-    $oi[] = '| `' . rtrim($k, '_') . '` | ' . cell($v) . ' |';
+    $oi[] = '| `'.rtrim($k, '_').'` | '.cell($v).' |';
 }
-file_put_contents($appendixDir . '/02-option-index.md', implode("\n", $oi) . "\n");
+file_put_contents($appendixDir.'/02-option-index.md', implode("\n", $oi)."\n");
 echo "生成: docs/06-附录/02-option-index.md（参数字典）\n";
 
 // ------------------------------------------------------------------
 // 7. 生成 06-附录/03-plugin-index.md（插件资源索引）
 // ------------------------------------------------------------------
-$pi   = [];
+$pi = [];
 $pi[] = '# 插件资源索引';
 $pi[] = '';
 $pi[] = '> 本文件由 `php tools/gen_component_docs.php` 自动生成（源自 `Assets::PLUGINS`）。';
@@ -2191,44 +2215,44 @@ $pi[] = '|---|---|---|---|---|';
 $usage = [];
 foreach ($flat as $r) {
     foreach ($r['assets'] as $a) {
-        $usage[$a][] = '`' . $r['alias'] . '`';
+        $usage[$a][] = '`'.$r['alias'].'`';
     }
 }
-foreach (\zxf\XfAdmin\Assets\Assets::PLUGINS as $name => $def) {
-    $pi[] = '| `' . $name . '` | ' . (empty($def['css']) ? '—' : count($def['css']) . ' 个')
-        . ' | ' . (empty($def['js']) ? '—' : count($def['js']) . ' 个')
-        . ' | ' . (empty($def['deps']) ? '—' : implode(' ', array_map(fn ($d) => '`' . $d . '`', $def['deps'])))
-        . ' | ' . (empty($usage[$name]) ? '—' : implode(' ', $usage[$name])) . ' |';
+foreach (Assets::PLUGINS as $name => $def) {
+    $pi[] = '| `'.$name.'` | '.(empty($def['css']) ? '—' : count($def['css']).' 个')
+        .' | '.(empty($def['js']) ? '—' : count($def['js']).' 个')
+        .' | '.(empty($def['deps']) ? '—' : implode(' ', array_map(fn ($d) => '`'.$d.'`', $def['deps'])))
+        .' | '.(empty($usage[$name]) ? '—' : implode(' ', $usage[$name])).' |';
 }
 $pi[] = '';
 $pi[] = '## 明细';
 $pi[] = '';
-foreach (\zxf\XfAdmin\Assets\Assets::PLUGINS as $name => $def) {
-    $pi[] = '### `' . $name . '`';
+foreach (Assets::PLUGINS as $name => $def) {
+    $pi[] = '### `'.$name.'`';
     $pi[] = '';
     if (! empty($def['deps'])) {
-        $pi[] = '- **依赖**：' . implode('、', array_map(fn ($d) => '`' . $d . '`', $def['deps']));
+        $pi[] = '- **依赖**：'.implode('、', array_map(fn ($d) => '`'.$d.'`', $def['deps']));
     }
     if (! empty($def['css'])) {
         $pi[] = '- **CSS**：';
         foreach ($def['css'] as $f) {
-            $pi[] = '  - `' . $f . '`';
+            $pi[] = '  - `'.$f.'`';
         }
     }
     if (! empty($def['js'])) {
         $pi[] = '- **JS**：';
         foreach ($def['js'] as $f) {
-            $pi[] = '  - `' . $f . '`';
+            $pi[] = '  - `'.$f.'`';
         }
     }
     $pi[] = '';
 }
-file_put_contents($appendixDir . '/03-plugin-index.md', implode("\n", $pi) . "\n");
-echo '生成: docs/06-附录/03-plugin-index.md（' . count(\zxf\XfAdmin\Assets\Assets::PLUGINS) . " 个插件）\n";
+file_put_contents($appendixDir.'/03-plugin-index.md', implode("\n", $pi)."\n");
+echo '生成: docs/06-附录/03-plugin-index.md（'.count(Assets::PLUGINS)." 个插件）\n";
 
 // 未分配检查
 $missing = array_diff(array_keys($list), array_keys($assigned));
 if ($missing !== []) {
-    echo "\n⚠️ 未归入任何分组的组件（请补进 \$GROUPS）：\n - " . implode("\n - ", $missing) . "\n";
+    echo "\n⚠️ 未归入任何分组的组件（请补进 \$GROUPS）：\n - ".implode("\n - ", $missing)."\n";
 }
-echo "\n总组件数: " . count($list) . '，已分配: ' . count($assigned) . "\n";
+echo "\n总组件数: ".count($list).'，已分配: '.count($assigned)."\n";

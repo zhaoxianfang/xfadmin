@@ -62,11 +62,11 @@ class Sitemap extends Component
             $title = (string) ($col['title'] ?? '');
             $links = (array) ($col['links'] ?? []);
 
-            $html .= '<div class="' . $this->e($colClass) . '"><div class="card"><div class="card-body">';
+            $html .= '<div class="'.$this->e($colClass).'"><div class="card"><div class="card-body">';
             if ($title) {
-                $html .= '<h5 class="fw-bold text-uppercase">' . $this->e($title) . '</h5>';
+                $html .= '<h5 class="fw-bold text-uppercase">'.$this->e($title).'</h5>';
             }
-            if (!empty($links)) {
+            if (! empty($links)) {
                 $html .= '<ul class="list-unstyled sitemap-list mt-3">';
                 foreach ($links as $link) {
                     $html .= $this->renderLink($link);
@@ -83,8 +83,7 @@ class Sitemap extends Component
     /**
      * render Link（private实例方法）
      *
-     * @param array $link link
-     *
+     * @param  array  $link  link
      * @return string result
      */
     private function renderLink(array $link): string
@@ -92,24 +91,26 @@ class Sitemap extends Component
         $link = (array) $link;
         $label = (string) ($link['label'] ?? '');
         $icon = (string) ($link['icon'] ?? '');
-        $color = (string) ($link['color'] ?? 'link-reset');
+        // color 走白名单校验，防止任意值拼入 class 属性
+        $color = $this->enum((string) ($link['color'] ?? 'link-reset'), ['link-reset', 'link-primary', 'link-secondary', 'link-success', 'link-danger', 'link-warning', 'link-info', 'link-dark', 'link-body'], 'link-reset');
         $children = (array) ($link['children'] ?? []);
-        $url = (string) ($link['url'] ?? 'javascript:void(0)');
+        // url 经 safeUrl 校验（默认保留 javascript:void(0) 无操作协议），children 分支复用同一安全值
+        $url = $this->safeUrl($link['url'] ?? 'javascript:void(0)', 'javascript:void(0)');
 
         $html = '<li>';
-        $html .= '<a href="' . $this->e($url) . '" class="' . $this->e($color) . ' fw-semibold">';
+        $html .= '<a href="'.$this->e($url).'" class="'.$this->e($color).' fw-semibold">';
         if ($icon) {
-            $html .= '<i class="ti ' . $this->e($icon) . ' me-1 text-muted"></i>';
+            $html .= '<i class="ti '.$this->e($icon).' me-1 text-muted"></i>';
         }
-        $html .= $this->e($label) . '</a>';
+        $html .= $this->e($label).'</a>';
 
-        if (!empty($children)) {
+        if (! empty($children)) {
             $html .= '<ul>';
             foreach ($children as $child) {
                 if (is_array($child)) {
                     $html .= $this->renderLink($child);
                 } else {
-                    $html .= '<li><a href="' . $this->e($url) . '" class="link-reset">' . $this->e((string) $child) . '</a></li>';
+                    $html .= '<li><a href="'.$this->e($url).'" class="link-reset">'.$this->e((string) $child).'</a></li>';
                 }
             }
             $html .= '</ul>';

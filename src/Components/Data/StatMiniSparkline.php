@@ -31,12 +31,12 @@ class StatMiniSparkline extends Component
     protected function defaults(): array
     {
         return [
-            'label'   => '',
-            'value'   => '',
-            'delta'   => null,
-            'series'  => [],
+            'label' => '',
+            'value' => '',
+            'delta' => null,
+            'series' => [],
             'variant' => 'primary',
-            'icon'    => null,
+            'icon' => null,
         ];
     }
 
@@ -47,52 +47,53 @@ class StatMiniSparkline extends Component
      */
     protected function html(): string
     {
-        $label   = $this->get('label');
-        $value   = $this->get('value');
-        $delta   = $this->get('delta');
-        $series  = (array) $this->get('series', []);
+        $label = $this->get('label');
+        $value = $this->get('value');
+        $delta = $this->get('delta');
+        $series = (array) $this->get('series', []);
         $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
-        $icon    = $this->get('icon');
-        $id      = $this->resolveId('xf-spark');
+        $icon = $this->get('icon');
+        $id = $this->resolveId('xf-spark');
 
         $spark = $this->sparklineSvg($series, $id, $variant);
 
         $deltaHtml = '';
         if ($delta !== null) {
-            $up   = (float) $delta >= 0;
-            $cls  = $up ? 'text-success' : 'text-danger';
+            $up = (float) $delta >= 0;
+            $cls = $up ? 'text-success' : 'text-danger';
             // 用独立变量承载涨跌箭头，避免顶掉调用方配置的 icon
             $deltaIcon = $up ? 'ti ti-arrow-up-right' : 'ti ti-arrow-down-right';
-            $deltaHtml = '<span class="small ' . $cls . '"><i class="' . $deltaIcon . '"></i> '
-                . $this->e(abs((float) $delta)) . '%</span>';
+            $deltaHtml = '<span class="small '.$cls.'"><i class="'.$deltaIcon.'"></i> '
+                .$this->e(abs((float) $delta)).'%</span>';
         }
-        $iconHtml = $icon ? '<span class="avatar-sm rounded-circle bg-' . $variant . '-subtle text-' . $variant
-            . ' d-inline-flex align-items-center justify-content-center mb-2"><i class="' . $this->e($icon) . '"></i></span>' : '';
+        $iconHtml = $icon ? '<span class="avatar-sm rounded-circle bg-'.$variant.'-subtle text-'.$variant
+            .' d-inline-flex align-items-center justify-content-center mb-2"><i class="'.$this->iconClass($icon).'"></i></span>' : '';
 
         return '<div class="card border-0 shadow-sm h-100">'
-            . '<div class="card-body">'
-            . $iconHtml
-            . '<div class="d-flex align-items-end justify-content-between">'
-            . '<div>'
-            . '<p class="text-muted mb-1 small">' . $this->e($label) . '</p>'
-            . '<h3 class="mb-0 fw-bold">' . $this->e($value) . ' ' . $deltaHtml . '</h3>'
-            . '</div>'
-            . $spark
-            . '</div>'
-            . '</div></div>';
+            .'<div class="card-body">'
+            .$iconHtml
+            .'<div class="d-flex align-items-end justify-content-between">'
+            .'<div>'
+            .'<p class="text-muted mb-1 small">'.$this->e($label).'</p>'
+            .'<h3 class="mb-0 fw-bold">'.$this->e($value).' '.$deltaHtml.'</h3>'
+            .'</div>'
+            .$spark
+            .'</div>'
+            .'</div></div>';
     }
 
     /**
      * sparkline Svg（private实例方法）
      *
-     * @param array $series series
-     * @param string $id id
-     * @param string $variant variant
-     *
+     * @param  array  $series  series
+     * @param  string  $id  id
+     * @param  string  $variant  variant
      * @return string result
      */
     private function sparklineSvg(array $series, string $id, string $variant): string
     {
+        // 过滤非数值元素并重整索引，避免 min()/max() 在 PHP 8 下抛 TypeError
+        $series = array_values(array_filter($series, 'is_numeric'));
         if (count($series) < 2) {
             return '';
         }
@@ -106,14 +107,14 @@ class StatMiniSparkline extends Component
         foreach ($series as $i => $v) {
             $x = ($n === 1) ? 0 : ($i / ($n - 1)) * $w;
             $y = $h - (($v - $min) / $range) * ($h - 4) - 2;
-            $pts[] = round($x, 1) . ',' . round($y, 1);
+            $pts[] = round($x, 1).','.round($y, 1);
         }
         $poly = implode(' ', $pts);
-        $color = 'var(--bs-' . $variant . ')';
+        $color = 'var(--bs-'.$variant.')';
 
-        return '<svg class="xf-spark" width="' . $w . '" height="' . $h . '" viewBox="0 0 ' . $w . ' ' . $h . '"'
-            . ' preserveAspectRatio="none" aria-hidden="true">'
-            . '<polyline points="' . $poly . '" fill="none" stroke="' . $color . '" stroke-width="2"'
-            . ' stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        return '<svg class="xf-spark" width="'.$w.'" height="'.$h.'" viewBox="0 0 '.$w.' '.$h.'"'
+            .' preserveAspectRatio="none" aria-hidden="true">'
+            .'<polyline points="'.$poly.'" fill="none" stroke="'.$color.'" stroke-width="2"'
+            .' stroke-linecap="round" stroke-linejoin="round"/></svg>';
     }
 }

@@ -33,22 +33,24 @@ class Form extends Component
     protected function defaults(): array
     {
         return [
-            'action'      => '',
-            'method'      => 'POST',
-            'enctype'     => null,
-            'validation'  => false,
-            'ajax'        => false,   // true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）
-            'remote'      => false,    // 兼容别名（= ajax），保留旧调用方式
-            'redirect'    => '',       // AJAX 成功且后端未返回 url 时前端兜底跳转地址（整页）
-            'reset'       => false,    // AJAX 成功后是否重置表单（默认 false；与 reload 二选一）
-            'reload'      => true,     // AJAX 成功且无 url/redirect 时是否刷新当前页（false=仅 toast）
-            'inline'      => false,     // 兼容旧写法（等价 layout=inline）
-            'layout'      => null,      // vertical | horizontal | inline（form-layouts.html）
+            'action' => '',
+            'method' => 'POST',
+            'enctype' => null,
+            'validation' => false,
+            'ajax' => false,   // true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）
+            'remote' => false,    // 兼容别名（= ajax），保留旧调用方式
+            'redirect' => '',       // AJAX 成功且后端未返回 url 时前端兜底跳转地址（整页）
+            'reset' => false,    // AJAX 成功后是否重置表单（默认 false；与 reload 二选一）
+            'reload' => true,     // AJAX 成功且无 url/redirect 时是否刷新当前页（false=仅 toast）
+            'inline' => false,     // 兼容旧写法（等价 layout=inline）
+            'layout' => null,      // vertical | horizontal | inline（form-layouts.html）
             'label_width' => 180,       // horizontal 布局标签列宽（px）
-            'fields'      => [],
-            'content'     => null,
-            'buttons'     => null,
-            'csrf'        => [],
+            'fields' => [],
+            'content' => null,
+            'buttons' => null,
+            // true（默认）：自动注入 _token；false：不注入；[name=>value]：自定义隐藏域
+            // 注意：默认值必须为 true，否则 html() 中 get('csrf', true) 的兜底永远不生效
+            'csrf' => true,
         ];
     }
 
@@ -59,17 +61,17 @@ class Form extends Component
      */
     protected function html(): string
     {
-        $method     = strtoupper((string) $this->get('method', 'POST'));
+        $method = strtoupper((string) $this->get('method', 'POST'));
         $formMethod = in_array($method, ['GET', 'POST'], true) ? $method : 'POST';
 
         // 布局解析：layout 优先，兼容旧的 inline=true 写法
         $layout = (string) ($this->get('layout') ?? ($this->get('inline') ? 'inline' : 'vertical'));
 
         $attrs = [
-            'action'  => $this->get('action'),
-            'method'  => $formMethod,
-            'class'   => Html::cls([
-                'needs-validation'   => $this->get('validation'),
+            'action' => $this->safeUrl($this->get('action')),
+            'method' => $formMethod,
+            'class' => Html::cls([
+                'needs-validation' => $this->get('validation'),
                 'row row-cols-lg-auto g-3 align-items-center' => $layout === 'inline',
                 // horizontal：标签左置两栏排版（CSS Grid 实现，见 xfadmin.css .xf-form-horizontal）
                 'xf-form-horizontal' => $layout === 'horizontal',
@@ -78,7 +80,7 @@ class Form extends Component
             'enctype' => $this->get('enctype'),
         ];
         if ($layout === 'horizontal') {
-            $attrs['style'] = '--xf-label-width:' . (int) $this->get('label_width', 180) . 'px';
+            $attrs['style'] = '--xf-label-width:'.(int) $this->get('label_width', 180).'px';
         }
         if ($this->get('ajax') || $this->get('remote')) {
             // 远程表单：交由前端 XFAdmin.bindRemoteForms 全局托管（拦截提交 -> AJAX -> 成功刷新/关闭、失败回填）
@@ -95,7 +97,8 @@ class Form extends Component
             $hasFile = $this->get('file') || $this->get('enctype') === 'multipart/form-data';
             if (! $hasFile) {
                 foreach ((array) $this->get('fields', []) as $field) {
-                    if (is_string($field) && stripos($field, 'type="file"') !== false) {
+                    // 兼容单引号/无引号/多余空格的写法：<input type=file>、type='file'、type = "file"
+                    if (is_string($field) && preg_match('/type\s*=\s*["\']?file/i', $field) === 1) {
                         $hasFile = true;
                         break;
                     }
@@ -106,21 +109,21 @@ class Form extends Component
                 $attrs['data-xf-has-file'] = '';
             }
         }
-        $html = '<form' . $this->attrs($attrs) . '>';
+        $html = '<form'.$this->attrs($attrs).'>';
 
         // 隐藏域（CSRF / 方法伪装）
         $csrf = $this->get('csrf', true);
         if ($csrf === true) {
             // 自动注入框架 CSRF 令牌（宿主框架通过 XfAdmin::setCsrfResolver 注册）
-            $html .= '<input type="hidden" name="_token" value="' . $this->e(XfAdmin::csrfToken()) . '">';
+            $html .= '<input type="hidden" name="_token" value="'.$this->e(XfAdmin::csrfToken()).'">';
         } elseif (is_array($csrf) && $csrf !== []) {
             foreach ($csrf as $name => $value) {
-                $html .= '<input type="hidden" name="' . $this->e($name) . '" value="' . $this->e($value) . '">';
+                $html .= '<input type="hidden" name="'.$this->e($name).'" value="'.$this->e($value).'">';
             }
         }
         // csrf === false 时不输出任何令牌隐藏域
         if (! in_array($method, ['GET', 'POST'], true)) {
-            $html .= '<input type="hidden" name="_method" value="' . $this->e($method) . '">';
+            $html .= '<input type="hidden" name="_method" value="'.$this->e($method).'">';
         }
         foreach ((array) $this->get('fields', []) as $field) {
             $html .= $this->raw($field);
@@ -128,8 +131,9 @@ class Form extends Component
         $html .= $this->raw($this->get('content'));
 
         if ($this->get('buttons') !== null) {
-            $html .= '<div class="d-flex gap-2">' . $this->raw($this->get('buttons')) . '</div>';
+            $html .= '<div class="d-flex gap-2">'.$this->raw($this->get('buttons')).'</div>';
         }
-        return $html . '</form>';
+
+        return $html.'</form>';
     }
 }

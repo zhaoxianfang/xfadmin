@@ -5,12 +5,12 @@ declare(strict_types=1);
 use zxf\XfAdmin\XfAdmin;
 
 echo XfAdmin::page([
-    'title'       => '图表 - XfAdmin Demo',
-    'menu'        => $menu,
+    'title' => '图表 - XfAdmin Demo',
+    'menu' => $menu,
     'current_url' => '/charts',
-    'topbar'      => ['user' => $user],
-    'page_title'  => ['title' => '图表组件', 'breadcrumb' => [['text' => '首页', 'url' => '/'], ['text' => '图表']]],
-    'content'     => [
+    'topbar' => ['user' => $user],
+    'page_title' => ['title' => '图表组件', 'breadcrumb' => [['text' => '首页', 'url' => '/'], ['text' => '图表']]],
+    'content' => [
         XfAdmin::row(['gutter' => 3, 'cols' => [
             ['width' => ['lg' => 6], 'content' => XfAdmin::card(['title' => 'Apex 折线图', 'body' => XfAdmin::apexChart([
                 'type' => 'line', 'height' => 300,
@@ -28,7 +28,7 @@ echo XfAdmin::page([
             ])])],
             ['width' => ['lg' => 4], 'content' => XfAdmin::card(['title' => 'ECharts 饼图', 'body' => XfAdmin::echart(['height' => 300, 'options' => [
                 'tooltip' => ['trigger' => 'item'],
-                'series'  => [['type' => 'pie', 'radius' => ['40%', '70%'], 'data' => [
+                'series' => [['type' => 'pie', 'radius' => ['40%', '70%'], 'data' => [
                     ['value' => 1048, 'name' => '搜索'], ['value' => 735, 'name' => '直接'], ['value' => 580, 'name' => '邮件'],
                 ]]],
             ]])])],
@@ -39,7 +39,7 @@ echo XfAdmin::page([
             // ---------- 新增：组织架构树（apextree 插件，离线可用） ----------
             ['width' => ['lg' => 7], 'content' => XfAdmin::card(['title' => '组织架构树（ApexTree）', 'body' => XfAdmin::apexTree([
                 'height' => 360, 'direction' => 'top',
-                'data'   => [
+                'data' => [
                     'id' => '1', 'name' => '王一', 'role' => 'CEO', 'avatar' => 'users/user-1.jpg', 'color' => '#3e60d5',
                     'children' => [
                         ['id' => '2', 'name' => '李二', 'role' => '技术 VP', 'avatar' => 'users/user-2.jpg', 'color' => '#47ad77', 'children' => [
@@ -53,7 +53,7 @@ echo XfAdmin::page([
             // ---------- 新增：桑基图（apexsankey 插件，离线可用） ----------
             ['width' => 12, 'content' => XfAdmin::card(['title' => '桑基图（ApexSankey）', 'body' => XfAdmin::apexSankey([
                 'height' => 380,
-                'nodes'  => [
+                'nodes' => [
                     ['id' => 'search', 'title' => '搜索引擎'],
                     ['id' => 'social', 'title' => '社交媒体'],
                     ['id' => 'direct', 'title' => '直接访问'],
@@ -62,7 +62,7 @@ echo XfAdmin::page([
                     ['id' => 'lost',   'title' => '流失'],
                     ['id' => 'paid',   'title' => '付费转化'],
                 ],
-                'edges'  => [
+                'edges' => [
                     ['source' => 'search', 'target' => 'visit',  'value' => 60],
                     ['source' => 'social', 'target' => 'visit',  'value' => 25],
                     ['source' => 'direct', 'target' => 'visit',  'value' => 15],

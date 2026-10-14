@@ -26,10 +26,10 @@ class Callout extends Component
     protected function defaults(): array
     {
         return [
-            'title'   => '',
-            'body'    => '',
+            'title' => '',
+            'body' => '',
             'variant' => 'info',
-            'icon'    => '',
+            'icon' => '',
         ];
     }
 
@@ -40,21 +40,22 @@ class Callout extends Component
      */
     protected function html(): string
     {
-        $v     = (string) $this->get('variant');
-        $icon  = (string) $this->get('icon');
+        // variant 白名单（拼 xf-callout-* 类），非法值回退默认 info
+        $v = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'info');
+        $icon = (string) $this->get('icon');
         $title = (string) $this->get('title');
-        $body  = (string) $this->get('body');
+        $body = (string) $this->get('body');
 
-        $html = '<div' . $this->attrs(['class' => 'xf-callout xf-callout-' . $this->e($v)]) . '>';
+        $html = '<div'.$this->attrs(['class' => 'xf-callout xf-callout-'.$v]).'>';
         if ($icon !== '') {
-            $html .= '<i class="' . $this->e($icon) . ' xf-callout-icon"></i>';
+            $html .= '<i class="'.$this->iconClass($icon).' xf-callout-icon"></i>';
         }
         $html .= '<div class="xf-callout-body">';
         if ($title !== '') {
-            $html .= '<div class="xf-callout-title">' . $this->e($title) . '</div>';
+            $html .= '<div class="xf-callout-title">'.$this->e($title).'</div>';
         }
         if ($body !== '') {
-            $html .= '<div class="xf-callout-text">' . $this->e($body) . '</div>';
+            $html .= '<div class="xf-callout-text">'.$this->e($body).'</div>';
         }
         $html .= '</div></div>';
 

@@ -29,12 +29,12 @@ class Offcanvas extends Component
     protected function defaults(): array
     {
         return [
-            'title'     => null,
-            'body'      => '',
+            'title' => null,
+            'body' => '',
             'placement' => 'end',
-            'backdrop'  => true,
-            'scroll'    => false,
-            'trigger'   => null,
+            'backdrop' => true,
+            'scroll' => false,
+            'trigger' => null,
             'trigger_variant' => 'primary',
         ];
     }
@@ -46,17 +46,17 @@ class Offcanvas extends Component
      */
     protected function html(): string
     {
-        $id   = $this->resolveId('xf-offcanvas');
+        $id = $this->resolveId('xf-offcanvas');
         $html = '';
 
         if ($this->get('trigger') !== null) {
-            $html .= '<button class="btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary') . '" type="button" data-bs-toggle="offcanvas" data-bs-target="#' . $this->e($id) . '">'
-                . $this->e($this->get('trigger')) . '</button>';
+            $html .= '<button class="btn btn-'.$this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary').'" type="button" data-bs-toggle="offcanvas" data-bs-target="#'.$this->e($id).'">'
+                .$this->e($this->get('trigger')).'</button>';
         }
         $attrs = [
-            'class'    => 'offcanvas offcanvas-' . $this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'start'),
+            'class' => 'offcanvas offcanvas-'.$this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'start'),
             'tabindex' => '-1',
-            'id'       => $id,
+            'id' => $id,
         ];
         if (! $this->get('backdrop')) {
             $attrs['data-bs-backdrop'] = 'false';
@@ -64,10 +64,10 @@ class Offcanvas extends Component
         if ($this->get('scroll')) {
             $attrs['data-bs-scroll'] = 'true';
         }
-        $html .= '<div' . $this->attrs($attrs) . '>';
-        $html .= '<div class="offcanvas-header"><h5 class="offcanvas-title">' . $this->text($this->get('title')) . '</h5>'
-            . '<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>';
-        $html .= '<div class="offcanvas-body">' . $this->raw($this->get('body')) . '</div>';
+        $html .= '<div'.$this->attrs($attrs).'>';
+        $html .= '<div class="offcanvas-header"><h5 class="offcanvas-title">'.$this->text($this->get('title')).'</h5>'
+            .'<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>';
+        $html .= '<div class="offcanvas-body">'.$this->raw($this->get('body')).'</div>';
         $html .= '</div>';
 
         return $html;

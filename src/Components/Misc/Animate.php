@@ -38,13 +38,13 @@ class Animate extends Component
     {
         return [
             'animation' => 'bounce',
-            'trigger'   => 'load',
-            'infinite'  => false,
-            'delay'     => null,
-            'speed'     => null,
-            'repeat'    => null,
-            'content'   => '',
-            'tag'       => 'div',
+            'trigger' => 'load',
+            'infinite' => false,
+            'delay' => null,
+            'speed' => null,
+            'repeat' => null,
+            'content' => '',
+            'tag' => 'div',
         ];
     }
 
@@ -65,10 +65,15 @@ class Animate extends Component
      */
     protected function html(): string
     {
-        $anim    = (string) $this->get('animation', 'bounce');
-        $trigger = (string) $this->get('trigger', 'load');
+        $anim = (string) $this->get('animation', 'bounce');
+        // animation 进入 animate.css 类名（class 拼接），仅允许 animate.css 类名格式（字母开头的字母/数字/-/_），非法值回退默认
+        if (preg_match('/^[a-zA-Z][a-zA-Z0-9_-]*$/', $anim) !== 1) {
+            $anim = 'bounce';
+        }
+        // trigger 白名单：非法值回退默认 load
+        $trigger = $this->enum($this->get('trigger'), ['load', 'hover', 'click', 'scroll'], 'load');
         $allowedTags = ['div', 'span', 'section', 'article', 'p', 'header', 'footer', 'main', 'aside', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'figure'];
-        $tag     = strtolower((string) $this->get('tag', 'div'));
+        $tag = strtolower((string) $this->get('tag', 'div'));
         if (! in_array($tag, $allowedTags, true)) {
             $tag = 'div';
         }
@@ -77,26 +82,33 @@ class Animate extends Component
         if ($this->get('infinite')) {
             $mods[] = 'animate__infinite';
         }
-        if ($this->get('speed')) {
-            $mods[] = 'animate__' . $this->get('speed');
+        // speed 白名单：slower|slow|normal|fast|faster 或 1-5，非法值不输出速度修饰类（回退默认）
+        $speed = $this->enum((string) $this->get('speed'), ['slower', 'slow', 'normal', 'fast', 'faster', '1', '2', '3', '4', '5'], '');
+        if ($speed !== '') {
+            $mods[] = 'animate__'.$speed;
         }
+        // delay 白名单：仅接受纯数字 / 数字+s/ms，非法值不输出延迟修饰类（回退默认）
         if ($this->get('delay') !== null && $this->get('delay') !== '') {
-            $mods[] = 'animate__delay-' . rtrim((string) $this->get('delay'), 's') . 's';
+            $delay = trim((string) $this->get('delay'));
+            if (preg_match('/^\d+(?:\.\d+)?(?:ms|s)?$/', $delay) === 1) {
+                $mods[] = 'animate__delay-'.rtrim($delay, 's').'s';
+            }
         }
         if ($this->get('repeat')) {
-            $mods[] = 'animate__repeat-' . (int) $this->get('repeat');
+            $mods[] = 'animate__repeat-'.(int) $this->get('repeat');
         }
         $attrs = [
-            'class'             => 'xf-animate' . ($mods !== [] ? ' ' . implode(' ', $mods) : ''),
-            'data-xf'           => 'animate',
+            'class' => 'xf-animate'.($mods !== [] ? ' '.implode(' ', $mods) : ''),
+            'data-xf' => 'animate',
             'data-xf-animation' => $anim,
-            'data-xf-trigger'   => $trigger,
+            'data-xf-trigger' => $trigger,
         ];
 
         // load 触发直接输出动画类（无需等 JS），其余触发交由 xfadmin.js 绑定
         if ($trigger === 'load') {
-            $attrs['class'] .= ' animate__animated animate__' . $anim;
+            $attrs['class'] .= ' animate__animated animate__'.$anim;
         }
-        return '<' . $tag . $this->attrs($attrs) . '>' . $this->raw($this->get('content')) . '</' . $tag . '>';
+
+        return '<'.$tag.$this->attrs($attrs).'>'.$this->raw($this->get('content')).'</'.$tag.'>';
     }
 }

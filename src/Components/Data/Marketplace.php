@@ -56,54 +56,54 @@ class Marketplace extends Component
 
         // 分类卡片行
         $categories = (array) $this->get('categories', []);
-        if (!empty($categories)) {
+        if (! empty($categories)) {
             $html .= $this->renderCategories($categories);
         }
         // 筛选器行
         $filters = (array) $this->get('filters', []);
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $html .= $this->renderFilters($filters);
         }
         // 商品网格
         $products = (array) $this->get('products', []);
-        if (!empty($products)) {
+        if (! empty($products)) {
             $html .= $this->renderProducts($products);
         }
+
         return $html;
     }
 
     /**
      * render Categories（private实例方法）
      *
-     * @param array $categories categories
-     *
+     * @param  array  $categories  categories
      * @return string result
      */
     private function renderCategories(array $categories): string
     {
         $cols = (array) $this->get('columns', [4, 3, 2, 1]);
-        $colClass = 'col-md-' . (12 / max(1, min(3, count($categories))));
+        $colClass = 'col-md-'.(12 / max(1, min(3, count($categories))));
 
         $html = '<div class="row pt-3">';
         foreach ($categories as $cat) {
             $cat = (array) $cat;
-            $bg = $this->enum($cat['bg'] ?? 'primary', ['primary','secondary','success','danger','warning','info','dark','light'], 'primary');
+            $bg = $this->enum($cat['bg'] ?? 'primary', ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark', 'light'], 'primary');
             $title = (string) ($cat['title'] ?? '');
-            $image = !empty($cat['image']) ? XfAdmin::img((string) $cat['image']) : '';
+            $image = ! empty($cat['image']) ? XfAdmin::img((string) $cat['image']) : '';
             $children = (array) ($cat['children'] ?? []);
 
-            $html .= '<div class="' . $colClass . '"><div class="card bg-' . $this->e($bg) . ' bg-opacity-10 bg-gradient"><div class="card-body pb-0 d-flex align-items-center justify-content-between">';
-            $html .= '<div><h5 class="fw-semibold mb-3">' . $this->e($title) . '</h5>';
-            if (!empty($children)) {
+            $html .= '<div class="'.$colClass.'"><div class="card bg-'.$this->e($bg).' bg-opacity-10 bg-gradient"><div class="card-body pb-0 d-flex align-items-center justify-content-between">';
+            $html .= '<div><h5 class="fw-semibold mb-3">'.$this->e($title).'</h5>';
+            if (! empty($children)) {
                 $html .= '<ul class="list-unstyled mb-0 text-body">';
                 foreach ($children as $child) {
-                    $html .= '<li><a href="javascript:void(0)" class="text-reset d-block py-1">' . $this->e((string) $child) . '</a></li>';
+                    $html .= '<li><a href="javascript:void(0)" class="text-reset d-block py-1">'.$this->e((string) $child).'</a></li>';
                 }
                 $html .= '</ul>';
             }
             $html .= '<a href="javascript:void(0)" class="fw-semibold link-reset d-inline-block my-3">View All <i class="ti ti-arrow-right align-middle fs-lg"></i></a></div>';
             if ($image) {
-                $html .= '<img src="' . $this->e($image) . '" alt="' . $this->e($title) . '" class="img-fluid mt-auto" style="max-height:220px" />';
+                $html .= '<img src="'.$this->e($image).'" alt="'.$this->e($title).'" class="img-fluid mt-auto" style="max-height:220px" />';
             }
             $html .= '</div></div></div>';
         }
@@ -115,8 +115,7 @@ class Marketplace extends Component
     /**
      * render Filters（private实例方法）
      *
-     * @param array $filters filters
-     *
+     * @param  array  $filters  filters
      * @return string result
      */
     private function renderFilters(array $filters): string
@@ -126,16 +125,16 @@ class Marketplace extends Component
 
         $html = '<div class="row pt-4"><div class="col-12 text-center">';
         if ($subtitleDesc) {
-            $html .= '<span class="text-muted rounded-3 d-inline-block">' . $this->e($subtitleDesc) . '</span>';
+            $html .= '<span class="text-muted rounded-3 d-inline-block">'.$this->e($subtitleDesc).'</span>';
         }
         if ($subtitle) {
-            $html .= '<h3 class="mt-2 fw-bold mb-4">' . $this->raw($subtitle) . '</h3>';
+            $html .= '<h3 class="mt-2 fw-bold mb-4">'.$this->raw($subtitle).'</h3>';
         }
         $html .= '<div class="d-flex pt-1 justify-content-center align-items-center gap-1">';
         $first = true;
         foreach ($filters as $i => $filter) {
             $active = $first ? ' text-primary' : ' text-muted';
-            $html .= '<a href="javascript:void(0)" class="badge badge-default rounded-pill px-3 py-2 fs-6' . $active . '">' . $this->e((string) $filter) . '</a>';
+            $html .= '<a href="javascript:void(0)" class="badge badge-default rounded-pill px-3 py-2 fs-6'.$active.'">'.$this->e((string) $filter).'</a>';
             $first = false;
         }
         $html .= '</div></div></div>';
@@ -146,8 +145,7 @@ class Marketplace extends Component
     /**
      * render Products（private实例方法）
      *
-     * @param array $products products
-     *
+     * @param  array  $products  products
      * @return string result
      */
     private function renderProducts(array $products): string
@@ -156,12 +154,12 @@ class Marketplace extends Component
         $currency = (string) $this->get('currency', '$');
         // 列数夹紧 1~6（原 row-col-1 为笔误，Bootstrap 类名是 row-cols-1）
         $colAt = static fn (int $i, int $default): int => max(1, min(6, (int) ($cols[$i] ?? $default)));
-        $colClass = 'row-cols-xxl-' . $colAt(0, 4)
-            . ' row-cols-lg-' . $colAt(1, 3)
-            . ' row-cols-sm-' . $colAt(2, 2)
-            . ' row-cols-1';
+        $colClass = 'row-cols-xxl-'.$colAt(0, 4)
+            .' row-cols-lg-'.$colAt(1, 3)
+            .' row-cols-sm-'.$colAt(2, 2)
+            .' row-cols-1';
 
-        $html = '<div class="row ' . $colClass . ' mt-3">';
+        $html = '<div class="row '.$colClass.' mt-3">';
         foreach ($products as $product) {
             $product = (array) $product;
             $html .= $this->renderProductCard($product, $currency);
@@ -174,34 +172,34 @@ class Marketplace extends Component
     /**
      * render Product Card（private实例方法）
      *
-     * @param array $p p
-     * @param string $currency currency
-     *
+     * @param  array  $p  p
+     * @param  string  $currency  currency
      * @return string result
      */
     private function renderProductCard(array $p, string $currency): string
     {
         $title = (string) ($p['title'] ?? '');
-        $image = !empty($p['image']) ? XfAdmin::img((string) $p['image']) : '';
+        $image = ! empty($p['image']) ? XfAdmin::img((string) $p['image']) : '';
         $price = (float) ($p['price'] ?? 0);
         $oldPrice = isset($p['old_price']) ? (float) $p['old_price'] : 0;
         $rating = (int) ($p['rating'] ?? 0);
         $reviews = (int) ($p['reviews'] ?? 0);
         $badge = (string) ($p['badge'] ?? '');
-        $badgeColor = (string) ($p['badge_color'] ?? 'danger');
+        // badge_color 走白名单校验，防止任意值拼入 class 属性
+        $badgeColor = $this->enum((string) ($p['badge_color'] ?? 'danger'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'], 'danger');
 
         $html = '<div class="col"><article class="card card-h-100">';
 
         // 折扣徽章
         if ($badge) {
-            $html .= '<div class="badge text-bg-' . $this->e($badgeColor) . ' badge-label fs-base rounded position-absolute top-0 start-0 m-3">'
-                . $this->e($badge) . '</div>';
+            $html .= '<div class="badge text-bg-'.$this->e($badgeColor).' badge-label fs-base rounded position-absolute top-0 start-0 m-3">'
+                .$this->e($badge).'</div>';
         }
         $html .= '<div class="card-body">';
         if ($image) {
-            $html .= '<div class="p-3"><img src="' . $this->e($image) . '" alt="' . $this->e($title) . '" class="img-fluid" /></div>';
+            $html .= '<div class="p-3"><img src="'.$this->e($image).'" alt="'.$this->e($title).'" class="img-fluid" /></div>';
         }
-        $html .= '<h6 class="card-title fs-sm lh-base mb-2"><a href="javascript:void(0)" class="link-reset">' . $this->e($title) . '</a></h6>';
+        $html .= '<h6 class="card-title fs-sm lh-base mb-2"><a href="javascript:void(0)" class="link-reset">'.$this->e($title).'</a></h6>';
 
         // 评分
         if ($rating > 0 || $reviews > 0) {
@@ -211,7 +209,7 @@ class Marketplace extends Component
             }
             $html .= '</span>';
             if ($reviews > 0) {
-                $html .= '<span class="ms-1"><a href="javascript:void(0)" class="link-reset fw-semibold">(' . $reviews . ')</a></span>';
+                $html .= '<span class="ms-1"><a href="javascript:void(0)" class="link-reset fw-semibold">('.$reviews.')</a></span>';
             }
             $html .= '</div>';
         }
@@ -221,12 +219,12 @@ class Marketplace extends Component
         $html .= '<div class="card-footer bg-transparent d-flex justify-content-between border-dashed border-top">';
         $html .= '<div class="d-flex justify-content-start align-items-center gap-2">';
         $priceClass = $oldPrice > 0 ? 'text-danger' : 'text-success';
-        $cur        = $this->e($currency);
-        $html .= '<h4 class="' . $priceClass . ' d-flex align-items-center gap-2 mb-0">';
+        $cur = $this->e($currency);
+        $html .= '<h4 class="'.$priceClass.' d-flex align-items-center gap-2 mb-0">';
         if ($oldPrice > 0) {
-            $html .= '<span class="text-muted text-decoration-line-through">' . $cur . number_format($oldPrice, 2) . '</span>';
+            $html .= '<span class="text-muted text-decoration-line-through">'.$cur.number_format($oldPrice, 2).'</span>';
         }
-        $html .= $cur . number_format($price, 2) . '</h4></div>';
+        $html .= $cur.number_format($price, 2).'</h4></div>';
         $html .= '<a class="btn btn-sm btn-icon btn-primary" href="javascript:void(0)"><i class="ti ti-basket fs-lg"></i></a>';
         $html .= '</div>';
 

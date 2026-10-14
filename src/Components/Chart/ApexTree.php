@@ -38,10 +38,10 @@ class ApexTree extends Component
     protected function defaults(): array
     {
         return [
-            'height'      => 500,
-            'direction'   => 'top',
-            'data'        => [],
-            'node_width'  => 150,
+            'height' => 500,
+            'direction' => 'top',
+            'data' => [],
+            'node_width' => 150,
             'node_height' => 60,
             'collapsible' => true,
         ];
@@ -60,8 +60,7 @@ class ApexTree extends Component
     /**
      * normalize Node（protected实例方法）
      *
-     * @param array $node node
-     *
+     * @param  array  $node  node
      * @return array result
      */
     protected function normalizeNode(array $node): array
@@ -69,9 +68,15 @@ class ApexTree extends Component
         if (! empty($node['avatar'])) {
             $node['avatar'] = $this->img((string) $node['avatar']);
         }
-        if (! empty($node['children']) && is_array($node['children'])) {
-            $node['children'] = array_map(fn ($c) => $this->normalizeNode((array) $c), array_values($node['children']));
+        if (! empty($node['children'])) {
+            if (is_array($node['children'])) {
+                $node['children'] = array_map(fn ($c) => $this->normalizeNode((array) $c), array_values($node['children']));
+            } else {
+                // children 非数组（标量/对象）时丢弃，避免把非法结构原样塞给前端插件
+                unset($node['children']);
+            }
         }
+
         return $node;
     }
 
@@ -82,21 +87,26 @@ class ApexTree extends Component
      */
     protected function html(): string
     {
-        $id  = $this->resolveId('xf-apextree');
+        $id = $this->resolveId('xf-apextree');
+        $data = (array) $this->get('data', []);
+        // data 约定为「单个根节点」；若传入的是节点列表（顺序数组），取首个节点作为根
+        if (isset($data[0]) && is_array($data[0])) {
+            $data = $data[0];
+        }
         $cfg = [
-            'data'        => $this->normalizeNode((array) $this->get('data', [])),
-            'direction'   => (string) $this->get('direction', 'top'),
-            'height'      => (int) $this->get('height', 500),
-            'nodeWidth'   => (int) $this->get('node_width', 150),
-            'nodeHeight'  => (int) $this->get('node_height', 60),
+            'data' => $this->normalizeNode($data),
+            'direction' => (string) $this->get('direction', 'top'),
+            'height' => (int) $this->get('height', 500),
+            'nodeWidth' => (int) $this->get('node_width', 150),
+            'nodeHeight' => (int) $this->get('node_height', 60),
             'collapsible' => (bool) $this->get('collapsible', true),
         ];
 
-        return '<div' . $this->attrs([
-            'class'          => 'xf-apextree',
-            'id'             => $id,
-            'data-xf'        => 'apextree',
-            'data-xf-config' => json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP),
-        ]) . '></div>';
+        return '<div'.$this->attrs([
+            'class' => 'xf-apextree',
+            'id' => $id,
+            'data-xf' => 'apextree',
+            'data-xf-config' => json_encode($cfg, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
+        ]).'></div>';
     }
 }

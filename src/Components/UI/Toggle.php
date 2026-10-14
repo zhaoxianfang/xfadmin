@@ -30,15 +30,15 @@ class Toggle extends Component
     protected function defaults(): array
     {
         return [
-            'name'     => '',
-            'checked'  => false,
+            'name' => '',
+            'checked' => false,
             'disabled' => false,
-            'label'    => '',
-            'value'    => '1',
-            'variant'  => 'primary',
-            'size'     => '',
-            'id'       => null,
-            'class'    => '',
+            'label' => '',
+            'value' => '1',
+            'variant' => 'primary',
+            'size' => '',
+            'id' => null,
+            'class' => '',
         ];
     }
 
@@ -52,25 +52,29 @@ class Toggle extends Component
         $id = $this->resolveId('xf-switch');
 
         $wrapClass = 'form-check form-switch';
-        if ($this->get('size') !== '') {
-            $wrapClass .= ' form-switch-' . $this->get('size');
+        // size 白名单（sm|lg）：非法/空值都不加尺寸类，防止任意 class 注入
+        $size = $this->get('size') !== '' ? $this->enum($this->get('size'), self::ENUM_SIZE, '') : '';
+        if ($size !== '') {
+            $wrapClass .= ' form-switch-'.$size;
         }
         if ($this->get('class') !== '') {
-            $wrapClass .= ' ' . $this->get('class');
+            $wrapClass .= ' '.$this->get('class');
         }
-        $input = '<input id="' . $this->e($id) . '" class="form-check-input xf-switch-input" type="checkbox" role="switch"'
-            . ($this->get('name') !== '' ? ' name="' . $this->e($this->get('name')) . '"' : '')
-            . ' value="' . $this->e((string) $this->get('value')) . '"'
-            . ($this->get('checked') ? ' checked' : '')
-            . ($this->get('disabled') ? ' disabled' : '')
-            . ' data-variant="' . $this->e($this->get('variant')) . '">';
+        $input = '<input id="'.$this->e($id).'" class="form-check-input xf-switch-input" type="checkbox" role="switch"'
+            .($this->get('name') !== '' ? ' name="'.$this->e($this->get('name')).'"' : '')
+            .' value="'.$this->e((string) $this->get('value')).'"'
+            .($this->get('checked') ? ' checked' : '')
+            .($this->get('disabled') ? ' disabled' : '')
+            // variant 白名单（data-variant 供 JS/CSS 着色），非法值回退默认 primary
+            .' data-variant="'.$this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary').'">';
 
         if ($this->get('label') !== '') {
-            return '<div' . $this->attrs(['class' => $wrapClass]) . '>'
-                . $input
-                . '<label class="form-check-label" for="' . $this->e($id) . '">' . $this->e($this->get('label')) . '</label>'
-                . '</div>';
+            return '<div'.$this->attrs(['class' => $wrapClass]).'>'
+                .$input
+                .'<label class="form-check-label" for="'.$this->e($id).'">'.$this->e($this->get('label')).'</label>'
+                .'</div>';
         }
-        return '<div' . $this->attrs(['class' => $wrapClass]) . '>' . $input . '</div>';
+
+        return '<div'.$this->attrs(['class' => $wrapClass]).'>'.$input.'</div>';
     }
 }

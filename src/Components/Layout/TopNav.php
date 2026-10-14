@@ -46,23 +46,23 @@ class TopNav extends Component
     protected function defaults(): array
     {
         return [
-            'brand'              => true,
-            'sidenav_toggle'     => false,  // 纯水平布局默认不显示侧栏切换按钮
-            'menu'               => [],
-            'current_url'        => null,
-            'search'             => false,
+            'brand' => true,
+            'sidenav_toggle' => false,  // 纯水平布局默认不显示侧栏切换按钮
+            'menu' => [],
+            'current_url' => null,
+            'search' => false,
             'search_placeholder' => 'Search for something...',
-            'mega'               => false,
-            'left'               => null,
-            'languages'          => [],
-            'messages'           => false,
-            'notifications'      => false,
-            'theme_toggle'       => true,
-            'fullscreen'         => true,
-            'customizer'         => true,
-            'user'               => false,
-            'apps'               => false,   // 应用启动器（圆形九宫格 #apps-dropdown-rounded）
-            'right'              => null,
+            'mega' => false,
+            'left' => null,
+            'languages' => [],
+            'messages' => false,
+            'notifications' => false,
+            'theme_toggle' => true,
+            'fullscreen' => true,
+            'customizer' => true,
+            'user' => false,
+            'apps' => false,   // 应用启动器（圆形九宫格 #apps-dropdown-rounded）
+            'right' => null,
         ];
     }
 
@@ -73,7 +73,7 @@ class TopNav extends Component
      */
     protected function html(): string
     {
-        $html  = '<header' . $this->attrs(['class' => 'app-topbar']) . '>';
+        $html = '<header'.$this->attrs(['class' => 'app-topbar']).'>';
         $html .= '<div class="container-fluid topbar-menu">';
 
         // ---------- 左：品牌 + 折叠按钮 + 搜索 + Mega ----------
@@ -81,13 +81,13 @@ class TopNav extends Component
         $html .= $this->renderBrand();
         if ($this->get('sidenav_toggle')) {
             $html .= '<button class="sidenav-toggle-button btn btn-primary btn-icon" type="button">'
-                . '<i class="ti ti-menu-4 fs-22"></i></button>';
+                .'<i class="ti ti-menu-4 fs-22"></i></button>';
         }
         // 横向菜单折叠按钮（小屏显示，模板原生 class）
         $html .= '<button class="topnav-toggle-button px-2" type="button" data-bs-toggle="collapse"'
-            . ' data-bs-target="#topnav-menu-content" aria-controls="topnav-menu-content"'
-            . ' aria-expanded="false" aria-label="Toggle navigation">'
-            . '<i class="ti ti-menu-4 fs-22"></i></button>';
+            .' data-bs-target="#topnav-menu-content" aria-controls="topnav-menu-content"'
+            .' aria-expanded="false" aria-label="Toggle navigation">'
+            .'<i class="ti ti-menu-4 fs-22"></i></button>';
         $html .= $this->renderMega();
         $html .= $this->raw($this->get('left'));
         $html .= '</div>';
@@ -100,9 +100,9 @@ class TopNav extends Component
         $html .= $this->raw($this->get('right'));
         if ($this->get('search')) {
             $html .= '<div class="app-search topnav-search d-none d-lg-flex">'
-                . '<input type="search" class="form-control topbar-search" name="search" placeholder="'
-                . $this->e($this->get('search_placeholder')) . '">'
-                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
+                .'<input type="search" class="form-control topbar-search" name="search" placeholder="'
+                .$this->e($this->get('search_placeholder')).'">'
+                .'<i class="ti ti-search app-search-icon text-muted"></i></div>';
         }
         $html .= $this->renderApps();
         $html .= $this->renderLanguages();
@@ -110,17 +110,17 @@ class TopNav extends Component
         $html .= $this->renderNotifications();
         if ($this->get('customizer')) {
             $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link"'
-                . ' data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" type="button">'
-                . '<i class="ti ti-settings fs-xxl"></i></button></div>';
+                .' data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" type="button">'
+                .'<i class="ti ti-settings fs-xxl"></i></button></div>';
         }
         if ($this->get('fullscreen')) {
             $html .= '<div class="topbar-item d-none d-sm-flex"><button class="topbar-link"'
-                . ' data-toggle="fullscreen" type="button"><i class="ti ti-maximize fs-xxl"></i></button></div>';
+                .' data-toggle="fullscreen" type="button"><i class="ti ti-maximize fs-xxl"></i></button></div>';
         }
         if ($this->get('theme_toggle')) {
             $html .= '<div class="topbar-item"><button class="topbar-link" id="light-dark-mode" type="button">'
-                . '<i class="ti ti-moon fs-xxl mode-icon icon-moon"></i>'
-                . '<i class="ti ti-sun fs-xxl mode-icon icon-sun"></i></button></div>';
+                .'<i class="ti ti-moon fs-xxl mode-icon icon-moon"></i>'
+                .'<i class="ti ti-sun fs-xxl mode-icon icon-sun"></i></button></div>';
         }
         $html .= $this->renderUser();
         $html .= '</div>';
@@ -131,7 +131,7 @@ class TopNav extends Component
     }
 
     /* ------------------------------------------------------------------ */
-    /* 品牌                                                                */
+    /* 品牌 */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -144,33 +144,33 @@ class TopNav extends Component
         if (! $this->get('brand')) {
             return '';
         }
-        $brand  = is_array($this->get('brand')) ? $this->get('brand') : [];
+        $brand = is_array($this->get('brand')) ? $this->get('brand') : [];
         $brand += (array) XfAdmin::setting('brand', []);
         $assets = XfAdmin::assets();
-        $url    = $brand['url'] ?? $brand['home_url'] ?? '/';
-        $logo   = $brand['logo'] ?? $assets->url('images/logo.png');
+        $url = $brand['url'] ?? $brand['home_url'] ?? '/';
+        $logo = $brand['logo'] ?? $assets->url('images/logo.png');
         $logoDk = $brand['logo_dark'] ?? $assets->url('images/logo-black.png');
         $logoSm = $brand['logo_sm'] ?? $assets->url('images/logo-sm.png');
-        $name   = $brand['name'] ?? $brand['title'] ?? '';
+        $name = $brand['name'] ?? $brand['title'] ?? '';
 
         $nameHtml = $name !== ''
             ? '<span class="logo-text d-none d-sm-inline-block text-truncate ms-2">'
-              . $this->e($name) . '</span>'
+              .$this->e($name).'</span>'
             : '';
 
         return '<div class="logo-topbar d-flex align-items-center">'
-            . '<a href="' . $this->e($url) . '" class="logo-light">'
-            . '<span class="logo-lg"><img src="' . $this->e($logo) . '" alt="logo"></span>'
-            . '<span class="logo-sm"><img src="' . $this->e($logoSm) . '" alt="small logo"></span></a>'
-            . '<a href="' . $this->e($url) . '" class="logo-dark">'
-            . '<span class="logo-lg"><img src="' . $this->e($logoDk) . '" alt="dark logo"></span>'
-            . '<span class="logo-sm"><img src="' . $this->e($logoSm) . '" alt="small logo"></span></a>'
-            . $nameHtml
-            . '</div>';
+            .'<a href="'.$this->e($this->safeUrl($url)).'" class="logo-light">'
+            .'<span class="logo-lg"><img src="'.$this->e($logo).'" alt="logo"></span>'
+            .'<span class="logo-sm"><img src="'.$this->e($logoSm).'" alt="small logo"></span></a>'
+            .'<a href="'.$this->e($this->safeUrl($url)).'" class="logo-dark">'
+            .'<span class="logo-lg"><img src="'.$this->e($logoDk).'" alt="dark logo"></span>'
+            .'<span class="logo-sm"><img src="'.$this->e($logoSm).'" alt="small logo"></span></a>'
+            .$nameHtml
+            .'</div>';
     }
 
     /* ------------------------------------------------------------------ */
-    /* 水平菜单（核心）                                                     */
+    /* 水平菜单（核心） */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -189,14 +189,14 @@ class TopNav extends Component
         // （hover 级联下拉、菜单项排版、移动端手风琴）均以 .topnav 为作用域，
         // 合并进 app-topbar 后仍需该 class 才能命中框架样式。
         $html = '<div class="topnav topnav-inline">'
-            . '<nav class="navbar navbar-expand-lg">'
-            . '<div class="collapse navbar-collapse" id="topnav-menu-content">';
+            .'<nav class="navbar navbar-expand-lg">'
+            .'<div class="collapse navbar-collapse" id="topnav-menu-content">';
         // 移动端折叠面板顶部显示搜索框（小屏优先）
         if ($this->get('search')) {
             $html .= '<div class="app-search topnav-search d-lg-none p-2 border-bottom">'
-                . '<input type="search" class="form-control topbar-search" name="search" placeholder="'
-                . $this->e($this->get('search_placeholder')) . '">'
-                . '<i class="ti ti-search app-search-icon text-muted"></i></div>';
+                .'<input type="search" class="form-control topbar-search" name="search" placeholder="'
+                .$this->e($this->get('search_placeholder')).'">'
+                .'<i class="ti ti-search app-search-icon text-muted"></i></div>';
         }
         $html .= '<ul class="navbar-nav">';
         foreach ($items as $item) {
@@ -211,17 +211,17 @@ class TopNav extends Component
     protected function renderTopItem(array $item): string
     {
         $children = (array) ($item['children'] ?? []);
-        $mega     = $item['mega'] ?? null;
-        $hasDrop  = $children !== [] || ! empty($mega);
-        $active   = $this->isActive($item);
+        $mega = $item['mega'] ?? null;
+        $hasDrop = $children !== [] || ! empty($mega);
+        $active = $this->isActive($item);
 
-        $liClass = 'nav-item' . ($hasDrop ? ' dropdown' : '') . ($active ? ' active' : '');
-        $html    = '<li class="' . $liClass . '">';
+        $liClass = 'nav-item'.($hasDrop ? ' dropdown' : '').($active ? ' active' : '');
+        $html = '<li class="'.$liClass.'">';
 
         $icon = ! empty($item['icon'])
-            ? '<span class="menu-icon"><i class="' . $this->e($item['icon']) . '"></i></span>'
+            ? '<span class="menu-icon"><i class="'.$this->e($item['icon']).'"></i></span>'
             : '';
-        $text  = '<span class="menu-text"> ' . $this->e($item['text'] ?? '') . ' </span>';
+        $text = '<span class="menu-text"> '.$this->e($item['text'] ?? '').' </span>';
         $badge = $this->renderBadge($item);
 
         if ($hasDrop) {
@@ -230,89 +230,94 @@ class TopNav extends Component
             // 移动端手风琴由 xfadmin.js 自行切换 .show。若交给 Bootstrap 接管，
             // 其 dropdown 实例会在点击后立即移除我们添加的 .show（并施加浮层定位），
             // 导致移动端菜单无法展开。
-            $id    = $this->uid('topnav');
-            $html .= '<a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="' . $id . '"'
-                . ' role="button" aria-haspopup="true" aria-expanded="false">'
-                . $icon . $text . $badge . '<div class="menu-arrow"></div></a>';
+            $id = $this->uid('topnav');
+            $html .= '<a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="'.$id.'"'
+                .' role="button" aria-haspopup="true" aria-expanded="false">'
+                .$icon.$text.$badge.'<div class="menu-arrow"></div></a>';
             $html .= ! empty($mega)
                 ? $this->renderMegaPanel((array) $mega, $id)
                 : $this->renderDropdown($children, $id);
         } else {
-            $html .= '<a class="nav-link" href="' . $this->e($item['url'] ?? '#') . '">'
-                . $icon . $text . $badge . '</a>';
+            $html .= '<a class="nav-link" href="'.$this->e($this->safeUrl($item['url'] ?? '#')).'">'
+                .$icon.$text.$badge.'</a>';
         }
-        return $html . '</li>';
+
+        return $html.'</li>';
     }
 
     /** 下拉面板（无限级递归） */
     protected function renderDropdown(array $items, string $labelledBy): string
     {
-        $html = '<div class="dropdown-menu" aria-labelledby="' . $this->e($labelledBy) . '">';
+        $html = '<div class="dropdown-menu" aria-labelledby="'.$this->e($labelledBy).'">';
         foreach ($items as $child) {
             $child = (array) $child;
 
             // 分隔线与分组标题
             if (($child['divider'] ?? false) === true) {
                 $html .= '<div class="dropdown-divider"></div>';
+
                 continue;
             }
             if (isset($child['title']) && ! isset($child['text'])) {
                 $html .= '<div class="dropdown-header fs-xs text-uppercase fw-semibold">'
-                    . $this->e($child['title']) . '</div>';
+                    .$this->e($child['title']).'</div>';
+
                 continue;
             }
             $children = (array) ($child['children'] ?? []);
-            $icon     = ! empty($child['icon']) ? '<i class="' . $this->e($child['icon']) . '"></i> ' : '';
-            $badge    = $this->renderBadge($child);
+            $icon = ! empty($child['icon']) ? '<i class="'.$this->e($child['icon']).'"></i> ' : '';
+            $badge = $this->renderBadge($child);
 
             if ($children !== []) {
                 // 子级菜单：模板用嵌套 .dropdown 承载，CSS 已实现 hover 级联右侧展开
-                $id    = $this->uid('topnav');
+                $id = $this->uid('topnav');
                 $html .= '<div class="dropdown">'
-                    . '<a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="' . $id . '"'
-                    . ' role="button" aria-haspopup="true" aria-expanded="false">'
-                    . $icon . $this->e($child['text'] ?? '') . $badge . ' <div class="menu-arrow"></div></a>'
-                    . $this->renderDropdown($children, $id)
-                    . '</div>';
+                    .'<a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="'.$id.'"'
+                    .' role="button" aria-haspopup="true" aria-expanded="false">'
+                    .$icon.$this->e($child['text'] ?? '').$badge.' <div class="menu-arrow"></div></a>'
+                    .$this->renderDropdown($children, $id)
+                    .'</div>';
+
                 continue;
             }
-            $cls   = 'dropdown-item' . (! empty($child['disabled']) ? ' disabled' : '')
-                . ($this->isActive($child) ? ' active' : '');
-            $html .= '<a href="' . $this->e($child['url'] ?? '#!') . '" class="' . $cls . '">'
-                . $icon . $this->e($child['text'] ?? '') . $badge . '</a>';
+            $cls = 'dropdown-item'.(! empty($child['disabled']) ? ' disabled' : '')
+                .($this->isActive($child) ? ' active' : '');
+            $html .= '<a href="'.$this->e($this->safeUrl($child['url'] ?? '#!')).'" class="'.$cls.'">'
+                .$icon.$this->e($child['text'] ?? '').$badge.'</a>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 
     /** 菜单项内的 Mega 大面板 */
     protected function renderMegaPanel(array $mega, string $labelledBy): string
     {
-        $cols     = (int) ($mega['cols'] ?? count((array) ($mega['columns'] ?? [])) ?: 3);
-        $cols     = max(1, min(4, $cols));
-        $colClass = 'col-md-' . (int) (12 / $cols);
+        $cols = (int) ($mega['cols'] ?? count((array) ($mega['columns'] ?? [])) ?: 3);
+        $cols = max(1, min(4, $cols));
+        $colClass = 'col-md-'.(int) (12 / $cols);
 
-        $html = '<div class="dropdown-menu dropdown-menu-xxl p-0" aria-labelledby="' . $this->e($labelledBy) . '">'
-            . '<div class="h-100" style="max-height: 380px;" data-simplebar>';
+        $html = '<div class="dropdown-menu dropdown-menu-xxl p-0" aria-labelledby="'.$this->e($labelledBy).'">'
+            .'<div class="h-100" style="max-height: 380px;" data-simplebar>';
 
         if (! empty($mega['title'])) {
             $html .= '<div class="row g-0"><div class="col-12">'
-                . '<div class="p-3 text-center bg-light bg-opacity-50">'
-                . '<h4 class="mb-0 fs-lg fw-semibold">' . $this->e($mega['title']) . '</h4>'
-                . '</div></div></div>';
+                .'<div class="p-3 text-center bg-light bg-opacity-50">'
+                .'<h4 class="mb-0 fs-lg fw-semibold">'.$this->e($mega['title']).'</h4>'
+                .'</div></div></div>';
         }
         $html .= '<div class="row g-0">';
         foreach ((array) ($mega['columns'] ?? []) as $column) {
             $column = (array) $column;
-            $html  .= '<div class="' . $colClass . '"><div class="p-3">';
+            $html .= '<div class="'.$colClass.'"><div class="p-3">';
             if (! empty($column['title'])) {
-                $html .= '<h5 class="mb-2 fw-semibold fs-sm dropdown-header">' . $this->e($column['title']) . '</h5>';
+                $html .= '<h5 class="mb-2 fw-semibold fs-sm dropdown-header">'.$this->e($column['title']).'</h5>';
             }
             $html .= '<ul class="list-unstyled megamenu-list">';
             foreach ((array) ($column['items'] ?? []) as $link) {
-                $link  = (array) $link;
-                $icon  = ! empty($link['icon']) ? '<i class="' . $this->e($link['icon']) . '"></i> ' : '';
-                $html .= '<li><a href="' . $this->e($link['url'] ?? 'javascript:void(0);') . '" class="dropdown-item">'
-                    . $icon . $this->e($link['text'] ?? '') . $this->renderBadge($link) . '</a></li>';
+                $link = (array) $link;
+                $icon = ! empty($link['icon']) ? '<i class="'.$this->e($link['icon']).'"></i> ' : '';
+                $html .= '<li><a href="'.$this->e($this->safeUrl($link['url'] ?? 'javascript:void(0);')).'" class="dropdown-item">'
+                    .$icon.$this->e($link['text'] ?? '').$this->renderBadge($link).'</a></li>';
             }
             $html .= '</ul></div></div>';
         }
@@ -320,9 +325,10 @@ class TopNav extends Component
 
         if (! empty($mega['footer'])) {
             $html .= '<div class="row g-0"><div class="col-12"><div class="p-2 border-top text-center">'
-                . $this->raw($mega['footer']) . '</div></div></div>';
+                .$this->raw($mega['footer']).'</div></div></div>';
         }
-        return $html . '</div></div>';
+
+        return $html.'</div></div>';
     }
 
     /** 顶栏左侧独立的 Mega 下拉（模板 "Boom Boom!" 入口） */
@@ -333,21 +339,20 @@ class TopNav extends Component
             return '';
         }
         $mega = (array) $mega;
-        $id   = $this->uid('topnav-mega');
+        $id = $this->uid('topnav-mega');
 
         return '<div class="topbar-item d-none d-md-flex"><div class="dropdown">'
-            . '<button class="topbar-link btn fw-medium btn-link dropdown-toggle drop-arrow-none" id="' . $id . '"'
-            . ' data-bs-toggle="dropdown" data-bs-offset="0,16" type="button" aria-haspopup="false" aria-expanded="false">'
-            . $this->e($mega['text'] ?? 'Mega Menu') . '<i class="ti ti-chevron-down ms-1"></i></button>'
-            . $this->renderMegaPanel($mega, $id)
-            . '</div></div>';
+            .'<button class="topbar-link btn fw-medium btn-link dropdown-toggle drop-arrow-none" id="'.$id.'"'
+            .' data-bs-toggle="dropdown" data-bs-offset="0,16" type="button" aria-haspopup="false" aria-expanded="false">'
+            .$this->e($mega['text'] ?? 'Mega Menu').'<i class="ti ti-chevron-down ms-1"></i></button>'
+            .$this->renderMegaPanel($mega, $id)
+            .'</div></div>';
     }
 
     /**
      * render Badge（protected实例方法）
      *
-     * @param array $item item
-     *
+     * @param  array  $item  item
      * @return string result
      */
     protected function renderBadge(array $item): string
@@ -357,8 +362,8 @@ class TopNav extends Component
         }
         $badge = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
 
-        return ' <span class="badge ' . $this->e($badge['class'] ?? 'text-bg-danger') . ' ms-1">'
-            . $this->e($badge['text'] ?? '') . '</span>';
+        return ' <span class="badge '.$this->e($badge['class'] ?? 'text-bg-danger').' ms-1">'
+            .$this->e($badge['text'] ?? '').'</span>';
     }
 
     /** 当前项是否激活：显式 active，或 url 命中 current_url */
@@ -368,15 +373,16 @@ class TopNav extends Component
             return true;
         }
         $current = (string) $this->get('current_url', '');
-        $url     = (string) ($item['url'] ?? '');
+        $url = (string) ($item['url'] ?? '');
         if ($current === '' || $url === '' || $url === '#' || $url === '#!') {
             return false;
         }
+
         return trim($url, '/') === trim($current, '/');
     }
 
     /* ------------------------------------------------------------------ */
-    /* 右侧工具区                                                          */
+    /* 右侧工具区 */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -397,29 +403,32 @@ class TopNav extends Component
                 break;
             }
         }
-        $current ??= $languages[0];
+        // languages 可能为关联数组（如 ['zh'=>[...],'en'=>[...]]），$languages[0] 未必存在，
+        // 需 array_values 取首个元素兜底
+        $current ??= array_values($languages)[0] ?? null;
 
         $html = '<div class="topbar-item d-none d-sm-flex"><div class="dropdown">'
-            . '<button class="topbar-link fw-bold" data-bs-toggle="dropdown" data-bs-offset="0,21" type="button"'
-            . ' aria-haspopup="false" aria-expanded="false">';
+            .'<button class="topbar-link fw-bold" data-bs-toggle="dropdown" data-bs-offset="0,21" type="button"'
+            .' aria-haspopup="false" aria-expanded="false">';
         if (! empty($current['flag'])) {
-            $html .= '<img src="' . $this->e($this->img($current['flag'])) . '" alt="language"'
-                . ' class="rounded me-2" height="18" style="height:18px;" id="selected-language-image">';
+            $html .= '<img src="'.$this->e($this->img($current['flag'])).'" alt="language"'
+                .' class="rounded me-2" height="18" style="height:18px;" id="selected-language-image">';
         }
-        $html .= '<span id="selected-language-code">' . $this->e($current['name'] ?? '') . '</span>';
+        $html .= '<span id="selected-language-code">'.$this->e($current['name'] ?? '').'</span>';
         $html .= '</button><div class="dropdown-menu dropdown-menu-end">';
         foreach ($languages as $lang) {
             $lang = (array) $lang;
             $flag = ! empty($lang['flag'])
-                ? '<img src="' . $this->e($this->img($lang['flag'])) . '" alt="' . $this->e($lang['name'] ?? '')
-                  . '" class="me-1 rounded" height="18" style="height:18px;">'
+                ? '<img src="'.$this->e($this->img($lang['flag'])).'" alt="'.$this->e($lang['name'] ?? '')
+                  .'" class="me-1 rounded" height="18" style="height:18px;">'
                 : '';
-            $html .= '<a href="' . $this->e($lang['url'] ?? 'javascript:void(0);') . '" class="dropdown-item"'
-                . (isset($lang['code']) ? ' data-lang-code="' . $this->e($lang['code']) . '"' : '')
-                . ' title="' . $this->e($lang['name'] ?? '') . '">'
-                . $flag . '<span class="align-middle">' . $this->e($lang['name'] ?? '') . '</span></a>';
+            $html .= '<a href="'.$this->e($this->safeUrl($lang['url'] ?? 'javascript:void(0);')).'" class="dropdown-item"'
+                .(isset($lang['code']) ? ' data-lang-code="'.$this->e($lang['code']).'"' : '')
+                .' title="'.$this->e($lang['name'] ?? '').'">'
+                .$flag.'<span class="align-middle">'.$this->e($lang['name'] ?? '').'</span></a>';
         }
-        return $html . '</div></div></div>';
+
+        return $html.'</div></div></div>';
     }
 
     /**
@@ -433,34 +442,35 @@ class TopNav extends Component
         if (! $conf) {
             return '';
         }
-        $conf  = (array) $conf;
+        $conf = (array) $conf;
         $items = (array) ($conf['items'] ?? []);
         $count = $conf['count'] ?? count($items);
 
         $html = '<div class="topbar-item d-none d-sm-flex"><div class="dropdown">'
-            . '<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown"'
-            . ' data-bs-offset="0,22" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
-            . '<i class="ti ti-mail fs-xxl"></i>';
+            .'<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown"'
+            .' data-bs-offset="0,22" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
+            .'<i class="ti ti-mail fs-xxl"></i>';
         if ($count > 0) {
             $html .= '<span class="badge text-bg-success badge-circle topbar-badge position-absolute">'
-                . $this->e($count) . '</span>';
+                .$this->e($count).'</span>';
         }
         $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">'
-            . '<div class="px-3 py-2 border-bottom"><div class="row align-items-center"><div class="col">'
-            . '<h6 class="m-0 fs-md fw-semibold">' . $this->e($conf['title'] ?? '消息') . '</h6></div>';
+            .'<div class="px-3 py-2 border-bottom"><div class="row align-items-center"><div class="col">'
+            .'<h6 class="m-0 fs-md fw-semibold">'.$this->e($conf['title'] ?? '消息').'</h6></div>';
         if (! empty($conf['label'])) {
             $html .= '<div class="col text-end"><span class="badge badge-soft-success badge-label py-1">'
-                . $this->e($conf['label']) . '</span></div>';
+                .$this->e($conf['label']).'</span></div>';
         }
         $html .= '</div></div><div style="max-height: 300px;" data-simplebar>';
         $html .= $this->renderFeedItems($items);
         $html .= '</div>';
         if (! empty($conf['all_url'])) {
-            $html .= '<a href="' . $this->e($conf['all_url']) . '" class="dropdown-item text-center text-reset'
-                . ' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
-                . $this->e($conf['all_text'] ?? '查看全部') . '</a>';
+            $html .= '<a href="'.$this->e($this->safeUrl($conf['all_url'])).'" class="dropdown-item text-center text-reset'
+                .' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
+                .$this->e($conf['all_text'] ?? '查看全部').'</a>';
         }
-        return $html . '</div></div></div>';
+
+        return $html.'</div></div></div>';
     }
 
     /**
@@ -474,31 +484,32 @@ class TopNav extends Component
         if (! $conf) {
             return '';
         }
-        $conf  = (array) $conf;
+        $conf = (array) $conf;
         $items = (array) ($conf['items'] ?? []);
         $count = $conf['count'] ?? count($items);
 
         $html = '<div class="topbar-item"><div class="dropdown">'
-            . '<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown"'
-            . ' data-bs-offset="0,25" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
-            . '<i class="ti ti-bell fs-xxl"></i>';
+            .'<button class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown"'
+            .' data-bs-offset="0,25" type="button" data-bs-auto-close="outside" aria-haspopup="false" aria-expanded="false">'
+            .'<i class="ti ti-bell fs-xxl"></i>';
         if ($count > 0) {
             $html .= '<span class="position-absolute topbar-badge fs-xxs badge bg-danger rounded-pill">'
-                . $this->e($count) . '</span>';
+                .$this->e($count).'</span>';
         }
         $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg" style="min-height: 300px;">'
-            . '<div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">'
-            . '<div class="row align-items-center"><div class="col">'
-            . '<h6 class="m-0 fs-md fw-semibold">' . $this->e($conf['title'] ?? '通知') . '</h6>'
-            . '</div></div></div><div style="max-height: 300px;" data-simplebar>';
+            .'<div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">'
+            .'<div class="row align-items-center"><div class="col">'
+            .'<h6 class="m-0 fs-md fw-semibold">'.$this->e($conf['title'] ?? '通知').'</h6>'
+            .'</div></div></div><div style="max-height: 300px;" data-simplebar>';
         $html .= $this->renderFeedItems($items);
         $html .= '</div>';
         if (! empty($conf['all_url'])) {
-            $html .= '<a href="' . $this->e($conf['all_url']) . '" class="dropdown-item text-center text-reset'
-                . ' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
-                . $this->e($conf['all_text'] ?? '查看全部') . '</a>';
+            $html .= '<a href="'.$this->e($this->safeUrl($conf['all_url'])).'" class="dropdown-item text-center text-reset'
+                .' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
+                .$this->e($conf['all_text'] ?? '查看全部').'</a>';
         }
-        return $html . '</div></div></div>';
+
+        return $html.'</div></div></div>';
     }
 
     /** 消息 / 通知共用的条目渲染 */
@@ -506,29 +517,30 @@ class TopNav extends Component
     {
         $html = '';
         foreach ($items as $item) {
-            $item  = (array) $item;
+            $item = (array) $item;
             $media = '';
             if (! empty($item['avatar'])) {
-                $media = '<img src="' . $this->e($this->img($item['avatar']))
-                    . '" class="avatar-md rounded-circle" alt="avatar">';
+                $media = '<img src="'.$this->e($this->img($item['avatar']))
+                    .'" class="avatar-md rounded-circle" alt="avatar">';
             } elseif (! empty($item['icon'])) {
                 $variant = $this->e($item['variant'] ?? 'primary');
-                $media   = '<span class="avatar-md"><span class="avatar-title bg-' . $variant
-                    . '-subtle text-' . $variant . ' rounded-circle"><i class="' . $this->e($item['icon'])
-                    . ' fs-22"></i></span></span>';
+                $media = '<span class="avatar-md"><span class="avatar-title bg-'.$variant
+                    .'-subtle text-'.$variant.' rounded-circle"><i class="'.$this->e($item['icon'])
+                    .' fs-22"></i></span></span>';
             }
             $html .= '<div class="dropdown-item notification-item py-2 text-wrap'
-                . (! empty($item['unread']) ? ' active' : '') . '">'
-                . '<a href="' . $this->e($item['url'] ?? 'javascript:void(0);') . '" class="d-flex gap-2 text-reset">'
-                . '<span class="flex-shrink-0">' . $media . '</span>'
-                . '<span class="flex-grow-1 text-muted">'
-                . (isset($item['title']) || isset($item['from'])
-                    ? '<span class="fw-medium text-body">' . $this->e($item['title'] ?? $item['from']) . '</span> '
+                .(! empty($item['unread']) ? ' active' : '').'">'
+                .'<a href="'.$this->e($this->safeUrl($item['url'] ?? 'javascript:void(0);')).'" class="d-flex gap-2 text-reset">'
+                .'<span class="flex-shrink-0">'.$media.'</span>'
+                .'<span class="flex-grow-1 text-muted">'
+                .(isset($item['title']) || isset($item['from'])
+                    ? '<span class="fw-medium text-body">'.$this->e($item['title'] ?? $item['from']).'</span> '
                     : '')
-                . $this->e($item['text'] ?? '')
-                . (isset($item['time']) ? '<br><span class="fs-xs">' . $this->e($item['time']) . '</span>' : '')
-                . '</span></a></div>';
+                .$this->e($item['text'] ?? '')
+                .(isset($item['time']) ? '<br><span class="fs-xs">'.$this->e($item['time']).'</span>' : '')
+                .'</span></a></div>';
         }
+
         return $html;
     }
 
@@ -543,48 +555,50 @@ class TopNav extends Component
         if (! $user) {
             return '';
         }
-        $user   = (array) $user;
+        $user = (array) $user;
         $avatar = $this->img($user['avatar'] ?? 'users/user-2.jpg');
 
         $html = '<div class="topbar-item nav-user"><div class="dropdown">'
-            . '<a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown"'
-            . ' data-bs-offset="0,16" href="#!" aria-haspopup="false" aria-expanded="false">'
-            . '<img src="' . $this->e($avatar) . '" width="32" class="rounded-circle me-lg-2 d-flex" alt="user-image">'
-            . '<div class="d-lg-flex align-items-center gap-1 d-none">'
-            . '<h5 class="my-0">' . $this->e($user['name'] ?? '') . '</h5>'
-            . '<i class="ti ti-chevron-down align-middle"></i></div></a>'
-            . '<div class="dropdown-menu dropdown-menu-end">';
+            .'<a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown"'
+            .' data-bs-offset="0,16" href="#!" aria-haspopup="false" aria-expanded="false">'
+            .'<img src="'.$this->e($avatar).'" width="32" class="rounded-circle me-lg-2 d-flex" alt="user-image">'
+            .'<div class="d-lg-flex align-items-center gap-1 d-none">'
+            .'<h5 class="my-0">'.$this->e($user['name'] ?? '').'</h5>'
+            .'<i class="ti ti-chevron-down align-middle"></i></div></a>'
+            .'<div class="dropdown-menu dropdown-menu-end">';
         // 用户信息卡：头像 / 昵称 / 角色 / 签名
         $html .= '<div class="dropdown-header noti-title bg-primary-subtle rounded-top">'
-            . '<div class="d-flex align-items-center">'
-            . '<img src="' . $this->e($avatar) . '" class="rounded-circle avatar-md me-2" alt="user-image">'
-            . '<div class="flex-grow-1 overflow-hidden">'
-            . '<h6 class="mb-0 text-truncate">' . $this->e($user['name'] ?? '') . '</h6>'
-            . '<span class="fs-xs text-muted text-truncate d-block">'
-            . $this->e($user['role'] ?? ($user['subtitle'] ?? '')) . '</span>'
-            . '</div></div>';
+            .'<div class="d-flex align-items-center">'
+            .'<img src="'.$this->e($avatar).'" class="rounded-circle avatar-md me-2" alt="user-image">'
+            .'<div class="flex-grow-1 overflow-hidden">'
+            .'<h6 class="mb-0 text-truncate">'.$this->e($user['name'] ?? '').'</h6>'
+            .'<span class="fs-xs text-muted text-truncate d-block">'
+            .$this->e($user['role'] ?? ($user['subtitle'] ?? '')).'</span>'
+            .'</div></div>';
         if (! empty($user['signature'])) {
             $html .= '<p class="mt-2 mb-0 fs-xs text-muted text-truncate-2">'
-                . $this->e($user['signature']) . '</p>';
+                .$this->e($user['signature']).'</p>';
         }
         $html .= '</div>';
         if (! empty($user['header'])) {
             $html .= '<div class="dropdown-header noti-title">'
-                . '<h6 class="text-overflow m-0">' . $this->e($user['header']) . '</h6></div>';
+                .'<h6 class="text-overflow m-0">'.$this->e($user['header']).'</h6></div>';
         }
         foreach ((array) ($user['items'] ?? []) as $item) {
             $item = (array) $item;
             if (($item['divider'] ?? false) === true) {
                 $html .= '<div class="dropdown-divider"></div>';
+
                 continue;
             }
-            $icon  = ! empty($item['icon'])
-                ? '<i class="' . $this->e($item['icon']) . ' me-2 fs-17 align-middle"></i>' : '';
-            $html .= '<a href="' . $this->e($item['url'] ?? '#!') . '" class="dropdown-item '
-                . $this->e($item['class'] ?? '') . '">'
-                . $icon . '<span class="align-middle">' . $this->e($item['text'] ?? '') . '</span></a>';
+            $icon = ! empty($item['icon'])
+                ? '<i class="'.$this->e($item['icon']).' me-2 fs-17 align-middle"></i>' : '';
+            $html .= '<a href="'.$this->e($this->safeUrl($item['url'] ?? '#!')).'" class="dropdown-item '
+                .$this->e($item['class'] ?? '').'">'
+                .$icon.'<span class="align-middle">'.$this->e($item['text'] ?? '').'</span></a>';
         }
-        return $html . '</div></div></div>';
+
+        return $html.'</div></div></div>';
     }
 
     /**
@@ -603,8 +617,8 @@ class TopNav extends Component
         if (! $conf) {
             return '';
         }
-        $conf   = (array) $conf;
-        $items  = $conf['items'] ?? [];
+        $conf = (array) $conf;
+        $items = $conf['items'] ?? [];
         if ($items === []) {
             return '';
         }
@@ -612,42 +626,42 @@ class TopNav extends Component
         $rounded = $variant !== 'grid';
 
         $html = '<div class="topbar-item d-none d-lg-flex"><div class="dropdown">'
-            . '<button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"'
-            . ' data-bs-offset="0,16" type="button" aria-haspopup="false" aria-expanded="false">'
-            . '<i class="ti ti-layout-grid fs-xxl"></i></button>';
-        $menuCls = 'dropdown-menu dropdown-menu-end p-2' . ($rounded ? ' apps-dropdown-rounded-menu' : '');
-        $html .= '<div class="' . $menuCls . '"' . ($rounded ? ' id="apps-dropdown-rounded"' : '') . ' style="min-width: 300px;">';
+            .'<button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"'
+            .' data-bs-offset="0,16" type="button" aria-haspopup="false" aria-expanded="false">'
+            .'<i class="ti ti-layout-grid fs-xxl"></i></button>';
+        $menuCls = 'dropdown-menu dropdown-menu-end p-2'.($rounded ? ' apps-dropdown-rounded-menu' : '');
+        $html .= '<div class="'.$menuCls.'"'.($rounded ? ' id="apps-dropdown-rounded"' : '').' style="min-width: 300px;">';
         if (! empty($conf['title'])) {
-            $html .= '<h6 class="dropdown-header">' . $this->e($conf['title']) . '</h6>';
+            $html .= '<h6 class="dropdown-header">'.$this->e($conf['title']).'</h6>';
         }
-        $html .= '<div class="row g-1 app-launcher-grid' . ($rounded ? ' app-launcher-rounded' : '') . '">';
+        $html .= '<div class="row g-1 app-launcher-grid'.($rounded ? ' app-launcher-rounded' : '').'">';
         foreach ($items as $item) {
-            $item  = (array) $item;
-            $iv    = $item['variant'] ?? 'primary';
+            $item = (array) $item;
+            $iv = $item['variant'] ?? 'primary';
             $shape = $rounded ? 'rounded-circle' : 'rounded';
             $html .= '<div class="col-4">'
-                . '<a href="' . $this->e($item['url'] ?? 'javascript:void(0);') . '"'
-                . ' class="d-flex flex-column align-items-center text-reset text-decoration-none rounded p-2 app-launcher-item">'
-                . '<span class="avatar-md mb-1"><span class="avatar-title bg-' . $this->e($iv) . '-subtle text-' . $this->e($iv) . ' ' . $shape . '">'
-                . '<i class="' . $this->e($item['icon'] ?? 'ti ti-apps') . ' fs-22"></i></span></span>'
-                . '<small class="text-truncate">' . $this->e($item['text'] ?? '') . '</small>'
-                . '</a></div>';
+                .'<a href="'.$this->e($this->safeUrl($item['url'] ?? 'javascript:void(0);')).'"'
+                .' class="d-flex flex-column align-items-center text-reset text-decoration-none rounded p-2 app-launcher-item">'
+                .'<span class="avatar-md mb-1"><span class="avatar-title bg-'.$this->e($iv).'-subtle text-'.$this->e($iv).' '.$shape.'">'
+                .'<i class="'.$this->e($item['icon'] ?? 'ti ti-apps').' fs-22"></i></span></span>'
+                .'<small class="text-truncate">'.$this->e($item['text'] ?? '').'</small>'
+                .'</a></div>';
         }
         $html .= '</div>';
         $foot = '';
         if (! empty($conf['all_url']) || ! empty($conf['add_url'])) {
             $foot .= '<div class="d-flex gap-2 mt-2 pt-2 border-top app-launcher-foot">';
             if (! empty($conf['all_url'])) {
-                $foot .= '<a href="' . $this->e($conf['all_url']) . '" class="btn btn-sm btn-soft-primary flex-fill">'
-                    . $this->e($conf['all_text'] ?? '查看全部应用') . '</a>';
+                $foot .= '<a href="'.$this->e($this->safeUrl($conf['all_url'])).'" class="btn btn-sm btn-soft-primary flex-fill">'
+                    .$this->e($conf['all_text'] ?? '查看全部应用').'</a>';
             }
             if (! empty($conf['add_url'])) {
-                $foot .= '<a href="' . $this->e($conf['add_url']) . '" class="btn btn-sm btn-soft-secondary flex-fill">'
-                    . '<i class="ti ti-plus me-1"></i>' . $this->e($conf['add_text'] ?? '添加应用') . '</a>';
+                $foot .= '<a href="'.$this->e($this->safeUrl($conf['add_url'])).'" class="btn btn-sm btn-soft-secondary flex-fill">'
+                    .'<i class="ti ti-plus me-1"></i>'.$this->e($conf['add_text'] ?? '添加应用').'</a>';
             }
             $foot .= '</div>';
         }
-        $html .= $foot . '</div></div></div>';
+        $html .= $foot.'</div></div></div>';
 
         return $html;
     }

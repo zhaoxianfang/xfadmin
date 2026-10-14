@@ -57,35 +57,36 @@ class ProjectActivity extends Component
             return '';
         }
         $html = '<div class="card"><div class="card-body">';
-        $html .= '<h4 class="card-title mb-3">' . $this->e($this->get('title', '项目动态')) . '</h4>';
+        $html .= '<h4 class="card-title mb-3">'.$this->e($this->get('title', '项目动态')).'</h4>';
         $html .= '<div class="timeline">';
 
         foreach ($items as $it) {
-            $it     = (array) $it;
+            $it = (array) $it;
             $avatar = ! empty($it['avatar'])
-                ? \zxf\XfAdmin\XfAdmin::img((string) $it['avatar'])
+                ? XfAdmin::img((string) $it['avatar'])
                 : '';
-            $color = $it['color'] ?? 'primary';
-            $icon  = $it['icon'] ?? 'ti ti-activity';
+            // color 走白名单校验，防止任意值拼入 class 属性
+            $color = $this->enum($it['color'] ?? 'primary', ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark'], 'primary');
+            $icon = $it['icon'] ?? 'ti ti-activity';
 
             $html .= '<div class="timeline-item d-flex align-items-stretch">';
-            $html .= '<div class="timeline-dot flex-shrink-0"><span class="avatar-xs"><span class="avatar-title bg-' . $this->e($color) . '-subtle text-' . $this->e($color) . ' rounded-circle"><i class="' . $this->e($icon) . '"></i></span></span></div>';
+            $html .= '<div class="timeline-dot flex-shrink-0"><span class="avatar-xs"><span class="avatar-title bg-'.$this->e($color).'-subtle text-'.$this->e($color).' rounded-circle"><i class="'.$this->e($icon).'"></i></span></span></div>';
             $html .= '<div class="timeline-content ps-3 pb-4">';
             $html .= '<div class="d-flex align-items-center mb-1">';
             if ($avatar) {
-                $html .= '<img src="' . $this->e($avatar) . '" class="avatar avatar-sm rounded-circle me-2" alt="' . $this->e($it['user'] ?? '') . '">';
+                $html .= '<img src="'.$this->e($avatar).'" class="avatar avatar-sm rounded-circle me-2" alt="'.$this->e($it['user'] ?? '').'">';
             }
-            $html .= '<span class="fw-semibold">' . $this->e($it['user'] ?? '') . '</span>';
+            $html .= '<span class="fw-semibold">'.$this->e($it['user'] ?? '').'</span>';
             if (! empty($it['time'])) {
-                $html .= '<span class="text-muted ms-auto small">' . $this->e($it['time']) . '</span>';
+                $html .= '<span class="text-muted ms-auto small">'.$this->e($it['time']).'</span>';
             }
             $html .= '</div>';
             if (! empty($it['title'])) {
-                $html .= '<div class="mb-1">' . $this->e($it['title']) . '</div>';
+                $html .= '<div class="mb-1">'.$this->e($it['title']).'</div>';
             }
             if (! empty($it['desc'])) {
                 // desc 与同块的 user/time/title 同为纯文本，保持一致的转义策略
-                $html .= '<div class="text-muted small">' . $this->e($it['desc']) . '</div>';
+                $html .= '<div class="text-muted small">'.$this->e($it['desc']).'</div>';
             }
             $html .= '</div></div>';
         }

@@ -10,7 +10,7 @@ use zxf\XfAdmin\Support\Html;
  * Data Table
  *
  * 由 xfadmin 组件系统注册，封装对应 INSPINIA 后台模板的 UI / 业务 / 布局单元。
- */class DataTable extends Table
+ */ class DataTable extends Table
 {
     /** 快捷渲染器列键（列定义中出现即转为 render 配置） */
     protected const RENDER_SHORTCUTS = [
@@ -23,6 +23,8 @@ use zxf\XfAdmin\Support\Html;
         'badge', 'statusPill', 'priority', 'rate', 'duration', 'currency', 'json', 'copyBtn',
         'linkBtn', 'miniBar', 'progressBar', 'sparkbar', 'heatmap', 'ranking', 'progressSteps',
         'gradient', 'tagInput', 'avatarStack', 'rich',
+        // qr：二维码单元格（assets() 依此按需加载 qrcode 库）
+        'qr',
     ];
 
     /**
@@ -38,43 +40,43 @@ use zxf\XfAdmin\Support\Html;
             // 且表头为 `<thead class="thead-sm text-uppercase fs-xxs">`。
             // 此前本组件默认输出裸 `table`，导致演示系统的用户列表等表格
             // 无斑马纹、无垂直居中、表头字号/字重与模板明显不同。
-            'striped'        => true,
-            'align_middle'   => true,
-            'head_variant'   => null,     // 保留 table-light/dark 语义；模板风格表头见 head_class
-            'head_class'     => 'thead-sm text-uppercase fs-xxs',
-            'ajax'           => null,
-            'server_side'    => false,
-            'method'         => 'GET',    // 服务端数据请求方式（POST 可规避 URL 长度限制/WAF）
-            'searching'         => false,   // 默认关闭内置搜索，改用自定义搜索表单
-            'ordering'          => true,
-            'paging'            => true,
-            'info'              => true,
-            'processing'        => true,    // 默认显示加载处理提示
-            'page_length'       => 10,
-            'length_menu'       => [10, 15, 20, 25, 50],  // 标准每页条数菜单
+            'striped' => true,
+            'align_middle' => true,
+            'head_variant' => null,     // 保留 table-light/dark 语义；模板风格表头见 head_class
+            'head_class' => 'thead-sm text-uppercase fs-xxs',
+            'ajax' => null,
+            'server_side' => false,
+            'method' => 'GET',    // 服务端数据请求方式（POST 可规避 URL 长度限制/WAF）
+            'searching' => false,   // 默认关闭内置搜索，改用自定义搜索表单
+            'ordering' => true,
+            'paging' => true,
+            'info' => true,
+            'processing' => true,    // 默认显示加载处理提示
+            'page_length' => 10,
+            'length_menu' => [10, 15, 20, 25, 50],  // 标准每页条数菜单
             'show_custom_search' => true,   // 启用自定义搜索表单
-            'row_detail'        => null,    // 行详情展开 callback / 列名（null=不启用）
-            'show_header_btn'   => null,    // 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true]
-            'created_row'       => null,    // createdRow 回调（JS 函数名/全局函数引用）
-            'draw_callback'     => null,    // drawCallback 全局函数名
-            'buttons'           => [],
-            'select'            => false,
-            'fixed_header'   => false,
-            'responsive'     => false,  // 默认关闭响应式折叠（避免列被收进 child 子行），依赖 scrollX 水平滚动处理溢出列；row_detail 启用时仍互斥
+            'row_detail' => null,    // 行详情展开 callback / 列名（null=不启用）
+            'show_header_btn' => null,    // 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true]
+            'created_row' => null,    // createdRow 回调（JS 函数名/全局函数引用）
+            'draw_callback' => null,    // drawCallback 全局函数名
+            'buttons' => [],
+            'select' => false,
+            'fixed_header' => false,
+            'responsive' => false,  // 默认关闭响应式折叠（避免列被收进 child 子行），依赖 scrollX 水平滚动处理溢出列；row_detail 启用时仍互斥
             'column_filters' => false,
-            'order'          => [],       // [[0, 'asc']]
-            'language'       => null,     // DataTables 语言包配置数组（缺省内置中文）
-            'row_id'         => null,     // 行 id 字段
-            'row_url'        => null,     // 整行点击跳转 URL（支持 {id} 占位符，如 '/admin/app/{module}/{page}/detail/{id}'）
-            'auto_width'     => null,
-            'scroll_x'       => true,     // 默认启用横向滚动，溢出列通过滚动条展示（scroll_x=false 可关闭）
-            'fixed_columns'  => null,     // 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动）
-            'filter_bar'     => [],       // 过滤工具栏（服务端模式自动拼接查询参数并重载）
-            'filter_auto'    => false,    // 过滤工具栏是否即改即查（默认点击“搜索”按钮才发起请求）
-            'filter_all'     => false,    // 是否依据 columns 自动生成「全部列」筛选控件（按字段类型推断：文本/下拉/日期区间）
-            'create'         => null,     // 「新增」弹窗按钮：'/xx/create' 或 ['page'=>..,'label'=>..,'title'=>..,'size'=>..,'frame'=>..,'icon'=>..,'class'=>..]
-            'density'        => null,     // 'compact' | 'comfortable'（行间距密度；默认舒适）
-            'options'        => [],
+            'order' => [],       // [[0, 'asc']]
+            'language' => null,     // DataTables 语言包配置数组（缺省内置中文）
+            'row_id' => null,     // 行 id 字段
+            'row_url' => null,     // 整行点击跳转 URL（支持 {id} 占位符，如 '/admin/app/{module}/{page}/detail/{id}'）
+            'auto_width' => null,
+            'scroll_x' => true,     // 默认启用横向滚动，溢出列通过滚动条展示（scroll_x=false 可关闭）
+            'fixed_columns' => null,     // 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动）
+            'filter_bar' => [],       // 过滤工具栏（服务端模式自动拼接查询参数并重载）
+            'filter_auto' => false,    // 过滤工具栏是否即改即查（默认点击“搜索”按钮才发起请求）
+            'filter_all' => false,    // 是否依据 columns 自动生成「全部列」筛选控件（按字段类型推断：文本/下拉/日期区间）
+            'create' => null,     // 「新增」弹窗按钮：'/xx/create' 或 ['page'=>..,'label'=>..,'title'=>..,'size'=>..,'frame'=>..,'icon'=>..,'class'=>..]
+            'density' => null,     // 'compact' | 'comfortable'（行间距密度；默认舒适）
+            'options' => [],
         ]);
     }
 
@@ -87,7 +89,7 @@ use zxf\XfAdmin\Support\Html;
     {
         $assets = ['datatables'];
         // buttons 与 export 中任一处包含 pdf 即加载 pdfmake 资源（excel 依赖的 jszip 已在基础组）
-        $export  = $this->get('export');
+        $export = $this->get('export');
         $allBtns = array_merge(
             (array) $this->get('buttons', []),
             $export === true ? ['pdf'] : (is_array($export) ? $export : [])
@@ -106,10 +108,16 @@ use zxf\XfAdmin\Support\Html;
         }
         // 二维码渲染器按需依赖 qrcode 库
         foreach ((array) $this->get('columns', []) as $col) {
-            if (! is_array($col)) continue;
+            if (! is_array($col)) {
+                continue;
+            }
             $r = $this->columnRender($col);
-            if ($r && ($r['type'] ?? null) === 'qr') { $assets[] = 'qrcode'; break; }
+            if ($r && ($r['type'] ?? null) === 'qr') {
+                $assets[] = 'qrcode';
+                break;
+            }
         }
+
         return $assets;
     }
 
@@ -133,9 +141,11 @@ use zxf\XfAdmin\Support\Html;
                 } elseif (is_array($col[$key])) {
                     $cfg += $col[$key];
                 }
+
                 return $cfg;
             }
         }
+
         return null;
     }
 
@@ -146,17 +156,20 @@ use zxf\XfAdmin\Support\Html;
      */
     protected function html(): string
     {
-        $id      = $this->resolveId('xf-datatable');
+        $id = $this->resolveId('xf-datatable');
+        // 列定义只规范化一次：辅助列插入前的「业务列快照」供后续计数 / 操作列探测复用，
+        // 避免 html() 内重复调用 $this->columns()
         $columns = $this->columns();
+        $baseColumns = $columns;
 
         // 交互增强：按需在最前插入辅助列
         // ① row_detail 行明细列
         if ($this->get('row_detail')) {
             array_unshift($columns, [
-                'key'        => '',
-                'label'      => '',
-                'class'      => 'xf-dt-detail-col',
-                'sortable'   => false,
+                'key' => '',
+                'label' => '',
+                'class' => 'xf-dt-detail-col',
+                'sortable' => false,
                 'searchable' => false,
             ]);
         }
@@ -165,12 +178,12 @@ use zxf\XfAdmin\Support\Html;
             if (! empty($col['show_detail'])) {
                 $detailCfg = $col['show_detail'];
                 array_splice($columns, $idx, 0, [[
-                    'key'             => '',
-                    'label'           => '',
-                    'class'           => 'dt-control',
-                    'sortable'        => false,
-                    'searchable'      => false,
-                    '_xf_dt_control'  => $detailCfg,
+                    'key' => '',
+                    'label' => '',
+                    'class' => 'dt-control',
+                    'sortable' => false,
+                    'searchable' => false,
+                    '_xf_dt_control' => $detailCfg,
                 ]]);
                 break;
             }
@@ -178,10 +191,10 @@ use zxf\XfAdmin\Support\Html;
         // ③ bulk 批量选择列（最后 unshift，保持最左）
         if ($this->get('bulk')) {
             array_unshift($columns, [
-                'key'        => '',
-                'label'      => '',
-                'class'      => 'xf-dt-select-col',
-                'sortable'   => false,
+                'key' => '',
+                'label' => '',
+                'class' => 'xf-dt-select-col',
+                'sortable' => false,
                 'searchable' => false,
             ]);
         }
@@ -210,12 +223,16 @@ use zxf\XfAdmin\Support\Html;
             // dt-control 箭头独立辅助列（_xf_dt_control 为内部标记，传递 showDetail 配置）
             if (! empty($col['_xf_dt_control'])) {
                 $val = $col['_xf_dt_control'];
-                if (is_bool($val) || strtolower((string) $val) === 'true') {
+                // 判断顺序至关重要：is_bool / is_string 必须先于任何 (string) 强转，
+                // 否则传入 Closure 会触发 "Object of class Closure could not be converted to string" 致命错误
+                if (is_bool($val)) {
                     $c['showDetail'] = true;
-                } elseif (is_callable($val)) {
-                    $c['showDetail'] = $val;
                 } elseif (is_string($val)) {
-                    $c['showDetail'] = $val;
+                    // 'true' 字符串等价开启；其余字符串（如 JS 函数名）原样透传，保持回调能力
+                    $c['showDetail'] = strtolower($val) === 'true' ? true : $val;
+                } else {
+                    // Closure 等不可序列化值无法透传给前端：降级为开启箭头列（与传 true 等效）
+                    $c['showDetail'] = true;
                 }
             }
             // 业务列的 show_detail：仅保留 showDetail 标记（dt-control 箭头已由独立辅助列承载）
@@ -236,7 +253,7 @@ use zxf\XfAdmin\Support\Html;
                 $c['xfRender'] = $render;
                 // 操作/交互列默认不排序不搜索
                 if (in_array($render['type'], ['actions', 'buttons', 'dropdown', 'switch', 'toggle', 'input', 'select', 'sparkline', 'timeline'], true)) {
-                    $c['orderable']  ??= isset($col['sortable']) ? (bool) $col['sortable'] : false;
+                    $c['orderable'] ??= isset($col['sortable']) ? (bool) $col['sortable'] : false;
                     $c['searchable'] ??= isset($col['searchable']) ? (bool) $col['searchable'] : false;
                 }
                 // data 为空的操作列使用整行数据
@@ -252,21 +269,23 @@ use zxf\XfAdmin\Support\Html;
             $dtColumns[] = $c;
         }
         $config = [
-            'columns'    => $dtColumns,
-            'searching'  => (bool) $this->get('searching'),
-            'ordering'   => (bool) $this->get('ordering'),
-            'paging'     => (bool) $this->get('paging'),
-            'info'       => (bool) $this->get('info'),
+            'columns' => $dtColumns,
+            'searching' => (bool) $this->get('searching'),
+            'ordering' => (bool) $this->get('ordering'),
+            'paging' => (bool) $this->get('paging'),
+            'info' => (bool) $this->get('info'),
             'processing' => (bool) $this->get('processing'),
             'pageLength' => (int) $this->get('page_length'),
             'lengthMenu' => $this->get('length_menu'),
             // 搜索延迟 1200ms + 首尾分页按钮（最佳实践）
-            'searchDelay'       => 1200,
-            'pagingType'        => 'first_last_numbers',
+            'searchDelay' => 1200,
+            'pagingType' => 'first_last_numbers',
         ];
 
-        if ($this->get('order') !== []) {
-            $config['order'] = $this->get('order');
+        // order 显式传 null 时不输出 "order":null（与缺省/[] 一致，交由 DataTables 默认排序）
+        $order = $this->get('order');
+        if ($order !== null && $order !== []) {
+            $config['order'] = $order;
         }
         if ($this->get('ajax')) {
             $config['ajax'] = $this->get('ajax');
@@ -274,8 +293,13 @@ use zxf\XfAdmin\Support\Html;
                 $config['serverSide'] = true;
                 // method=POST：数据请求改用 POST（前端自动附带 CSRF 头），
                 // 彻底规避 GET 查询串长度限制 / WAF 拦截
-                if (strtoupper((string) $this->get('method', 'GET')) === 'POST' && is_string($config['ajax'])) {
-                    $config['ajax'] = ['url' => $config['ajax'], 'type' => 'POST'];
+                if (strtoupper((string) $this->get('method', 'GET')) === 'POST') {
+                    if (is_string($config['ajax'])) {
+                        $config['ajax'] = ['url' => $config['ajax'], 'type' => 'POST'];
+                    } elseif (is_array($config['ajax']) && ! isset($config['ajax']['type'])) {
+                        // ajax 为数组时同样注入 type（不覆盖用户显式声明的 type）
+                        $config['ajax']['type'] = 'POST';
+                    }
                 }
             }
         } else {
@@ -298,16 +322,16 @@ use zxf\XfAdmin\Support\Html;
         // 用户可通过 scroll_x=false / auto_width=false / scroll_y=false 显式关闭
         $disableScrollX = $this->get('scroll_x') === false || $this->get('auto_width') === false;
         if (! $disableScrollX) {
-            $config['scrollX']      = true;
-            $config['autoWidth']    = true;
+            $config['scrollX'] = true;
+            $config['autoWidth'] = true;
             $config['scrollCollapse'] = true;
             // scrollX + scrollY 联合模式，保证表头表体列宽一致
             if ($this->get('scroll_y') !== false) {
                 $config['scrollY'] = $this->get('scroll_y') ? (string) $this->get('scroll_y') : '100%';
             }
-        } elseif ($this->get('scroll_x') === true || count($this->columns()) > 10) {
+        } elseif ($this->get('scroll_x') === true || count($baseColumns) > 10) {
             // 显式指定 scroll_x: true 或列数很多时强制启用
-            $config['scrollX']      = true;
+            $config['scrollX'] = true;
             $config['scrollCollapse'] = true;
             if ($this->get('scroll_y') !== false) {
                 $config['scrollY'] = $this->get('scroll_y') ? (string) $this->get('scroll_y') : '100%';
@@ -328,17 +352,20 @@ use zxf\XfAdmin\Support\Html;
             if ($fixedCols === true) {
                 $fixedCols = ['left' => 1];
             }
-        } else {
+        } elseif ($fixedCols === null && $this->get('scroll_x') !== false) {
             // 自动固定操作列：当表格存在「操作列」（actions/dropdown/buttons 类型）时，
             // 默认将最后一列（操作列）右固定，避免横向滚动/冻结列场景下「更多」下拉被裁剪飞出。
             // 同时满足「列较多时操作列固定展示」的产品需求（用户列表 / 管理员列表等统一行为）。
-            $opCols = array_filter((array) $this->columns(), function ($c) {
+            // 注意：fixed_columns=false 显式关闭、或 scroll_x=false 显式关闭横向滚动时，
+            // 不进入本分支——不再强制开启 scrollX / 自动固定。
+            $opCols = array_filter($baseColumns, function ($c) {
                 // 行操作栏（actions 键）或显式 render 类型为操作型
                 if (isset($c['actions']) && is_array($c['actions'])) {
                     return true;
                 }
                 $r = $c['render'] ?? null;
                 $t = is_array($r) ? ($r['type'] ?? '') : (is_string($r) ? $r : '');
+
                 return $t === 'actions' || $t === 'dropdown' || $t === 'buttons';
             });
             if ($opCols !== []) {
@@ -352,16 +379,12 @@ use zxf\XfAdmin\Support\Html;
         if ($this->get('row_id')) {
             $config['rowId'] = (string) $this->get('row_id');
         }
-        // 整行点击跳转：把 row_url（支持 {id} 占位符）透传给前端，由 initDataTable 绑定行点击
-        if ($this->get('row_url')) {
-            $xfConfig['rowUrl'] = (string) $this->get('row_url');
-        }
         if ($this->get('select')) {
             $config['select'] = $this->get('select') === true ? ['style' => 'multi'] : ['style' => (string) $this->get('select')];
         }
         // 导出按钮：export 快捷开启（true=全格式；数组=指定格式）；亦支持 buttons 自定义
         $buttons = (array) $this->get('buttons', []);
-        $export  = $this->get('export');
+        $export = $this->get('export');
         if ($export === true) {
             $buttons = array_merge($buttons, ['copy', 'excel', 'csv', 'pdf', 'print']);
         } elseif (is_array($export)) {
@@ -369,9 +392,9 @@ use zxf\XfAdmin\Support\Html;
         }
         if ($buttons !== []) {
             $config['buttons'] = array_map([$this, 'mapButton'], $buttons);
-            $config['layout']  = [
+            $config['layout'] = [
                 'topStart' => ['buttons'],
-                'topEnd'   => ['search'],
+                'topEnd' => ['search'],
             ];
         }
         if ($this->get('language')) {
@@ -386,20 +409,25 @@ use zxf\XfAdmin\Support\Html;
         $config = array_replace_recursive($config, (array) $this->get('options', []));
 
         $xfConfig = [
-            'dt'                => $config,
-            'columnFilters'     => (bool) $this->get('column_filters'),
-            'processing'        => (bool) $this->get('processing'),
-            'showCustomSearch'  => (bool) $this->get('show_custom_search'),
-            'createdRow'        => $this->get('created_row'),
-            'drawCallback'      => $this->get('draw_callback'),
+            'dt' => $config,
+            'columnFilters' => (bool) $this->get('column_filters'),
+            'processing' => (bool) $this->get('processing'),
+            'showCustomSearch' => (bool) $this->get('show_custom_search'),
+            'createdRow' => $this->get('created_row'),
+            'drawCallback' => $this->get('draw_callback'),
         ];
+        // 整行点击跳转：把 row_url（支持 {id} 占位符）透传给前端，由 initDataTable 绑定行点击。
+        // 必须写在 $xfConfig 初始化之后——写在其前会被下面的数组字面量整体覆盖而丢失。
+        if ($this->get('row_url')) {
+            $xfConfig['rowUrl'] = (string) $this->get('row_url');
+        }
         if ((array) $this->get('filter_bar', []) !== [] || $this->get('filter_all')) {
-            $xfConfig['filterBar']  = true;
+            $xfConfig['filterBar'] = true;
             $xfConfig['filterAuto'] = (bool) $this->get('filter_auto');
         }
         if (! empty($fixedCols) && is_array($fixedCols)) {
             $xfConfig['fixedColumns'] = [
-                'left'  => max(0, (int) ($fixedCols['left'] ?? 0)),
+                'left' => max(0, (int) ($fixedCols['left'] ?? 0)),
                 'right' => max(0, (int) ($fixedCols['right'] ?? 0)),
             ];
         }
@@ -408,7 +436,7 @@ use zxf\XfAdmin\Support\Html;
             $bulkCfg = is_array($this->get('bulk')) ? $this->get('bulk') : [];
             $xfConfig['bulk'] = [
                 'checkbox' => $bulkCfg['checkbox'] ?? true,
-                'actions'  => array_values($bulkCfg['actions'] ?? []),
+                'actions' => array_values($bulkCfg['actions'] ?? []),
             ];
         }
         if ($this->get('row_detail')) {
@@ -424,40 +452,48 @@ use zxf\XfAdmin\Support\Html;
             }
         }
         // ---------- HTML ----------
-        $dtDataset = (string) ($xfConfig['dataset'] ?? $this->get('dataset', ''));
-        $html = '<table' . $this->attrs([
-            'id'             => $id,
+        // dataset 直取配置：$xfConfig 中不存在 'dataset' 键，原 `?? ` 分支为死代码
+        $dtDataset = (string) $this->get('dataset', '');
+        $html = '<table'.$this->attrs([
+            'id' => $id,
             // 移除 w-100：避免 !important 宽度压制 min-width，确保 table-responsive 在内容/列过多时
             // 能出现水平滚动条；Bootstrap .table 自身已带 width:100%，列少时仍会自然撑满。
-            'class'          => $this->tableClass(),
-            'data-xf'        => 'datatable',
-            'data-xf-dataset'=> $dtDataset !== '' ? $dtDataset : null,
+            'class' => $this->tableClass(),
+            'data-xf' => 'datatable',
+            'data-xf-dataset' => $dtDataset !== '' ? $dtDataset : null,
             'data-xf-config' => json_encode($xfConfig, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP),
-        ]) . '>';
+        ]).'>';
 
         // 表头 class：模板风格（thead-sm text-uppercase fs-xxs）+ 可选 table-light/table-dark
         $theadCls = Html::cls(
             (string) $this->get('head_class', ''),
-            $this->get('head_variant') ? 'table-' . $this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : ''
+            $this->get('head_variant') ? 'table-'.$this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : ''
         );
-        $html .= '<thead' . ($theadCls !== '' ? ' class="' . $this->e($theadCls) . '"' : '') . '><tr>';
+        $html .= '<thead'.($theadCls !== '' ? ' class="'.$this->e($theadCls).'"' : '').'><tr>';
         foreach ($columns as $col) {
             // th 带上列 class（前端依赖 thead th.xf-dt-select-col 定位全选框等）
             $thCls = (string) ($col['class'] ?? '');
-            // 列固定宽度 / 最小宽度：直接落到 th 的内联 style，确保 DataTables 渲染后生效
+            // 列固定宽度 / 最小宽度：走 cssLen 白名单校验后落到 th 的内联 style，
+            // 确保 DataTables 渲染后生效；非法值（如 "10px;position:fixed"）被丢弃而非拼接进 style
             $thStyle = '';
             if (isset($col['minWidth'])) {
-                $thStyle .= 'min-width:' . $this->e($col['minWidth']) . ';';
+                $minWidth = $this->cssLen($col['minWidth'], '');
+                if ($minWidth !== '') {
+                    $thStyle .= 'min-width:'.$minWidth.';';
+                }
             }
             if (isset($col['width'])) {
-                $thStyle .= 'width:' . $this->e($col['width']) . ';';
+                $width = $this->cssLen($col['width'], '');
+                if ($width !== '') {
+                    $thStyle .= 'width:'.$width.';';
+                }
             }
-            if (isset($col['style'])) {
-                $thStyle .= $this->e($col['style']);
-            }
-            $thAttr = ($thCls !== '' ? ' class="' . $this->e($thCls) . '"' : '')
-                . ($thStyle !== '' ? ' style="' . trim($thStyle) . '"' : '');
-            $html .= '<th' . $thAttr . '>' . $this->e($col['label']) . '</th>';
+            // 注意：不再支持列级自由 CSS 'style' 键——未文档化的任意声明串是
+            // 「分号注入」向量（可追加 position:fixed 等声明），列级样式请用
+            // 文档化的 width / minWidth / class 键表达
+            $thAttr = ($thCls !== '' ? ' class="'.$this->e($thCls).'"' : '')
+                .($thStyle !== '' ? ' style="'.trim($thStyle).'"' : '');
+            $html .= '<th'.$thAttr.'>'.$this->e($col['label']).'</th>';
         }
         $html .= '</tr></thead>';
         // 始终输出空 tbody：保证 HTML 结构合法（DataTables 会在客户端/服务端填充行），
@@ -471,7 +507,7 @@ use zxf\XfAdmin\Support\Html;
         // - scrollX 默认启用（最佳实践），仅 scroll_x=false 时关闭
         $scrollXDisabled = $this->get('scroll_x') === false || $this->get('auto_width') === false;
         if ($scrollXDisabled && ! $this->get('fixed_columns')) {
-            $html = '<div class="table-responsive">' . $html . '</div>';
+            $html = '<div class="table-responsive">'.$html.'</div>';
         }
         // 过滤工具栏（前端自动接线：变更 => 拼接查询参数 => 重载表格）
         // filter_all=true 时，依据 columns 自动生成「全部列」筛选控件，并与显式 filter_bar 合并
@@ -481,18 +517,19 @@ use zxf\XfAdmin\Support\Html;
             $filterBar = array_merge($filterBar, $this->buildAutoFilterBar((array) $this->get('columns', []), $filterBar));
         }
         if ($filterBar !== []) {
-            $html = $this->renderFilterBar($id, $filterBar) . $html;
+            $html = $this->renderFilterBar($id, $filterBar).$html;
         }
         // 「新增」弹窗按钮（点击后以弹窗加载服务端新建页面，提交成功自动刷新表格）
         $create = $this->get('create');
         if ($create) {
-            $html = $this->renderCreateButton($id, is_array($create) ? $create : ['page' => (string) $create]) . $html;
+            $html = $this->renderCreateButton($id, is_array($create) ? $create : ['page' => (string) $create]).$html;
         }
         // 批量操作栏（选中行后显示，提交至各 action 的 url，{ids} 占位自动替换为选中 id 列表）
         if ($this->get('bulk')) {
             $bk = $this->get('bulk');
-            $html = $this->renderBulkToolbar($id, is_array($bk) ? ($bk['actions'] ?? []) : []) . $html;
+            $html = $this->renderBulkToolbar($id, is_array($bk) ? ($bk['actions'] ?? []) : []).$html;
         }
+
         return $html;
     }
 
@@ -511,39 +548,39 @@ use zxf\XfAdmin\Support\Html;
     protected function renderCreateButton(string $tableId, array $cfg): string
     {
         $dialogPage = (string) ($cfg['page'] ?? '');
-        $pageUrl    = (string) ($cfg['url'] ?? '');
+        $pageUrl = (string) ($cfg['url'] ?? '');
         if ($dialogPage === '' && $pageUrl === '') {
             return '';
         }
         $label = (string) ($cfg['label'] ?? '新增');
-        $icon  = (string) ($cfg['icon'] ?? 'ti ti-plus');
-        $cls   = Html::cls('btn btn-sm', (string) ($cfg['class'] ?? 'btn-primary'));
+        $icon = (string) ($cfg['icon'] ?? 'ti ti-plus');
+        $cls = Html::cls('btn btn-sm', (string) ($cfg['class'] ?? 'btn-primary'));
 
         $btns = '';
         // 弹窗快速新增
         if ($dialogPage !== '') {
-            $btns .= '<button type="button" class="' . $this->e($cls) . '"'
-                . ' data-xf-page-dialog="' . $this->e($dialogPage) . '"'
-                . ' data-xf-title="' . $this->e((string) ($cfg['title'] ?? $label)) . '"'
-                . ' data-xf-size="' . $this->e((string) ($cfg['size'] ?? 'lg')) . '"'
-                . (! empty($cfg['frame']) ? ' data-xf-frame' : '')
-                . ' data-xf-table="#' . $this->e($tableId) . '">'
-                . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
-                . $this->e($label) . '</button>';
+            $btns .= '<button type="button" class="'.$this->e($cls).'"'
+                .' data-xf-page-dialog="'.$this->e($dialogPage).'"'
+                .' data-xf-title="'.$this->e((string) ($cfg['title'] ?? $label)).'"'
+                .' data-xf-size="'.$this->e((string) ($cfg['size'] ?? 'lg')).'"'
+                .(! empty($cfg['frame']) ? ' data-xf-frame' : '')
+                .' data-xf-table="#'.$this->e($tableId).'">'
+                .($icon !== '' ? '<i class="'.$this->e($icon).' me-1"></i>' : '')
+                .$this->e($label).'</button>';
         }
         // 整页创建表单链接
         if ($pageUrl !== '') {
             $urlLabel = (string) ($cfg['urlLabel'] ?? $label);
-            $urlIcon  = (string) ($cfg['urlIcon'] ?? 'ti ti-file-plus');
-            $urlCls   = Html::cls('btn btn-sm', (string) ($cfg['urlClass'] ?? 'btn-outline-primary'));
-            $btns .= '<a href="' . $this->e($pageUrl) . '" class="' . $this->e($urlCls) . '"'
-                . (($cfg['target'] ?? '') !== '' ? ' target="' . $this->e((string) $cfg['target']) . '"' : '')
-                . '>'
-                . ($urlIcon !== '' ? '<i class="' . $this->e($urlIcon) . ' me-1"></i>' : '')
-                . $this->e($urlLabel) . '</a>';
+            $urlIcon = (string) ($cfg['urlIcon'] ?? 'ti ti-file-plus');
+            $urlCls = Html::cls('btn btn-sm', (string) ($cfg['urlClass'] ?? 'btn-outline-primary'));
+            $btns .= '<a href="'.$this->e($this->safeUrl($pageUrl, '#')).'" class="'.$this->e($urlCls).'"'
+                .(($cfg['target'] ?? '') !== '' ? ' target="'.$this->e((string) $cfg['target']).'"' : '')
+                .'>'
+                .($urlIcon !== '' ? '<i class="'.$this->e($urlIcon).' me-1"></i>' : '')
+                .$this->e($urlLabel).'</a>';
         }
 
-        return '<div class="xf-dt-create mb-2 d-flex gap-2 flex-wrap">' . $btns . '</div>';
+        return '<div class="xf-dt-create mb-2 d-flex gap-2 flex-wrap">'.$btns.'</div>';
     }
 
     /**
@@ -566,35 +603,36 @@ use zxf\XfAdmin\Support\Html;
         // 无动作时仍输出容器（便于后续前端动态注入），但隐藏
         if ($actions === []) {
             return '<div class="xf-dt-bulk d-none card card-body py-2 px-3 mb-2 d-flex align-items-center gap-2"'
-                . ' data-dt="' . $this->e($tableId) . '">'
-                . '<span class="xf-dt-bulk-count text-muted small">已选 <b class="text-primary">0</b> 项</span></div>';
+                .' data-dt="'.$this->e($tableId).'">'
+                .'<span class="xf-dt-bulk-count text-muted small">已选 <b class="text-primary">0</b> 项</span></div>';
         }
         $btns = '';
         foreach ($actions as $a) {
-            $a      = (array) $a;
-            $label  = (string) ($a['label'] ?? '操作');
-            $icon   = (string) ($a['icon'] ?? '');
-            $cls    = Html::cls('btn btn-sm', (string) ($a['class'] ?? 'btn-outline-secondary'));
-            $url    = (string) ($a['url'] ?? '');
+            $a = (array) $a;
+            $label = (string) ($a['label'] ?? '操作');
+            $icon = (string) ($a['icon'] ?? '');
+            $cls = Html::cls('btn btn-sm', (string) ($a['class'] ?? 'btn-outline-secondary'));
+            $url = (string) ($a['url'] ?? '');
             $method = strtoupper((string) ($a['method'] ?? 'POST'));
             $confirm = (string) ($a['confirm'] ?? '');
             $reload = ! isset($a['reload']) || $a['reload'];
             // 批量动作名（后端据此分发领域动作 / 状态流转 / 启用停用 / 删除等）
             $actName = (string) ($a['action'] ?? '');
 
-            $btns .= '<button type="button" class="' . $this->e($cls) . '"'
-                . ' data-xf-bulk-action data-url="' . $this->e($url) . '"'
-                . ' data-method="' . $this->e($method) . '"'
-                . (! empty($confirm) ? ' data-confirm="' . $this->e($confirm) . '"' : '')
-                . (! empty($actName) ? ' data-action="' . $this->e($actName) . '"' : '')
-                . ' data-reload="' . ($reload ? '1' : '0') . '">'
-                . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
-                . $this->e($label) . '</button>';
+            $btns .= '<button type="button" class="'.$this->e($cls).'"'
+                .' data-xf-bulk-action data-url="'.$this->e($url).'"'
+                .' data-method="'.$this->e($method).'"'
+                .(! empty($confirm) ? ' data-confirm="'.$this->e($confirm).'"' : '')
+                .(! empty($actName) ? ' data-action="'.$this->e($actName).'"' : '')
+                .' data-reload="'.($reload ? '1' : '0').'">'
+                .($icon !== '' ? '<i class="'.$this->e($icon).' me-1"></i>' : '')
+                .$this->e($label).'</button>';
         }
+
         return '<div class="xf-dt-bulk d-none card card-body py-2 px-3 mb-2 d-flex flex-wrap align-items-center gap-2"'
-            . ' data-dt="' . $this->e($tableId) . '">'
-            . '<span class="xf-dt-bulk-count text-muted small me-1">已选 <b class="text-primary">0</b> 项</span>'
-            . '<div class="btn-group btn-group-sm">' . $btns . '</div></div>';
+            .' data-dt="'.$this->e($tableId).'">'
+            .'<span class="xf-dt-bulk-count text-muted small me-1">已选 <b class="text-primary">0</b> 项</span>'
+            .'<div class="btn-group btn-group-sm">'.$btns.'</div></div>';
     }
 
     /**
@@ -624,135 +662,136 @@ use zxf\XfAdmin\Support\Html;
      */
     protected function renderFilterBar(string $tableId, array $controls): string
     {
-        $html = '<form class="row g-2 mb-3 xf-filter-bar" data-xf-filter-for="' . $this->e($tableId) . '" onsubmit="return false;">';
+        $html = '<form class="row g-2 mb-3 xf-filter-bar" data-xf-filter-for="'.$this->e($tableId).'" onsubmit="return false;">';
         foreach ($controls as $c) {
             // 开发者完全自定义控件：['html' => '<div>...任意表单控件...</div>', 'width' => 'col-3']
             // 控件内部凡带 class="xf-filter" data-filter="参数名" 的元素都会被自动采集进查询参数
             if (is_array($c) && isset($c['html'])) {
-                $html .= '<div class="' . $this->e($c['width'] ?? 'col-6 col-md-3 col-xl-2') . '">' . (string) $c['html'] . '</div>';
+                $html .= '<div class="'.$this->e($c['width'] ?? 'col-6 col-md-3 col-xl-2').'">'.(string) $c['html'].'</div>';
+
                 continue;
             }
             if (! is_array($c) || empty($c['name'])) {
                 continue;
             }
-            $name        = (string) $c['name'];
-            $type        = (string) ($c['type'] ?? 'select');
-            $width       = (string) ($c['width'] ?? 'col-6 col-md-3 col-xl-2');
+            $name = (string) $c['name'];
+            $type = (string) ($c['type'] ?? 'select');
+            $width = (string) ($c['width'] ?? 'col-6 col-md-3 col-xl-2');
             $placeholder = (string) ($c['placeholder'] ?? '');
-            $numAttrs    = '';
+            $numAttrs = '';
             foreach (['min', 'max', 'step'] as $na) {
                 if (isset($c[$na]) && is_numeric($c[$na])) {
-                    $numAttrs .= ' ' . $na . '="' . $this->e($c[$na]) . '"';
+                    $numAttrs .= ' '.$na.'="'.$this->e($c[$na]).'"';
                 }
             }
-            $html .= '<div class="' . $this->e($width) . '">';
+            $html .= '<div class="'.$this->e($width).'">';
             if (! empty($c['label'])) {
-                $html .= '<label class="form-label mb-1">' . $this->e($c['label']) . '</label>';
+                $html .= '<label class="form-label mb-1">'.$this->e($c['label']).'</label>';
             }
             // 原生日期/时间族控件（浏览器随系统语言自动本地化，中文环境即中文界面）
             $nativeDate = ['date' => 'date', 'datetime' => 'datetime-local', 'time' => 'time', 'month' => 'month', 'week' => 'week'];
             if (isset($nativeDate[$type])) {
-                $html .= '<input type="' . $nativeDate[$type] . '" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '" title="' . $this->e($c['label'] ?? $name) . '">';
+                $html .= '<input type="'.$nativeDate[$type].'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'" title="'.$this->e($c['label'] ?? $name).'">';
             } elseif ($type === 'daterange' || $type === 'datetimerange' || $type === 'timerange') {
                 $it = ['daterange' => 'date', 'datetimerange' => 'datetime-local', 'timerange' => 'time'][$type];
                 $html .= '<div class="input-group input-group-sm flex-nowrap">'
-                    . '<input type="' . $it . '" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '_from" title="起始">'
-                    . '<span class="input-group-text px-1">~</span>'
-                    . '<input type="' . $it . '" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '_to" title="结束">'
-                    . '</div>';
+                    .'<input type="'.$it.'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_from" title="起始">'
+                    .'<span class="input-group-text px-1">~</span>'
+                    .'<input type="'.$it.'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_to" title="结束">'
+                    .'</div>';
             } elseif ($type === 'year') {
-                $y    = (int) date('Y');
+                $y = (int) date('Y');
                 $from = (int) ($c['from'] ?? $y - 10);
-                $html .= '<select class="form-select form-select-sm xf-filter" data-filter="' . $this->e($name) . '"><option value="">' . $this->e($placeholder !== '' ? $placeholder : '全部年份') . '</option>';
+                $html .= '<select class="form-select form-select-sm xf-filter" data-filter="'.$this->e($name).'"><option value="">'.$this->e($placeholder !== '' ? $placeholder : '全部年份').'</option>';
                 for ($i = $y; $i >= $from; $i--) {
-                    $html .= '<option value="' . $i . '">' . $i . ' 年</option>';
+                    $html .= '<option value="'.$i.'">'.$i.' 年</option>';
                 }
                 $html .= '</select>';
             } elseif ($type === 'color') {
-                $html .= '<input type="color" class="form-control form-control-sm form-control-color w-100 xf-filter" data-filter="' . $this->e($name) . '" value="' . $this->e($c['value'] ?? '#3e60d5') . '">';
+                $html .= '<input type="color" class="form-control form-control-sm form-control-color w-100 xf-filter" data-filter="'.$this->e($name).'" value="'.$this->e($c['value'] ?? '#3e60d5').'">';
             } elseif ($type === 'checkboxes') {
-                $html .= '<div class="xf-filter-checks d-flex flex-wrap gap-2 pt-1" data-filter="' . $this->e($name) . '">';
+                $html .= '<div class="xf-filter-checks d-flex flex-wrap gap-2 pt-1" data-filter="'.$this->e($name).'">';
                 foreach ((array) ($c['options'] ?? []) as $v => $t) {
-                    $cid = 'xf-fbc-' . $this->e($tableId . '-' . $name . '-' . $v);
+                    $cid = 'xf-fbc-'.$this->e($tableId.'-'.$name.'-'.$v);
                     $html .= '<div class="form-check form-check-inline m-0">'
-                        . '<input type="checkbox" class="form-check-input" value="' . $this->e($v) . '" id="' . $cid . '">'
-                        . '<label class="form-check-label small" for="' . $cid . '">' . $this->e($t) . '</label></div>';
+                        .'<input type="checkbox" class="form-check-input" value="'.$this->e($v).'" id="'.$cid.'">'
+                        .'<label class="form-check-label small" for="'.$cid.'">'.$this->e($t).'</label></div>';
                 }
                 $html .= '</div>';
             } elseif ($type === 'number') {
-                $html .= '<input type="number" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '" placeholder="' . $this->e($placeholder) . '"' . $numAttrs . '>';
+                $html .= '<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'" placeholder="'.$this->e($placeholder).'"'.$numAttrs.'>';
             } elseif ($type === 'range') {
                 $html .= '<div class="input-group input-group-sm flex-nowrap">'
-                    . '<input type="number" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '_min" placeholder="' . $this->e($c['min_placeholder'] ?? '最小') . '"' . $numAttrs . '>'
-                    . '<span class="input-group-text px-1">~</span>'
-                    . '<input type="number" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '_max" placeholder="' . $this->e($c['max_placeholder'] ?? '最大') . '"' . $numAttrs . '>'
-                    . '</div>';
+                    .'<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_min" placeholder="'.$this->e($c['min_placeholder'] ?? '最小').'"'.$numAttrs.'>'
+                    .'<span class="input-group-text px-1">~</span>'
+                    .'<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_max" placeholder="'.$this->e($c['max_placeholder'] ?? '最大').'"'.$numAttrs.'>'
+                    .'</div>';
             } elseif ($type === 'text' || $type === 'search') {
-                $html .= '<input type="' . ($type === 'search' ? 'search' : 'text') . '" class="form-control form-control-sm xf-filter" data-filter="' . $this->e($name) . '" placeholder="' . $this->e($placeholder) . '">';
+                $html .= '<input type="'.($type === 'search' ? 'search' : 'text').'" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'" placeholder="'.$this->e($placeholder).'">';
             } elseif ($type === 'checkbox' || $type === 'switch') {
-                $html .= '<div class="form-check' . ($type === 'switch' ? ' form-switch' : '') . ' mt-1">'
-                    . '<input type="checkbox" class="form-check-input xf-filter" data-filter="' . $this->e($name) . '" value="' . $this->e($c['value'] ?? '1') . '" id="xf-fb-' . $this->e($tableId . '-' . $name) . '">'
-                    . '<label class="form-check-label small" for="xf-fb-' . $this->e($tableId . '-' . $name) . '">' . $this->e($c['text'] ?? $placeholder ?: '启用') . '</label>'
-                    . '</div>';
+                $html .= '<div class="form-check'.($type === 'switch' ? ' form-switch' : '').' mt-1">'
+                    .'<input type="checkbox" class="form-check-input xf-filter" data-filter="'.$this->e($name).'" value="'.$this->e($c['value'] ?? '1').'" id="xf-fb-'.$this->e($tableId.'-'.$name).'">'
+                    .'<label class="form-check-label small" for="xf-fb-'.$this->e($tableId.'-'.$name).'">'.$this->e($c['text'] ?? $placeholder ?: '启用').'</label>'
+                    .'</div>';
             } elseif ($type === 'radio') {
-                $html .= '<div class="btn-group btn-group-sm w-100 xf-filter-radio" data-filter="' . $this->e($name) . '" role="group">';
+                $html .= '<div class="btn-group btn-group-sm w-100 xf-filter-radio" data-filter="'.$this->e($name).'" role="group">';
                 $html .= '<button type="button" class="btn btn-outline-secondary active" data-value="">全部</button>';
                 foreach ((array) ($c['options'] ?? []) as $v => $t) {
-                    $html .= '<button type="button" class="btn btn-outline-secondary" data-value="' . $this->e($v) . '">' . $this->e($t) . '</button>';
+                    $html .= '<button type="button" class="btn btn-outline-secondary" data-value="'.$this->e($v).'">'.$this->e($t).'</button>';
                 }
                 $html .= '</div>';
             } elseif ($type === 'slider' || $type === 'range-slider') {
                 // 双滑块范围过滤：data-type=slider，值形如 lo-hi（* 表示不限）
-                $smin   = $c['min'] ?? 0;
-                $smax   = $c['max'] ?? 100;
-                $sstep  = $c['step'] ?? 1;
+                $smin = $c['min'] ?? 0;
+                $smax = $c['max'] ?? 100;
+                $sstep = $c['step'] ?? 1;
                 $suffix = $c['suffix'] ?? '';
-                $html .= '<div class="xf-filter xf-slider-filter" data-type="slider" data-filter="' . $this->e($name) . '">'
-                    . '<div class="d-flex justify-content-between small text-muted mb-1"><span class="xf-slider-lo-label"></span><span class="xf-slider-hi-label"></span></div>'
-                    . '<input type="range" class="xf-slider-lo form-range" min="' . $this->e($smin) . '" max="' . $this->e($smax) . '" step="' . $this->e($sstep) . '" value="' . $this->e($smin) . '" data-suffix="' . $this->e($suffix) . '">'
-                    . '<input type="range" class="xf-slider-hi form-range" min="' . $this->e($smin) . '" max="' . $this->e($smax) . '" step="' . $this->e($sstep) . '" value="' . $this->e($smax) . '" data-suffix="' . $this->e($suffix) . '">'
-                    . '<input type="hidden" data-xf-min value="' . $this->e($smin) . '">'
-                    . '<input type="hidden" data-xf-max value="' . $this->e($smax) . '">'
-                    . '</div>';
+                $html .= '<div class="xf-filter xf-slider-filter" data-type="slider" data-filter="'.$this->e($name).'">'
+                    .'<div class="d-flex justify-content-between small text-muted mb-1"><span class="xf-slider-lo-label"></span><span class="xf-slider-hi-label"></span></div>'
+                    .'<input type="range" class="xf-slider-lo form-range" min="'.$this->e($smin).'" max="'.$this->e($smax).'" step="'.$this->e($sstep).'" value="'.$this->e($smin).'" data-suffix="'.$this->e($suffix).'">'
+                    .'<input type="range" class="xf-slider-hi form-range" min="'.$this->e($smin).'" max="'.$this->e($smax).'" step="'.$this->e($sstep).'" value="'.$this->e($smax).'" data-suffix="'.$this->e($suffix).'">'
+                    .'<input type="hidden" data-xf-min value="'.$this->e($smin).'">'
+                    .'<input type="hidden" data-xf-max value="'.$this->e($smax).'">'
+                    .'</div>';
             } elseif ($type === 'tree') {
                 // 树形选择过滤：options 为 [['value'=>..,'label'=>..,'children'=>[...]]] 层级结构
-                $html .= '<div class="xf-filter xf-tree-filter" data-type="tree" data-filter="' . $this->e($name) . '">';
+                $html .= '<div class="xf-filter xf-tree-filter" data-type="tree" data-filter="'.$this->e($name).'">';
                 $html .= $this->renderTreeFilter($c['options'] ?? [], $tableId, $name);
                 $html .= '</div>';
             } elseif ($type === 'autocomplete') {
                 // 自动完成过滤：datalist 提供候选（或 data-url 走远程搜索）
                 $remote = $c['url'] ?? '';
-                $html .= '<input type="text" class="form-control form-control-sm xf-filter" data-type="autocomplete" data-filter="' . $this->e($name) . '"'
-                    . ' placeholder="' . $this->e($placeholder ?: '输入并选择') . '"' . ($remote ? ' data-url="' . $this->e($remote) . '"' : '') . ' list="xf-ac-' . $this->e($tableId . '-' . $name) . '">';
+                $html .= '<input type="text" class="form-control form-control-sm xf-filter" data-type="autocomplete" data-filter="'.$this->e($name).'"'
+                    .' placeholder="'.$this->e($placeholder ?: '输入并选择').'"'.($remote ? ' data-url="'.$this->e($remote).'"' : '').' list="xf-ac-'.$this->e($tableId.'-'.$name).'">';
                 if (! $remote && ! empty($c['options'])) {
-                    $html .= '<datalist id="xf-ac-' . $this->e($tableId . '-' . $name) . '">';
+                    $html .= '<datalist id="xf-ac-'.$this->e($tableId.'-'.$name).'">';
                     foreach ((array) $c['options'] as $v => $t) {
-                        $html .= '<option value="' . $this->e($v) . '">' . $this->e($t) . '</option>';
+                        $html .= '<option value="'.$this->e($v).'">'.$this->e($t).'</option>';
                     }
                     $html .= '</datalist>';
                 }
             } elseif ($type === 'custom') {
                 // 完全自定义过滤控件：开发者传入 'control' => '<任意带 class="xf-filter" data-filter="x" 的 HTML>'
                 // 前端通过 data-xf-custom-value 或 xf:filter-custom 事件获取值
-                $html .= '<div class="xf-filter xf-filter-custom" data-filter="' . $this->e($name) . '">' . (string) ($c['control'] ?? '') . '</div>';
+                $html .= '<div class="xf-filter xf-filter-custom" data-filter="'.$this->e($name).'">'.(string) ($c['control'] ?? '').'</div>';
             } else {
                 // select / select2（multiple 时自动启用 select2 多选交互）
                 $multiple = ! empty($c['multiple']);
-                $useS2    = $multiple || $type === 'select2';
-                $html .= '<select class="form-select form-select-sm xf-filter' . ($useS2 ? ' xf-filter-s2' : '') . '" data-filter="' . $this->e($name) . '"'
-                    . ($multiple ? ' multiple' : '')
-                    . ($useS2 ? ' data-placeholder="' . $this->e($placeholder !== '' ? $placeholder : '全部') . '"' : '') . '>'
-                    . ($multiple ? '' : '<option value="">' . $this->e($placeholder !== '' ? $placeholder : '全部') . '</option>');
+                $useS2 = $multiple || $type === 'select2';
+                $html .= '<select class="form-select form-select-sm xf-filter'.($useS2 ? ' xf-filter-s2' : '').'" data-filter="'.$this->e($name).'"'
+                    .($multiple ? ' multiple' : '')
+                    .($useS2 ? ' data-placeholder="'.$this->e($placeholder !== '' ? $placeholder : '全部').'"' : '').'>'
+                    .($multiple ? '' : '<option value="">'.$this->e($placeholder !== '' ? $placeholder : '全部').'</option>');
                 foreach ((array) ($c['options'] ?? []) as $v => $t) {
-                    $html .= '<option value="' . $this->e($v) . '">' . $this->e($t) . '</option>';
+                    $html .= '<option value="'.$this->e($v).'">'.$this->e($t).'</option>';
                 }
                 $html .= '</select>';
             }
             $html .= '</div>';
         }
         $html .= '<div class="col-12 col-md-auto d-flex align-items-end gap-2 ms-md-auto">'
-            . '<button type="submit" class="btn btn-sm btn-primary px-3 xf-filter-search"><i class="ti ti-search"></i> 搜索</button>'
-            . '<button type="button" class="btn btn-sm btn-soft-secondary xf-filter-reset"><i class="ti ti-rotate"></i> 重置</button></div>';
+            .'<button type="submit" class="btn btn-sm btn-primary px-3 xf-filter-search"><i class="ti ti-search"></i> 搜索</button>'
+            .'<button type="button" class="btn btn-sm btn-soft-secondary xf-filter-reset"><i class="ti ti-rotate"></i> 重置</button></div>';
         $html .= '</form>';
 
         return $html;
@@ -770,14 +809,14 @@ use zxf\XfAdmin\Support\Html;
      * 操作列、纯展示 / 聚合列（无真实字段）、关系列默认跳过，避免产出无效控件。
      * 已显式声明于 $existing（filter_bar）的字段不再重复生成，保留业务侧定制筛选。
      *
-     * @param  array<int|string, mixed> $columns 列定义
-     * @param  array<int, array<string, mixed>> $existing 已显式声明的筛选控件（按 name 去重）
+     * @param  array<int|string, mixed>  $columns  列定义
+     * @param  array<int, array<string, mixed>>  $existing  已显式声明的筛选控件（按 name 去重）
      * @return array<int, array<string, mixed>> 过滤工具栏控件配置
      */
     protected function buildAutoFilterBar(array $columns, array $existing = []): array
     {
-        $controls   = [];
-        $declared   = [];
+        $controls = [];
+        $declared = [];
         foreach ($existing as $c) {
             if (is_array($c) && isset($c['name'])) {
                 $declared[strtolower((string) $c['name'])] = true;
@@ -806,24 +845,27 @@ use zxf\XfAdmin\Support\Html;
 
             // 显式 filter 元信息优先（开发者可声明 select / radio / daterange 等）
             if (isset($def['filter']) && is_array($def['filter']) && $def['filter'] !== []) {
-                $ctl            = $def['filter'];
-                $ctl['name']    = $ctl['name'] ?? $field;
-                $ctl['label']   = $ctl['label'] ?? $label;
-                $controls[]     = $ctl;
+                $ctl = $def['filter'];
+                $ctl['name'] = $ctl['name'] ?? $field;
+                $ctl['label'] = $ctl['label'] ?? $label;
+                $controls[] = $ctl;
+
                 continue;
             }
             // 列自带 options（枚举型）→ 下拉筛选
             if (! empty($def['options']) && is_array($def['options'])) {
                 $controls[] = ['name' => $field, 'label' => $label, 'type' => 'select', 'options' => $def['options']];
+
                 continue;
             }
             // 日期 / 时间类 → 时间段选择
             if (preg_match($dateRe, $field) || in_array((string) ($def['type'] ?? ''), ['date', 'datetime', 'time'], true)) {
                 $controls[] = ['name' => $field, 'label' => $label, 'type' => 'daterange'];
+
                 continue;
             }
             // 其余 → 文本框（服务端对数值等值匹配、文本模糊匹配）
-            $controls[] = ['name' => $field, 'label' => $label, 'type' => 'text', 'placeholder' => '搜索' . $label];
+            $controls[] = ['name' => $field, 'label' => $label, 'type' => 'text', 'placeholder' => '搜索'.$label];
         }
 
         return $controls;
@@ -834,22 +876,25 @@ use zxf\XfAdmin\Support\Html;
     {
         $html = '';
         foreach ($nodes as $node) {
-            if (! is_array($node)) continue;
-            $v    = (string) ($node['value'] ?? '');
-            $t    = (string) ($node['label'] ?? $v);
-            $cid  = 'xf-tree-' . $this->e($tableId . '-' . $name . '-' . $v);
+            if (! is_array($node)) {
+                continue;
+            }
+            $v = (string) ($node['value'] ?? '');
+            $t = (string) ($node['label'] ?? $v);
+            $cid = 'xf-tree-'.$this->e($tableId.'-'.$name.'-'.$v);
             $children = $node['children'] ?? [];
-            $html .= '<div class="xf-tree-node' . ($depth ? ' ps-3' : '') . '">'
-                . '<div class="form-check m-0">'
-                . '<input type="checkbox" class="form-check-input xf-tree-leaf" value="' . $this->e($v) . '" id="' . $cid . '">'
-                . '<label class="form-check-label small" for="' . $cid . '">' . $this->e($t) . '</label>'
-                . ($children ? ' <i class="ti ti-chevron-down xf-tree-toggle small"></i>' : '')
-                . '</div>';
+            $html .= '<div class="xf-tree-node'.($depth ? ' ps-3' : '').'">'
+                .'<div class="form-check m-0">'
+                .'<input type="checkbox" class="form-check-input xf-tree-leaf" value="'.$this->e($v).'" id="'.$cid.'">'
+                .'<label class="form-check-label small" for="'.$cid.'">'.$this->e($t).'</label>'
+                .($children ? ' <i class="ti ti-chevron-down xf-tree-toggle small"></i>' : '')
+                .'</div>';
             if ($children) {
-                $html .= '<div class="xf-tree-children">' . $this->renderTreeFilter($children, $tableId, $name, $depth + 1) . '</div>';
+                $html .= '<div class="xf-tree-children">'.$this->renderTreeFilter($children, $tableId, $name, $depth + 1).'</div>';
             }
             $html .= '</div>';
         }
+
         return $html;
     }
 
@@ -861,22 +906,23 @@ use zxf\XfAdmin\Support\Html;
         }
         // 包内扩展按钮（由 xfadmin.js 转换为带 action 的真实按钮）
         if (in_array($b, ['refresh', 'fullscreen', 'density'], true)) {
-            return ['xfButton' => $b, 'className' => 'btn btn-sm btn-secondary xf-btn-' . $b];
+            return ['xfButton' => $b, 'className' => 'btn btn-sm btn-secondary xf-btn-'.$b];
         }
         // DataTables 原生导出/列显隐按钮（需 datatables 资源的 buttons.html5 / print）
         $map = [
-            'copy'   => ['extend' => 'copyHtml5',   'text' => '<i class="ti ti-copy"></i> 复制',     'className' => 'btn btn-soft-secondary btn-sm'],
-            'csv'    => ['extend' => 'csvHtml5',    'text' => '<i class="ti ti-file-text"></i> CSV', 'className' => 'btn btn-soft-secondary btn-sm'],
-            'excel'  => ['extend' => 'excelHtml5',  'text' => '<i class="ti ti-file-spreadsheet"></i> Excel', 'className' => 'btn btn-soft-success btn-sm'],
-            'pdf'    => ['extend' => 'pdfHtml5',    'text' => '<i class="ti ti-file-type-pdf"></i> PDF', 'className' => 'btn btn-soft-danger btn-sm'],
+            'copy' => ['extend' => 'copyHtml5',   'text' => '<i class="ti ti-copy"></i> 复制',     'className' => 'btn btn-soft-secondary btn-sm'],
+            'csv' => ['extend' => 'csvHtml5',    'text' => '<i class="ti ti-file-text"></i> CSV', 'className' => 'btn btn-soft-secondary btn-sm'],
+            'excel' => ['extend' => 'excelHtml5',  'text' => '<i class="ti ti-file-spreadsheet"></i> Excel', 'className' => 'btn btn-soft-success btn-sm'],
+            'pdf' => ['extend' => 'pdfHtml5',    'text' => '<i class="ti ti-file-type-pdf"></i> PDF', 'className' => 'btn btn-soft-danger btn-sm'],
             // 注意：DataTables 打印按钮的类型名是 print（不存在 printHtml5，误用会抛
             // “Cannot extend unknown button type: printHtml5” 导致整表初始化失败）
-            'print'  => ['extend' => 'print',       'text' => '<i class="ti ti-printer"></i> 打印',  'className' => 'btn btn-soft-info btn-sm'],
+            'print' => ['extend' => 'print',       'text' => '<i class="ti ti-printer"></i> 打印',  'className' => 'btn btn-soft-info btn-sm'],
             'colvis' => ['extend' => 'colvis',      'text' => '<i class="ti ti-columns"></i> 列显示', 'className' => 'btn btn-soft-secondary btn-sm', 'columns' => ':not(.no-export)'],
         ];
         if (array_key_exists($b, $map)) {
             return $map[$b];
         }
+
         // 未知 key 作为自定义集合按钮
         return ['extend' => 'collection', 'text' => $b, 'className' => 'btn btn-soft-secondary btn-sm'];
     }
@@ -897,6 +943,7 @@ use zxf\XfAdmin\Support\Html;
         if (($this->get('density') ?? 'comfortable') === 'compact') {
             $cls .= ' xf-dt-compact';
         }
+
         return $cls;
     }
 }

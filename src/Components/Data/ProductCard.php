@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace zxf\XfAdmin\Components\Data;
 
 use zxf\XfAdmin\Components\Component;
-use zxf\XfAdmin\Support\Html;
+use zxf\XfAdmin\Components\UI\Rating;
 use zxf\XfAdmin\XfAdmin;
 
 /**
@@ -34,16 +34,16 @@ class ProductCard extends Component
     protected function defaults(): array
     {
         return [
-            'image'        => null,
-            'title'        => '',
-            'category'     => null,
-            'price'        => null,
-            'old_price'    => null,
-            'rating'       => null,
+            'image' => null,
+            'title' => '',
+            'category' => null,
+            'price' => null,
+            'old_price' => null,
+            'rating' => null,
             'rating_count' => null,
-            'badge'        => null,
-            'href'         => '#',
-            'actions'      => null,
+            'badge' => null,
+            'href' => '#',
+            'actions' => null,
         ];
     }
 
@@ -54,16 +54,16 @@ class ProductCard extends Component
      */
     protected function html(): string
     {
-        $html = '<div' . $this->attrs(['class' => 'card h-100']) . '>';
+        $html = '<div'.$this->attrs(['class' => 'card h-100']).'>';
         $html .= '<div class="position-relative">';
         if ($this->get('badge')) {
             $b = (array) $this->get('badge');
-            $html .= '<span class="badge bg-' . $this->e($b['variant'] ?? 'primary') . ' position-absolute top-0 start-0 m-2">' . $this->e($b['text'] ?? '') . '</span>';
+            $html .= '<span class="badge bg-'.$this->e($b['variant'] ?? 'primary').' position-absolute top-0 start-0 m-2">'.$this->e($b['text'] ?? '').'</span>';
         }
         $img = $this->get('image');
         if ($img) {
-            $img = \zxf\XfAdmin\XfAdmin::img((string) $img);
-            $html .= '<a href="' . $this->e($this->safeUrl($this->get('href'))) . '"><img src="' . $this->e($img) . '" class="card-img-top xf-product-img object-fit-cover" alt="' . $this->e($this->get('title')) . '"></a>';
+            $img = XfAdmin::img((string) $img);
+            $html .= '<a href="'.$this->e($this->safeUrl($this->get('href'))).'"><img src="'.$this->e($img).'" class="card-img-top xf-product-img object-fit-cover" alt="'.$this->e($this->get('title')).'"></a>';
         } else {
             // 无图时渲染占位块，保持卡片高度与布局一致
             $html .= '<div class="xf-product-img bg-light d-flex align-items-center justify-content-center text-muted"><i class="ti ti-photo fs-1"></i></div>';
@@ -72,28 +72,28 @@ class ProductCard extends Component
 
         $html .= '<div class="card-body">';
         if ($this->get('category')) {
-            $html .= '<small class="text-muted">' . $this->e($this->get('category')) . '</small>';
+            $html .= '<small class="text-muted">'.$this->e($this->get('category')).'</small>';
         }
-        $html .= '<h5 class="my-1"><a href="' . $this->e($this->safeUrl($this->get('href'))) . '" class="text-body">' . $this->e($this->get('title')) . '</a></h5>';
+        $html .= '<h5 class="my-1"><a href="'.$this->e($this->safeUrl($this->get('href'))).'" class="text-body">'.$this->e($this->get('title')).'</a></h5>';
 
         if ($this->get('rating') !== null) {
-            $html .= (new \zxf\XfAdmin\Components\UI\Rating([
+            $html .= (new Rating([
                 'value' => (float) $this->get('rating'),
                 'count' => $this->get('rating_count'),
-                'size'  => 'fs-6',
+                'size' => 'fs-6',
             ]))->render();
         }
         $html .= '<div class="d-flex align-items-center gap-2 mt-2">';
         if ($this->get('price') !== null) {
-            $html .= '<h5 class="mb-0 text-primary">' . $this->e($this->get('price')) . '</h5>';
+            $html .= '<h5 class="mb-0 text-primary">'.$this->e($this->get('price')).'</h5>';
         }
         if ($this->get('old_price') !== null) {
-            $html .= '<span class="text-muted text-decoration-line-through">' . $this->e($this->get('old_price')) . '</span>';
+            $html .= '<span class="text-muted text-decoration-line-through">'.$this->e($this->get('old_price')).'</span>';
         }
         $html .= '</div>';
 
         if ($this->get('actions')) {
-            $html .= '<div class="mt-3">' . $this->raw($this->get('actions')) . '</div>';
+            $html .= '<div class="mt-3">'.$this->raw($this->get('actions')).'</div>';
         }
         $html .= '</div></div>';
 

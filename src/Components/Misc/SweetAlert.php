@@ -32,17 +32,17 @@ class SweetAlert extends Component
     protected function defaults(): array
     {
         return [
-            'trigger'         => null,
+            'trigger' => null,
             'trigger_variant' => 'primary',
-            'title'           => '',
-            'text'            => null,
-            'icon'            => null,     // success | error | warning | info | question
-            'confirm_text'    => '确定',
-            'cancel_text'     => null,     // 非空则显示取消按钮
-            'confirm_url'     => null,
-            'confirm_js'      => null,
-            'auto'            => false,
-            'options'         => [],
+            'title' => '',
+            'text' => null,
+            'icon' => null,     // success | error | warning | info | question
+            'confirm_text' => '确定',
+            'cancel_text' => null,     // 非空则显示取消按钮
+            'confirm_url' => null,
+            'confirm_js' => null,
+            'auto' => false,
+            'options' => [],
         ];
     }
 
@@ -64,15 +64,15 @@ class SweetAlert extends Component
     protected function html(): string
     {
         $config = array_replace_recursive(array_filter([
-            'title'             => $this->get('title'),
-            'text'              => $this->get('text'),
-            'icon'              => $this->get('icon'),
+            'title' => $this->get('title'),
+            'text' => $this->get('text'),
+            'icon' => $this->get('icon'),
             'confirmButtonText' => $this->get('confirm_text'),
-            'showCancelButton'  => $this->get('cancel_text') !== null,
-            'cancelButtonText'  => $this->get('cancel_text'),
-            'customClass'       => [
+            'showCancelButton' => $this->get('cancel_text') !== null,
+            'cancelButtonText' => $this->get('cancel_text'),
+            'customClass' => [
                 'confirmButton' => 'btn btn-primary me-2 mt-2',
-                'cancelButton'  => 'btn btn-light mt-2',
+                'cancelButton' => 'btn btn-light mt-2',
             ],
             'buttonsStyling' => false,
         ], fn ($v) => $v !== null), (array) $this->get('options', []));
@@ -81,18 +81,20 @@ class SweetAlert extends Component
             'swal' => $config,
             'auto' => (bool) $this->get('auto'),
             'confirmUrl' => $this->get('confirm_url'),
-            'confirmJs'  => $this->get('confirm_js'),
+            'confirmJs' => $this->get('confirm_js'),
         ];
 
-        $json = json_encode($xfConfig, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        // json_encode 失败（递归结构等）会返回 false，?: '{}' 兜底避免 attrs 输出空 data-xf-config
+        $json = json_encode($xfConfig, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?: '{}';
 
         if ($this->get('trigger') !== null) {
-            return '<button type="button"' . $this->attrs([
-                'class'          => 'btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
-                'data-xf'        => 'sweetalert',
+            return '<button type="button"'.$this->attrs([
+                'class' => 'btn btn-'.$this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary'),
+                'data-xf' => 'sweetalert',
                 'data-xf-config' => $json,
-            ]) . '>' . $this->e($this->get('trigger')) . '</button>';
+            ]).'>'.$this->e($this->get('trigger')).'</button>';
         }
-        return '<span' . $this->attrs(['data-xf' => 'sweetalert', 'data-xf-config' => $json, 'hidden' => true]) . '></span>';
+
+        return '<span'.$this->attrs(['data-xf' => 'sweetalert', 'data-xf-config' => $json, 'hidden' => true]).'></span>';
     }
 }

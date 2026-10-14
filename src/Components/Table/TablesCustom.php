@@ -53,7 +53,8 @@ class TablesCustom extends Component
     {
         $columns = (array) $this->get('columns', []);
         $rows = (array) $this->get('rows', []);
-        $headerBg = (string) $this->get('headerBg', '');
+        // headerBg 白名单：非法值不输出 table-* 类（与其它组件的枚举选项一致）
+        $headerBg = $this->enum($this->get('headerBg'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'], '');
         $striped = (bool) $this->get('striped', true);
         $hover = (bool) $this->get('hover', true);
         $bordered = (bool) $this->get('bordered', true);
@@ -61,62 +62,80 @@ class TablesCustom extends Component
         $footable = (array) $this->get('footable', []);
 
         $tableClass = 'table';
-        if ($striped) $tableClass .= ' table-striped';
-        if ($hover) $tableClass .= ' table-hover';
-        if ($bordered) $tableClass .= ' table-bordered';
-        if ($compact) $tableClass .= ' table-sm';
+        if ($striped) {
+            $tableClass .= ' table-striped';
+        }
+        if ($hover) {
+            $tableClass .= ' table-hover';
+        }
+        if ($bordered) {
+            $tableClass .= ' table-bordered';
+        }
+        if ($compact) {
+            $tableClass .= ' table-sm';
+        }
         $tableClass .= ' mb-0';
 
-        $html = '<div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="' . $tableClass . '">';
+        $html = '<div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="'.$tableClass.'">';
 
         // 表头
-        if (!empty($columns)) {
+        if (! empty($columns)) {
             $html .= '<thead>';
             if ($headerBg) {
-                $html .= '<tr class="table-' . $this->e($headerBg) . '">';
+                $html .= '<tr class="table-'.$this->e($headerBg).'">';
             } else {
                 $html .= '<tr>';
             }
             foreach ($columns as $col) {
                 if (is_array($col)) {
-                    $html .= '<th class="' . $this->e($col['class'] ?? '') . '">' . $this->e($col['label'] ?? '') . '</th>';
+                    $html .= '<th class="'.$this->e($col['class'] ?? '').'">'.$this->e($col['label'] ?? '').'</th>';
                 } else {
-                    $html .= '<th>' . $this->e((string) $col) . '</th>';
+                    $html .= '<th>'.$this->e((string) $col).'</th>';
                 }
             }
             $html .= '</tr></thead>';
         }
-        // 表体
+        // 表体：按 columns 定义逐列取格（与表头一一对应）。
+        // 旧写法 foreach ($row as $key => $value) 会输出行内全部字段，行字段顺序/数量
+        // 与 columns 不一致时单元格错位；缺字段一律输出空串。
         $html .= '<tbody>';
         foreach ($rows as $row) {
             $row = (array) $row;
+            $rowValues = array_values($row);
             $html .= '<tr>';
-            foreach ($row as $key => $value) {
-                if (is_array($value)) {
-                    $html .= '<td class="' . $this->e($value['class'] ?? '') . '">' . $this->raw($value['html'] ?? '') . '</td>';
+            foreach ($columns as $i => $col) {
+                if (is_array($col)) {
+                    // 列显式声明字段名（key/data/field）时按键取格，否则按位置顺序取格
+                    $fieldKey = $col['key'] ?? $col['data'] ?? $col['field'] ?? null;
+                    $value = $fieldKey !== null ? ($row[$fieldKey] ?? '') : ($rowValues[$i] ?? '');
                 } else {
-                    $html .= '<td>' . $this->e((string) $value) . '</td>';
+                    $value = $rowValues[$i] ?? '';
+                }
+                if (is_array($value)) {
+                    $html .= '<td class="'.$this->e($value['class'] ?? '').'">'.$this->raw($value['html'] ?? '').'</td>';
+                } else {
+                    $html .= '<td>'.$this->e((string) $value).'</td>';
                 }
             }
             $html .= '</tr>';
         }
         if (empty($rows)) {
             $colspan = count($columns) ?: 1;
-            $html .= '<tr><td colspan="' . $colspan . '" class="text-center text-muted py-4">暂无数据</td></tr>';
+            $html .= '<tr><td colspan="'.$colspan.'" class="text-center text-muted py-4">暂无数据</td></tr>';
         }
         $html .= '</tbody>';
 
         // 表尾
-        if (!empty($footable)) {
+        if (! empty($footable)) {
             $html .= '<tfoot>';
             foreach ($footable as $row) {
                 $row = (array) $row;
                 $html .= '<tr>';
                 foreach ($row as $value) {
                     if (is_array($value)) {
-                        $html .= '<td class="' . $this->e($value['class'] ?? '') . '">' . $this->raw($value['html'] ?? '') . '</td>';
+                        $html .= '<td class="'.$this->e($value['class'] ?? '').'">'.$this->raw($value['html'] ?? '').'</td>';
                     } else {
-                        $html .= '<td>' . $this->e((string) $value) . '</td>';
+                        $html .= '<td>'.$this->e((string) $value).'</td>';
                     }
                 }
                 $html .= '</tr>';

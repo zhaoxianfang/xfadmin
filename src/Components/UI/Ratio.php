@@ -28,10 +28,10 @@ class Ratio extends Component
     protected function defaults(): array
     {
         return [
-            'ratio'  => '16x9',
-            'src'    => null,
-            'type'   => 'iframe',
-            'body'   => null,
+            'ratio' => '16x9',
+            'src' => null,
+            'type' => 'iframe',
+            'body' => null,
             'allowfullscreen' => true,
             'controls' => true,
         ];
@@ -61,15 +61,16 @@ class Ratio extends Component
         $ratio = (string) $this->get('ratio');
         $isPreset = in_array($ratio, ['1x1', '4x3', '16x9', '21x9'], true);
 
-        $attrs = ['class' => Html::cls('ratio', $isPreset ? 'ratio-' . $ratio : null)];
+        $attrs = ['class' => Html::cls('ratio', $isPreset ? 'ratio-'.$ratio : null)];
         if (! $isPreset && is_numeric($ratio)) {
-            $attrs['style'] = '--bs-aspect-ratio: ' . (float) $ratio . '%;';
+            $attrs['style'] = '--bs-aspect-ratio: '.(float) $ratio.'%;';
         }
         $inner = '';
         switch ($this->get('type')) {
             case 'video':
                 $ctrl = $this->get('controls') ? ' controls' : '';
-                $inner = '<video' . $ctrl . '><source src="' . $this->e($this->get('src')) . '"></video>';
+                // src 走 safeUrl 白名单，拦截 javascript: 等伪协议
+                $inner = '<video'.$ctrl.'><source src="'.$this->e($this->safeUrl($this->get('src'))).'"></video>';
                 break;
             case 'content':
                 $inner = $this->raw($this->get('body'));
@@ -77,8 +78,10 @@ class Ratio extends Component
             case 'iframe':
             default:
                 $fs = $this->get('allowfullscreen') ? ' allowfullscreen' : '';
-                $inner = '<iframe src="' . $this->e($this->get('src')) . '" title="embed"' . $fs . '></iframe>';
+                // src 走 safeUrl 白名单，拦截 javascript: 等伪协议
+                $inner = '<iframe src="'.$this->e($this->safeUrl($this->get('src'))).'" title="embed"'.$fs.'></iframe>';
         }
-        return '<div' . $this->attrs($attrs) . '>' . $inner . '</div>';
+
+        return '<div'.$this->attrs($attrs).'>'.$inner.'</div>';
     }
 }

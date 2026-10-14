@@ -39,15 +39,15 @@ class ImportExport extends Component
     protected function defaults(): array
     {
         return [
-            'exports'      => [],   // [['label','format','url']]
-            'export_url'  => '',     // 简写基址
-            'formats'     => [],     // 简写格式列表（默认空；使用 export_url 简写时必须显式传 formats）
-            'import'      => null,   // null | ['url','accept','title']
+            'exports' => [],   // [['label','format','url']]
+            'export_url' => '',     // 简写基址
+            'formats' => [],     // 简写格式列表（默认空；使用 export_url 简写时必须显式传 formats）
+            'import' => null,   // null | ['url','accept','title']
             'export_label' => '导出',
             'import_label' => '导入',
-            'csrf'        => '',     // 宿主注入的隐藏域 HTML（如 csrf_field()）
-            'class'       => '',
-            'id'          => null,
+            'csrf' => '',     // 宿主注入的隐藏域 HTML（如 csrf_field()）
+            'class' => '',
+            'id' => null,
         ];
     }
 
@@ -66,54 +66,54 @@ class ImportExport extends Component
         if ($exports !== []) {
             $items = '';
             foreach ($exports as $ex) {
-                $items .= '<li><a class="dropdown-item" href="' . $this->e($this->safeUrl($ex['url']))
-                    . '" data-format="' . $this->e($ex['format'] ?? '') . '">'
-                    . $this->e($ex['label']) . '</a></li>';
+                $items .= '<li><a class="dropdown-item" href="'.$this->e($this->safeUrl($ex['url']))
+                    .'" data-format="'.$this->e($ex['format'] ?? '').'">'
+                    .$this->e($ex['label']).'</a></li>';
             }
             $exportHtml = '<div class="btn-group">'
-                . '<button type="button" class="btn btn-soft-primary dropdown-toggle" '
-                . 'data-bs-toggle="dropdown" aria-expanded="false">'
-                . '<i class="ti ti-download"></i> ' . $this->e($this->get('export_label')) . '</button>'
-                . '<ul class="dropdown-menu">' . $items . '</ul></div>';
+                .'<button type="button" class="btn btn-soft-primary dropdown-toggle" '
+                .'data-bs-toggle="dropdown" aria-expanded="false">'
+                .'<i class="ti ti-download"></i> '.$this->e($this->get('export_label')).'</button>'
+                .'<ul class="dropdown-menu">'.$items.'</ul></div>';
         }
 
         $importHtml = '';
         $import = $this->get('import');
         if (is_array($import) && ($import['url'] ?? '') !== '') {
-            $modalId = $id . '-import';
-            $accept  = $this->e($import['accept'] ?? '.csv,.xlsx');
-            $title   = $this->e($import['title'] ?? '导入数据');
-            $url     = $this->e($this->safeUrl($import['url']));
-            $csrf    = $this->get('csrf');
+            $modalId = $id.'-import';
+            $accept = $this->e($import['accept'] ?? '.csv,.xlsx');
+            $title = $this->e($import['title'] ?? '导入数据');
+            $url = $this->e($this->safeUrl($import['url']));
+            $csrf = $this->get('csrf');
             $importHtml = '<button type="button" class="btn btn-soft-success" '
-                . 'data-bs-toggle="modal" data-bs-target="#' . $modalId . '">'
-                . '<i class="ti ti-upload"></i> ' . $this->e($this->get('import_label')) . '</button>'
-                . '<div class="modal fade" id="' . $modalId . '" tabindex="-1" aria-hidden="true">'
-                . '<div class="modal-dialog"><form class="modal-content" action="' . $url
-                . '" method="post" enctype="multipart/form-data">'
-                . ($csrf !== '' ? $this->raw($csrf) : '')
-                . '<div class="modal-header"><h5 class="modal-title">' . $title . '</h5>'
-                . '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button></div>'
-                . '<div class="modal-body"><div class="mb-3">'
-                . '<label class="form-label">选择文件</label>'
-                . '<input type="file" class="form-control" name="file" accept="' . $accept . '" required>'
-                . '<div class="form-text">支持格式：' . $accept . '</div>'
-                . '</div></div>'
-                . '<div class="modal-footer">'
-                . '<button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>'
-                . '<button type="submit" class="btn btn-success">开始导入</button>'
-                . '</div></form></div></div>';
+                .'data-bs-toggle="modal" data-bs-target="#'.$modalId.'">'
+                .'<i class="ti ti-upload"></i> '.$this->e($this->get('import_label')).'</button>'
+                .'<div class="modal fade" id="'.$modalId.'" tabindex="-1" aria-hidden="true">'
+                .'<div class="modal-dialog"><form class="modal-content" action="'.$url
+                .'" method="post" enctype="multipart/form-data">'
+                .($csrf !== '' ? $this->raw($csrf) : '')
+                .'<div class="modal-header"><h5 class="modal-title">'.$title.'</h5>'
+                .'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button></div>'
+                .'<div class="modal-body"><div class="mb-3">'
+                .'<label class="form-label">选择文件</label>'
+                .'<input type="file" class="form-control" name="file" accept="'.$accept.'" required>'
+                .'<div class="form-text">支持格式：'.$accept.'</div>'
+                .'</div></div>'
+                .'<div class="modal-footer">'
+                .'<button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>'
+                .'<button type="submit" class="btn btn-success">开始导入</button>'
+                .'</div></form></div></div>';
         }
 
         if ($exportHtml === '' && $importHtml === '') {
             return '';
         }
 
-        return '<div' . $this->attrs([
-            'id'    => $id,
+        return '<div'.$this->attrs([
+            'id' => $id,
             'class' => 'xf-importexport d-flex align-items-center gap-2 flex-wrap'
-                . ($this->get('class') !== '' ? ' ' . $this->get('class') : ''),
-        ]) . '>' . $exportHtml . $importHtml . '</div>';
+                .($this->get('class') !== '' ? ' '.$this->get('class') : ''),
+        ]).'>'.$exportHtml.$importHtml.'</div>';
     }
 
     /** 归一导出项：显式 exports 优先；否则由 export_url + formats 简写生成 */
@@ -123,10 +123,18 @@ class ImportExport extends Component
         if (is_array($exports) && $exports !== []) {
             $out = [];
             foreach ($exports as $ex) {
-                $out[] = is_array($ex)
-                    ? $ex
-                    : ['label' => (string) $ex, 'format' => (string) $ex, 'url' => ''];
+                if (! is_array($ex)) {
+                    // 简写字符串：按 label/format 处理
+                    $ex = ['label' => (string) $ex, 'format' => (string) $ex];
+                }
+                // 补齐缺失键默认值（url 默认 '#'，label 默认 '导出'），避免渲染期未定义索引
+                $out[] = [
+                    'label' => (string) ($ex['label'] ?? '导出'),
+                    'format' => (string) ($ex['format'] ?? ''),
+                    'url' => (string) ($ex['url'] ?? '#'),
+                ];
             }
+
             return $out;
         }
 
@@ -139,11 +147,12 @@ class ImportExport extends Component
         foreach ($formats as $f) {
             $f = (string) $f;
             $out[] = [
-                'label'  => strtoupper($f),
+                'label' => strtoupper($f),
                 'format' => $f,
-                'url'    => $base . $f,
+                'url' => $base.$f,
             ];
         }
+
         return $out;
     }
 }

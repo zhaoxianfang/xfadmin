@@ -39,20 +39,20 @@ class MetricCard extends Component
     protected function defaults(): array
     {
         return [
-            'title'      => '',
-            'value'      => 0,
-            'prefix'     => '',
-            'suffix'     => '',
-            'decimals'   => 0,
-            'trend'      => null,
+            'title' => '',
+            'value' => 0,
+            'prefix' => '',
+            'suffix' => '',
+            'decimals' => 0,
+            'trend' => null,
             'trend_text' => '较上周',
-            'chart'      => 'donut',
-            'data'       => [],
-            'labels'     => [],
-            'color'      => '#3e60d5',
-            'icon'       => null,
-            'footer'     => null,
-            'url'        => null,
+            'chart' => 'donut',
+            'data' => [],
+            'labels' => [],
+            'color' => '#3e60d5',
+            'icon' => null,
+            'footer' => null,
+            'url' => null,
         ];
     }
 
@@ -74,55 +74,55 @@ class MetricCard extends Component
      */
     protected function html(): string
     {
-        $id    = $this->resolveId('xf-metric');
+        $id = $this->resolveId('xf-metric');
         $value = $this->get('value');
         $trend = $this->get('trend');
 
         // ---------- 数值区：数字自动启用滚动计数动画 ----------
         $valueHtml = is_numeric($value)
-            ? '<span class="xf-count" data-xf-count="' . $this->e($value) . '" data-xf-decimals="' . (int) $this->get('decimals') . '">0</span>'
+            ? '<span class="xf-count" data-xf-count="'.$this->e($value).'" data-xf-decimals="'.(int) $this->get('decimals').'">0</span>'
             : $this->e((string) $value);
-        $valueHtml = '<h3 class="mb-1 fw-bold">' . $this->e($this->get('prefix', '')) . $valueHtml . $this->e($this->get('suffix', '')) . '</h3>';
+        $valueHtml = '<h3 class="mb-1 fw-bold">'.$this->e($this->get('prefix', '')).$valueHtml.$this->e($this->get('suffix', '')).'</h3>';
 
         // ---------- 趋势徽标：正=绿升 负=红降 ----------
         $trendHtml = '';
         if ($trend !== null && $trend !== '') {
-            $up        = (float) $trend >= 0;
+            $up = (float) $trend >= 0;
             $trendHtml = '<p class="mb-0 text-muted small">'
-                . '<span class="' . ($up ? 'text-success' : 'text-danger') . ' me-1">'
-                . '<i class="ti ti-arrow-' . ($up ? 'up' : 'down') . '-right"></i> ' . $this->e(abs((float) $trend)) . '%</span>'
-                . $this->e($this->get('trend_text', '')) . '</p>';
+                .'<span class="'.($up ? 'text-success' : 'text-danger').' me-1">'
+                .'<i class="ti ti-arrow-'.($up ? 'up' : 'down').'-right"></i> '.$this->e(abs((float) $trend)).'%</span>'
+                .$this->e($this->get('trend_text', '')).'</p>';
         }
         // ---------- 迷你图 ----------
         $chartHtml = '';
         if ($this->get('chart')) {
             $cfg = [
-                'type'   => (string) $this->get('chart'),
-                'data'   => array_values((array) $this->get('data', [])),
+                'type' => (string) $this->get('chart'),
+                'data' => array_values((array) $this->get('data', [])),
                 'labels' => array_values((array) $this->get('labels', [])),
-                'color'  => (string) $this->get('color'),
+                'color' => (string) $this->get('color'),
             ];
             $chartHtml = '<div class="xf-metric-chart" data-xf="metric-chart" data-xf-config="'
-                . $this->e(json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP)) . '"></div>';
+                .$this->e(json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP)).'"></div>';
         } elseif ($this->get('icon')) {
             $chartHtml = '<div class="avatar-lg d-flex align-items-center justify-content-center rounded bg-primary-subtle">'
-                . '<i class="' . $this->e($this->get('icon')) . ' fs-2 text-primary"></i></div>';
+                .'<i class="'.$this->iconClass($this->get('icon')).' fs-2 text-primary"></i></div>';
         }
         $inner = '<div class="d-flex align-items-center justify-content-between gap-2">'
-            . '<div class="flex-grow-1">'
-            . '<h5 class="text-muted fs-13 text-uppercase mb-2">'
-            . ($this->get('icon') && $this->get('chart') ? '<i class="' . $this->e($this->get('icon')) . ' me-1"></i>' : '')
-            . $this->e($this->get('title')) . '</h5>'
-            . $valueHtml . $trendHtml
-            . '</div>' . $chartHtml . '</div>';
+            .'<div class="flex-grow-1">'
+            .'<h5 class="text-muted fs-13 text-uppercase mb-2">'
+            .($this->get('icon') && $this->get('chart') ? '<i class="'.$this->iconClass($this->get('icon')).' me-1"></i>' : '')
+            .$this->e($this->get('title')).'</h5>'
+            .$valueHtml.$trendHtml
+            .'</div>'.$chartHtml.'</div>';
 
         if ($this->get('footer') !== null) {
-            $inner .= '<div class="mt-2 pt-2 border-top border-dashed">' . $this->raw($this->get('footer')) . '</div>';
+            $inner .= '<div class="mt-2 pt-2 border-top border-dashed">'.$this->raw($this->get('footer')).'</div>';
         }
-        $body = '<div class="card-body">' . $inner . '</div>';
+        $body = '<div class="card-body">'.$inner.'</div>';
         $card = $this->get('url')
-            ? '<a href="' . $this->e($this->safeUrl($this->get('url'))) . '" class="card xf-metric-card text-reset" id="' . $id . '">' . $body . '</a>'
-            : '<div' . $this->attrs(['class' => 'card xf-metric-card', 'id' => $id]) . '>' . $body . '</div>';
+            ? '<a href="'.$this->e($this->safeUrl($this->get('url'))).'" class="card xf-metric-card text-reset" id="'.$id.'">'.$body.'</a>'
+            : '<div'.$this->attrs(['class' => 'card xf-metric-card', 'id' => $id]).'>'.$body.'</div>';
 
         return $card;
     }

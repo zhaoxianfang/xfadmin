@@ -30,23 +30,22 @@ class Pagination extends Component
     protected function defaults(): array
     {
         return [
-            'total'    => 0,
+            'total' => 0,
             'per_page' => 15,
-            'current'  => 1,
-            'url'      => '?page={page}',
-            'window'   => 2,
-            'size'     => null,
-            'align'    => 'center',
-            'rounded'  => false,
-            'arrows'   => true,
+            'current' => 1,
+            'url' => '?page={page}',
+            'window' => 2,
+            'size' => null,
+            'align' => 'center',
+            'rounded' => false,
+            'arrows' => true,
         ];
     }
 
     /**
      * link（protected实例方法）
      *
-     * @param int $page page
-     *
+     * @param  int  $page  page
      * @return string result
      */
     protected function link(int $page): string
@@ -61,33 +60,38 @@ class Pagination extends Component
      */
     protected function html(): string
     {
-        $total   = (int) $this->get('total');
+        $total = (int) $this->get('total');
         $perPage = max(1, (int) $this->get('per_page'));
-        $pages   = max(1, (int) ceil($total / $perPage));
+        $pages = max(1, (int) ceil($total / $perPage));
         $current = min(max(1, (int) $this->get('current')), $pages);
-        $window  = (int) $this->get('window');
+        // window 夹紧下界 0：负数窗口会导致 start>end，出现双省略号且当前页从窗口消失
+        $window = max(0, (int) $this->get('window'));
 
         $ulClass = Html::cls('pagination', [
             'pagination-rounded' => $this->get('rounded'),
             'justify-content-center' => $this->get('align') === 'center',
-            'justify-content-end'    => $this->get('align') === 'end',
-        ], ($this->get('size') && ($pz = $this->enum($this->get('size'), self::ENUM_SIZE, '')) !== '') ? 'pagination-' . $pz : '');
+            'justify-content-end' => $this->get('align') === 'end',
+        ], ($this->get('size') && ($pz = $this->enum($this->get('size'), self::ENUM_SIZE, '')) !== '') ? 'pagination-'.$pz : '');
 
         $item = function (string $label, ?int $page, bool $active = false, bool $disabled = false): string {
-            $li = '<li class="' . Html::cls('page-item', ['active' => $active, 'disabled' => $disabled]) . '">';
+            $li = '<li class="'.Html::cls('page-item', ['active' => $active, 'disabled' => $disabled]).'">';
             $li .= $disabled || $page === null
-                ? '<span class="page-link">' . $label . '</span>'
-                : '<a class="page-link" href="' . $this->e($this->link($page)) . '">' . $label . '</a>';
+                ? '<span class="page-link">'.$label.'</span>'
+                : '<a class="page-link" href="'.$this->e($this->link($page)).'">'.$label.'</a>';
 
-            return $li . '</li>';
+            return $li.'</li>';
         };
 
-        $html = '<nav' . $this->attrs() . '><ul class="' . $ulClass . '">';
+        $html = '<nav'.$this->attrs().'><ul class="'.$ulClass.'">';
         if ($this->get('arrows')) {
             $html .= $item('<i class="ti ti-chevron-left"></i>', $current - 1, false, $current <= 1);
         }
         $start = max(1, $current - $window);
-        $end   = min($pages, $current + $window);
+        $end = min($pages, $current + $window);
+        if ($start > $end) {
+            // 兜底：窗口异常（start>end）时退化为仅渲染当前页，不再输出省略号
+            $start = $end = $current;
+        }
         if ($start > 1) {
             $html .= $item('1', 1);
             if ($start > 2) {
@@ -106,6 +110,7 @@ class Pagination extends Component
         if ($this->get('arrows')) {
             $html .= $item('<i class="ti ti-chevron-right"></i>', $current + 1, false, $current >= $pages);
         }
-        return $html . '</ul></nav>';
+
+        return $html.'</ul></nav>';
     }
 }

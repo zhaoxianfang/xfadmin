@@ -30,10 +30,10 @@ class Faq extends Component
     protected function defaults(): array
     {
         return [
-            'items'    => [],
-            'flush'    => false,
+            'items' => [],
+            'flush' => false,
             'bordered' => true,
-            'open'     => 0,
+            'open' => 0,
         ];
     }
 
@@ -44,30 +44,32 @@ class Faq extends Component
      */
     protected function html(): string
     {
-        $id  = $this->resolveId('faq');
+        $id = $this->resolveId('faq');
         $cls = Html::cls('accordion', [
-            'accordion-flush'    => (bool) $this->get('flush'),
+            'accordion-flush' => (bool) $this->get('flush'),
             'accordion-bordered' => (bool) $this->get('bordered'),
         ]);
 
-        $html = '<div' . $this->attrs(['class' => $cls, 'id' => $id]) . '>';
+        $html = '<div'.$this->attrs(['class' => $cls, 'id' => $id]).'>';
 
         foreach (array_values((array) $this->get('items', [])) as $i => $item) {
             // 标量（字符串）容错：非数组项按 q 处理，避免 PHP 8 下标访问致命错误
             if (! is_array($item)) {
                 $item = ['q' => (string) $item];
             }
-            $open   = $this->get('open') === $i;
-            $itemId = $this->e($id . '-item-' . $i);
+            $open = $this->get('open') === $i;
+            $itemId = $this->e($id.'-item-'.$i);
             $html .= '<div class="accordion-item">';
             $html .= '<h2 class="accordion-header">';
-            $html .= '<button class="accordion-button' . ($open ? '' : ' collapsed') . '" type="button" data-bs-toggle="collapse" data-bs-target="#' . $itemId . '" aria-expanded="' . ($open ? 'true' : 'false') . '">'
-                . $this->e($item['q'] ?? '') . '</button>';
+            $html .= '<button class="accordion-button'.($open ? '' : ' collapsed').'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$itemId.'" aria-expanded="'.($open ? 'true' : 'false').'">'
+                .$this->e($item['q'] ?? '').'</button>';
             $html .= '</h2>';
-            $html .= '<div id="' . $itemId . '" class="accordion-collapse collapse' . ($open ? ' show' : '') . '" data-bs-parent="#' . $id . '">';
-            $html .= '<div class="accordion-body">' . $this->raw($item['a'] ?? '') . '</div>';
+            $html .= '<div id="'.$itemId.'" class="accordion-collapse collapse'.($open ? ' show' : '').'" data-bs-parent="#'.$id.'">';
+            // 答案为纯文本语义：与 FaqAccordion 对齐，text() 转义且支持透传组件
+            $html .= '<div class="accordion-body">'.$this->text($item['a'] ?? '').'</div>';
             $html .= '</div></div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

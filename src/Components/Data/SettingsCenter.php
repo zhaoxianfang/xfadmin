@@ -36,7 +36,7 @@ class SettingsCenter extends Component
     protected function defaults(): array
     {
         return [
-            'title'  => '设置',
+            'title' => '设置',
             'groups' => [],
         ];
     }
@@ -59,27 +59,29 @@ class SettingsCenter extends Component
         $first = true;
         foreach ($groups as $g) {
             $g = (array) $g;
-            $id    = $this->e($g['id'] ?? ('grp-' . md5((string) ($g['label'] ?? count($groups)))));
-            $icon  = $this->e($g['icon'] ?? 'ti-circle');
+            $id = $this->e($g['id'] ?? ('grp-'.md5((string) ($g['label'] ?? count($groups)))));
+            $icon = $this->e($g['icon'] ?? 'ti-circle');
             $label = $this->e($g['label'] ?? '');
-            $ptitle = $this->e($g['title'] ?? $label);
-            $desc  = $this->e($g['desc'] ?? '');
-            $body  = $this->raw($g['body'] ?? '');
+            // title 缺省时回退原始 label 再统一转义（$label 已转义，复用会导致双重转义）
+            $ptitle = $this->e($g['title'] ?? ($g['label'] ?? ''));
+            $desc = $this->e($g['desc'] ?? '');
+            $body = $this->raw($g['body'] ?? '');
 
-            $nav .= '<a href="#' . $id . '" class="list-group-item list-group-item-action d-flex align-items-center gap-2 ' . ($first ? 'active' : '') . '" data-bs-toggle="list">'
-                . '<i class="ti ' . $icon . '"></i>' . $label . '</a>';
+            $nav .= '<a href="#'.$id.'" class="list-group-item list-group-item-action d-flex align-items-center gap-2 '.($first ? 'active' : '').'" data-bs-toggle="list">'
+                .'<i class="ti '.$icon.'"></i>'.$label.'</a>';
 
-            $panels .= '<div class="tab-pane fade ' . ($first ? 'show active' : '') . '" id="' . $id . '">'
-                . '<div class="d-flex justify-content-between align-items-center mb-3">'
-                . '<div><h5 class="mb-1">' . $ptitle . '</h5>' . ($desc ? '<p class="text-muted mb-0 small">' . $desc . '</p>' : '') . '</div></div>'
-                . $body
-                . '</div>';
+            $panels .= '<div class="tab-pane fade '.($first ? 'show active' : '').'" id="'.$id.'">'
+                .'<div class="d-flex justify-content-between align-items-center mb-3">'
+                .'<div><h5 class="mb-1">'.$ptitle.'</h5>'.($desc ? '<p class="text-muted mb-0 small">'.$desc.'</p>' : '').'</div></div>'
+                .$body
+                .'</div>';
 
             $first = false;
         }
-        return '<div class="card"><div class="card-header"><h4 class="mb-0">' . $title . '</h4></div>'
-            . '<div class="card-body"><div class="row"><div class="col-md-3">'
-            . '<div class="list-group list-group-flush ' . $this->e($this->get('nav_class', 'settings-nav')) . '" role="tablist">' . $nav . '</div>'
-            . '</div><div class="col-md-9"><div class="tab-content">' . $panels . '</div></div></div></div></div>';
+
+        return '<div class="card"><div class="card-header"><h4 class="mb-0">'.$title.'</h4></div>'
+            .'<div class="card-body"><div class="row"><div class="col-md-3">'
+            .'<div class="list-group list-group-flush '.$this->e($this->get('nav_class', 'settings-nav')).'" role="tablist">'.$nav.'</div>'
+            .'</div><div class="col-md-9"><div class="tab-content">'.$panels.'</div></div></div></div></div>';
     }
 }

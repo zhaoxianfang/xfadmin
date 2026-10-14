@@ -30,9 +30,9 @@ class Stepper extends Component
     protected function defaults(): array
     {
         return [
-            'steps'    => [],
+            'steps' => [],
             'vertical' => false,
-            'variant'  => 'primary',
+            'variant' => 'primary',
         ];
     }
 
@@ -43,30 +43,32 @@ class Stepper extends Component
      */
     protected function html(): string
     {
-        $variant  = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
+        $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
         $vertical = (bool) $this->get('vertical');
         $cls = Html::cls('xf-stepper', ['xf-stepper-vertical' => $vertical, 'xf-stepper-horizontal' => ! $vertical]);
 
-        $html = '<div' . $this->attrs(['class' => $cls]) . '>';
+        $html = '<div'.$this->attrs(['class' => $cls]).'>';
         foreach (array_values((array) $this->get('steps', [])) as $i => $s) {
             // 标量（字符串）容错：非数组项按 title 处理，避免 PHP 8 下标访问致命错误
             if (! is_array($s)) {
                 $s = ['title' => (string) $s];
             }
-            $status = $s['status'] ?? 'pending';
+            // status 白名单（done|active|pending，与下方 match 语义一致），非法值回退 pending
+            $status = $this->enum($s['status'] ?? 'pending', ['done', 'active', 'pending'], 'pending');
             [$dotCls, $icon] = match ($status) {
-                'done'   => ['bg-' . $variant . ' text-white', '<i class="ti ti-check"></i>'],
-                'active' => ['bg-' . $variant . '-subtle text-' . $variant . ' border border-' . $variant, (string) ($i + 1)],
-                default  => ['bg-light text-muted', (string) ($i + 1)],
+                'done' => ['bg-'.$variant.' text-white', '<i class="ti ti-check"></i>'],
+                'active' => ['bg-'.$variant.'-subtle text-'.$variant.' border border-'.$variant, (string) ($i + 1)],
+                default => ['bg-light text-muted', (string) ($i + 1)],
             };
-            $html .= '<div class="xf-stepper-item ' . $this->e($status) . '">';
-            $html .= '<div class="xf-stepper-dot ' . $dotCls . '">' . $icon . '</div>';
-            $html .= '<div class="xf-stepper-body"><h5 class="mb-0">' . $this->e($s['title'] ?? '') . '</h5>';
+            $html .= '<div class="xf-stepper-item '.$status.'">';
+            $html .= '<div class="xf-stepper-dot '.$dotCls.'">'.$icon.'</div>';
+            $html .= '<div class="xf-stepper-body"><h5 class="mb-0">'.$this->e($s['title'] ?? '').'</h5>';
             if (! empty($s['text'])) {
-                $html .= '<small class="text-muted">' . $this->e($s['text']) . '</small>';
+                $html .= '<small class="text-muted">'.$this->e($s['text']).'</small>';
             }
             $html .= '</div></div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

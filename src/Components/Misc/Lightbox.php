@@ -30,7 +30,7 @@ class Lightbox extends Component
     protected function defaults(): array
     {
         return [
-            'images'  => [],
+            'images' => [],
             'columns' => 3,
             'masonry' => false,
             'gallery' => 'xf-gallery',
@@ -55,35 +55,39 @@ class Lightbox extends Component
      */
     protected function html(): string
     {
-        $cols   = max(1, (int) $this->get('columns'));
+        $cols = max(1, (int) $this->get('columns'));
+        // gallery 值同时进入 JS 选择器（data-xf-config JSON）与 data-gallery 属性，两侧必须一致；
+        // 仅保留 [a-zA-Z0-9_-]，防止选择器/JSON 注入导致两侧不匹配
+        $gallery = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $this->get('gallery'));
         $config = array_replace_recursive([
-            'selector' => '[data-gallery="' . $this->get('gallery') . '"]',
-            'masonry'  => (bool) $this->get('masonry'),
+            'selector' => '[data-gallery="'.$gallery.'"]',
+            'masonry' => (bool) $this->get('masonry'),
         ], (array) $this->get('options', []));
 
-        $html = '<div' . $this->attrs([
-            'class'          => 'row g-2',
-            'data-xf'        => 'lightbox',
+        $html = '<div'.$this->attrs([
+            'class' => 'row g-2',
+            'data-xf' => 'lightbox',
             'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
-        ]) . '>';
+        ]).'>';
 
         // 栅格列类：整除用 col-{n}；非整除回退 col-xf-{cols}（与 FileManager 一致，避免一行挤入过量项）
-        $colClass = (12 % $cols === 0) ? 'col-' . (int) (12 / $cols) : 'col-xf-' . $cols;
+        $colClass = (12 % $cols === 0) ? 'col-'.(int) (12 / $cols) : 'col-xf-'.$cols;
 
         foreach ((array) $this->get('images', []) as $image) {
             $image = is_array($image) ? $image : ['src' => $image];
-            $thumb = $image['thumb'] ?? $image['src'] ?? '';
             // GLightbox 的 data-glightbox 是自有 DSL（key: value; ...），title 中的 ; 会注入额外配置项，需剔除
-            $gTitle = isset($image['title']) ? 'title: ' . str_replace(';', '', (string) $image['title']) : null;
-            $html .= '<div class="' . $colClass . '">'
-                . '<a href="' . $this->e($image['src'] ?? '') . '"' . Html::attrs([
-                    'class'        => 'glightbox d-block',
-                    'data-gallery' => $this->get('gallery'),
+            $gTitle = isset($image['title']) ? 'title: '.str_replace(';', '', (string) $image['title']) : null;
+            $html .= '<div class="'.$colClass.'">'
+                // href/src 均需过安全助手：拦截 javascript: 等伪协议，缩略图走 img() 解析相对路径
+                .'<a href="'.$this->e($this->safeUrl($image['src'] ?? '')).'"'.Html::attrs([
+                    'class' => 'glightbox d-block',
+                    'data-gallery' => $gallery,
                     'data-glightbox' => $gTitle,
-                ]) . '>'
-                . '<img src="' . $this->e($thumb) . '" alt="' . $this->e($image['title'] ?? '') . '" class="img-fluid rounded">'
-                . '</a></div>';
+                ]).'>'
+                .'<img src="'.$this->e($this->img($image['thumb'] ?? $image['src'] ?? '')).'" alt="'.$this->e($image['title'] ?? '').'" class="img-fluid rounded">'
+                .'</a></div>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

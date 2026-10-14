@@ -34,15 +34,15 @@ class Dropdown extends Component
     protected function defaults(): array
     {
         return [
-            'text'      => '',
-            'variant'   => 'light',
-            'size'      => null,
-            'items'     => [],
+            'text' => '',
+            'variant' => 'light',
+            'size' => null,
+            'items' => [],
             'direction' => 'down',
-            'align'     => null,
-            'split'     => false,
-            'toggle'    => null,   // 自定义触发器 HTML（完全接管）
-            'menu'      => null,   // 自定义菜单内容 HTML
+            'align' => null,
+            'split' => false,
+            'toggle' => null,   // 自定义触发器 HTML（完全接管）
+            'menu' => null,   // 自定义菜单内容 HTML
         ];
     }
 
@@ -62,6 +62,7 @@ class Dropdown extends Component
             // 标量（字符串）容错：非数组项按 text 处理，避免 PHP 8 下标访问致命错误
             if (! is_array($it)) {
                 $it = ['text' => (string) $it];
+
                 continue;
             }
             if (! isset($it['text']) && isset($it['label'])) {
@@ -75,9 +76,9 @@ class Dropdown extends Component
         $this->options['items'] = $items;
 
         $dirClass = match ($this->get('direction')) {
-            'up'    => 'btn-group dropup',
+            'up' => 'btn-group dropup',
             'start' => 'btn-group dropstart',
-            'end'   => 'btn-group dropend',
+            'end' => 'btn-group dropend',
             default => $this->get('split') ? 'btn-group' : 'dropdown',
         };
 
@@ -86,41 +87,44 @@ class Dropdown extends Component
             ? $this->get('variant')
             : 'light';
 
-        $html = '<div' . $this->attrs(['class' => $dirClass]) . '>';
+        $html = '<div'.$this->attrs(['class' => $dirClass]).'>';
 
         if ($this->get('toggle') !== null) {
             $html .= $this->raw($this->get('toggle'));
         } else {
-            $btnClass = Html::cls('btn', 'btn-' . $variant, $this->get('size') ? 'btn-' . $this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '');
+            $btnClass = Html::cls('btn', 'btn-'.$variant, $this->get('size') ? 'btn-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '');
             if ($this->get('split')) {
-                $html .= '<button type="button" class="' . $btnClass . '">' . $this->e($this->get('text')) . '</button>';
-                $html .= '<button type="button" class="' . $btnClass . ' dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">Toggle</span></button>';
+                $html .= '<button type="button" class="'.$btnClass.'">'.$this->e($this->get('text')).'</button>';
+                $html .= '<button type="button" class="'.$btnClass.' dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">Toggle</span></button>';
             } else {
-                $html .= '<button type="button" class="' . $btnClass . ' dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">' . $this->e($this->get('text')) . '</button>';
+                $html .= '<button type="button" class="'.$btnClass.' dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">'.$this->e($this->get('text')).'</button>';
             }
         }
         $menuClass = Html::cls('dropdown-menu', $this->get('align') === 'end' ? 'dropdown-menu-end' : '');
-        $html     .= '<div class="' . $menuClass . '">';
+        $html .= '<div class="'.$menuClass.'">';
         if ($this->get('menu') !== null) {
             $html .= $this->raw($this->get('menu'));
         } else {
             foreach ((array) $this->get('items', []) as $item) {
                 if (! empty($item['divider'])) {
                     $html .= '<div class="dropdown-divider"></div>';
+
                     continue;
                 }
                 if (isset($item['header'])) {
-                    $html .= '<h6 class="dropdown-header">' . $this->e($item['header']) . '</h6>';
+                    $html .= '<h6 class="dropdown-header">'.$this->e($item['header']).'</h6>';
+
                     continue;
                 }
-                $icon  = isset($item['icon']) ? '<i class="' . $this->e($item['icon']) . ' me-2"></i>' : '';
+                $icon = isset($item['icon']) ? '<i class="'.$this->e($item['icon']).' me-2"></i>' : '';
                 $attrs = Html::attrs(array_filter([
-                    'class'   => Html::cls('dropdown-item', $item['class'] ?? '', ['active' => ! empty($item['active']), 'disabled' => ! empty($item['disabled'])]),
-                    'href'    => $item['url'] ?? '#!',
+                    'class' => Html::cls('dropdown-item', $item['class'] ?? '', ['active' => ! empty($item['active']), 'disabled' => ! empty($item['disabled'])]),
+                    // href 走 safeUrl 白名单，拦截 javascript: 等伪协议（保持原默认 #!）
+                    'href' => $this->safeUrl($item['url'] ?? '#!'),
                     'onclick' => $item['onclick'] ?? null,
-                    'target'  => $item['target'] ?? null,
+                    'target' => $item['target'] ?? null,
                 ], fn ($v) => $v !== null));
-                $html .= '<a' . $attrs . '>' . $icon . $this->e($item['text'] ?? '') . '</a>';
+                $html .= '<a'.$attrs.'>'.$icon.$this->e($item['text'] ?? '').'</a>';
             }
         }
         $html .= '</div></div>';

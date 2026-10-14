@@ -6,6 +6,7 @@ namespace zxf\XfAdmin\Laravel;
 
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 /**
@@ -30,24 +31,24 @@ class AssetController extends Controller
      * 允许的静态资源 MIME 映射（白名单）
      */
     private const MIME_TYPES = [
-        'css'   => 'text/css; charset=utf-8',
-        'js'    => 'text/javascript; charset=utf-8',
-        'mjs'   => 'text/javascript; charset=utf-8',
-        'map'   => 'application/json',
-        'json'  => 'application/json',
-        'svg'   => 'image/svg+xml',
-        'png'   => 'image/png',
-        'jpg'   => 'image/jpeg',
-        'jpeg'  => 'image/jpeg',
-        'gif'   => 'image/gif',
-        'ico'   => 'image/x-icon',
-        'webp'  => 'image/webp',
-        'avif'  => 'image/avif',
-        'woff'  => 'font/woff',
+        'css' => 'text/css; charset=utf-8',
+        'js' => 'text/javascript; charset=utf-8',
+        'mjs' => 'text/javascript; charset=utf-8',
+        'map' => 'application/json',
+        'json' => 'application/json',
+        'svg' => 'image/svg+xml',
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'gif' => 'image/gif',
+        'ico' => 'image/x-icon',
+        'webp' => 'image/webp',
+        'avif' => 'image/avif',
+        'woff' => 'font/woff',
         'woff2' => 'font/woff2',
-        'ttf'   => 'font/ttf',
-        'eot'   => 'application/vnd.ms-fontobject',
-        'otf'   => 'font/otf',
+        'ttf' => 'font/ttf',
+        'eot' => 'application/vnd.ms-fontobject',
+        'otf' => 'font/otf',
     ];
 
     /**
@@ -57,7 +58,7 @@ class AssetController extends Controller
      */
     public function serve(string $path): SymfonyResponse
     {
-        $base = __DIR__ . '/../../resources/assets';
+        $base = __DIR__.'/../../resources/assets';
         $realBase = realpath($base);
 
         if ($realBase === false) {
@@ -71,9 +72,9 @@ class AssetController extends Controller
         }
 
         // 路径穿越防护：文件必须真实存在、可读，且位于资源根目录内
-        $realFile = realpath($base . '/' . ltrim($path, '/'));
+        $realFile = realpath($base.'/'.ltrim($path, '/'));
         if ($realFile === false
-            || ! str_starts_with($realFile, $realBase . DIRECTORY_SEPARATOR)
+            || ! str_starts_with($realFile, $realBase.DIRECTORY_SEPARATOR)
             || ! is_file($realFile)
             || ! is_readable($realFile)
         ) {
@@ -81,13 +82,13 @@ class AssetController extends Controller
         }
 
         $contentType = self::MIME_TYPES[$extension];
-        $etag = md5($realFile . ':' . filemtime($realFile));
+        $etag = md5($realFile.':'.filemtime($realFile));
 
         $headers = [
-            'Content-Type'  => $contentType,
+            'Content-Type' => $contentType,
             'Cache-Control' => 'public, max-age=31536000',
-            'Expires'       => gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000),
-            'ETag'          => $etag,
+            'Expires' => gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000),
+            'ETag' => $etag,
         ];
 
         // 客户端已缓存且未变更 -> 304 Not Modified（零流量）
@@ -101,6 +102,6 @@ class AssetController extends Controller
     /** 供 ServiceProvider 注册路由时使用的前缀（去掉首斜杠） */
     public static function prefix(): string
     {
-        return ltrim((string) \Illuminate\Support\Facades\Config::get('xfadmin.assets_url', '/zxf/xfadmin'), '/');
+        return ltrim((string) Config::get('xfadmin.assets_url', '/zxf/xfadmin'), '/');
     }
 }

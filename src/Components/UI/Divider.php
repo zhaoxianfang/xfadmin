@@ -25,8 +25,8 @@ class Divider extends Component
     protected function defaults(): array
     {
         return [
-            'text'    => '',
-            'icon'    => '',
+            'text' => '',
+            'icon' => '',
             'variant' => '',
         ];
     }
@@ -38,17 +38,18 @@ class Divider extends Component
      */
     protected function html(): string
     {
-        $variant = (string) $this->get('variant');
-        $text    = (string) $this->get('text');
-        $icon    = (string) $this->get('icon');
-        $inner   = '';
+        // variant 白名单（拼 xf-divider-* 类）；默认为空（纯线条，不着色），非法值同样不加类
+        $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, '');
+        $text = (string) $this->get('text');
+        $icon = (string) $this->get('icon');
+        $inner = '';
         if ($text !== '' || $icon !== '') {
             $inner = '<span class="xf-divider-inner">'
-                . ($icon !== '' ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '')
-                . $this->e($text) . '</span>';
+                .($icon !== '' ? '<i class="'.$this->iconClass($icon).' me-1"></i>' : '')
+                .$this->e($text).'</span>';
         }
-        $cls = 'xf-divider' . ($variant !== '' ? ' xf-divider-' . $this->e($variant) : '');
+        $cls = 'xf-divider'.($variant !== '' ? ' xf-divider-'.$variant : '');
 
-        return '<div' . $this->attrs(['class' => $cls]) . '>' . $inner . '</div>';
+        return '<div'.$this->attrs(['class' => $cls]).'>'.$inner.'</div>';
     }
 }

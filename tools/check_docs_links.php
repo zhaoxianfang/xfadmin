@@ -11,14 +11,14 @@
 
 declare(strict_types=1);
 
-$root = dirname(__DIR__) . '/docs';
+$root = dirname(__DIR__).'/docs';
 
 $rii = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS)
 );
 
 $total = 0;
-$bad   = [];
+$bad = [];
 
 foreach ($rii as $file) {
     if (! $file->isFile() || $file->getExtension() !== 'md') {
@@ -35,19 +35,19 @@ foreach ($rii as $file) {
             continue;      // 外链跳过
         }
         $total++;
-        $clean  = rtrim(urldecode($link), '.;,');
-        $target = realpath(dirname($file->getPathname()) . '/' . $clean);
+        $clean = rtrim(urldecode($link), '.;,');
+        $target = realpath(dirname($file->getPathname()).'/'.$clean);
         if ($target === false || ! file_exists($target)) {
-            $bad[] = str_replace($root . '/', '', $file->getPathname()) . '  →  ' . $link;
+            $bad[] = str_replace($root.'/', '', $file->getPathname()).'  →  '.$link;
         }
     }
 }
 
 echo "检查内部链接：{$total} 个\n";
 if ($bad !== []) {
-    echo '失效链接：' . count($bad) . " 个\n";
+    echo '失效链接：'.count($bad)." 个\n";
     foreach (array_unique($bad) as $b) {
-        echo '  ✘ ' . $b . "\n";
+        echo '  ✘ '.$b."\n";
     }
     exit(1);
 }

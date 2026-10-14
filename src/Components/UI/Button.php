@@ -62,7 +62,9 @@ class Button extends Component
      */
     protected function html(): string
     {
-        $variant = $this->get('variant');
+        // variant 白名单（拼 btn-*/btn-soft-*/btn-outline-*/btn-ghost-* 类），
+        // 含 outline-* 描边变体，非法值回退默认 primary
+        $variant = $this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary');
         $style = 'btn-'.$variant;
         if ($this->get('soft')) {
             $style = 'btn-soft-'.$variant;
@@ -101,7 +103,7 @@ class Button extends Component
         if ($this->get('onclick')) {
             $attrs['onclick'] = $this->get('onclick');
         }
-        $icon = $this->get('icon') ? '<i class="'.$this->e($this->get('icon')).($this->get('icon_only') || $this->get('text') === '' ? '"' : ' me-1"').'></i>' : '';
+        $icon = $this->get('icon') ? '<i class="'.$this->iconClass($this->get('icon')).($this->get('icon_only') || $this->get('text') === '' ? '"' : ' me-1"').'></i>' : '';
         $label = $this->get('ladda') ? '<span class="ladda-label">'.$icon.$this->e($this->get('text')).'</span>' : $icon.$this->e($this->get('text'));
 
         if ($this->get('href') !== null) {

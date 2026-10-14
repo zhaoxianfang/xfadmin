@@ -27,10 +27,10 @@ class InvoicePrintButton extends Component
     protected function defaults(): array
     {
         return [
-            'text'   => '打印 / 下载 PDF',
+            'text' => '打印 / 下载 PDF',
             'variant' => 'primary',
             'target' => null,
-            'icon'   => 'ti ti-printer',
+            'icon' => 'ti ti-printer',
         ];
     }
 
@@ -41,19 +41,26 @@ class InvoicePrintButton extends Component
      */
     protected function html(): string
     {
-        $text    = $this->get('text');
+        $text = $this->get('text');
         $variant = $this->enum($this->get('variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary');
-        $icon    = $this->get('icon');
-        $target  = $this->get('target');
+        $icon = $this->get('icon');
+        $target = $this->get('target');
 
-        $cfg = $target ? ['target' => $target] : [];
+        // target 为 CSS 选择器（前端 document.querySelector 消费），白名单限制字符集，
+        // 拒绝携带 javascript: / url( / 表达式等可疑构造，异常值一律退回整页打印
+        $cfg = [];
+        if (is_string($target) && $target !== ''
+            && preg_match('/^[#.]?[A-Za-z][\w\-.#\[\]="\'()\s,:>+~]*$/', $target) === 1) {
+            $cfg = ['target' => $target];
+        }
         $attrs = $this->initAttrs('print', $cfg);
 
         $attrStr = '';
         foreach ($attrs as $k => $v) {
-            $attrStr .= ' ' . $k . '="' . $this->e($v) . '"';
+            $attrStr .= ' '.$k.'="'.$this->e($v).'"';
         }
-        return '<button type="button" class="btn btn-' . $variant . '"' . $attrStr . '>'
-            . ($icon ? '<i class="' . $this->e($icon) . ' me-1"></i>' : '') . $this->e($text) . '</button>';
+
+        return '<button type="button" class="btn btn-'.$variant.'"'.$attrStr.'>'
+            .($icon ? '<i class="'.$this->iconClass($icon).' me-1"></i>' : '').$this->e($text).'</button>';
     }
 }

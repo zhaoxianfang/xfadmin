@@ -12,6 +12,8 @@ use zxf\XfAdmin\Components\Component;
  * 结构：list-group.nested-sortable（可多层嵌套 list-group.nested-sortable），
  * 由 xfadmin.js 的 nestable 模块基于 SortableJS（group:'nested'）初始化。
  *
+ * 注意：items 的 content 为可信 HTML 槽位（原样输出），传入用户数据前务必自行转义，防止 XSS。
+ *
  * XfAdmin::nestable([
  *     'items'  => [
  *         ['content' => '设计阶段', 'id' => 1, 'children' => [
@@ -54,17 +56,18 @@ class Nestable extends Component
     protected function html(): string
     {
         $handle = (bool) $this->get('handle');
-        $class  = 'list-group nested-sortable' . ($handle ? ' nested-sortable-handle' : '');
+        $class = 'list-group nested-sortable'.($handle ? ' nested-sortable-handle' : '');
 
-        $html = '<div' . $this->attrs(['class' => $class, 'data-xf' => 'nestable']) . '>';
+        $html = '<div'.$this->attrs(['class' => $class, 'data-xf' => 'nestable']).'>';
         foreach ((array) $this->get('items', []) as $item) {
             $html .= $this->renderItem($item, $handle);
         }
         $html .= '</div>';
 
         if ($this->get('input')) {
-            $html .= '<input type="hidden" name="' . $this->e($this->get('input')) . '" data-nestable-input>';
+            $html .= '<input type="hidden" name="'.$this->e($this->get('input')).'" data-nestable-input>';
         }
+
         return $html;
     }
 
@@ -72,27 +75,27 @@ class Nestable extends Component
     /**
      * render Item（protected实例方法）
      *
-     * @param mixed $item item
-     * @param bool $handle handle
-     *
+     * @param  mixed  $item  item
+     * @param  bool  $handle  handle
      * @return string result
      */
     protected function renderItem($item, bool $handle): string
     {
-        $item   = is_array($item) ? $item : ['content' => (string) $item];
-        $id     = $item['id'] ?? null;
+        $item = is_array($item) ? $item : ['content' => (string) $item];
+        $id = $item['id'] ?? null;
         $handleIcon = $handle ? '<i class="ti ti-grip-horizontal align-middle sort-handle me-2" style="cursor:grab"></i>' : '';
-        $content = $handleIcon . $this->raw($item['content'] ?? '');
+        $content = $handleIcon.$this->raw($item['content'] ?? '');
 
         $children = '';
-        if (!empty($item['children'])) {
-            $children = '<div class="list-group nested-sortable' . ($handle ? ' nested-sortable-handle' : '') . '">';
+        if (! empty($item['children'])) {
+            $children = '<div class="list-group nested-sortable'.($handle ? ' nested-sortable-handle' : '').'">';
             foreach ((array) $item['children'] as $c) {
                 $children .= $this->renderItem($c, $handle);
             }
             $children .= '</div>';
         }
-        return '<div class="list-group-item"' . ($id !== null ? ' data-id="' . $this->e((string) $id) . '"' : '') . '>'
-            . $content . $children . '</div>';
+
+        return '<div class="list-group-item"'.($id !== null ? ' data-id="'.$this->e((string) $id).'"' : '').'>'
+            .$content.$children.'</div>';
     }
 }

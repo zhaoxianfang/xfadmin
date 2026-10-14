@@ -29,10 +29,10 @@ class Row extends Component
     protected function defaults(): array
     {
         return [
-            'gutter'  => null,
-            'align'   => null,   // start|center|end  => align-items-*
+            'gutter' => null,
+            'align' => null,   // start|center|end  => align-items-*
             'justify' => null,   // start|center|end|between|around => justify-content-*
-            'cols'    => [],
+            'cols' => [],
             'content' => null,   // 直接传内容（可与 cols 混用）
         ];
     }
@@ -45,19 +45,38 @@ class Row extends Component
     protected function html(): string
     {
         $classes = ['row'];
-        $gutter  = $this->get('gutter');
+        $gutter = $this->get('gutter');
         if (is_array($gutter)) {
             foreach ($gutter as $axis => $v) {
-                $classes[] = 'g' . ($axis === 'x' || $axis === 'y' ? $axis : '') . '-' . $v;
+                // 轴名限 x/y、值限 0-5 整数：非法项跳过，杜绝任意 class 注入
+                if (! in_array($axis, ['x', 'y'], true) || ! is_numeric($v)) {
+                    continue;
+                }
+                $n = (int) $v;
+                if ($n < 0 || $n > 5) {
+                    continue;
+                }
+                $classes[] = 'g'.$axis.'-'.$n;
             }
-        } elseif ($gutter !== null) {
-            $classes[] = 'g-' . $gutter;
+        } elseif ($gutter !== null && is_numeric($gutter)) {
+            $n = (int) $gutter;
+            if ($n >= 0 && $n <= 5) {
+                $classes[] = 'g-'.$n;
+            }
         }
         if ($this->get('align')) {
-            $classes[] = 'align-items-' . $this->get('align');
+            // align-items-* 白名单（文档值域 start|center|end）
+            $align = $this->enum($this->get('align'), ['start', 'center', 'end'], '');
+            if ($align !== '') {
+                $classes[] = 'align-items-'.$align;
+            }
         }
         if ($this->get('justify')) {
-            $classes[] = 'justify-content-' . $this->get('justify');
+            // justify-content-* 白名单（文档值域 start|center|end|between|around）
+            $justify = $this->enum($this->get('justify'), ['start', 'center', 'end', 'between', 'around'], '');
+            if ($justify !== '') {
+                $classes[] = 'justify-content-'.$justify;
+            }
         }
         $inner = '';
         foreach ((array) $this->get('cols', []) as $col) {
@@ -71,6 +90,6 @@ class Row extends Component
         }
         $inner .= $this->raw($this->get('content'));
 
-        return '<div' . $this->attrs(['class' => Html::cls($classes)]) . '>' . $inner . '</div>';
+        return '<div'.$this->attrs(['class' => Html::cls($classes)]).'>'.$inner.'</div>';
     }
 }

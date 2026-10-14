@@ -50,7 +50,7 @@ echo XfAdmin::card([
 ApexCharts 图表（折线/柱/饼/雷达等）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\ApexChart`
-> **文件**：`src/Components/Chart/ApexChart.php`（70 行）
+> **文件**：`src/Components/Chart/ApexChart.php`（87 行）
 > **依赖插件**：`apexcharts`
 
 **用法示例**
@@ -109,7 +109,7 @@ echo XfAdmin::apexChart([
 ApexCharts 树形图。
 
 > **类**：`zxf\XfAdmin\Components\Chart\ApexTree`
-> **文件**：`src/Components/Chart/ApexTree.php`（72 行）
+> **文件**：`src/Components/Chart/ApexTree.php`（112 行）
 > **依赖插件**：`apextree`
 
 **用法示例**
@@ -171,7 +171,7 @@ echo XfAdmin::apexTree([
 ApexCharts 桑基图（流量关系）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\ApexSankey`
-> **文件**：`src/Components/Chart/ApexSankey.php`（69 行）
+> **文件**：`src/Components/Chart/ApexSankey.php`（104 行）
 > **依赖插件**：`apexsankey`
 
 **用法示例**
@@ -236,7 +236,7 @@ echo XfAdmin::apexSankey([
 ECharts 图表（通用可视化）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\EChart`
-> **文件**：`src/Components/Chart/EChart.php`（52 行）
+> **文件**：`src/Components/Chart/EChart.php`（72 行）
 > **依赖插件**：`echarts`
 
 **用法示例**
@@ -285,7 +285,7 @@ echo XfAdmin::echart([
 矢量地图（jsVectorMap）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\VectorMap`
-> **文件**：`src/Components/Chart/VectorMap.php`（48 行）
+> **文件**：`src/Components/Chart/VectorMap.php`（67 行）
 > **依赖插件**：`jsvectormap-world`
 
 **用法示例**
@@ -334,7 +334,7 @@ echo XfAdmin::vectorMap([
 Leaflet 地图（支持离线瓦片）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\LeafletMap`
-> **文件**：`src/Components/Chart/LeafletMap.php`（83 行）
+> **文件**：`src/Components/Chart/LeafletMap.php`（109 行）
 > **依赖插件**：`leaflet`
 
 **用法示例**
@@ -398,7 +398,7 @@ echo XfAdmin::leafletMap([
 Google 地图。
 
 > **类**：`zxf\XfAdmin\Components\Chart\GoogleMap`
-> **文件**：`src/Components/Chart/GoogleMap.php`（55 行）
+> **文件**：`src/Components/Chart/GoogleMap.php`（80 行）
 > **依赖插件**：无
 
 **用法示例**

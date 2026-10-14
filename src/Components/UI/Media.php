@@ -28,12 +28,12 @@ class Media extends Component
     protected function defaults(): array
     {
         return [
-            'image'  => '',
+            'image' => '',
             'avatar' => false,
-            'title'  => '',
-            'text'   => '',
-            'meta'   => '',
-            'href'   => '',
+            'title' => '',
+            'text' => '',
+            'meta' => '',
+            'href' => '',
         ];
     }
 
@@ -44,36 +44,37 @@ class Media extends Component
      */
     protected function html(): string
     {
-        $img   = (string) $this->get('image');
+        $img = (string) $this->get('image');
         $title = (string) $this->get('title');
-        $text  = (string) $this->get('text');
-        $meta  = (string) $this->get('meta');
-        $href  = $this->safeUrl($this->get('href'));
+        $text = (string) $this->get('text');
+        $meta = (string) $this->get('meta');
+        $href = $this->safeUrl($this->get('href'));
 
         $inner = '<div class="xf-media d-flex gap-3">';
         if ($img !== '') {
             $src = $this->img($img);
             if ($this->get('avatar')) {
-                $inner .= '<span class="avatar avatar-sm flex-shrink-0"><img src="' . $this->e($src) . '" class="rounded-circle img-fluid" alt=""></span>';
+                $inner .= '<span class="avatar avatar-sm flex-shrink-0"><img src="'.$this->e($src).'" class="rounded-circle img-fluid" alt=""></span>';
             } else {
-                $inner .= '<img src="' . $this->e($src) . '" class="xf-media-img rounded flex-shrink-0" alt="">';
+                $inner .= '<img src="'.$this->e($src).'" class="xf-media-img rounded flex-shrink-0" alt="">';
             }
         }
         $inner .= '<div class="xf-media-body flex-grow-1">';
         if ($title !== '') {
-            $inner .= '<div class="xf-media-title fw-semibold">' . $this->e($title) . '</div>';
+            $inner .= '<div class="xf-media-title fw-semibold">'.$this->e($title).'</div>';
         }
         if ($text !== '') {
-            $inner .= '<div class="xf-media-text text-muted small">' . $this->e($text) . '</div>';
+            $inner .= '<div class="xf-media-text text-muted small">'.$this->e($text).'</div>';
         }
         if ($meta !== '') {
-            $inner .= '<div class="xf-media-meta small text-muted mt-1">' . $this->e($meta) . '</div>';
+            $inner .= '<div class="xf-media-meta small text-muted mt-1">'.$this->e($meta).'</div>';
         }
         $inner .= '</div></div>';
 
         if ($href !== '') {
-            return '<a' . $this->attrs(['href' => $href, 'class' => 'text-decoration-none text-reset']) . '>' . $inner . '</a>';
+            return '<a'.$this->attrs(['href' => $href, 'class' => 'text-decoration-none text-reset']).'>'.$inner.'</a>';
         }
+
         return $inner;
     }
 }

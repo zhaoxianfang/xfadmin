@@ -42,7 +42,7 @@ echo XfAdmin::chatConversationPanel(['messages' => \$messages, 'action' => '/cha
 聊天应用整页（会话+消息）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatApp`
-> **文件**：`src/Components/Data/ChatApp.php`（94 行）
+> **文件**：`src/Components/Data/ChatApp.php`（120 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -105,7 +105,7 @@ echo XfAdmin::chatApp([
 聊天框（消息气泡容器）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatBox`
-> **文件**：`src/Components/Data/ChatBox.php`（87 行）
+> **文件**：`src/Components/Data/ChatBox.php`（112 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -169,7 +169,7 @@ echo XfAdmin::chatBox([
 聊天会话面板（单会话消息区）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatConversationPanel`
-> **文件**：`src/Components/Data/ChatConversationPanel.php`（66 行）
+> **文件**：`src/Components/Data/ChatConversationPanel.php`（88 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -222,7 +222,7 @@ echo XfAdmin::chatConversationPanel([
 聊天气泡（单条消息）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatMessageBubble`
-> **文件**：`src/Components/Data/ChatMessageBubble.php`（58 行）
+> **文件**：`src/Components/Data/ChatMessageBubble.php`（81 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -275,7 +275,7 @@ echo XfAdmin::chatMessageBubble([
 邮件应用整页（列表+阅读+撰写）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EmailApp`
-> **文件**：`src/Components/Data/EmailApp.php`（109 行）
+> **文件**：`src/Components/Data/EmailApp.php`（135 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -333,7 +333,7 @@ echo XfAdmin::emailApp([
 邮件撰写（收件人/主题/正文/附件）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EmailCompose`
-> **文件**：`src/Components/Data/EmailCompose.php`（68 行）
+> **文件**：`src/Components/Data/EmailCompose.php`（88 行）
 > **依赖插件**：`quill`
 
 **用法示例**
@@ -381,7 +381,7 @@ echo XfAdmin::emailCompose([
 邮件列表（收件箱条目）。
 
 > **类**：`zxf\XfAdmin\Components\Data\MailList`
-> **文件**：`src/Components/Data/MailList.php`（52 行）
+> **文件**：`src/Components/Data/MailList.php`（79 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -433,7 +433,7 @@ echo XfAdmin::mailList([
 Outlook 风格邮件客户端。
 
 > **类**：`zxf\XfAdmin\Components\Data\Outlook`
-> **文件**：`src/Components/Data/Outlook.php`（88 行）
+> **文件**：`src/Components/Data/Outlook.php`（109 行）
 > **依赖插件**：无
 
 **用法示例**

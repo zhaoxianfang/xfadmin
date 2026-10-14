@@ -1,7 +1,7 @@
 # XfAdmin
 
 > 基于 **INSPINIA v4.1.0** 后台模板拆分的 PHP 组件化后台 UI 扩展包 ·
-> **213 个组件** · 纯原生 JS（不依赖 Node 构建）· 离线可用 ·
+> **216 个组件（228 个注册别名）** · 纯原生 JS（不依赖 Node 构建）· 离线可用 ·
 > 支持 **Laravel 11/12** 与 **ThinkPHP 8+** · 要求 **PHP ≥ 8.2**
 
 `XfAdmin` 把 INSPINIA 后台模板的布局、导航、表格、表单、图表、UI 与业务组件全部拆分为
@@ -20,7 +20,7 @@ echo XfAdmin::page([
 ## ✨ 特性
 
 - **纯 PHP 组件化**：每个 UI 元素都是一个 PHP 类，返回 `(string)` 即 HTML，无模板引擎强绑定。
-- **213 个组件全覆盖**：布局 / 导航 / 栅格 / UI 基础 / 表单 / 图表地图 / 表格 / 数据业务 / 杂项 九大分类，
+- **216 个组件全覆盖**：布局 / 导航 / 栅格 / UI 基础 / 表单 / 图表地图 / 表格 / 数据业务 / 杂项 九大分类，
   并完整覆盖 INSPINIA 后台约 220 个页面（见 [页面映射](docs/pages.md)）。
 - **按需加载 + 自动去重**：组件声明自身依赖的 CSS/JS，同一资源在一个页面内**最多加载一次**（见 [资源与去重](docs/assets.md)）。
 - **离线可用**：所有第三方插件（jQuery、Bootstrap 5、DataTables、ApexCharts、Tagify、FullCalendar…）均随包内置，不请求外网。
@@ -33,7 +33,7 @@ echo XfAdmin::page([
 
 ---
 
-## 📦 组件一览（共 213 个）
+## 📦 组件一览（共 216 个组件 / 228 个注册别名）
 
 完整参数与示例见 [组件总览](docs/components.md)。
 
@@ -176,8 +176,8 @@ echo XfAdmin::assets()->scripts();  // 放在 </body> 前
 
 ```php
 XfAdmin::has('dataTable');          // 是否已注册
-XfAdmin::version();                 // '1.0.0'
-XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=1.0.0
+XfAdmin::version();                 // '2.2.15'
+XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=2.2.15
 ```
 
 ---
@@ -203,7 +203,7 @@ Laravel 用户可注册 Blade 指令与服务提供者。详见 [自定义与扩
 
 | 文档 | 说明 |
 |------|------|
-| [组件总览](docs/components.md) | 全部 213 个组件的参数、事件与门面全局方法 |
+| [组件总览](docs/components.md) | 全部 216 个组件的参数、事件与门面全局方法 |
 | [组件详细参考](docs/components-reference.md) | 每个组件的数据输入/输出、前端控件（data-xf）与可复制用法示例 |
 | [布局与页面](docs/layout.md) | `page` / `authPage` / `errorPage` 等整页骨架与布局变体 |
 | [表格](docs/tables.md) | 静态 `table` 与全功能 `dataTable` |

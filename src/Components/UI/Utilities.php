@@ -49,7 +49,7 @@ class Utilities extends Component
                 $cards .= $this->builtin($block);
             } elseif (is_array($block)) {
                 $title = (string) ($block['title'] ?? '');
-                $body  = (string) ($block['body'] ?? '');
+                $body = (string) ($block['body'] ?? '');
                 $cards .= $this->card($title, $body);
             }
         }
@@ -58,32 +58,31 @@ class Utilities extends Component
             if (trim($c) === '') {
                 continue;
             }
-            $cols .= '<div class="col-lg-6">' . $c . '</div>';
+            $cols .= '<div class="col-lg-6">'.$c.'</div>';
         }
-        return '<div class="container-xxl"><div class="row">' . $cols . '</div></div>';
+
+        return '<div class="container-xxl"><div class="row">'.$cols.'</div></div>';
     }
 
     /**
      * card（private实例方法）
      *
-     * @param string $title title
-     * @param string $body body
-     *
+     * @param  string  $title  title
+     * @param  string  $body  body
      * @return string result
      */
     private function card(string $title, string $body): string
     {
         return '<div class="card">'
-            . '<div class="card-header"><h4 class="card-title">' . $this->e($title) . '</h4></div>'
-            . '<div class="card-body">' . $body . '</div>'
-            . '</div><!-- end card--><!--SPLIT-->';
+            .'<div class="card-header"><h4 class="card-title">'.$this->e($title).'</h4></div>'
+            .'<div class="card-body">'.$body.'</div>'
+            .'</div><!-- end card--><!--SPLIT-->';
     }
 
     /**
      * builtin（private实例方法）
      *
-     * @param string $key key
-     *
+     * @param  string  $key  key
      * @return string result
      */
     private function builtin(string $key): string

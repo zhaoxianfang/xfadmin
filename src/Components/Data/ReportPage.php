@@ -32,10 +32,10 @@ class ReportPage extends Component
     protected function defaults(): array
     {
         return [
-            'title'   => '报表',
+            'title' => '报表',
             'filters' => '',
-            'charts'  => [],
-            'table'   => '',
+            'charts' => [],
+            'table' => '',
         ];
     }
 
@@ -46,34 +46,37 @@ class ReportPage extends Component
      */
     protected function html(): string
     {
-        $title   = $this->e($this->get('title', '报表'));
+        $title = $this->e($this->get('title', '报表'));
         // filters / table 是 HTML 内容槽位（Form / DataTable 组件实例或开发者自定义 HTML），按 raw 原样输出
         $filters = $this->raw($this->get('filters', ''));
-        $charts  = (array) $this->get('charts', []);
-        $table   = $this->raw($this->get('table', ''));
+        $charts = (array) $this->get('charts', []);
+        $table = $this->raw($this->get('table', ''));
 
         $html = '<div class="d-flex justify-content-between align-items-center mb-3">'
-            . '<h4 class="mb-0">' . $title . '</h4></div>';
+            .'<h4 class="mb-0">'.$title.'</h4></div>';
 
         if ($filters !== '') {
-            $html .= '<div class="card mb-3"><div class="card-body">' . $filters . '</div></div>';
+            $html .= '<div class="card mb-3"><div class="card-body">'.$filters.'</div></div>';
         }
         if (! empty($charts)) {
             $html .= '<div class="row g-3">';
             foreach ($charts as $c) {
                 $c = (array) $c;
-                $width = (int) ($c['width'] ?? 12);
-                $body  = $this->raw($c['body'] ?? '');
+                // width 夹紧 1-12：非法值回退整行 12 列，避免产生 col-xl-0 等非法列类
+                $w = (int) ($c['width'] ?? 12);
+                $width = ($w >= 1 && $w <= 12) ? $w : 12;
+                $body = $this->raw($c['body'] ?? '');
                 $ctitle = $this->e($c['title'] ?? '');
-                $html .= '<div class="col-xl-' . $width . '">'
-                    . '<div class="card h-100"><div class="card-header"><h6 class="mb-0">' . $ctitle . '</h6></div>'
-                    . '<div class="card-body">' . $body . '</div></div></div>';
+                $html .= '<div class="col-xl-'.$width.'">'
+                    .'<div class="card h-100"><div class="card-header"><h6 class="mb-0">'.$ctitle.'</h6></div>'
+                    .'<div class="card-body">'.$body.'</div></div></div>';
             }
             $html .= '</div>';
         }
         if ($table !== '') {
-            $html .= '<div class="mt-3">' . $table . '</div>';
+            $html .= '<div class="mt-3">'.$table.'</div>';
         }
+
         return $html;
     }
 }

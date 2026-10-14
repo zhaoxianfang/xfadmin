@@ -29,11 +29,11 @@ class Skeleton extends Component
     protected function defaults(): array
     {
         return [
-            'lines'    => 3,
-            'type'     => 'text',
-            'width'    => '100%',
-            'height'   => 16,
-            'circle'   => 48,
+            'lines' => 3,
+            'type' => 'text',
+            'width' => '100%',
+            'height' => 16,
+            'circle' => 48,
             'animated' => true,
         ];
     }
@@ -45,29 +45,32 @@ class Skeleton extends Component
      */
     protected function html(): string
     {
-        $type     = (string) $this->get('type');
+        $type = (string) $this->get('type');
         $animated = $this->get('animated') ? ' xf-skeleton-animated' : '';
-        $cls      = 'xf-skeleton' . $animated;
+        $cls = 'xf-skeleton'.$animated;
 
         if ($type === 'circle') {
             $d = (int) $this->get('circle');
 
-            return '<span' . $this->attrs(['class' => $cls . ' xf-skeleton-circle', 'style' => "width:{$d}px;height:{$d}px"]) . '></span>';
+            return '<span'.$this->attrs(['class' => $cls.' xf-skeleton-circle', 'style' => "width:{$d}px;height:{$d}px"]).'></span>';
         }
         if ($type === 'rect') {
             $h = (int) $this->get('height');
-            $w = $this->e($this->get('width'));
+            // width 拼入 style 属性，走 cssLen 白名单（仅数字+单位），杜绝分号注入
+            $w = $this->cssLen($this->get('width'), '100%');
 
-            return '<span' . $this->attrs(['class' => $cls . ' xf-skeleton-rect', 'style' => "width:{$w};height:{$h}px"]) . '></span>';
+            return '<span'.$this->attrs(['class' => $cls.' xf-skeleton-rect', 'style' => "width:{$w};height:{$h}px"]).'></span>';
         }
-        $n   = max(1, (int) $this->get('lines'));
-        $w   = $this->e($this->get('width'));
+        // lines 加上界夹紧（1~12），防止极端值渲染过多个占位行
+        $n = max(1, min(12, (int) $this->get('lines')));
+        $w = $this->cssLen($this->get('width'), '100%');
         $out = '';
         for ($i = 0; $i < $n; $i++) {
             $mw = ($i === $n - 1 && $n > 1) ? '60%' : $w; // 末行略短，更接近真实文本
             // 循环内只输出自身 class/style，根属性（id/class/data-*）由外层 wrap 承载，避免重复 id
-            $out .= '<span' . Html::attrs(['class' => $cls . ' xf-skeleton-line', 'style' => "width:{$mw}"]) . '></span>';
+            $out .= '<span'.Html::attrs(['class' => $cls.' xf-skeleton-line', 'style' => "width:{$mw}"]).'></span>';
         }
-        return '<div' . $this->attrs(['class' => 'xf-skeleton-wrap']) . '>' . $out . '</div>';
+
+        return '<div'.$this->attrs(['class' => 'xf-skeleton-wrap']).'>'.$out.'</div>';
     }
 }

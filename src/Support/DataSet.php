@@ -57,7 +57,7 @@ class DataSet
      *
      * @param  iterable|object  $rows  数组数据 / Traversable / Laravel 查询构造器
      * @param  array  $params  请求参数（如 $_GET、request()->all()）
-     * @param  array  $options  searchable | filters | transform | columns_map
+     * @param  array  $options  searchable | filters | transform
      */
     public static function response(iterable|object $rows, array $params = [], array $options = []): array
     {
@@ -252,8 +252,8 @@ class DataSet
             });
         }
 
-        // 5. 分页
-        $page = array_slice($data, $req['start'], $req['length'] > 0 ? $req['length'] : null);
+        // 5. 分页（length<=0 与查询构造器管线保持一致：按单页上限兜底，避免无界输出）
+        $page = array_slice($data, $req['start'], $req['length'] > 0 ? $req['length'] : self::$maxLength);
 
         // 6. 行转换
         $page = self::transformRows($page, $options);

@@ -63,7 +63,6 @@ class VideoPlayer extends Component
         $src = (string) $this->get('src', '');
         $poster = (string) $this->get('poster', '');
         $type = (string) $this->get('type', 'video/mp4');
-        $width = (string) $this->get('width', '100%');
         $autoplay = (bool) $this->get('autoplay', false);
         $controls = (bool) $this->get('controls', true);
         $loop = (bool) $this->get('loop', false);
@@ -73,22 +72,34 @@ class VideoPlayer extends Component
         $id = $this->uid('xf-video');
 
         $attrs = '';
-        if ($controls) $attrs .= ' controls';
-        if ($autoplay) $attrs .= ' autoplay';
-        if ($loop) $attrs .= ' loop';
-        if ($muted) $attrs .= ' muted';
-        if ($poster) $attrs .= ' poster="' . $this->e($poster) . '"';
+        if ($controls) {
+            $attrs .= ' controls';
+        }
+        if ($autoplay) {
+            $attrs .= ' autoplay';
+        }
+        if ($loop) {
+            $attrs .= ' loop';
+        }
+        if ($muted) {
+            $attrs .= ' muted';
+        }
+        // poster 为图片路径，走 img() 解析（外链原样 / 相对路径经 asset）；src 走 safeUrl 拦截伪协议
+        if ($poster) {
+            $attrs .= ' poster="'.$this->e($this->img($poster)).'"';
+        }
 
-        $style = $width === '100%' ? 'width:100%' : '';
-        if ($style) $style = ' style="' . $style . '"';
+        // width 支持任意合法 CSS 长度（此前仅 '100%' 生效）；cssLen 拦截分号注入等非法值并回退 100%
+        $w = $this->cssLen($this->get('width'), '100%');
+        $style = $w !== '' ? ' style="width:'.$w.'"' : '';
 
-        $html = '<div class="xf-video-player"' . $style . '>';
+        $html = '<div class="xf-video-player"'.$style.'>';
         if ($title) {
-            $html .= '<h5 class="mb-3">' . $this->e($title) . '</h5>';
+            $html .= '<h5 class="mb-3">'.$this->e($title).'</h5>';
         }
         if ($src) {
-            $html .= '<div class="ratio ratio-16x9"><video id="' . $this->e($id) . '"' . $attrs . ' class="w-100 rounded">';
-            $html .= '<source src="' . $this->e($src) . '" type="' . $this->e($type) . '">';
+            $html .= '<div class="ratio ratio-16x9"><video id="'.$this->e($id).'"'.$attrs.' class="w-100 rounded">';
+            $html .= '<source src="'.$this->e($this->safeUrl($src)).'" type="'.$this->e($type).'">';
             $html .= '您的浏览器不支持视频播放。</video></div>';
         } else {
             $html .= '<div class="ratio ratio-16x9 bg-dark rounded d-flex align-items-center justify-content-center">';

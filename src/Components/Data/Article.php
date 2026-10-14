@@ -62,63 +62,68 @@ class Article extends Component
         if (empty($a)) {
             return '';
         }
-        $avatar = ! empty($a['author']['avatar'])
-            ? \zxf\XfAdmin\XfAdmin::img((string) $a['author']['avatar'])
+        // author 允许传字符串，降级为 ['name' => ...]，避免字符串下标访问致命错误
+        $author = $a['author'] ?? [];
+        if (is_string($author)) {
+            $author = ['name' => $author];
+        }
+        $author = (array) $author;
+        $avatar = ! empty($author['avatar'])
+            ? XfAdmin::img((string) $author['avatar'])
             : '';
         $cover = ! empty($a['cover'])
-            ? \zxf\XfAdmin\XfAdmin::img((string) $a['cover'])
+            ? XfAdmin::img((string) $a['cover'])
             : '';
-        $author  = (array) ($a['author'] ?? []);
-        $aname   = $author['name'] ?? '';
-        $abio    = $author['bio'] ?? '';
-        $body    = (array) ($a['body'] ?? []);
-        $tags    = (array) ($a['tags'] ?? []);
+        $aname = $author['name'] ?? '';
+        $abio = $author['bio'] ?? '';
+        $body = (array) ($a['body'] ?? []);
+        $tags = (array) ($a['tags'] ?? []);
         $related = (array) ($a['related'] ?? []);
 
         $html = '<article class="xf-article">';
 
         // 标题与元信息
-        $html .= '<h1 class="h3 mb-1">' . $this->e($a['title'] ?? '') . '</h1>';
+        $html .= '<h1 class="h3 mb-1">'.$this->e($a['title'] ?? '').'</h1>';
         $html .= '<div class="text-muted small mb-3">';
         if (! empty($a['category'])) {
-            $html .= '<span class="badge bg-primary-subtle text-primary me-2">' . $this->e($a['category']) . '</span>';
+            $html .= '<span class="badge bg-primary-subtle text-primary me-2">'.$this->e($a['category']).'</span>';
         }
         if (! empty($a['date'])) {
-            $html .= '<i class="ti ti-calendar me-1"></i>' . $this->e($a['date']);
+            $html .= '<i class="ti ti-calendar me-1"></i>'.$this->e($a['date']);
         }
         if (! empty($a['read_time'])) {
-            $html .= ' <i class="ti ti-clock ms-2 me-1"></i>' . $this->e($a['read_time']);
+            $html .= ' <i class="ti ti-clock ms-2 me-1"></i>'.$this->e($a['read_time']);
         }
         $html .= '</div>';
 
         // 封面（固定高度裁切，避免被 img{height:auto} 拉变形）
         if ($cover) {
-            $html .= '<img src="' . $this->e($cover) . '" class="rounded w-100 xf-article-cover mb-4" alt="' . $this->e($a['title'] ?? '') . '">';
+            $html .= '<img src="'.$this->e($cover).'" class="rounded w-100 xf-article-cover mb-4" alt="'.$this->e($a['title'] ?? '').'">';
         }
         // 作者信息块
         $html .= '<div class="d-flex align-items-center mb-4">';
         if ($avatar) {
-            $html .= '<img src="' . $this->e($avatar) . '" class="avatar avatar-xl rounded-circle me-3" alt="' . $this->e($aname) . '">';
+            $html .= '<img src="'.$this->e($avatar).'" class="avatar avatar-xl rounded-circle me-3" alt="'.$this->e($aname).'">';
         }
-        $html .= '<div><div class="fw-semibold">' . $this->e($aname) . '</div>';
+        $html .= '<div><div class="fw-semibold">'.$this->e($aname).'</div>';
         if ($abio) {
-            $html .= '<div class="text-muted small">' . $this->e($abio) . '</div>';
+            $html .= '<div class="text-muted small">'.$this->e($abio).'</div>';
         }
         $html .= '</div></div>';
 
         // 正文段落
         foreach ($body as $p) {
-            $html .= '<p class="text-muted">' . $this->raw($p) . '</p>';
+            $html .= '<p class="text-muted">'.$this->raw($p).'</p>';
         }
         // 引用块
         if (! empty($a['quote'])) {
-            $html .= '<blockquote class="border-start border-3 border-primary ps-3 my-4 fst-italic">' . $this->e($a['quote']) . '</blockquote>';
+            $html .= '<blockquote class="border-start border-3 border-primary ps-3 my-4 fst-italic">'.$this->e($a['quote']).'</blockquote>';
         }
         // 标签
         if ($tags) {
             $html .= '<div class="mt-3">';
             foreach ($tags as $t) {
-                $html .= '<span class="badge bg-light text-dark me-1">' . $this->e($t) . '</span>';
+                $html .= '<span class="badge bg-light text-dark me-1">'.$this->e($t).'</span>';
             }
             $html .= '</div>';
         }
@@ -126,18 +131,18 @@ class Article extends Component
         if ($related) {
             $html .= '<hr class="my-4"><h5 class="mb-3">相关文章</h5><div class="row g-3">';
             foreach ($related as $r) {
-                $r    = (array) $r;
-                $rimg = ! empty($r['image']) ? \zxf\XfAdmin\XfAdmin::img((string) $r['image']) : '';
+                $r = (array) $r;
+                $rimg = ! empty($r['image']) ? XfAdmin::img((string) $r['image']) : '';
                 $html .= '<div class="col-md-4"><div class="card h-100">';
                 if ($rimg) {
-                    $html .= '<img src="' . $this->e($rimg) . '" class="card-img-top object-fit-cover" height="140" alt="" style="height:140px;">';
+                    $html .= '<img src="'.$this->e($rimg).'" class="card-img-top object-fit-cover" height="140" alt="" style="height:140px;">';
                 }
-                $html .= '<div class="card-body"><h6 class="mb-1">' . $this->e($r['title'] ?? '') . '</h6>';
+                $html .= '<div class="card-body"><h6 class="mb-1">'.$this->e($r['title'] ?? '').'</h6>';
                 if (! empty($r['excerpt'])) {
-                    $html .= '<p class="text-muted small mb-1">' . $this->e($r['excerpt']) . '</p>';
+                    $html .= '<p class="text-muted small mb-1">'.$this->e($r['excerpt']).'</p>';
                 }
                 if (! empty($r['date'])) {
-                    $html .= '<small class="text-muted">' . $this->e($r['date']) . '</small>';
+                    $html .= '<small class="text-muted">'.$this->e($r['date']).'</small>';
                 }
                 $html .= '</div></div></div>';
             }

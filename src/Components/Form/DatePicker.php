@@ -87,9 +87,10 @@ class DatePicker extends Component
         // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
         $dateAttrs = array_merge($dateAttrs, $this->describeAttrs($id), $this->stateAria());
 
-        $control = (string) $this->get('prepend', '')
+        // prepend/append 支持闭包/组件（与 Input 的 raw() 语义一致），不能用 (string) 强转
+        $control = $this->raw($this->get('prepend'))
             .'<input'.Html::attrs($dateAttrs).'>'
-            .(string) $this->get('append', '');
+            .$this->raw($this->get('append'));
 
         return $this->wrapField($control, $id);
     }

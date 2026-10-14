@@ -63,29 +63,33 @@ class AccountSettings extends Component
 
         // 左侧头像&信息
         $html .= '<div class="card"><div class="card-body text-center">';
-        $avatar = !empty($user['avatar']) ? XfAdmin::img((string) $user['avatar']) : '';
+        $avatar = ! empty($user['avatar']) ? XfAdmin::img((string) $user['avatar']) : '';
         if ($avatar) {
-            $html .= '<img src="' . $this->e($avatar) . '" class="rounded-circle mb-3" width="80" height="80" alt="" style="width:80px;height:80px;object-fit:cover">';
+            $html .= '<img src="'.$this->e($avatar).'" class="rounded-circle mb-3" width="80" height="80" alt="" style="width:80px;height:80px;object-fit:cover">';
         } else {
             $html .= '<div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px">'
-                . '<i class="ti ti-user fs-24 text-primary"></i></div>';
+                .'<i class="ti ti-user fs-24 text-primary"></i></div>';
         }
-        $html .= '<h5 class="mb-1">' . $this->e($user['name'] ?? '') . '</h5>';
-        $html .= '<small class="text-muted">' . $this->e($user['role'] ?? '') . '</small>';
+        $html .= '<h5 class="mb-1">'.$this->e($user['name'] ?? '').'</h5>';
+        $html .= '<small class="text-muted">'.$this->e($user['role'] ?? '').'</small>';
         $html .= '</div></div>';
 
         // 选项卡导航
         $html .= '<div class="card mt-3"><div class="list-group list-group-flush">';
         foreach ($tabs as $i => $tab) {
+            // 防御：tabs 元素若非「int 键 + 数组」结构（调用方误传关联数组/标量），跳过避免 TypeError
+            if (! is_int($i) || ! is_array($tab)) {
+                continue;
+            }
             $tab = (array) $tab;
             $active = $i === $activeTab ? ' active' : '';
             $icon = (string) ($tab['icon'] ?? 'ti-settings');
             $title = (string) ($tab['title'] ?? '');
-            $tabId = $prefix . '-tab-' . $i;
+            $tabId = $prefix.'-tab-'.$i;
 
-            $html .= '<a href="javascript:void(0)" class="list-group-item list-group-item-action' . $active . '"'
-                . ' data-bs-toggle="tab" data-bs-target="#' . $this->e($tabId) . '" role="tab">'
-                . '<i class="ti ' . $this->e($icon) . ' me-2"></i>' . $this->e($title) . '</a>';
+            $html .= '<a href="javascript:void(0)" class="list-group-item list-group-item-action'.$active.'"'
+                .' data-bs-toggle="tab" data-bs-target="#'.$this->e($tabId).'" role="tab">'
+                .'<i class="ti '.$this->e($icon).' me-2"></i>'.$this->e($title).'</a>';
         }
         $html .= '</div></div>';
 
@@ -94,12 +98,16 @@ class AccountSettings extends Component
         // 右侧内容
         $html .= '<div class="col-lg-9"><div class="card"><div class="card-body"><div class="tab-content">';
         foreach ($tabs as $i => $tab) {
+            // 防御：tabs 元素若非「int 键 + 数组」结构（调用方误传关联数组/标量），跳过避免 TypeError
+            if (! is_int($i) || ! is_array($tab)) {
+                continue;
+            }
             $tab = (array) $tab;
             $show = $i === $activeTab ? ' show active' : '';
-            $tabId = $prefix . '-tab-' . $i;
+            $tabId = $prefix.'-tab-'.$i;
             $content = (string) ($tab['content'] ?? '');
 
-            $html .= '<div class="tab-pane fade' . $show . '" id="' . $this->e($tabId) . '" role="tabpanel">';
+            $html .= '<div class="tab-pane fade'.$show.'" id="'.$this->e($tabId).'" role="tabpanel">';
             if ($content) {
                 $html .= $this->raw($content);
             } else {
@@ -117,10 +125,9 @@ class AccountSettings extends Component
     /**
      * render Default Tab（private实例方法）
      *
-     * @param int $idx idx
-     * @param array $tab tab
-     * @param array $user user
-     *
+     * @param  int  $idx  idx
+     * @param  array  $tab  tab
+     * @param  array  $user  user
      * @return string result
      */
     private function renderDefaultTab(int $idx, array $tab, array $user): string
@@ -148,8 +155,7 @@ class AccountSettings extends Component
     /**
      * render General Tab（private实例方法）
      *
-     * @param array $user user
-     *
+     * @param  array  $user  user
      * @return string result
      */
     private function renderGeneralTab(array $user): string
@@ -163,12 +169,12 @@ class AccountSettings extends Component
 
         $html = '<h5 class="mb-3">基本信息</h5>';
         $html .= '<div class="row g-3">';
-        $html .= '<div class="col-md-6"><label class="form-label">姓名</label><input type="text" class="form-control" value="' . $this->e($name) . '"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">邮箱</label><input type="email" class="form-control" value="' . $this->e($email) . '"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">手机号</label><input type="text" class="form-control" value="' . $this->e($phone) . '"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">公司</label><input type="text" class="form-control" value="' . $this->e($company) . '"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">时区</label><select class="form-select"><option>' . ($timezone ? $this->e($timezone) : 'Asia/Shanghai') . '</option></select></div>';
-        $html .= '<div class="col-12"><label class="form-label">个人简介</label><textarea class="form-control" rows="3">' . $this->e($bio) . '</textarea></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">姓名</label><input type="text" class="form-control" value="'.$this->e($name).'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">邮箱</label><input type="email" class="form-control" value="'.$this->e($email).'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">手机号</label><input type="text" class="form-control" value="'.$this->e($phone).'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">公司</label><input type="text" class="form-control" value="'.$this->e($company).'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">时区</label><select class="form-select"><option>'.($timezone ? $this->e($timezone) : 'Asia/Shanghai').'</option></select></div>';
+        $html .= '<div class="col-12"><label class="form-label">个人简介</label><textarea class="form-control" rows="3">'.$this->e($bio).'</textarea></div>';
         $html .= '<div class="col-12"><button class="btn btn-primary">保存修改</button></div>';
         $html .= '</div>';
 
@@ -178,8 +184,7 @@ class AccountSettings extends Component
     /**
      * render Password Tab（private实例方法）
      *
-     * @param array $user user
-     *
+     * @param  array  $user  user
      * @return string result
      */
     private function renderPasswordTab(array $user): string
@@ -198,8 +203,7 @@ class AccountSettings extends Component
     /**
      * render Notifications Tab（private实例方法）
      *
-     * @param array $user user
-     *
+     * @param  array  $user  user
      * @return string result
      */
     private function renderNotificationsTab(array $user): string
@@ -214,8 +218,8 @@ class AccountSettings extends Component
         $html = '<h5 class="mb-3">通知偏好</h5>';
         foreach ($items as $item) {
             $html .= '<div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">';
-            $html .= '<div><div class="fw-semibold">' . $this->e($item['label']) . '</div>';
-            $html .= '<small class="text-muted">' . $this->e($item['desc']) . '</small></div>';
+            $html .= '<div><div class="fw-semibold">'.$this->e($item['label']).'</div>';
+            $html .= '<small class="text-muted">'.$this->e($item['desc']).'</small></div>';
             $html .= '<div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked></div>';
             $html .= '</div>';
         }
@@ -227,8 +231,7 @@ class AccountSettings extends Component
     /**
      * render Export Tab（private实例方法）
      *
-     * @param array $user user
-     *
+     * @param  array  $user  user
      * @return string result
      */
     private function renderExportTab(array $user): string
@@ -246,9 +249,9 @@ class AccountSettings extends Component
         $html .= '<div class="list-group mb-3">';
         foreach ($items as $item) {
             $html .= '<div class="list-group-item d-flex justify-content-between align-items-center">';
-            $html .= '<div><i class="ti ' . $this->e($item['icon']) . ' me-2 text-muted"></i>';
-            $html .= '<span class="fw-semibold">' . $this->e($item['label']) . '</span>';
-            $html .= '<small class="text-muted d-block ms-4">' . $this->e($item['desc']) . '</small></div>';
+            $html .= '<div><i class="ti '.$this->e($item['icon']).' me-2 text-muted"></i>';
+            $html .= '<span class="fw-semibold">'.$this->e($item['label']).'</span>';
+            $html .= '<small class="text-muted d-block ms-4">'.$this->e($item['desc']).'</small></div>';
             $html .= '<button class="btn btn-sm btn-outline-primary">导出</button>';
             $html .= '</div>';
         }

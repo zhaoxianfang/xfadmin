@@ -47,17 +47,18 @@ class TaskList extends Component
     protected function defaults(): array
     {
         return [
-            'title'      => '',
-            'tasks'      => [],
+            'title' => '',
+            'tasks' => [],
             'filterable' => true,
-            'addable'    => true,
-            'add_url'    => 'javascript:void(0);',
+            'addable' => true,
+            'add_url' => 'javascript:void(0);',
         ];
     }
+
     private const PRIORITY = [
-        'high'   => ['danger', '高'],
+        'high' => ['danger', '高'],
         'medium' => ['warning', '中'],
-        'low'    => ['info', '低'],
+        'low' => ['info', '低'],
     ];
 
     /**
@@ -73,17 +74,17 @@ class TaskList extends Component
         $head = '';
         if ($title !== '' || $this->get('filterable') || $this->get('addable')) {
             $head .= '<div class="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">';
-            $head .= '<h5 class="card-title mb-0">' . $title . '</h5>';
+            $head .= '<h5 class="card-title mb-0">'.$title.'</h5>';
             $head .= '<div class="d-flex align-items-center gap-2">';
             if ($this->get('filterable')) {
                 $head .= '<div class="btn-group btn-group-sm xf-task-filter" role="group">'
-                    . '<button type="button" class="btn btn-soft-primary active" data-filter="all">全部</button>'
-                    . '<button type="button" class="btn btn-light" data-filter="active">进行中</button>'
-                    . '<button type="button" class="btn btn-light" data-filter="done">已完成</button>'
-                    . '</div>';
+                    .'<button type="button" class="btn btn-soft-primary active" data-filter="all">全部</button>'
+                    .'<button type="button" class="btn btn-light" data-filter="active">进行中</button>'
+                    .'<button type="button" class="btn btn-light" data-filter="done">已完成</button>'
+                    .'</div>';
             }
             if ($this->get('addable')) {
-                $head .= '<a href="' . $this->e($this->safeUrl($this->get('add_url'))) . '" class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>新建</a>';
+                $head .= '<a href="'.$this->e($this->safeUrl($this->get('add_url'))).'" class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>新建</a>';
             }
             $head .= '</div></div>';
         }
@@ -92,38 +93,38 @@ class TaskList extends Component
             $list .= '<div class="list-group-item text-muted text-center py-4">暂无任务</div>';
         }
         foreach ($tasks as $t) {
-            $t        = (array) $t;
-            $id       = $t['id'] ?? '';
-            $done     = ! empty($t['done']);
-            $prio     = $t['priority'] ?? 'medium';
+            $t = (array) $t;
+            $id = $t['id'] ?? '';
+            $done = ! empty($t['done']);
+            $prio = $t['priority'] ?? 'medium';
             [$pv, $pl] = self::PRIORITY[$prio] ?? self::PRIORITY['medium'];
-            $avatar   = $t['avatar'] ?? '';
+            $avatar = $t['avatar'] ?? '';
             $assignee = $t['assignee'] ?? '';
-            $due      = $t['due'] ?? '';
-            $tag      = $t['tag'] ?? '';
-            $meta     = [];
+            $due = $t['due'] ?? '';
+            $tag = $t['tag'] ?? '';
+            $meta = [];
             if ($tag !== '') {
-                $meta[] = '<span class="badge bg-secondary-subtle text-secondary">' . $this->e($tag) . '</span>';
+                $meta[] = '<span class="badge bg-secondary-subtle text-secondary">'.$this->e($tag).'</span>';
             }
-            $meta[] = '<span class="badge bg-' . $pv . '-subtle text-' . $pv . '">优先级·' . $pl . '</span>';
+            $meta[] = '<span class="badge bg-'.$pv.'-subtle text-'.$pv.'">优先级·'.$pl.'</span>';
             if ($assignee !== '') {
                 $av = $avatar !== ''
-                    ? '<img src="' . $this->e($avatar) . '" class="avatar-xs rounded-circle me-1" alt="">'
-                    : '<span class="avatar-xs rounded-circle bg-' . $pv . '-subtle text-' . $pv . ' me-1 d-inline-flex align-items-center justify-content-center"><i class="ti ti-user fs-xs"></i></span>';
-                $meta[] = '<span class="d-inline-flex align-items-center">' . $av . $this->e($assignee) . '</span>';
+                    ? '<img src="'.$this->e($avatar).'" class="avatar-xs rounded-circle me-1" alt="">'
+                    : '<span class="avatar-xs rounded-circle bg-'.$pv.'-subtle text-'.$pv.' me-1 d-inline-flex align-items-center justify-content-center"><i class="ti ti-user fs-xs"></i></span>';
+                $meta[] = '<span class="d-inline-flex align-items-center">'.$av.$this->e($assignee).'</span>';
             }
             if ($due !== '') {
-                $meta[] = '<span class="text-muted"><i class="ti ti-calendar-event me-1"></i>' . $this->e($due) . '</span>';
+                $meta[] = '<span class="text-muted"><i class="ti ti-calendar-event me-1"></i>'.$this->e($due).'</span>';
             }
-            $list .= '<label class="list-group-item xf-task-item d-flex align-items-start gap-2 py-2' . ($done ? ' xf-task-done' : '') . '" data-done="' . ($done ? '1' : '0') . '">'
-                . '<input class="form-check-input mt-1 xf-task-check" type="checkbox"' . ($done ? ' checked' : '') . ' data-id="' . $this->e((string) $id) . '">'
-                . '<div class="flex-grow-1">'
-                . '<div class="xf-task-title fw-medium">' . $this->e($t['title'] ?? '') . '</div>'
-                . '<div class="d-flex flex-wrap align-items-center gap-2 mt-1 small">' . implode('', $meta) . '</div>'
-                . '</div></label>';
+            $list .= '<label class="list-group-item xf-task-item d-flex align-items-start gap-2 py-2'.($done ? ' xf-task-done' : '').'" data-done="'.($done ? '1' : '0').'">'
+                .'<input class="form-check-input mt-1 xf-task-check" type="checkbox"'.($done ? ' checked' : '').' data-id="'.$this->e((string) $id).'">'
+                .'<div class="flex-grow-1">'
+                .'<div class="xf-task-title fw-medium">'.$this->e($t['title'] ?? '').'</div>'
+                .'<div class="d-flex flex-wrap align-items-center gap-2 mt-1 small">'.implode('', $meta).'</div>'
+                .'</div></label>';
         }
         $list .= '</div>';
 
-        return '<div class="card xf-tasklist">' . $head . $list . '</div>';
+        return '<div class="card xf-tasklist">'.$head.$list.'</div>';
     }
 }

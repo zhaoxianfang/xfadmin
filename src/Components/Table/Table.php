@@ -35,23 +35,23 @@ class Table extends Component
     protected function defaults(): array
     {
         return [
-            'columns'      => [],
-            'data'         => [],
-            'striped'      => false,
+            'columns' => [],
+            'data' => [],
+            'striped' => false,
             'striped_cols' => false,
-            'hover'        => false,
-            'bordered'     => false,
-            'borderless'   => false,
-            'sm'           => false,
+            'hover' => false,
+            'bordered' => false,
+            'borderless' => false,
+            'sm' => false,
             'align_middle' => false,
-            'centered'     => false,
-            'nowrap'       => false,
-            'variant'      => null,
+            'centered' => false,
+            'nowrap' => false,
+            'variant' => null,
             'head_variant' => null,   // light|dark => table-*
-            'responsive'   => true,
-            'caption'      => null,
-            'empty'        => '暂无数据',
-            'row_attrs'    => null,   // fn($row): array
+            'responsive' => true,
+            'caption' => null,
+            'empty' => '暂无数据',
+            'row_attrs' => null,   // fn($row): array
         ];
     }
 
@@ -82,19 +82,19 @@ class Table extends Component
             if (isset($col['xfTemplate']) && ! isset($col['template'])) {
                 $col['template'] = $col['xfTemplate'];
             }
-            $col['key']   ??= is_string($key) ? $key : '';
+            $col['key'] ??= is_string($key) ? $key : '';
             $col['label'] ??= $col['key'];
-            $columns[]      = $col;
+            $columns[] = $col;
         }
+
         return $columns;
     }
 
     /**
      * cell（protected实例方法）
      *
-     * @param array $col col
-     * @param mixed $row row
-     *
+     * @param  array  $col  col
+     * @param  mixed  $row  row
      * @return string result
      */
     protected function cell(array $col, mixed $row): string
@@ -118,16 +118,16 @@ class Table extends Component
     protected function tableClass(): string
     {
         return Html::cls('table', [
-            'table-striped'         => $this->get('striped'),
+            'table-striped' => $this->get('striped'),
             'table-striped-columns' => $this->get('striped_cols'),
-            'table-hover'           => $this->get('hover'),
-            'table-bordered'        => $this->get('bordered'),
-            'table-borderless'      => $this->get('borderless'),
-            'table-sm'              => $this->get('sm'),
-            'align-middle'          => $this->get('align_middle'),
-            'table-centered'        => $this->get('centered'),
-            'table-nowrap'          => $this->get('nowrap'),
-        ], $this->get('variant') ? 'table-' . $this->enum($this->get('variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : '');
+            'table-hover' => $this->get('hover'),
+            'table-bordered' => $this->get('bordered'),
+            'table-borderless' => $this->get('borderless'),
+            'table-sm' => $this->get('sm'),
+            'align-middle' => $this->get('align_middle'),
+            'table-centered' => $this->get('centered'),
+            'table-nowrap' => $this->get('nowrap'),
+        ], $this->get('variant') ? 'table-'.$this->enum($this->get('variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : '');
     }
 
     /**
@@ -138,39 +138,45 @@ class Table extends Component
     protected function html(): string
     {
         $columns = $this->columns();
-        $data    = (array) $this->get('data', []);
+        $data = (array) $this->get('data', []);
 
-        $html = '<table' . $this->attrs(['class' => $this->tableClass()]) . '>';
+        $html = '<table'.$this->attrs(['class' => $this->tableClass()]).'>';
         if ($this->get('caption')) {
-            $html .= '<caption>' . $this->e($this->get('caption')) . '</caption>';
+            $html .= '<caption>'.$this->e($this->get('caption')).'</caption>';
         }
-        $html .= '<thead' . ($this->get('head_variant') ? ' class="table-' . $this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') . '"' : '') . '><tr>';
+        $html .= '<thead'.($this->get('head_variant') ? ' class="table-'.$this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light').'"' : '').'><tr>';
         foreach ($columns as $col) {
             $attrs = ['class' => $col['class'] ?? null];
             if (isset($col['width'])) {
-                $attrs['style'] = 'width:' . $col['width'] . ';';
+                // 列宽走 cssLen 白名单校验（防 "10px;position:fixed" 分号注入），非法/空则不输出 width
+                $width = $this->cssLen($col['width'], '');
+                if ($width !== '') {
+                    $attrs['style'] = 'width:'.$width.';';
+                }
             }
-            $html .= '<th' . Html::attrs($attrs) . '>' . $this->e($col['label']) . '</th>';
+            $html .= '<th'.Html::attrs($attrs).'>'.$this->e($col['label']).'</th>';
         }
         $html .= '</tr></thead><tbody>';
 
         if ($data === []) {
-            $html .= '<tr><td colspan="' . count($columns) . '" class="text-center text-muted py-4">' . $this->e($this->get('empty')) . '</td></tr>';
+            // max(1,...) 兜底：无列时 colspan=0 是非法 HTML
+            $html .= '<tr><td colspan="'.max(1, count($columns)).'" class="text-center text-muted py-4">'.$this->e($this->get('empty')).'</td></tr>';
         }
         $rowAttrs = $this->get('row_attrs');
         foreach ($data as $row) {
             $attrs = $rowAttrs instanceof Closure ? (array) $rowAttrs($row) : [];
-            $html .= '<tr' . Html::attrs($attrs) . '>';
+            $html .= '<tr'.Html::attrs($attrs).'>';
             foreach ($columns as $col) {
-                $html .= '<td' . Html::attrs(['class' => $col['cell_class'] ?? null]) . '>' . $this->cell($col, $row) . '</td>';
+                $html .= '<td'.Html::attrs(['class' => $col['cell_class'] ?? null]).'>'.$this->cell($col, $row).'</td>';
             }
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
 
         if ($this->get('responsive')) {
-            $html = '<div class="table-responsive">' . $html . '</div>';
+            $html = '<div class="table-responsive">'.$html.'</div>';
         }
+
         return $html;
     }
 }

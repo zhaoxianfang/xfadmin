@@ -22,12 +22,12 @@ class Alert extends Component
     protected function defaults(): array
     {
         return [
-            'variant'     => 'primary',
-            'text'        => '',
-            'heading'     => null,
-            'icon'        => null,
+            'variant' => 'primary',
+            'text' => '',
+            'heading' => null,
+            'icon' => null,
             'dismissible' => false,
-            'soft'        => false,   // bg-*-subtle 柔和风格
+            'soft' => false,   // bg-*-subtle 柔和风格
         ];
     }
 
@@ -51,24 +51,26 @@ class Alert extends Component
         if ($this->get('type') !== null && $this->get('variant') === 'primary') {
             $this->options['variant'] = $this->get('type');
         }
-        $variant = $this->e($this->get('variant'));
-        $class   = Html::cls('alert', [
+        // variant 白名单（拼 alert-* / bg-*-subtle 类），非法值回退默认 primary
+        $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'primary');
+        $class = Html::cls('alert', [
             'alert-dismissible fade show' => $this->get('dismissible'),
-            'd-flex align-items-center'   => (bool) $this->get('icon'),
+            'd-flex align-items-center' => (bool) $this->get('icon'),
         ], $this->get('soft') ? "bg-{$variant}-subtle text-{$variant} border-0" : "alert-{$variant}");
 
-        $html = '<div' . $this->attrs(['class' => $class, 'role' => 'alert']) . '>';
+        $html = '<div'.$this->attrs(['class' => $class, 'role' => 'alert']).'>';
         if ($this->get('icon')) {
-            $html .= '<i class="' . $this->e($this->get('icon')) . ' fs-20 me-2"></i>';
+            $html .= '<i class="'.$this->iconClass($this->get('icon')).' fs-20 me-2"></i>';
         }
         $html .= '<div>';
         if ($this->get('heading')) {
-            $html .= '<h5 class="alert-heading">' . $this->e($this->get('heading')) . '</h5>';
+            $html .= '<h5 class="alert-heading">'.$this->e($this->get('heading')).'</h5>';
         }
-        $html .= $this->e($this->get('text')) . '</div>';
+        $html .= $this->e($this->get('text')).'</div>';
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

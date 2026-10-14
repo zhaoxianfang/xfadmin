@@ -61,7 +61,7 @@ echo XfAdmin::dataTable([
 静态表格（基础 HTML 表格封装）。
 
 > **类**：`zxf\XfAdmin\Components\Table\Table`
-> **文件**：`src/Components/Table/Table.php`（149 行）
+> **文件**：`src/Components/Table/Table.php`（181 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -146,7 +146,7 @@ echo XfAdmin::table([
 数据表格（DataTables：服务端/客户端、导出、固定列等）。
 
 > **类**：`zxf\XfAdmin\Components\Table\DataTable`
-> **文件**：`src/Components/Table/DataTable.php`（813 行）
+> **文件**：`src/Components/Table/DataTable.php`（929 行）
 > **依赖插件**：`datatables`、`datatables-pdf`、`select2`、`qrcode`
 
 **用法示例**
@@ -328,7 +328,7 @@ echo XfAdmin::dataTable([
 自定义表格（可编辑/带控件的复杂表）。
 
 > **类**：`zxf\XfAdmin\Components\Table\TablesCustom`
-> **文件**：`src/Components/Table/TablesCustom.php`（105 行）
+> **文件**：`src/Components/Table/TablesCustom.php`（141 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -396,7 +396,7 @@ echo XfAdmin::tablesCustom([
 列表工具条 搜索 + 列筛选 + 每页条数 + 批量操作按钮 + 视图切换， 复刻文件管理器 / 订单等页面的列表工具栏。 'table'    => 'dt-orders',        // 关联的表格 id；留空则自动查找同容器中最近的表格 'search'   => true, 'searchPlaceholder' => '搜索...', 'filters'  => [ ['label'=>'全部', 'value'=>''], ['label'=>'待处理','value'=>'pending'] ], 'filterField' => 'status',        // 筛选绑定的列（列索引或 DataTables 列名） 'pageSize' => [10, 20, 50], 'actions'  => [ ['label'=>'导出','variant'=>'outline-secondary','icon'=>'ti ti-download'] ], 'views'    => [ ['label'=>'网格','icon'=>'ti ti-layout-grid','active'=>true], ['label'=>'列表','icon'=>'ti ti-list'] ], ]) 交互由 xfadmin.js 的 dt-search / dt-filter / dt-pagesize / dt-views 四个 widget 托管： 搜索与筛选为输入防抖后重绘、每页条数调用 page.len()、视图切换同步 active 并派发 xf.dtview.change 事件（detail: {view, button, api}）供业务切换渲染形态。。
 
 > **类**：`zxf\XfAdmin\Components\Table\DataTableToolbar`
-> **文件**：`src/Components/Table/DataTableToolbar.php`（89 行）
+> **文件**：`src/Components/Table/DataTableToolbar.php`（121 行）
 > **依赖插件**：无
 
 **用法示例**

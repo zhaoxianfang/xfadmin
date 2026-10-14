@@ -32,14 +32,14 @@ class Carousel extends Component
     protected function defaults(): array
     {
         return [
-            'items'      => [],
+            'items' => [],
             'indicators' => false,
-            'controls'   => true,
-            'fade'       => false,
-            'interval'   => 5000,
-            'dark'       => false,
-            'ride'       => 'carousel',
-            'height'     => '',          // 轮播图高度，留空则由 .xf-carousel img 兜底（响应式）
+            'controls' => true,
+            'fade' => false,
+            'interval' => 5000,
+            'dark' => false,
+            'ride' => 'carousel',
+            'height' => '',          // 轮播图高度，留空则由 .xf-carousel img 兜底（响应式）
         ];
     }
 
@@ -50,19 +50,19 @@ class Carousel extends Component
      */
     protected function html(): string
     {
-        $id    = $this->resolveId('xf-carousel');
+        $id = $this->resolveId('xf-carousel');
         $items = array_values((array) $this->get('items', []));
 
-        $html = '<div' . $this->attrs([
-            'class'        => Html::cls('carousel slide', ['carousel-fade' => $this->get('fade'), 'carousel-dark' => $this->get('dark')]),
-            'id'           => $id,
+        $html = '<div'.$this->attrs([
+            'class' => Html::cls('carousel slide', ['carousel-fade' => $this->get('fade'), 'carousel-dark' => $this->get('dark')]),
+            'id' => $id,
             'data-bs-ride' => $this->get('ride'),
-        ]) . '>';
+        ]).'>';
 
         if ($this->get('indicators')) {
             $html .= '<div class="carousel-indicators">';
             foreach ($items as $i => $item) {
-                $html .= '<button type="button" data-bs-target="#' . $this->e($id) . '" data-bs-slide-to="' . $i . '"' . ($i === 0 ? ' class="active" aria-current="true"' : '') . '></button>';
+                $html .= '<button type="button" data-bs-target="#'.$this->e($id).'" data-bs-slide-to="'.$i.'"'.($i === 0 ? ' class="active" aria-current="true"' : '').'></button>';
             }
             $html .= '</div>';
         }
@@ -72,15 +72,15 @@ class Carousel extends Component
             if (! is_array($item)) {
                 $item = ['image' => (string) $item];
             }
-            $html .= '<div class="' . Html::cls('carousel-item', ['active' => $i === 0]) . '" data-bs-interval="' . $this->e($item['interval'] ?? $this->get('interval')) . '">';
+            $html .= '<div class="'.Html::cls('carousel-item', ['active' => $i === 0]).'" data-bs-interval="'.$this->e($item['interval'] ?? $this->get('interval')).'">';
             if (isset($item['image'])) {
                 // 高度值走长度白名单：e() 不转义分号，可被注入额外声明
                 $style = $this->cssLen($this->get('height'));
-                $style = $style !== '' ? 'height:' . $style . ';' : '';
-                $html .= '<img src="' . $this->e($this->img((string) $item['image'])) . '" class="d-block w-100 xf-carousel-img object-fit-cover"' . ($style !== '' ? ' style="' . $style . '"' : '') . ' alt="' . $this->e($item['alt'] ?? '') . '">';
+                $style = $style !== '' ? 'height:'.$style.';' : '';
+                $html .= '<img src="'.$this->e($this->img((string) $item['image'])).'" class="d-block w-100 xf-carousel-img object-fit-cover"'.($style !== '' ? ' style="'.$style.'"' : '').' alt="'.$this->e($item['alt'] ?? '').'">';
             }
             if (isset($item['caption'])) {
-                $html .= '<div class="carousel-caption d-none d-md-block">' . $this->raw($item['caption']) . '</div>';
+                $html .= '<div class="carousel-caption d-none d-md-block">'.$this->raw($item['caption']).'</div>';
             }
             if (isset($item['content'])) {
                 $html .= $this->raw($item['content']);
@@ -90,9 +90,10 @@ class Carousel extends Component
         $html .= '</div>';
 
         if ($this->get('controls')) {
-            $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#' . $this->e($id) . '" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">上一页</span></button>'
-                . '<button class="carousel-control-next" type="button" data-bs-target="#' . $this->e($id) . '" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">下一页</span></button>';
+            $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#'.$this->e($id).'" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">上一页</span></button>'
+                .'<button class="carousel-control-next" type="button" data-bs-target="#'.$this->e($id).'" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">下一页</span></button>';
         }
-        return $html . '</div>';
+
+        return $html.'</div>';
     }
 }

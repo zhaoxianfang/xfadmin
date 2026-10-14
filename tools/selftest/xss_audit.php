@@ -1,4 +1,5 @@
 <?php
+
 /**
  * xfadmin 组件 XSS 转义一致性审计（运行时模糊审计）
  *
@@ -20,7 +21,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__.'/../../vendor/autoload.php';
 
 use zxf\XfAdmin\XfAdmin;
 
@@ -48,11 +49,11 @@ const TEXT_KEYS = [
 
 // 组件级豁免：这些组件/键组合设计上就原样输出某字段 HTML（已在组件 docblock 注明）
 const RAW_TEXT_EXEMPT = [
-    'popover'   => ['text'],
-    'tooltip'   => ['text'],
-    'editor'    => ['value'],
-    'authPage'  => ['captcha'],
-    'terms'     => ['intro', 'accept'],
+    'popover' => ['text'],
+    'tooltip' => ['text'],
+    'editor' => ['value'],
+    'authPage' => ['captcha'],
+    'terms' => ['intro', 'accept'],
 ];
 
 /** 把可注入文本键设为 payload（仅 TEXT_KEYS，且跳过 raw 槽位与组件级 raw 豁免） */
@@ -72,7 +73,7 @@ function injectPayload(array $opts, string $alias): array
 
 $list = XfAdmin::componentList();
 $failures = [];
-$errors   = [];
+$errors = [];
 
 foreach ($list as $alias => $class) {
     try {
@@ -80,7 +81,7 @@ foreach ($list as $alias => $class) {
         $opts = $inst->options();
         $injected = injectPayload($opts, $alias);
         $html = (string) $class::make($injected);
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $errors[$alias] = $e->getMessage();
         $opts = [];
         $html = '';
@@ -93,15 +94,15 @@ foreach ($list as $alias => $class) {
     // URL 伪协议探测：向 url/href 注入 javascript: 链接，检测是否被原样输出到 href/src 属性
     try {
         $urlOpts = $opts;
-        $urlOpts['url']  = 'javascript:alert(1)';
+        $urlOpts['url'] = 'javascript:alert(1)';
         $urlOpts['href'] = 'javascript:alert(1)';
         $urlHtml = (string) $class::make($urlOpts);
         // 排除良性 no-op：javascript:void(0)（设计性无操作，非 XSS）
         if (preg_match('/href\s*=\s*["\']\s*javascript:(?!void\s*\()/i', $urlHtml)
             || preg_match('/src\s*=\s*["\']\s*javascript:(?!void\s*\()/i', $urlHtml)) {
-            $failures[$alias] = ($failures[$alias] ?? 'unsafe') . ' | unsafe javascript: url';
+            $failures[$alias] = ($failures[$alias] ?? 'unsafe').' | unsafe javascript: url';
         }
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         // 渲染异常已由上方 $errors 记录，此处忽略
     }
 }
@@ -121,9 +122,9 @@ if ($failures !== []) {
     foreach ($failures as $a => $m) {
         echo "  - {$a}: {$m}\n";
     }
-    echo "\nRESULT: FAIL (" . count($failures) . " unescaped, " . count($errors) . " errors)\n";
+    echo "\nRESULT: FAIL (".count($failures).' unescaped, '.count($errors)." errors)\n";
     exit(1);
 }
 
-echo "\nRESULT: PASS (0 unescaped, " . count($errors) . " errors)\n";
+echo "\nRESULT: PASS (0 unescaped, ".count($errors)." errors)\n";
 exit(0);

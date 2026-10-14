@@ -95,9 +95,12 @@ class Select extends Component
     protected function html(): string
     {
         $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-select');
+        // size 白名单兜底 ''（无尺寸类）：非法值不再回落成 lg，也不输出 "form-select-" 残类
+        $size = $this->enum($this->get('size'), self::ENUM_SIZE, '');
+        $sizeCls = $size !== '' ? 'form-select-'.$size : '';
 
         $attrs = [
-            'class' => Html::cls('form-select', $this->get('size') ? 'form-select-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '', $this->controlStateClass()),
+            'class' => Html::cls('form-select', $sizeCls, $this->controlStateClass()),
             'id' => $id,
             'name' => $this->get('name').($this->get('multiple') && $this->get('name') && ! str_ends_with((string) $this->get('name'), '[]') ? '[]' : ''),
             'multiple' => (bool) $this->get('multiple'),
@@ -108,14 +111,16 @@ class Select extends Component
         // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
         $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
 
-        if ($this->get('enhance')) {
+        // enhance 白名单：非法值不输出 data-xf（前端按 data-xf 值分发初始化器，任意值属于未定义行为）
+        $enhance = $this->enum($this->get('enhance'), ['choices', 'select2'], '');
+        if ($enhance !== '') {
             $enhanceCfg = (array) $this->get('enhance_options', []);
             // 多选原生 select 无空白占位项，Choices/Select2 占位需由插件自身提供；
             // 仅在单选时把 placeholder 注入插件配置，避免「配置有占位却无 DOM 占位项」失效
             if ($this->get('placeholder') && ! $this->get('multiple')) {
                 $enhanceCfg['placeholder'] = $this->get('placeholder');
             }
-            $attrs['data-xf'] = $this->get('enhance');
+            $attrs['data-xf'] = $enhance;
             $attrs['data-xf-config'] = json_encode(
                 $enhanceCfg,
                 JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
