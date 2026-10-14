@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace zxf\XfAdmin\Laravel;
 
+use Composer\InstalledVersions;
+use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -82,5 +84,10 @@ class XfAdminServiceProvider extends ServiceProvider
         if (method_exists($this->app, 'terminating')) {
             $this->app->terminating(fn () => Assets::reset());
         }
+
+        // 将 zxf/xfadmin 版本信息添加到 Laravel about 命令输出中
+        AboutCommand::add('Extend', [
+            'zxf/xfadmin' => fn () => InstalledVersions::getPrettyVersion('zxf/xfadmin') ?? 'unknown',
+        ]);
     }
 }

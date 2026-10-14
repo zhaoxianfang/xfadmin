@@ -95,7 +95,7 @@ echo XfAdmin::apexSankey([
 
 ⚠️ 依赖 svg.js v3，与 apexcharts 内置的旧版 svg.js 冲突；
 包内用「前置护栏 → svg.js v3 → apexsankey → 后置护栏恢复」顺序加载（见
-[03-资源与插件](../02-核心架构/03-assets.md#6-特殊加载顺序apexsankey)）。
+[03-资源与插件](../02-core-architecture/03-assets.md#6-特殊加载顺序apexsankey)）。
 
 ## 5. ECharts（`echart`）
 

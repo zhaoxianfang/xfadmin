@@ -62,7 +62,7 @@ use zxf\XfAdmin\XfAdmin;
 
 XfAdmin::config(array_replace(require __DIR__.'/../config/xfadmin.php', [
     'assets_url' => $__xfAssetPrefix,
-    'version' => '2.2.15',
+    'version' => '1.0.1',
 ]));
 
 $menu = [

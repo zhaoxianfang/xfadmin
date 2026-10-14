@@ -11,7 +11,7 @@
     'use strict';
 
     var XFAdmin = {
-        version: '2.2.14',
+        version: '1.0.1',
         widgets: {},
         destroyers: {},          // 组件名 => 销毁函数（见 XFAdmin.register 第三参）
         instances: new WeakMap(), // el => 组件实例
@@ -1266,8 +1266,14 @@
         // 图标统一使用 Tabler(ti) 字体图标，无需 lucide 增量渲染
         // 增量内容同样需要 Bootstrap 增强（tooltip/popover/表单校验）与远程表单托管：
         // initBootstrapExtras 内部已调用 bindRemoteForms，仅在它缺失时单独兜底
-        if (XFAdmin.initBootstrapExtras) XFAdmin.initBootstrapExtras(root);
-        else if (XFAdmin.bindRemoteForms) XFAdmin.bindRemoteForms(root);
+        try {
+            // 单独守护：bootstrap 增强 / 远程表单托管若抛错，不应中断已完成的 [data-xf] 初始化，
+            // 也不应阻断后续 DOM 区块的 scan()
+            if (XFAdmin.initBootstrapExtras) XFAdmin.initBootstrapExtras(root);
+            else if (XFAdmin.bindRemoteForms) XFAdmin.bindRemoteForms(root);
+        } catch (e) {
+            console.error('[XfAdmin] initBootstrapExtras/bindRemoteForms 执行失败:', e);
+        }
     };
 
     /**

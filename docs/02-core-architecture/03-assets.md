@@ -200,7 +200,7 @@ echo XfAdmin::table([...]);       // 静态表不依赖插件
 ⚠️ **兜底机制**：`head()` 会记录当时已输出的 CSS 列表（`headCssEmitted`），
 `scripts()` 对比后补发差异 —— 解决"组件在 head 之后才渲染"导致的样式丢失。
 但补发的 CSS 出现在 `</body>` 前，可能引起首屏闪烁，
-**推荐先渲染内容再输出 head**（见 [安装文档](../01-快速开始/01-installation.md#34-自定义布局手动接管-head--scripts)）。
+**推荐先渲染内容再输出 head**（见 [安装文档](../01-getting-started/01-installation.md#34-自定义布局手动接管-head--scripts)）。
 
 ## 6. 特殊加载顺序：apexsankey
 

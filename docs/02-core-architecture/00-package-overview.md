@@ -53,7 +53,7 @@ xfadmin/
 | 注册别名 | 228 |
 | 依赖前端插件 | 45 个 |
 
-按分类（详见 `docs/03-组件参考/00-总览.md`）：
+按分类（详见 `docs/03-component-reference/00-overview.md`）：
 
 | 分类文档 | 组件数 |
 |---|---|
@@ -116,7 +116,7 @@ xfadmin/
 - `asset_check.php` 校验：① 组件引用的 key 均已注册；② 注册声明的资源文件均真实存在（含 deps 递归）；
 - 资源由 `XfAdminServiceProvider` 的 `AssetController` 直接托管 vendor 包内 `resources/assets`，**无需发布**即可在演示中加载。
 
-常用插件（45 个，完整清单见 `docs/06-附录/03-plugin-index.md`）：`datatables`、`datatables-pdf`、`select2`、`choices`、`quill`、`summernote`、`apexcharts`、`apextree`、`apexsankey`、`echarts`、`jsvectormap-world`、`leaflet`、`googlemaps`、`nouislider`、`daterangepicker`、`dropzone`、`filepond`、`pickr`、`tagify`、`inputmask`、`fullcalendar`、`jstree`、`sortablejs`、`glightbox`、`masonry`、`sweetalert2`、`pdfjs`、`tourguide`、`clipboard`、`tinycon`、`animate`、`spinkit`、`ladda`、`diff`、`simplebar` 等。
+常用插件（45 个，完整清单见 `docs/06-appendix/03-plugin-index.md`）：`datatables`、`datatables-pdf`、`select2`、`choices`、`quill`、`summernote`、`apexcharts`、`apextree`、`apexsankey`、`echarts`、`jsvectormap-world`、`leaflet`、`googlemaps`、`nouislider`、`daterangepicker`、`dropzone`、`filepond`、`pickr`、`tagify`、`inputmask`、`fullcalendar`、`jstree`、`sortablejs`、`glightbox`、`masonry`、`sweetalert2`、`pdfjs`、`tourguide`、`clipboard`、`tinycon`、`animate`、`spinkit`、`ladda`、`diff`、`simplebar` 等。
 
 ---
 

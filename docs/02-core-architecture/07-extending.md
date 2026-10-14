@@ -312,7 +312,7 @@ document.addEventListener('xf.kanban.move', e => console.log(e.detail.from, e.de
 document.addEventListener('xf.wizard.finish', e => console.log('提交', e.detail.step));
 ```
 
-完整事件表见 [06-前端 JS API](../04-进阶指南/06-javascript-api.md#4-事件全表)。
+完整事件表见 [06-前端 JS API](../04-advanced-guide/06-javascript-api.md#4-事件全表)。
 
 ## 9. 扩展检查清单
 
@@ -359,4 +359,4 @@ echo XfAdmin::statusPill([
 ]);
 ```
 
-下一步：[01-页面与布局](../04-进阶指南/01-page-layout.md)
+下一步：[01-页面与布局](../04-advanced-guide/01-page-layout.md)

@@ -1,6 +1,6 @@
 <?php
 
-/** 文档覆盖审计：确认每个注册别名都在 03-组件参考 中有条目、示例与参数表 */
+/** 文档覆盖审计：确认每个注册别名都在 03-component-reference 中有条目、示例与参数表 */
 require __DIR__.'/../vendor/autoload.php';
 
 use zxf\XfAdmin\XfAdmin;
@@ -10,7 +10,7 @@ $list = XfAdmin::componentList();
 // 按 "### `别名`" 切分所有章节（避免大正则回溯）
 $sections = [];
 $cur = null;
-foreach (glob(__DIR__.'/../docs/03-组件参考/*.md') as $f) {
+foreach (glob(__DIR__.'/../docs/03-component-reference/*.md') as $f) {
     foreach (file($f, FILE_IGNORE_NEW_LINES) as $line) {
         if (preg_match('/^### `([^`]+)`$/', $line, $m)) {
             $cur = $m[1];

@@ -85,7 +85,7 @@ class DashboardController extends Controller
 {{-- 局部组件 --}}
 {!! XfAdmin::card(['title' => '统计', 'body' => $body]) !!}
 
-{{-- 或 Blade 指令（见 04-进阶指南/10-laravel.md） --}}
+{{-- 或 Blade 指令（见 04-advanced-guide/10-laravel.md） --}}
 @xf('card', ['title' => '统计', 'body' => $body])
 ```
 
@@ -154,7 +154,7 @@ public function index()
 return xfadmin('page', ['title' => '仪表盘', 'content' => $body]);
 ```
 
-详见 [11-ThinkPHP 集成](../04-进阶指南/11-thinkphp.md)。
+详见 [11-ThinkPHP 集成](../04-advanced-guide/11-thinkphp.md)。
 
 ## 5. 原生 PHP（无框架）
 

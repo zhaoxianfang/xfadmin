@@ -110,7 +110,7 @@ XfAdmin::card([...])->addClass('shadow-sm', 'mb-3')->attr('data-role', 'panel')-
 
 **Q：菜单支持权限过滤吗？**
 
-组件不处理权限。请在生成菜单数组时自行过滤（见 [02-导航系统 §7](../04-进阶指南/02-navigation.md#7-权限过滤推荐做法)）。
+组件不处理权限。请在生成菜单数组时自行过滤（见 [02-导航系统 §7](../04-advanced-guide/02-navigation.md#7-权限过滤推荐做法)）。
 
 ## 表格
 
@@ -126,7 +126,7 @@ XfAdmin::card([...])->addClass('shadow-sm', 'mb-3')->attr('data-role', 'panel')-
 **Q：过滤栏不生效？**
 
 前端控件名必须与后端 `filters` 的键对应。例如 `daterange` 产出 `date_from`/`date_to`，
-后端需配置同名规则。对照表见 [data-protocol §11](../02-核心架构/05-data-protocol.md#11-完整示例)。
+后端需配置同名规则。对照表见 [data-protocol §11](../02-core-architecture/05-data-protocol.md#11-完整示例)。
 
 **Q：表格里的操作按钮点了两次？**
 

@@ -3,7 +3,7 @@
 /**
  * XfAdmin 组件参考文档生成器
  *
- * 从源码反射 + 注释解析，生成 docs/03-组件参考/ 下的分类组件文档：
+ * 从源码反射 + 注释解析，生成 docs/03-component-reference/ 下的分类组件文档：
  *   - 组件用途（取 src/XfAdmin.php 的 @method 中文注释，回退类 docblock）
  *   - 用法示例（取类 docblock 中的 XfAdmin::xxx([...]) 代码块）
  *   - 完整参数表（取 defaults()，含键名、默认值、类型、行尾中文注释）
@@ -191,8 +191,8 @@ $GROUPS = [
             '',
             '### 完整能力见',
             '',
-            '- [03-数据表格全指南](../04-进阶指南/03-datatable.md) —— 列定义、52 种渲染器、行操作、过滤栏、批量、导出、服务端对接、陷阱清单',
-            '- [05-服务端数据协议](../02-核心架构/05-data-protocol.md) —— `XfAdmin::dataResponse()` 的请求/响应与 `filters` 语法',
+            '- [03-数据表格全指南](../04-advanced-guide/03-datatable.md) —— 列定义、52 种渲染器、行操作、过滤栏、批量、导出、服务端对接、陷阱清单',
+            '- [05-服务端数据协议](../02-core-architecture/05-data-protocol.md) —— `XfAdmin::dataResponse()` 的请求/响应与 `filters` 语法',
             '',
             '### 组合范式',
             '',
@@ -1798,14 +1798,14 @@ function cell(string $s): string
 $methodDocs = parseMethodDocs($root.'/src/XfAdmin.php');
 $list = XfAdmin::componentList();
 
-$outDir = $root.'/docs/03-组件参考';
+$outDir = $root.'/docs/03-component-reference';
 if (! is_dir($outDir)) {
     mkdir($outDir, 0755, true);
 }
 
 $assigned = [];
 $stats = [];
-$index = [];   // 用于生成 00-总览.md
+$index = [];   // 用于生成 00-overview.md
 
 foreach ($GROUPS as $file => $group) {
     $md = [];
@@ -2096,11 +2096,11 @@ foreach ($GROUPS as $file => $group) {
         array_slice($md, $pos + 1)
     );
     file_put_contents($outDir.'/'.$file, implode("\n", $final)."\n");
-    echo "生成: docs/03-组件参考/{$file} (".($stats[$file] ?? 0)." 个组件)\n";
+    echo "生成: docs/03-component-reference/{$file} (".($stats[$file] ?? 0)." 个组件)\n";
 }
 
 // ------------------------------------------------------------------
-// 4. 生成 00-总览.md（全组件索引）
+// 4. 生成 00-overview.md（全组件索引）
 // ------------------------------------------------------------------
 $ov = [];
 $ov[] = '# 组件总览';
@@ -2143,13 +2143,13 @@ foreach ($GROUPS as $file => $group) {
     }
     $ov[] = '';
 }
-file_put_contents($outDir.'/00-总览.md', implode("\n", $ov)."\n");
-echo "生成: docs/03-组件参考/00-总览.md（全组件索引）\n";
+file_put_contents($outDir.'/00-overview.md', implode("\n", $ov)."\n");
+echo "生成: docs/03-component-reference/00-overview.md（全组件索引）\n";
 
 // ------------------------------------------------------------------
-// 5. 生成 06-附录/01-component-index.md（按字母序速查）
+// 5. 生成 06-appendix/01-component-index.md（按字母序速查）
 // ------------------------------------------------------------------
-$appendixDir = $root.'/docs/06-附录';
+$appendixDir = $root.'/docs/06-appendix';
 if (! is_dir($appendixDir)) {
     mkdir($appendixDir, 0755, true);
 }
@@ -2168,7 +2168,7 @@ $ci[] = '';
 $ci[] = '> 本文件由 `php tools/gen_component_docs.php` 自动生成。';
 $ci[] = '> 共 **'.count($flat).'** 个组件条目（注册表别名 **'.count($list).'** 个，'
     .(count($list) - count($flat)).' 个为指向同一组件类的重复别名）。';
-$ci[] = '> 按分类浏览见 [组件总览](../03-组件参考/00-总览.md)。';
+$ci[] = '> 按分类浏览见 [组件总览](../03-component-reference/00-overview.md)。';
 $ci[] = '';
 $ci[] = '| 别名 | 一句话说明 | 组件类 | 源文件 | 分类文档 |';
 $ci[] = '|---|---|---|---|---|';
@@ -2176,13 +2176,13 @@ foreach ($flat as $r) {
     $short = trim(explode('。', explode('（', $r['summary'])[0])[0]);
     $ci[] = '| `'.$r['alias'].'` | '.cell($short).' | `'
         .str_replace('zxf\\XfAdmin\\Components\\', '', $r['class']).'` | `'
-        .$r['file'].'` | ['.$r['group'].'](../03-组件参考/'.$r['doc'].') |';
+        .$r['file'].'` | ['.$r['group'].'](../03-component-reference/'.$r['doc'].') |';
 }
 file_put_contents($appendixDir.'/01-component-index.md', implode("\n", $ci)."\n");
-echo '生成: docs/06-附录/01-component-index.md（'.count($flat)." 条）\n";
+echo '生成: docs/06-appendix/01-component-index.md（'.count($flat)." 条）\n";
 
 // ------------------------------------------------------------------
-// 6. 生成 06-附录/02-option-index.md（高频参数字典）
+// 6. 生成 06-appendix/02-option-index.md（高频参数字典）
 // ------------------------------------------------------------------
 $oi = [];
 $oi[] = '# 参数字典';
@@ -2198,10 +2198,10 @@ foreach ($dict as $k => $v) {
     $oi[] = '| `'.rtrim($k, '_').'` | '.cell($v).' |';
 }
 file_put_contents($appendixDir.'/02-option-index.md', implode("\n", $oi)."\n");
-echo "生成: docs/06-附录/02-option-index.md（参数字典）\n";
+echo "生成: docs/06-appendix/02-option-index.md（参数字典）\n";
 
 // ------------------------------------------------------------------
-// 7. 生成 06-附录/03-plugin-index.md（插件资源索引）
+// 7. 生成 06-appendix/03-plugin-index.md（插件资源索引）
 // ------------------------------------------------------------------
 $pi = [];
 $pi[] = '# 插件资源索引';
@@ -2248,7 +2248,7 @@ foreach (Assets::PLUGINS as $name => $def) {
     $pi[] = '';
 }
 file_put_contents($appendixDir.'/03-plugin-index.md', implode("\n", $pi)."\n");
-echo '生成: docs/06-附录/03-plugin-index.md（'.count(Assets::PLUGINS)." 个插件）\n";
+echo '生成: docs/06-appendix/03-plugin-index.md（'.count(Assets::PLUGINS)." 个插件）\n";
 
 // 未分配检查
 $missing = array_diff(array_keys($list), array_keys($assigned));

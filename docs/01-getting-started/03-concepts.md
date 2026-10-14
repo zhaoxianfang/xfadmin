@@ -116,7 +116,7 @@ Assets::instance()->inlineJs($code, 'my-key');   // 同 key 只输出一次
 Assets::instance()->inlineJs($code);             // 按内容去重
 ```
 
-详细机制见 [03-资源与插件](../02-核心架构/03-assets.md)。
+详细机制见 [03-资源与插件](../02-core-architecture/03-assets.md)。
 
 ## 5. 转义策略（安全模型）
 
@@ -154,7 +154,7 @@ use zxf\XfAdmin\Support\Html;
 ```
 
 - 内联 `<script>` 中输出变量必须用 `Html::scriptJson()`（带 `JSON_HEX_TAG`，防 `</script>` 断标签），
-  属性中的 JSON 用 `Html::json()`。详见 [04-安全与转义](../02-核心架构/04-security.md)。
+  属性中的 JSON 用 `Html::json()`。详见 [04-安全与转义](../02-core-architecture/04-security.md)。
 
 ## 6. 前端协作：声明式初始化
 

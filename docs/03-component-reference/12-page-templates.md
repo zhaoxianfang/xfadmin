@@ -17,8 +17,8 @@
 |---|---|---|---|
 | `page` | 后台整页（垂直/水平布局） | ✅ | [01-layout](01-layout.md#page) |
 | `landing` | 营销落地页 | ✅（内部委托 `page`） | [01-layout](01-layout.md#landing) |
-| `authPage` + 9 个语义别名 | 认证页（登录/注册/找回/锁屏…） | ✅ | [08-认证与错误页](../04-进阶指南/08-auth-pages.md) |
-| `errorPage` | 错误页（400/401/403/404/408/500） | ✅ | [08-认证与错误页](../04-进阶指南/08-auth-pages.md#7-错误页-errorpage) |
+| `authPage` + 9 个语义别名 | 认证页（登录/注册/找回/锁屏…） | ✅ | [08-认证与错误页](../04-advanced-guide/08-auth-pages.md) |
+| `errorPage` | 错误页（400/401/403/404/408/500） | ✅ | [08-认证与错误页](../04-advanced-guide/08-auth-pages.md#7-错误页-errorpage) |
 | `comingSoon` | 即将上线页 | ✅ | [01-layout](01-layout.md#comingsOon) |
 | `maintenance` | 系统维护页 | ✅ | [01-layout](01-layout.md#maintenance) |
 | `lockScreen` | 锁屏页（独立组件） | ✅ | [01-layout](01-layout.md#lockscreen) |
@@ -453,7 +453,7 @@ echo XfAdmin::errorPage(['code' => 404]);
 ## 4. 模板复用建议
 
 1. **先选骨架**：后台页用 `page`，认证/状态页用 `authPage`/`errorPage` 系列，营销页用 `landing`；
-2. **再选内容块**：从 [组件总览](00-总览.md) 找到对应业务组件（列表/表单/详情/看板/聊天…）；
+2. **再选内容块**：从 [组件总览](00-overview.md) 找到对应业务组件（列表/表单/详情/看板/聊天…）；
 3. **最后补交互**：优先使用组件内置能力（`data-xf` / 行操作 / 过滤栏 / 批量 / 弹窗），
    避免复制模板里的页面专用 JS；
 4. **保持一致性**：同一系统的列表页、表单页、详情页使用相同配方结构，便于维护。
@@ -462,7 +462,7 @@ echo XfAdmin::errorPage(['code' => 404]);
 
 ## 5. 相关文档
 
-- [01-页面与布局](../04-进阶指南/01-page-layout.md) —— `Page` 的全部参数与渲染顺序
-- [08-认证与错误页](../04-进阶指南/08-auth-pages.md) —— 9 种认证页 × 3 种布局
-- [09-模板页面映射](../04-进阶指南/09-templates-pages.md) —— INSPINIA 220+ 页面对应组件
-- [组件总览](00-总览.md) —— 226 个组件分类索引
+- [01-页面与布局](../04-advanced-guide/01-page-layout.md) —— `Page` 的全部参数与渲染顺序
+- [08-认证与错误页](../04-advanced-guide/08-auth-pages.md) —— 9 种认证页 × 3 种布局
+- [09-模板页面映射](../04-advanced-guide/09-templates-pages.md) —— INSPINIA 220+ 页面对应组件
+- [组件总览](00-overview.md) —— 226 个组件分类索引

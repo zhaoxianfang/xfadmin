@@ -23,8 +23,8 @@
 
 ### 完整能力见
 
-- [03-数据表格全指南](../04-进阶指南/03-datatable.md) —— 列定义、52 种渲染器、行操作、过滤栏、批量、导出、服务端对接、陷阱清单
-- [05-服务端数据协议](../02-核心架构/05-data-protocol.md) —— `XfAdmin::dataResponse()` 的请求/响应与 `filters` 语法
+- [03-数据表格全指南](../04-advanced-guide/03-datatable.md) —— 列定义、52 种渲染器、行操作、过滤栏、批量、导出、服务端对接、陷阱清单
+- [05-服务端数据协议](../02-core-architecture/05-data-protocol.md) —— `XfAdmin::dataResponse()` 的请求/响应与 `filters` 语法
 
 ### 组合范式
 

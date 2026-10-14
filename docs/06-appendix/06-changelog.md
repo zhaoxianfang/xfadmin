@@ -4,6 +4,27 @@
 
 ---
 
+## v1.0.1 安装健壮性修复：docs 中文路径英文化（2026-10-14）
+
+### 安装期缺陷根因与修复
+
+- **`composer require` 解压失败（Illegal byte sequence）**：`docs/` 下 6 个中文目录（`01-快速开始` / `02-核心架构` / `03-组件参考` / `04-进阶指南` / `05-运维` / `06-附录`）与 3 个中文文件（`00-总览.md` / `12-页面模板.md` / `00-包总览与分析.md`）在 macOS 系统 `unzip` 解压时因 UTF-8 文件名触发 `Illegal byte sequence`，导致 `Failed to extract zxf/xfadmin` 并级联产生大量错误。现已将全部中文目录/文件名英文化（保留数字前缀以维持原排序），并同步改写 24 个文件中的交叉引用（含 `docs/INDEX.md`、`docs/README.md`、`06-附录/01-component-index.md` 等）。
+- **生成器同步修复**：`tools/gen_component_docs.php`（`$outDir = .../docs/03-组件参考` 及 `file_put_contents($outDir.'/00-总览.md', ...)`）与 `tools/audit_docs_coverage.php`（`glob(.../docs/03-组件参考/*.md)`）同步指向新的英文路径，避免重新生成文档时复现中文路径。
+- **发布归档净化**：新增 `.gitattributes`，将 `.workbuddy/`（agent 工作区记忆）标记为 `export-ignore`，确保 dist 压缩包不再携带本地私有数据。
+- **大小写冲突复核**：全包按完整路径做大小写不敏感冲突扫描，确认 0 处同目录冲突（此前 Composer 提示的 "identical file names with different capitalization" 为通用非致命提示，无需改动自动加载结构）。
+
+### 代码健壮性加固
+
+- **前端初始化容错**：`xfadmin.js` 的 `XFAdmin.scan()` 在逐组件 `try/catch` 重试基础上，进一步将后置的 `initBootstrapExtras` / `bindRemoteForms` 调用包裹独立 `try/catch`，单点失败不再中断已完成的 `[data-xf]` 初始化，也不阻断后续区块扫描。
+
+### 验证
+
+- 构建 dist 等价 zip 并以系统 `/usr/bin/unzip -qq` 解压：退出码 0、stderr 为空、解压产物 0 个非 ASCII 路径（此前必报 Illegal byte sequence）。
+- `docs/` 内 669 条本地 Markdown 链接全部可解析（0 断链）。
+- 全包 `pint --test` 257 files PASS；`tools/*.php` PHP lint 通过；`tests/run-all.sh` 全绿。
+
+---
+
 ## v2.2.15 全包深度审计与全面修复（2026-10-14）
 
 本轮为全包体检（216 个组件 + 核心框架 + 前端运行时 + demo），覆盖错误、异常、逻辑缺陷、
@@ -128,7 +149,7 @@ variant/size/placement/status/theme/language/color 等枚举值统一走 `enum()
 
 ### 补充完善（v2.2.15 收尾：文档对齐 / 可访问性 / 全包 Pint 格式化）
 
-- **文档对齐**：`docs/03-组件参考/*.md` 共 215 处「（N 行）」标注按 `src/` 实际行数批量修正；`docs/04-进阶指南/06-javascript-api.md` 补齐全部 64 个 widget 说明（静态 53 + inlineJs 动态 11）；`demo/pages/widgets.php`、`forms.php` 新增 `loadingButton` / `quantityStepper` / `invoicePrintButton` 三个新组件示例。
+- **文档对齐**：`docs/03-component-reference/*.md` 共 215 处「（N 行）」标注按 `src/` 实际行数批量修正；`docs/04-advanced-guide/06-javascript-api.md` 补齐全部 64 个 widget 说明（静态 53 + inlineJs 动态 11）；`demo/pages/widgets.php`、`forms.php` 新增 `loadingButton` / `quantityStepper` / `invoicePrintButton` 三个新组件示例。
 - **LoadingButton 增强**：新增 `restore_ms`（自动恢复毫秒数）选项并透传额外 HTML 属性（`data-xf-config` 输出 `restoreMs`，JS 端已支持），支撑「加载后自动恢复」场景。
 - **可访问性（a11y）修复**：Topbar（菜单 / 搜索 / 设置 / 全屏 / 主题 / 语言 / 通知 / 消息 8 处）、Customizer（关闭）、EmailApp（筛选 / 星标 / 行操作）、Outlook（行操作）、InvoiceCreate（删除明细行）、PinBoard（移除便利贴）、Customers（更多操作）共 9 个文件的纯图标按钮补 `aria-label` + `type="button"`，消除屏幕阅读器无法识别的图标按钮。
 - **全包 Pint 格式化**：使用 `/Users/aha/www/yoc/vendor/bin/pint` 对 `src/` `demo/` `config/` `tools/` `tests/` 共 246 个 PHP 文件统一 Laravel 风格格式化（仅重排空白，不改变逻辑）。
@@ -1215,8 +1236,8 @@ P2 客户/公司/联系人/评论/聊天/顶栏/侧栏头像统一改用 Avatar�
 
 ### 文档
 
-- [表格](../04-进阶指南/03-datatable.md) 补充：服务端 `DataSet`/`dataResponse`、`filter_bar`、富单元格渲染器总表与操作栏用法。
-- [扩展组件](../02-核心架构/07-extending.md) 补充：前端交互事件（`xf:action` / `xf:switch` / `xf:cell-input` / `data-xf-event` / `xf:copy`）、
+- [表格](../04-advanced-guide/03-datatable.md) 补充：服务端 `DataSet`/`dataResponse`、`filter_bar`、富单元格渲染器总表与操作栏用法。
+- [扩展组件](../02-core-architecture/07-extending.md) 补充：前端交互事件（`xf:action` / `xf:switch` / `xf:cell-input` / `data-xf-event` / `xf:copy`）、
   单元格渲染器扩展与 `XFAdmin` API 速查。
 - [组件详细参考](07-components-reference.md) 补充 Tabs（footer/form/badge）与 Menu（箭头/徽标）条目。
 
@@ -1291,7 +1312,7 @@ P2 客户/公司/联系人/评论/聊天/顶栏/侧栏头像统一改用 Avatar�
 
 - 新增 [组件详细参考](07-components-reference.md)：由代码反射自动生成，覆盖全部 99 个组件，逐项列出
   别名、用途、输入参数（数据）、前端控件（`data-xf`）与可复制用法示例，并在顶部说明数据输入 / 输出通用约定。
-- [组件总览](../03-组件参考/00-总览.md) 顶部新增「数据输入与输出约定」，并链接到详细参考；[README](../README.md)
+- [组件总览](../03-component-reference/00-overview.md) 顶部新增「数据输入与输出约定」，并链接到详细参考；[README](../README.md)
   文档目录同步新增条目。
 
 ---
@@ -1322,7 +1343,7 @@ P2 客户/公司/联系人/评论/聊天/顶栏/侧栏头像统一改用 Avatar�
 - 内联 `<script>` 中的 JSON 经 `Html::scriptJson()`（`JSON_HEX_TAG` / `JSON_HEX_AMP` 等）转义，
   防止 `</script>` 注入与存储型 XSS。
 - 属性值统一通过 `Html::attrs()` 转义；前端 `xfadmin.js` 对用户输入再做 `escapeHtml()` 二次转义。
-- 文档化可信边界：[安全与转义规范](../02-核心架构/04-security.md)。
+- 文档化可信边界：[安全与转义规范](../02-core-architecture/04-security.md)。
 
 ### 文档
 

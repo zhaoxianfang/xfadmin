@@ -256,4 +256,4 @@ php -S 127.0.0.1:8900 demo/router.php
 
 - [03-核心概念](03-concepts.md) —— 理解组件、配置合并与资源机制
 - [04-全局配置](04-configuration.md) —— 主题、品牌、资源基址
-- [03-数据表格全指南](../04-进阶指南/03-datatable.md) —— 表格的全部能力
+- [03-数据表格全指南](../04-advanced-guide/03-datatable.md) —— 表格的全部能力

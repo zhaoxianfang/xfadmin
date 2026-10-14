@@ -2,9 +2,9 @@
 
 按任务组织，每个任务给**完整可运行代码 + 关键要点**。适合复制后改改即用。
 
-- 基础概念见 [03-核心概念](../01-快速开始/03-concepts.md)
+- 基础概念见 [03-核心概念](../01-getting-started/03-concepts.md)
 - 组件速查见 [INDEX.md](../INDEX.md)
-- 出错先看 [04-问题排查](../05-运维/04-troubleshooting.md)
+- 出错先看 [04-问题排查](../05-operations/04-troubleshooting.md)
 
 ---
 
@@ -75,7 +75,7 @@ public function users(Request $request)
 
 **要点**：区间控件产出 `*_from`/`*_to`；滑块产出 `"lo,hi"`（配 `op => between`）；
 多选产出逗号串（配 `op => in`）。完整对照见
-[05-服务端数据协议 §11](../02-核心架构/05-data-protocol.md#11-完整示例)。
+[05-服务端数据协议 §11](../02-core-architecture/05-data-protocol.md#11-完整示例)。
 
 ---
 
@@ -444,7 +444,7 @@ XfAdmin::extend('teamCard', TeamCard::class);
 echo XfAdmin::teamCard(['name' => '张三', 'role' => '前端']);
 ```
 
-详见 [07-扩展机制](../02-核心架构/07-extending.md)。
+详见 [07-扩展机制](../02-core-architecture/07-extending.md)。
 
 ---
 
@@ -477,7 +477,7 @@ XFAdmin.load(['/css/x.css'], ['/js/x.js']).then(() => XFAdmin.scan());
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| 页面无样式 | 未输出 `head()`/资源 404 | 见 [问题排查 §1](../05-运维/04-troubleshooting.md#1-页面无样式--无交互) |
+| 页面无样式 | 未输出 `head()`/资源 404 | 见 [问题排查 §1](../05-operations/04-troubleshooting.md#1-页面无样式--无交互) |
 | 表格空白 | `window.DataTable` 未加载 | 检查资源 |
 | 过滤无效 | 前端 name 与后端 filters 不对应 | 见 [§2](#2-过滤栏与后端-filters-配对) |
 | AJAX 不跳转 | 后端未返回顶层 `url` | 见 [§8](#8-ajax-表单保存--错误回填) |
@@ -486,4 +486,4 @@ XFAdmin.load(['/css/x.css'], ['/js/x.js']).then(() => XFAdmin.scan());
 | 弹窗内容整页 | 服务端未标记 `[data-xf-page-content]` | 见 [§13](#13-弹窗中加载远程页面) |
 | 参数没生效 | 键名拼错 / 被 `+` 合并覆盖 | 打印 `->options()` 核对 |
 
-完整清单见 [04-问题排查](../05-运维/04-troubleshooting.md)。
+完整清单见 [04-问题排查](../05-operations/04-troubleshooting.md)。

@@ -17,7 +17,7 @@
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| `InvalidArgumentException: 未知组件 [xxx]` | 别名拼错 | 见 [组件索引](../06-附录/01-component-index.md)；别名大小写不敏感但需存在 |
+| `InvalidArgumentException: 未知组件 [xxx]` | 别名拼错 | 见 [组件索引](../06-appendix/01-component-index.md)；别名大小写不敏感但需存在 |
 | 输出空字符串 | 必需参数缺失（如 `items` 为空） | 检查参数 |
 | `Object of class Closure could not be converted to string` | 内容槽位传了未调用的闭包 | 组件会自动调用，检查是否自己拼接了闭包 |
 | 组件重复渲染 | 同一实例被 echo 多次（每次生成新 uid） | 需要复用请先 `(string)` 一次 |
@@ -40,7 +40,7 @@
 | "Requested unknown parameter" | 列 `data` 为空且无 `defaultContent` | 组件已自动补，若自定义 `options.columns` 需自行补 |
 | 行操作按钮点两次 / prompt 弹两次 | 全局委托与行委托重复 | 已有 `btn.closest('table')` 守卫；自定义按钮避免在表格内用 `data-xf-op` + `data-xf-act` 双写 |
 | 「更多」下拉不弹出 / 飞出视口 | DataTables scrollX + 固定列导致 Popper 定位偏移 | `initDtDropdownFix` 已在 `shown.bs.dropdown` 的 rAF 内改为 fixed 定位 |
-| 过滤栏不生效 | 前端控件名与后端 `filters` 键不对应 | 对照 [data-protocol §11](../02-核心架构/05-data-protocol.md#11-完整示例) |
+| 过滤栏不生效 | 前端控件名与后端 `filters` 键不对应 | 对照 [data-protocol §11](../02-core-architecture/05-data-protocol.md#11-完整示例) |
 | 服务端返回 302 登录页 | 接口未走 web 中间件 / 未登录 | 检查路由中间件 |
 | 服务端 419 | CSRF | 确认 meta csrf-token；用 `method => 'POST'` |
 | 排序错列 | 启用 bulk/row_detail 后索引被辅助列顶偏 | 用列名或调整索引 |
@@ -155,5 +155,5 @@ XFAdmin.table('#user-table').ajax.reload();
 1. 运行 `bash tests/run-all.sh` 确认包本身健康；
 2. 运行 `bash tools/selftest/run.sh` 做浏览器级自检；
 3. 检查浏览器控制台与 Network 面板；
-4. 在 [FAQ](../06-附录/04-faq.md) 与 [组件索引](../06-附录/01-component-index.md) 中检索；
+4. 在 [FAQ](../06-appendix/04-faq.md) 与 [组件索引](../06-appendix/01-component-index.md) 中检索；
 5. 提交 issue 时附上：PHP 版本、框架版本、组件别名、完整配置数组、渲染输出片段、控制台错误。

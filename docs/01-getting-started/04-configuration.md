@@ -194,4 +194,4 @@ echo XfAdmin::asset('css/app.min.css');             // /zxf/xfadmin/css/app.min.
 print_r(XfAdmin::setting('theme'));
 ```
 
-下一步：[01-架构总览](../02-核心架构/01-architecture.md)
+下一步：[01-架构总览](../02-core-architecture/01-architecture.md)

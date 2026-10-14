@@ -35,7 +35,7 @@ echo XfAdmin::dataTable([
 ]);
 ```
 
-后端见 [05-服务端数据协议](../02-核心架构/05-data-protocol.md)。
+后端见 [05-服务端数据协议](../02-core-architecture/05-data-protocol.md)。
 
 ## 2. 参数总表
 
@@ -426,7 +426,7 @@ if (未设 fixed_columns 且存在 actions/dropdown/buttons 列) fixedColumns = 
 - 回车 = 搜索；重置按钮清空后自动 reload。
 
 ⚠️ 前端控件名必须与后端 `filters` 键配对（对照表见
-[05-服务端数据协议 §11](../02-核心架构/05-data-protocol.md#11-完整示例)）。
+[05-服务端数据协议 §11](../02-core-architecture/05-data-protocol.md#11-完整示例)）。
 
 ## 9. 「新增」按钮 `create`
 

@@ -134,5 +134,5 @@ php artisan optimize:clear
 ## 7. 获取帮助
 
 - 查阅 [文档中心](../README.md)；
-- 检索 [组件索引](01-component-index.md) 与 [问题排查](../05-运维/04-troubleshooting.md)；
+- 检索 [组件索引](01-component-index.md) 与 [问题排查](../05-operations/04-troubleshooting.md)；
 - 提交 issue 时附：版本、PHP/框架版本、组件别名、配置数组、输出片段、控制台错误。

@@ -256,7 +256,7 @@ use zxf\XfAdmin\Components\Component;
 final class XfAdmin
 {
     /** 扩展包版本号（与 config/xfadmin.php 的 version 及 docs 更新日志保持同步，用于运行时自检） */
-    public const VERSION = '2.2.15';
+    public const VERSION = '1.0.1';
 
     /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
     private const AUTH_TYPE_ALIASES = [

@@ -26,7 +26,7 @@ bash tests/run-all.sh
 | # | 防线 | 内容 |
 |---|---|---|
 | 1 | **资源完整性** | 组件 `assets()` 声明的插件必须已注册在 `Assets::PLUGINS`；`PLUGINS` 声明的文件（含 deps 递归）必须真实存在 |
-| 2 | **注入模糊审计** | 对每个组件的「文本展示字段」注入 payload，检测输出是否未转义（详见 [04-安全与转义](../02-核心架构/04-security.md#6-审计工具)） |
+| 2 | **注入模糊审计** | 对每个组件的「文本展示字段」注入 payload，检测输出是否未转义（详见 [04-安全与转义](../02-core-architecture/04-security.md#6-审计工具)） |
 | 3 | **健壮性审计** | 极端/非法输入不得触发 PHP 致命错误 |
 | 4 | **前端契约审计** | 校验 `xfadmin.js` / `xfadmin.css` 中已修复的关键点仍然存在（防回退） |
 
@@ -112,7 +112,7 @@ bash tools/selftest/run.sh
 
 | 脚本 | 作用 |
 |---|---|
-| `tools/gen_component_docs.php` | 生成 `docs/03-组件参考/` 全部组件文档（参数表 + 示例 + 依赖） |
+| `tools/gen_component_docs.php` | 生成 `docs/03-component-reference/` 全部组件文档（参数表 + 示例 + 依赖） |
 | `tools/gen_component_matrix.php` | 导出组件矩阵 JSON（参数统计） |
 | `tools/gen_docs.php` | 生成 `docs/components-reference.md`（单文件全组件参考） |
 | `tools/gen_category_docs.php` | 生成 `docs/categories/*.md` |
