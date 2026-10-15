@@ -96,6 +96,10 @@
     --xf-shadow-sm: 0 1px 2px rgba(0, 0, 0, .06);
     --xf-shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 4px 14px rgba(0, 0, 0, .04);
     --xf-shadow-lg: 0 10px 40px rgba(0, 0, 0, .12);
+    /* 品牌主色与浅色柔化背景（命令面板 hover / 通知未读 / 拖拽区高亮等），
+       单独抽成变量以便暗色主题统一覆写，避免暗色下出现刺眼浅蓝面板。 */
+    --xf-brand: #3e60d5;
+    --xf-brand-soft: #eef1fb;
 }
 
 /* 暗色模式：Bootstrap 5 -> INSPINIA 变量桥接 */
@@ -154,6 +158,9 @@
     --ins-table-bg: var(--bs-body-bg, #17181e);
     --ins-table-accent-bg: rgba(255, 255, 255, 0.04);
     --ins-table-border-color: var(--bs-border-color, rgba(255, 255, 255, 0.1));
+    /* 品牌柔化背景：暗色下由浅蓝 #eef1fb 改为深蓝半透明，避免命令面板 / 通知 /
+       拖拽区在暗色主题下出现刺眼浅色块。 */
+    --xf-brand-soft: rgba(62, 96, 213, .16);
 }
 
 /* --------------------------------------------------------------------------
@@ -1276,6 +1283,9 @@ body.layout-boxed .wrapper { max-width: 1320px; margin: 0 auto; box-shadow: var(
 /* 暗色 hover 仅跟随模板 .side-nav-link:hover（变色，不加深色背景），不在此强加背景 */
 [data-bs-theme="dark"] .avatar-group .avatar-group-item { border-color: var(--bs-body-bg); }
 [data-bs-theme="dark"] .toast { background: var(--bs-body-bg); }
+/* 步骤小圆点：暗色下默认（未完成）态改用次级表面色，避免亮白点刺眼；
+   完成 / 激活态仍沿用品牌主色，保持状态语义。 */
+[data-bs-theme="dark"] .xf-step-dot { background: var(--bs-tertiary-bg, #272832); }
 
 /* --------------------------------------------------------------------------
    19. 业务 / 协作 / 页面模板组件样式
@@ -1548,6 +1558,42 @@ a:focus-visible, .btn:focus-visible, .nav-link:focus-visible { outline-offset: 3
 [data-bs-theme="dark"] .form-control, [data-bs-theme="dark"] .form-select {
   background-color: #11161c; border-color: rgba(255, 255, 255, .12);
 }
+
+/* 20.11b 后台主框架暗色化（侧边栏 / 顶栏 / 搜索框）
+ * INSPINIA 的侧栏、顶栏暗色样式依赖 [data-menu-color] / [data-topbar-color] 属性，
+ * 而后台布局通常只切换 data-bs-theme，不会附带上述属性，导致暗色模式下侧栏 / 顶栏
+ * 仍保持浅色，与全局暗色主题割裂、对比度异常。
+ * 此处于 [data-bs-theme="dark"] 下统一注入暗色令牌，使主框架在“仅切换主题、不指定
+ * color 属性”的场景下也能正确进入暗色（友好型双向主题）。
+ * 若页面显式指定 data-menu-color=light / data-topbar-color=light，INSPINIA 的
+ * [data-bs-theme=dark][data-menu-color=light] 选择器特异性更高，会优先生效，互不冲突。 */
+[data-bs-theme="dark"] {
+  --ins-sidenav-bg: #1e1f27;
+  --ins-sidenav-border-color: #2c2d38;
+  --ins-sidenav-item-color: #8495ab;
+  --ins-sidenav-item-hover-color: #bccee4;
+  --ins-sidenav-item-hover-bg: #2f3742;
+  --ins-sidenav-item-active-color: #ced6df;
+  --ins-sidenav-item-active-bg: #22232c;
+  --ins-topbar-bg: #252630;
+  --ins-topbar-item-color: #adb5bf;
+  --ins-topbar-item-hover-color: #e0eeff;
+  --ins-topbar-search-bg: #2d2e3c;
+  --ins-topbar-search-border: #2d2e3c;
+  --ins-navbar-color: rgba(255, 255, 255, .55);
+  --ins-navbar-hover-color: rgba(255, 255, 255, .75);
+  --ins-navbar-active-color: #fff;
+  --ins-navbar-brand-color: #fff;
+}
+/* 侧栏激活项左侧高亮条（暗色更清晰） */
+[data-bs-theme="dark"] .side-nav-link.active { box-shadow: inset 2px 0 0 var(--bs-primary); }
+/* 暗色下侧栏滚动条更柔和 */
+[data-bs-theme="dark"] .sidenav-menu::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .18); }
+/* 暗色下顶栏搜索框文字跟随令牌，避免浅色文字不可读 */
+[data-bs-theme="dark"] .topbar-search .form-control,
+[data-bs-theme="dark"] .app-topbar .form-control { color: var(--ins-topbar-item-color, #adb5bf); }
+/* 暗色下品牌区与用户菜单文字提亮，保证对比度 */
+[data-bs-theme="dark"] .nav-user .name { color: #e6ebf2; }
 
 /* 20.13a 投票列表 / 问题跟踪 */
 .xf-vote-box .btn-link { color: var(--bs-secondary-color); line-height: 1; }

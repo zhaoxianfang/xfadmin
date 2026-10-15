@@ -32,6 +32,7 @@ class Sidenav extends Component
             'menu' => [],
             'current_url' => null,
             'append' => null, // 菜单下方附加内容
+            'collapsible' => true, // 是否渲染折叠/关闭（offcanvas）触发按钮
         ];
     }
 
@@ -44,8 +45,10 @@ class Sidenav extends Component
     {
         $html = '<div'.$this->attrs(['class' => 'sidenav-menu']).'>';
         $html .= $this->renderBrand();
-        $html .= '<button class="button-on-hover"><i class="ti ti-menu-4 fs-22 align-middle"></i></button>';
-        $html .= '<button class="button-close-offcanvas"><i class="ti ti-x align-middle"></i></button>';
+        if ($this->get('collapsible')) {
+            $html .= '<button class="button-on-hover"><i class="ti ti-menu-4 fs-22 align-middle"></i></button>';
+            $html .= '<button class="button-close-offcanvas"><i class="ti ti-x align-middle"></i></button>';
+        }
         $html .= '<div class="scrollbar" data-simplebar>';
         $html .= $this->renderUser();
         $html .= $this->renderMenu();

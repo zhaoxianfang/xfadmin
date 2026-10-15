@@ -1087,6 +1087,16 @@
         actions: function (d, row, cfg) {
             var html = '<div class="btn-group btn-group-sm xf-row-actions" role="group">';
             (cfg.items || []).forEach(function (item, idx) {
+                // 受保护记录：依据 item.hideFlags 声明的行级标记隐藏对应操作按钮
+                // （如 _xf_disable_edit / _xf_disable_delete），与后端鉴权保持一致，
+                // 避免对受保护数据（如超级管理员账号 / 超管角色组）展示无权操作按钮。
+                if (item.hideFlags && Array.isArray(item.hideFlags) && row) {
+                    for (var hf = 0; hf < item.hideFlags.length; hf++) {
+                        if (row[item.hideFlags[hf]]) {
+                            return; // 命中禁用标记，跳过该动作渲染
+                        }
+                    }
+                }
                 if (item.dropdown) {
                     html += '<div class="btn-group btn-group-sm" role="group">' +
                         '<button type="button" class="btn ' + escapeHtml(item.class || 'btn-soft-secondary') + ' dropdown-toggle" data-bs-toggle="dropdown">' +
@@ -2211,9 +2221,10 @@
                         if (auto) reloadWithFilters();
                     });
                 });
-                // 搜索按钮（submit 亦触发，天然支持表单回车提交）
-                var searchBtn = bar.querySelector('.xf-filter-search');
-                if (searchBtn) searchBtn.addEventListener('click', function (e) { e.preventDefault(); reloadWithFilters(); });
+                // 搜索按钮：仅绑定表单 submit 事件（submit 按钮点击与回车提交都会触发该事件）。
+                // 此前同时绑定了「按钮 click」与「表单 submit」，点击 submit 按钮会先后触发
+                // click 与 submit 两个监听器，导致一次搜索发起两次过滤请求。现仅保留 submit 绑定，
+                // 由 submit 事件统一接管（按钮原生提交 + 回车提交均覆盖），杜绝重复请求。
                 bar.addEventListener('submit', function (e) { e.preventDefault(); reloadWithFilters(); });
                 var resetBtn = bar.querySelector('.xf-filter-reset');
                 if (resetBtn) {

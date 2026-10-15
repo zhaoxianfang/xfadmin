@@ -26,6 +26,8 @@ use zxf\XfAdmin\XfAdmin;
  *     'content' => $components,           // 字符串 / 组件 / 数组（可混排任意组件）
  *     'footer'  => [...] | false,
  *     'customizer' => true,
+ *     'body_class' => 'login-page',       // <body> 附加 class
+ *     'body_attrs' => ['data-app' => 'crm'], // <body> 附加属性（键值对）
  * ]);
  */
 class Page extends Component
@@ -60,6 +62,7 @@ class Page extends Component
             'head' => null,   // <head> 附加内容
             'scripts' => null,   // </body> 前附加内容
             'body_class' => null,
+            'body_attrs' => [],   // <body> 附加属性（键值对，如 ['data-foo' => 'bar']），与 body_class 互补
             'csrf' => null,   // CSRF Token（Laravel 下自动注入 csrf_token()）
         ];
     }
@@ -207,7 +210,18 @@ class Page extends Component
         $doc .= '<link rel="shortcut icon" href="'.$this->e($this->safeUrl($favicon, '')).'">'."\n";
         $doc .= $assets->head();
         $doc .= $this->raw($this->get('head'));
-        $doc .= "</head>\n<body".($this->get('body_class') ? ' class="'.$this->e($this->get('body_class')).'"' : '').">\n";
+        // <body> 属性：body_class 与 body_attrs 合并（body_attrs 允许传入任意键值对，
+        // 与 attr()/addClass() 等方法级覆盖互补）。
+        $bodyAttrs = [];
+        if (($bc = $this->get('body_class'))) {
+            $bodyAttrs['class'] = $bc;
+        }
+        foreach ((array) $this->get('body_attrs', []) as $k => $v) {
+            if (is_string($k) && $k !== '' && $v !== null && $v !== false) {
+                $bodyAttrs[$k] = $v;
+            }
+        }
+        $doc .= "</head>\n<body".$this->attrs($bodyAttrs).">\n";
 
         // 页面加载动画（preloader）
         if ($this->get('preloader')) {

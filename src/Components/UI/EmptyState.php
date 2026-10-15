@@ -33,6 +33,7 @@ class EmptyState extends Component
             'text' => '',
             'action' => '',
             'size' => '',
+            'title_tag' => 'h6', // 标题标签：h1~h6 / div / p（语义化）
             'id' => null,
             'class' => '',
         ];
@@ -50,6 +51,7 @@ class EmptyState extends Component
         // size 直接拼进 class，走白名单（非法值忽略，不产生 xf-empty-icon-<任意串>）
         $sz = $this->enum($this->get('size'), self::ENUM_SIZE, '');
         $iconSize = $sz !== '' ? ' xf-empty-icon-'.$sz : '';
+        $titleTag = $this->enum($this->get('title_tag'), ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'p'], 'h6');
 
         $action = $this->get('action') !== '' && $this->get('action') !== null ? '<div class="xf-empty-action mt-3">'.$this->raw($this->get('action')).'</div>' : '';
 
@@ -59,7 +61,7 @@ class EmptyState extends Component
                 .($this->get('class') !== '' ? ' '.$this->get('class') : ''),
         ]).'>'
             .'<div class="xf-empty-icon'.$iconSize.'"><i class="'.$this->iconClass($this->get('icon')).'"></i></div>'
-            .'<h6 class="xf-empty-title mt-3 mb-1">'.$this->e($this->get('title')).'</h6>'
+            .'<'.$titleTag.' class="xf-empty-title mt-3 mb-1">'.$this->e($this->get('title')).'</'.$titleTag.'>'
             .($this->get('text') !== '' ? '<p class="xf-empty-text text-muted small">'.$this->e($this->get('text')).'</p>' : '')
             .$action
             .'</div>';

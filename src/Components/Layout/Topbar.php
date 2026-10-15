@@ -24,6 +24,8 @@ use zxf\XfAdmin\XfAdmin;
  *     'search_modal'  => true,              // 点击搜索图标弹出全屏搜索模态（需 search=true）
  *     'user'          => ['name'=>'张三','role'=>'管理员','avatar'=>'/a.jpg','items'=>[['text'=>'退出','icon'=>'ti ti-logout-2','url'=>'/logout']]],
  *     'right'         => '自定义HTML',     // 右侧附加插槽
+ *     'container_fluid' => true,           // true=全宽容器 / false=居中容器
+ *     'sticky'        => false,            // true=吸顶
  * ])
  */
 class Topbar extends Component
@@ -50,6 +52,8 @@ class Topbar extends Component
             'apps' => false,
             'user' => false,
             'right' => null,
+            'container_fluid' => true,   // true=container-fluid（默认全宽）/ false=container（窄屏居中）
+            'sticky' => false,           // true=吸顶（sticky-top）
         ];
     }
 
@@ -60,8 +64,8 @@ class Topbar extends Component
      */
     protected function html(): string
     {
-        $html = '<header'.$this->attrs(['class' => 'app-topbar']).'>';
-        $html .= '<div class="container-fluid topbar-menu">';
+        $html = '<header'.$this->attrs(['class' => 'app-topbar'.($this->get('sticky') ? ' sticky-top' : '')]).'>';
+        $html .= '<div class="'.($this->get('container_fluid') ? 'container-fluid' : 'container').' topbar-menu">';
 
         // 左侧
         $html .= '<div class="d-flex align-items-center gap-2">';

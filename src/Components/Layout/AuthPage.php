@@ -151,6 +151,11 @@ class AuthPage extends Component
             ], // 侧栏要点列表（[['icon'=>..., 'text'=>...], ...]，card/split 通用）
             'sideVariant' => 'primary', // 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变）
 
+            // —— 侧栏内容开关 ——
+            // closeSideContent 为 true 时：auth 页面仅显示背景图（sideImage）与右侧表单，
+            // 隐藏 sideTitle / sideText / sideList 等侧栏文案及其遮罩（仅保留纯背景图）。
+            'closeSideContent' => false,
+
             // —— 锁屏 / 用户 ——
             'user' => [],       // ['name'=>..., 'avatar'=>..., 'email'=>...]
 
@@ -298,7 +303,9 @@ class AuthPage extends Component
         $imgAlt = (string) $this->get('sideImageAlt');
         $imgSize = $this->e((string) $this->get('sideImageSize', 'cover'));
         $imgPos = $this->e((string) $this->get('sideImagePosition', 'center'));
-        $overlay = $this->get('sideOverlay') ? 'auth-overlay' : 'auth-overlay-plain';
+        $closeSide = (bool) $this->get('closeSideContent');
+        // closeSideContent 为 true 时不叠加遮罩（仅保留背景图与右侧表单）
+        $overlay = (! $closeSide && $this->get('sideOverlay')) ? 'auth-overlay' : 'auth-overlay-plain';
         $variant = $this->e($this->get('sideVariant', 'primary'));
 
         // 侧栏（左）：对齐 auth-split-*.html —— 外层 col + 内层整幅背景图
@@ -314,10 +321,13 @@ class AuthPage extends Component
         if ($imgAlt !== '') {
             $side .= '    <span class="visually-hidden">'.$this->e($imgAlt).'</span>'."\n";
         }
-        $side .= '    <div class="p-4 card-img-overlay '.$overlay.' d-flex align-items-center justify-content-center">'."\n";
-        $side .= $this->sideContent();
-        $side .= "\n".'    </div>'."\n"
-            .'  </div>'."\n"
+        // closeSideContent 为 true 时仅展示背景图（与右侧表单组合），隐藏侧栏文案与遮罩
+        if (! $closeSide) {
+            $side .= '    <div class="p-4 card-img-overlay '.$overlay.' d-flex align-items-center justify-content-center">'."\n";
+            $side .= $this->sideContent();
+            $side .= "\n".'    </div>'."\n";
+        }
+        $side .= '  </div>'."\n"
             .'</div>';
 
         // 右侧表单卡片（对齐 auth-split-sign-in.html）：
@@ -552,7 +562,9 @@ class AuthPage extends Component
         $img = $this->sideImageUrl();
         $imgSize = $this->e((string) $this->get('sideImageSize', 'cover'));
         $imgPos = $this->e((string) $this->get('sideImagePosition', 'center'));
-        $overlay = $this->get('sideOverlay') ? 'auth-overlay' : 'auth-overlay-plain';
+        $closeSide = (bool) $this->get('closeSideContent');
+        // closeSideContent 为 true 时不叠加遮罩（仅保留背景图与右侧表单）
+        $overlay = (! $closeSide && $this->get('sideOverlay')) ? 'auth-overlay' : 'auth-overlay-plain';
         $variant = $this->e($this->get('sideVariant', 'primary'));
 
         $html = '<div class="col-lg-6 d-none d-lg-block card-side-img auth-card-media auth-card-media--'.$variant.'">';
@@ -562,9 +574,13 @@ class AuthPage extends Component
             $html .= '<div class="h-100 position-relative auth-card-media-bg"'
                 .' style="background-image: url(\''.$this->e($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"></div>';
         }
-        $html .= '<div class="p-4 card-img-overlay rounded-4 rounded-start-0 '.$overlay.' auth-overlay-card d-flex align-items-center justify-content-center">';
-        $html .= $this->sideContent();
-        $html .= '</div></div>';
+        // closeSideContent 为 true 时仅展示背景图（与右侧表单组合），隐藏侧栏文案与遮罩
+        if (! $closeSide) {
+            $html .= '<div class="p-4 card-img-overlay rounded-4 rounded-start-0 '.$overlay.' auth-overlay-card d-flex align-items-center justify-content-center">';
+            $html .= $this->sideContent();
+            $html .= '</div>';
+        }
+        $html .= '</div>';
 
         return $html;
     }
@@ -577,6 +593,11 @@ class AuthPage extends Component
      */
     protected function sideContent(): string
     {
+        // closeSideContent 为 true 时整块侧栏文案/列表不输出（仅保留背景图与右侧表单）
+        if ($this->get('closeSideContent')) {
+            return '';
+        }
+
         $title = (string) $this->get('sideTitle');
         $text = (string) $this->get('sideText');
         $list = $this->get('sideList');
