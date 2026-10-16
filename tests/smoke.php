@@ -97,6 +97,11 @@ $check('echart', fn () => XfAdmin::echart(['options' => ['series' => [['type' =>
 $check('vectorMap', fn () => XfAdmin::vectorMap(['markers' => [['name' => 'BJ', 'coords' => [39.9, 116.4]]]]));
 $check('alert', fn () => XfAdmin::alert(['variant' => 'success', 'text' => 'OK', 'dismissible' => true, 'icon' => 'ti ti-check']));
 $check('badge', fn () => XfAdmin::badge(['text' => '新', 'soft' => true, 'pill' => true]));
+$check('statusTag', fn () => XfAdmin::statusTag(['text' => '运行中', 'type' => 'success', 'dot' => true]));
+$check('statRow', fn () => XfAdmin::statRow(['items' => [['title' => '用户', 'value' => '128', 'variant' => 'primary'], ['title' => '订单', 'value' => '32', 'variant' => 'success']], 'cols' => 2]));
+$check('confirmDialog', fn () => XfAdmin::confirmDialog(['message' => '确认删除该任务？', 'url' => '/admin/spider/delete?id=1', 'method' => 'POST', 'trigger' => '删除']));
+$check('actionBar', fn () => XfAdmin::actionBar(['items' => [['text' => '规则测试', 'variant' => 'ghost', 'href' => '/test'], ['text' => '新建任务', 'variant' => 'primary', 'href' => '/create']], 'align' => 'between']));
+$check('filterBar', fn () => XfAdmin::filterBar(['fields' => [['name' => 'name', 'type' => 'text', 'placeholder' => '按名称搜索', 'width' => 'col-md-4'], ['name' => 'type', 'type' => 'select', 'options' => ['' => '全部类型', 1 => '列表', 2 => '详情']]], 'action' => '/spider/list', 'submit' => '查询']));
 $check('button', fn () => XfAdmin::button(['text' => '保存', 'ladda' => true, 'icon' => 'ti ti-check']));
 $check('dropdown', fn () => XfAdmin::dropdown(['text' => '操作', 'items' => [['text' => '编辑'], ['divider' => true], ['header' => '危险'], ['text' => '删除', 'class' => 'text-danger']]]));
 $check('modal', fn () => XfAdmin::modal(['title' => '弹窗', 'body' => 'hi', 'trigger' => '打开', 'size' => 'lg', 'centered' => true, 'static' => true]));

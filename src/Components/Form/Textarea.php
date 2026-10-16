@@ -53,7 +53,7 @@ class Textarea extends Component
         // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
         $attrs = array_merge($attrs, $this->describeAttrs($id), $this->stateAria());
 
-        $control = '<textarea'.$this->attrs($attrs).'>'.$this->e($this->get('value')).'</textarea>';
+        $control = '<textarea'.$this->attrs($attrs).'>'.$this->escape($this->get('value')).'</textarea>';
 
         return $this->wrapField($control, $id);
     }

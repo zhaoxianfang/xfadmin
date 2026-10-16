@@ -57,10 +57,10 @@ class VideoEmbed extends Component
         if ($title || $description) {
             $html .= '<div class="mb-3">';
             if ($title) {
-                $html .= '<h5>'.$this->e($title).'</h5>';
+                $html .= '<h5>'.$this->escape($title).'</h5>';
             }
             if ($description) {
-                $html .= '<p class="text-muted">'.$this->e($description).'</p>';
+                $html .= '<p class="text-muted">'.$this->escape($description).'</p>';
             }
             $html .= '</div>';
         }
@@ -71,7 +71,7 @@ class VideoEmbed extends Component
             if ($provider === 'html5') {
                 $html .= '<video controls playsinline class="w-100">';
                 // src 走 safeUrl 白名单，拦截 javascript: 等伪协议
-                $html .= '<source src="'.$this->e($this->safeUrl($src)).'" type="video/mp4">';
+                $html .= '<source src="'.$this->escape($this->safeUrl($src)).'" type="video/mp4">';
                 $html .= '您的浏览器不支持视频播放。';
                 $html .= '</video>';
             } else {
@@ -84,9 +84,9 @@ class VideoEmbed extends Component
                 }
 
                 // embedUrl 同样走 safeUrl 白名单后再转义
-                $html .= '<iframe src="'.$this->e($this->safeUrl($embedUrl)).'" ';
+                $html .= '<iframe src="'.$this->escape($this->safeUrl($embedUrl)).'" ';
                 if ($allow) {
-                    $html .= 'allow="'.$this->e($allow).'" ';
+                    $html .= 'allow="'.$this->escape($allow).'" ';
                 }
                 $html .= 'allowfullscreen></iframe>';
             }

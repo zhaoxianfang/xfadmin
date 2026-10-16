@@ -115,15 +115,15 @@ class Form extends Component
         $csrf = $this->get('csrf', true);
         if ($csrf === true) {
             // 自动注入框架 CSRF 令牌（宿主框架通过 XfAdmin::setCsrfResolver 注册）
-            $html .= '<input type="hidden" name="_token" value="'.$this->e(XfAdmin::csrfToken()).'">';
+            $html .= '<input type="hidden" name="_token" value="'.$this->escape(XfAdmin::csrfToken()).'">';
         } elseif (is_array($csrf) && $csrf !== []) {
             foreach ($csrf as $name => $value) {
-                $html .= '<input type="hidden" name="'.$this->e($name).'" value="'.$this->e($value).'">';
+                $html .= '<input type="hidden" name="'.$this->escape($name).'" value="'.$this->escape($value).'">';
             }
         }
         // csrf === false 时不输出任何令牌隐藏域
         if (! in_array($method, ['GET', 'POST'], true)) {
-            $html .= '<input type="hidden" name="_method" value="'.$this->e($method).'">';
+            $html .= '<input type="hidden" name="_method" value="'.$this->escape($method).'">';
         }
         foreach ((array) $this->get('fields', []) as $field) {
             $html .= $this->raw($field);

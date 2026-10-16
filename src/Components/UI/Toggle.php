@@ -60,9 +60,9 @@ class Toggle extends Component
         if ($this->get('class') !== '') {
             $wrapClass .= ' '.$this->get('class');
         }
-        $input = '<input id="'.$this->e($id).'" class="form-check-input xf-switch-input" type="checkbox" role="switch"'
-            .($this->get('name') !== '' ? ' name="'.$this->e($this->get('name')).'"' : '')
-            .' value="'.$this->e((string) $this->get('value')).'"'
+        $input = '<input id="'.$this->escape($id).'" class="form-check-input xf-switch-input" type="checkbox" role="switch"'
+            .($this->get('name') !== '' ? ' name="'.$this->escape($this->get('name')).'"' : '')
+            .' value="'.$this->escape((string) $this->get('value')).'"'
             .($this->get('checked') ? ' checked' : '')
             .($this->get('disabled') ? ' disabled' : '')
             // variant 白名单（data-variant 供 JS/CSS 着色），非法值回退默认 primary
@@ -71,7 +71,7 @@ class Toggle extends Component
         if ($this->get('label') !== '') {
             return '<div'.$this->attrs(['class' => $wrapClass]).'>'
                 .$input
-                .'<label class="form-check-label" for="'.$this->e($id).'">'.$this->e($this->get('label')).'</label>'
+                .'<label class="form-check-label" for="'.$this->escape($id).'">'.$this->escape($this->get('label')).'</label>'
                 .'</div>';
         }
 

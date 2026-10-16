@@ -74,7 +74,7 @@ class GoogleMap extends Component
             'class' => 'xf-gmap overflow-hidden'.($this->get('rounded') ? ' rounded' : ''),
             'id' => $id,
             'style' => 'height:'.(int) ($this->get('height') ?? 400).'px',
-        ]).'><iframe src="'.$this->e($src).'" style="border:0;width:100%;height:100%;"'
+        ]).'><iframe src="'.$this->escape($src).'" style="border:0;width:100%;height:100%;"'
             .' loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
     }
 }

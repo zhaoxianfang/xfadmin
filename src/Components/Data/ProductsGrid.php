@@ -105,16 +105,16 @@ class ProductsGrid extends Component
         $html .= $statusBadge;
 
         if ($image) {
-            $html .= '<img src="'.$this->e($image).'" class="card-img-top" alt="'.$this->e($title).'" style="height:180px;object-fit:cover">';
+            $html .= '<img src="'.$this->escape($image).'" class="card-img-top" alt="'.$this->escape($title).'" style="height:180px;object-fit:cover">';
         }
         $html .= '<div class="card-body d-flex flex-column">';
         if ($category) {
-            $html .= '<small class="text-muted text-uppercase">'.$this->e($category).'</small>';
+            $html .= '<small class="text-muted text-uppercase">'.$this->escape($category).'</small>';
         }
-        $html .= '<h6 class="card-title mt-1"><a href="javascript:void(0)" class="text-reset stretched-link">'.$this->e($title).'</a></h6>';
+        $html .= '<h6 class="card-title mt-1"><a href="javascript:void(0)" class="text-reset stretched-link">'.$this->escape($title).'</a></h6>';
 
         $html .= '<div class="mt-auto"><div class="d-flex align-items-center gap-2">';
-        $cur = $this->e($currency);
+        $cur = $this->escape($currency);
         if ($oldPrice > 0) {
             $html .= '<span class="text-muted text-decoration-line-through small">'.$cur.number_format($oldPrice, 2).'</span>';
         }

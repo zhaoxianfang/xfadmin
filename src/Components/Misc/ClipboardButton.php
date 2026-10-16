@@ -60,6 +60,6 @@ class ClipboardButton extends Component
             $attrs['data-clipboard-target'] = $this->get('target');
         }
 
-        return '<button'.$this->attrs($attrs).'><i class="ti ti-copy me-1"></i>'.$this->e($this->get('label')).'</button>';
+        return '<button'.$this->attrs($attrs).'><i class="ti ti-copy me-1"></i>'.$this->escape($this->get('label')).'</button>';
     }
 }

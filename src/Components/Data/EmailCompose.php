@@ -59,17 +59,17 @@ class EmailCompose extends Component
         $html = '<form'.$this->attrs(['class' => 'xf-mail-compose card', 'id' => $id, 'method' => 'post', 'action' => $this->safeUrl($this->get('action'), '#')]).'>';
         $html .= '<div class="card-body">';
         $html .= '<div class="mb-3 row"><label class="col-sm-2 col-form-label">收件人</label><div class="col-sm-10">'
-            .'<input type="text" name="to" class="form-control" value="'.$this->e($this->get('to')).'" placeholder="name@example.com"></div></div>';
+            .'<input type="text" name="to" class="form-control" value="'.$this->escape($this->get('to')).'" placeholder="name@example.com"></div></div>';
         $html .= '<div class="mb-3 row"><label class="col-sm-2 col-form-label">主题</label><div class="col-sm-10">'
-            .'<input type="text" name="subject" class="form-control" value="'.$this->e($this->get('subject')).'"></div></div>';
+            .'<input type="text" name="subject" class="form-control" value="'.$this->escape($this->get('subject')).'"></div></div>';
         $html .= '<div class="row"><label class="col-sm-2 col-form-label">正文</label><div class="col-sm-10">';
 
         if ($editor === 'quill') {
             $editorId = $this->resolveId('mail-body');
             $html .= '<div class="xf-quill"><div id="'.$editorId.'">'.$this->raw($this->get('body')).'</div></div>'
-                .'<input type="hidden" name="body" value="'.$this->e($this->get('body')).'">';
+                .'<input type="hidden" name="body" value="'.$this->escape($this->get('body')).'">';
         } else {
-            $html .= '<textarea name="body" class="form-control" rows="10">'.$this->e($this->get('body')).'</textarea>';
+            $html .= '<textarea name="body" class="form-control" rows="10">'.$this->escape($this->get('body')).'</textarea>';
         }
         $html .= '</div></div></div>';
         $html .= '<div class="card-footer text-end d-flex gap-2 justify-content-end">'

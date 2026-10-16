@@ -94,10 +94,10 @@ class Dropdown extends Component
         } else {
             $btnClass = Html::cls('btn', 'btn-'.$variant, $this->get('size') ? 'btn-'.$this->enum($this->get('size'), self::ENUM_SIZE, 'lg') : '');
             if ($this->get('split')) {
-                $html .= '<button type="button" class="'.$btnClass.'">'.$this->e($this->get('text')).'</button>';
+                $html .= '<button type="button" class="'.$btnClass.'">'.$this->escape($this->get('text')).'</button>';
                 $html .= '<button type="button" class="'.$btnClass.' dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">Toggle</span></button>';
             } else {
-                $html .= '<button type="button" class="'.$btnClass.' dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">'.$this->e($this->get('text')).'</button>';
+                $html .= '<button type="button" class="'.$btnClass.' dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">'.$this->escape($this->get('text')).'</button>';
             }
         }
         $menuClass = Html::cls('dropdown-menu', $this->get('align') === 'end' ? 'dropdown-menu-end' : '');
@@ -112,11 +112,11 @@ class Dropdown extends Component
                     continue;
                 }
                 if (isset($item['header'])) {
-                    $html .= '<h6 class="dropdown-header">'.$this->e($item['header']).'</h6>';
+                    $html .= '<h6 class="dropdown-header">'.$this->escape($item['header']).'</h6>';
 
                     continue;
                 }
-                $icon = isset($item['icon']) ? '<i class="'.$this->e($item['icon']).' me-2"></i>' : '';
+                $icon = isset($item['icon']) ? '<i class="'.$this->escape($item['icon']).' me-2"></i>' : '';
                 $attrs = Html::attrs(array_filter([
                     'class' => Html::cls('dropdown-item', $item['class'] ?? '', ['active' => ! empty($item['active']), 'disabled' => ! empty($item['disabled'])]),
                     // href 走 safeUrl 白名单，拦截 javascript: 等伪协议（保持原默认 #!）
@@ -124,7 +124,7 @@ class Dropdown extends Component
                     'onclick' => $item['onclick'] ?? null,
                     'target' => $item['target'] ?? null,
                 ], fn ($v) => $v !== null));
-                $html .= '<a'.$attrs.'>'.$icon.$this->e($item['text'] ?? '').'</a>';
+                $html .= '<a'.$attrs.'>'.$icon.$this->escape($item['text'] ?? '').'</a>';
             }
         }
         $html .= '</div></div>';

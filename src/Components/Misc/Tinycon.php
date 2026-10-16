@@ -52,8 +52,8 @@ class Tinycon extends Component
             'data-xf' => 'tinycon',
             'style' => 'display:none',
             'data-count' => (int) $this->get('count'),
-            'data-color' => $this->e($this->get('color')),
-            'data-bg' => $this->e($this->get('background')),
+            'data-color' => $this->escape($this->get('color')),
+            'data-bg' => $this->escape($this->get('background')),
         ]).'></span>';
 
         $js = 'XFAdmin.register("tinycon",function(el){if(!window.Tinycon)return;'

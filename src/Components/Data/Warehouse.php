@@ -51,12 +51,12 @@ class Warehouse extends Component
 
         // 统计卡片
         $html .= '<div class="row mb-3"><div class="col-md-6"><div class="card text-bg-primary"><div class="card-body">';
-        $html .= '<h6 class="text-white-50">总库存容量</h6><h2>'.$this->e($totalCapacity).'</h2></div></div></div>';
+        $html .= '<h6 class="text-white-50">总库存容量</h6><h2>'.$this->escape($totalCapacity).'</h2></div></div></div>';
         $html .= '<div class="col-md-6"><div class="card text-bg-success"><div class="card-body">';
-        $html .= '<h6 class="text-white-50">当前库存量</h6><h2>'.$this->e($totalInventory).'</h2></div></div></div></div>';
+        $html .= '<h6 class="text-white-50">当前库存量</h6><h2>'.$this->escape($totalInventory).'</h2></div></div></div></div>';
 
         // 仓库列表
-        $html .= '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">'.$this->e($title).'</h5>'
+        $html .= '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">'.$this->escape($title).'</h5>'
             .'<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>添加仓库</button></div>';
         $html .= '<div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0">';
         $html .= '<thead><tr><th class="ps-3">仓库名称</th><th>位置</th><th>负责人</th><th>总容量</th><th>已使用</th><th>使用率</th><th>状态</th><th class="text-end pe-3">操作</th></tr></thead>';
@@ -77,11 +77,11 @@ class Warehouse extends Component
             $statusBadge = match ($status) {
                 'active' => '<span class="badge text-bg-success">运行中</span>',
                 'inactive' => '<span class="badge text-bg-warning">暂停</span>',
-                default => '<span class="badge text-bg-secondary">'.$this->e($status).'</span>',
+                default => '<span class="badge text-bg-secondary">'.$this->escape($status).'</span>',
             };
 
-            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">'.$this->e($name).'</a></td>';
-            $html .= '<td>'.$this->e($location).'</td><td>'.$this->e($manager).'</td>';
+            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">'.$this->escape($name).'</a></td>';
+            $html .= '<td>'.$this->escape($location).'</td><td>'.$this->escape($manager).'</td>';
             $html .= '<td>'.number_format($capacity).'</td><td>'.number_format($used).'</td>';
             $html .= '<td><div class="d-flex align-items-center gap-2"><div class="progress flex-grow-1" style="height:6px">';
             $html .= '<div class="progress-bar bg-'.$barColor.'" style="width:'.$pct.'%"></div></div>';

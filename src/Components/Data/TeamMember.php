@@ -59,24 +59,24 @@ class TeamMember extends Component
             $avatar = $m['avatar'] ?? '';
             if ($avatar) {
                 // 成员头像：INSPINIA 规范 .avatar 包裹结构（avatar-xxl = 5rem/80px），替代裸 img + 表现属性写法
-                $html .= '<span class="avatar avatar-xxl mx-auto d-block mb-3"><img src="'.$this->e(XfAdmin::img((string) $avatar)).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
+                $html .= '<span class="avatar avatar-xxl mx-auto d-block mb-3"><img src="'.$this->escape(XfAdmin::img((string) $avatar)).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
             } else {
                 $ini = mb_substr((string) ($m['name'] ?? '?'), 0, 1);
                 // 首字母占位：与图片头像同尺寸（avatar-xxl），避免有图/无图两种卡片高度不一致
-                $html .= '<span class="avatar avatar-xxl mx-auto d-block mb-3"><span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-3">'.$this->e($ini).'</span></span>';
+                $html .= '<span class="avatar avatar-xxl mx-auto d-block mb-3"><span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-3">'.$this->escape($ini).'</span></span>';
             }
-            $html .= '<h5 class="mb-1 fw-semibold">'.$this->e($m['name'] ?? '').'</h5>';
+            $html .= '<h5 class="mb-1 fw-semibold">'.$this->escape($m['name'] ?? '').'</h5>';
             if (! empty($m['role'])) {
-                $html .= '<p class="text-primary mb-2 small fw-medium">'.$this->e($m['role']).'</p>';
+                $html .= '<p class="text-primary mb-2 small fw-medium">'.$this->escape($m['role']).'</p>';
             }
             if (! empty($m['bio'])) {
-                $html .= '<p class="text-muted small mb-3">'.$this->e($m['bio']).'</p>';
+                $html .= '<p class="text-muted small mb-3">'.$this->escape($m['bio']).'</p>';
             }
             if (! empty($m['social']) && is_array($m['social'])) {
                 $html .= '<div class="d-flex justify-content-center gap-2">';
                 foreach ($m['social'] as $icon => $href) {
                     $sHref = $this->safeUrl($href, '#');
-                    $html .= '<a href="'.$this->e($sHref).'" class="btn btn-soft-secondary btn-sm rounded-circle px-2" aria-label="social"><i class="'.$this->e($icon).'"></i></a>';
+                    $html .= '<a href="'.$this->escape($sHref).'" class="btn btn-soft-secondary btn-sm rounded-circle px-2" aria-label="social"><i class="'.$this->escape($icon).'"></i></a>';
                 }
                 $html .= '</div>';
             }

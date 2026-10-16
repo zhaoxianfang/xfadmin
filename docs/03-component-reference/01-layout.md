@@ -73,7 +73,7 @@ echo XfAdmin::page([
 整页布局容器：组装 head/body/scripts，所有后台页面入口。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Page`
-> **文件**：`src/Components/Layout/Page.php`（229 行）
+> **文件**：`src/Components/Layout/Page.php`（211 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -90,6 +90,8 @@ XfAdmin::page([
     'content' => $components,           // 字符串 / 组件 / 数组（可混排任意组件）
     'footer'  => [...] | false,
     'customizer' => true,
+    'body_class' => 'login-page',       // <body> 附加 class
+    'body_attrs' => ['data-app' => 'crm'], // <body> 附加属性（键值对）
 ]);
 ```
 
@@ -119,6 +121,7 @@ echo XfAdmin::page([
     'head' => null,    // <head> 附加内容
     'scripts' => null,    // </body> 前附加内容
     'body_class' => null,
+    'body_attrs' => [],    // <body> 附加属性（键值对，如 ['data-foo' => 'bar']），与 body_class 互补
     'csrf' => null,    // CSRF Token（Laravel 下自动注入 csrf_token()）
 ]);
 ```
@@ -136,27 +139,28 @@ echo XfAdmin::page([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `lang` | string | `'zh-CN'` | 源码用法：`$htmlAttrs = ['lang' => $this->get('lang')];` |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `description` | mixed | `null` | 描述文本；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `keywords` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `author` | mixed | `null` | 作者信息；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$doc .= '<title>'.$this->escape($this->get('title')).'</title>'."\n";` |
+| `description` | mixed | `null` | 描述文本；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `keywords` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `author` | mixed | `null` | 作者信息；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `favicon` | mixed | `null` | 源码用法：`$favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url…` |
 | `layout` | string | `'vertical'` | 布局模式（各组件不同，如 vertical/horizontal） |
 | `theme` | array | `[]` | 可选值：`light` / `dark` / `auto` |
 | `menu` | array | `[]` | 菜单数据数组 |
 | `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮）；源码用法：`$topnavOpts['current_url'] ??= $this->get('current_url');` |
-| `sidenav` | array | `[]` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `topbar` | array | `[]` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `sidenav` | array | `[]` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `topbar` | array | `[]` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `topnav` | mixed | `null` | 水平布局顶部导航（layout=horizontal 时启用）；为 `null` 时不渲染该区块 |
 | `page_title` | mixed | `null` | 页面标题区（数组则渲染 PageTitle 组件）；源码用法：`$pageTitle = $this->get('page_title');` |
 | `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
-| `container` | string | `'container-fluid'` | 内容区容器 class（默认 container-fluid）；**文本槽位**：输出前自动 HTML 转义 |
-| `footer` | array | `[]` | 底部内容（原样输出）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `customizer` | bool | `true` | 是否渲染主题定制面板；开关：非空 / 真值时启用对应区块 |
-| `preloader` | bool | `false` | 页面加载动画（true = 启用）；开关：非空 / 真值时启用对应区块 |
+| `container` | string | `'container-fluid'` | 内容区容器 class（默认 container-fluid）；源码用法：`$body .= '<div class="content-page"><div class="'.$this->escape($this->get('container…` |
+| `footer` | array | `[]` | 底部内容（原样输出）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `customizer` | bool | `true` | 是否渲染主题定制面板；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `preloader` | bool | `false` | 页面加载动画（true = 启用）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `head` | mixed | `null` | <head> 附加内容；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `scripts` | mixed | `null` | </body> 前附加内容；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
-| `body_class` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义 |
+| `body_class` | mixed | `null` | 源码用法：`if (($bc = $this->get('body_class'))) {` |
+| `body_attrs` | array | `[]` | <body> 附加属性（键值对，如 ['data-foo' => 'bar']），与 body_class 互补 |
 | `csrf` | mixed | `null` | CSRF Token（Laravel 下自动注入 csrf_token()） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -168,7 +172,7 @@ echo XfAdmin::page([
 左侧导航菜单（支持多级子菜单与 Mega Menu）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Sidenav`
-> **文件**：`src/Components/Layout/Sidenav.php`（144 行）
+> **文件**：`src/Components/Layout/Sidenav.php`（131 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -190,6 +194,7 @@ echo XfAdmin::sidenav([
     'menu' => [],
     'current_url' => null,
     'append' => null,    // 菜单下方附加内容
+    'collapsible' => true,    // 是否渲染折叠/关闭（offcanvas）触发按钮
 ]);
 ```
 
@@ -211,6 +216,7 @@ echo XfAdmin::sidenav([
 | `menu` | array | `[]` | 菜单数据数组；源码用法：`$menu = $this->get('menu');` |
 | `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮）；源码用法：`'current_url' => $this->get('current_url'),` |
 | `append` | mixed | `null` | 菜单下方附加内容；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `collapsible` | bool | `true` | 是否渲染折叠/关闭（offcanvas）触发按钮；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -221,7 +227,7 @@ echo XfAdmin::sidenav([
 顶部导航栏（搜索/通知/用户菜单等）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Topbar`
-> **文件**：`src/Components/Layout/Topbar.php`（394 行）
+> **文件**：`src/Components/Layout/Topbar.php`（370 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -241,6 +247,8 @@ XfAdmin::topbar([
     'search_modal'  => true,              // 点击搜索图标弹出全屏搜索模态（需 search=true）
     'user'          => ['name'=>'张三','role'=>'管理员','avatar'=>'/a.jpg','items'=>[['text'=>'退出','icon'=>'ti ti-logout-2','url'=>'/logout']]],
     'right'         => '自定义HTML',     // 右侧附加插槽
+    'container_fluid' => true,           // true=全宽容器 / false=居中容器
+    'sticky'        => false,            // true=吸顶
 ]);
 ```
 
@@ -262,6 +270,8 @@ echo XfAdmin::topbar([
     'apps' => false,
     'user' => false,
     'right' => null,
+    'container_fluid' => true,    // true=container-fluid（默认全宽）/ false=container（窄屏居中）
+    'sticky' => false,    // true=吸顶（sticky-top）
 ]);
 ```
 
@@ -271,26 +281,28 @@ echo XfAdmin::topbar([
 
 - `languages[]` 元素键：`active`
 
-> **渲染骨架**：主要 class `container-fluid` `topbar-menu` `d-flex` `align-items-center` `gap-2` `topbar-item` `d-none` `d-xl-flex`
+> **渲染骨架**：主要 class `d-flex` `align-items-center` `gap-2` `topbar-item` `d-none` `d-xl-flex` `app-search` `d-sm-flex`
 
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `brand` | bool | `true` | 品牌信息（name/logo/url）；源码用法：`if (! $this->get('brand')) {` |
-| `search` | bool | `true` | 是否启用搜索；开关：非空 / 真值时启用对应区块 |
-| `search_placeholder` | string | `'Search...'` | **文本槽位**：输出前自动 HTML 转义 |
-| `search_modal` | bool | `false` | 点击搜索图标弹出全屏模态（替代内联搜索框）；开关：非空 / 真值时启用对应区块 |
+| `search` | bool | `true` | 是否启用搜索；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `search_placeholder` | string | `'Search...'` | 源码用法：`.'<input type="search" class="form-control topbar-search" name="search" placeholder="…` |
+| `search_modal` | bool | `false` | 点击搜索图标弹出全屏模态（替代内联搜索框）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `left` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
-| `theme_toggle` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
-| `fullscreen` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
-| `customizer` | bool | `true` | 是否渲染主题定制面板；开关：非空 / 真值时启用对应区块 |
+| `theme_toggle` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `fullscreen` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `customizer` | bool | `true` | 是否渲染主题定制面板；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `languages` | array | `[]` |  |
 | `notifications` | bool | `false` | 源码用法：`$conf = $this->get('notifications');` |
 | `messages` | bool | `false` | 消息列表（聊天/通知/消息中心条目）；源码用法：`$conf = $this->get('messages');` |
 | `apps` | bool | `false` | 应用列表（应用启动器）；源码用法：`$conf = $this->get('apps');` |
 | `user` | bool | `false` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = $this->get('user');` |
 | `right` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `container_fluid` | bool | `true` | true=container-fluid（默认全宽）/ false=container（窄屏居中） |
+| `sticky` | bool | `false` | true=吸顶（sticky-top） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -301,7 +313,7 @@ echo XfAdmin::topbar([
 水平顶部导航（无限级子菜单 + Mega 面板）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\TopNav` 等 `topNav` / `topnav`
-> **文件**：`src/Components/Layout/TopNav.php`（656 行）
+> **文件**：`src/Components/Layout/TopNav.php`（630 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -361,19 +373,19 @@ echo XfAdmin::topNav([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `brand` | bool | `true` | 品牌信息（name/logo/url）；源码用法：`if (! $this->get('brand')) {` |
-| `sidenav_toggle` | bool | `false` | 纯水平布局默认不显示侧栏切换按钮；开关：非空 / 真值时启用对应区块 |
+| `sidenav_toggle` | bool | `false` | 纯水平布局默认不显示侧栏切换按钮；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `menu` | array | `[]` | 菜单数据数组 |
 | `current_url` | mixed | `null` | 当前 URL（用于菜单自动高亮） |
-| `search` | bool | `false` | 是否启用搜索；开关：非空 / 真值时启用对应区块 |
-| `search_placeholder` | string | `'Search for something...'` | **文本槽位**：输出前自动 HTML 转义 |
+| `search` | bool | `false` | 是否启用搜索；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `search_placeholder` | string | `'Search for something...'` | 源码用法：`.$this->escape($this->get('search_placeholder')).'">'` |
 | `mega` | bool | `false` | 源码用法：`$mega = $this->get('mega');` |
 | `left` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `languages` | array | `[]` |  |
 | `messages` | bool | `false` | 消息列表（聊天/通知/消息中心条目）；源码用法：`$conf = $this->get('messages');` |
 | `notifications` | bool | `false` | 源码用法：`$conf = $this->get('notifications');` |
-| `theme_toggle` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
-| `fullscreen` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
-| `customizer` | bool | `true` | 是否渲染主题定制面板；开关：非空 / 真值时启用对应区块 |
+| `theme_toggle` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `fullscreen` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `customizer` | bool | `true` | 是否渲染主题定制面板；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `user` | bool | `false` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = $this->get('user');` |
 | `apps` | bool | `false` | 应用启动器（圆形九宫格 #apps-dropdown-rounded） |
 | `right` | mixed | `null` | **内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
@@ -402,7 +414,7 @@ echo XfAdmin::topnav(['menu' => $menu, 'current_url' => '/admin']);
 页面标题区（标题 + 面包屑 + 操作按钮）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\PageTitle`
-> **文件**：`src/Components/Layout/PageTitle.php`（68 行）
+> **文件**：`src/Components/Layout/PageTitle.php`（75 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -410,8 +422,12 @@ echo XfAdmin::topnav(['menu' => $menu, 'current_url' => '/admin']);
 ```php
 XfAdmin::pageTitle([
     'title'      => '用户管理',
+    'icon'       => 'ti ti-user',                       // 标题前导图标
+    'subtitle'   => '用户列表与权限管理',                // 标题下方描述
     'breadcrumb' => [['text' => '首页', 'url' => '/'], ['text' => '系统'], ['text' => '用户管理', 'active' => true]],
     'actions'    => '右侧自定义HTML（可选，替代面包屑）',
+    'container'  => 'fluid',                            // fluid | boxed | false（不包裹）
+    'align'      => 'start',                            // start | center | end
 ]);
 ```
 
@@ -422,6 +438,10 @@ echo XfAdmin::pageTitle([
     'title' => '',
     'breadcrumb' => [],
     'actions' => null,
+    'icon' => '',    // 标题前导图标（ti 图标 class，如 'ti ti-user'）
+    'subtitle' => '',    // 标题下方描述文案（small muted）
+    'container' => false,    // 外层包裹容器：fluid=container-fluid / boxed=container / false=不包裹（默认不包裹，避免与父级容器重复嵌套）
+    'align' => 'start',    // 水平对齐：start | center | end
 ]);
 ```
 
@@ -437,9 +457,13 @@ echo XfAdmin::pageTitle([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$inner .= '<h4 class="fs-sm text-uppercase fw-bold m-0">'.$this->escape($this->get('t…` |
 | `breadcrumb` | array | `[]` |  |
-| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `icon` | string | `''` | 标题前导图标（ti 图标 class，如 'ti ti-user'） |
+| `subtitle` | string | `''` | 标题下方描述文案（small muted） |
+| `container` | bool | `false` | 外层包裹容器：fluid=container-fluid / boxed=container / false=不包裹（默认不包裹，避免与父级容器重复嵌套） |
+| `align` | string | `'start'` | 枚举白名单 `'start', 'center', 'end'`；可选值：`start` / `center` / `end` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -450,13 +474,28 @@ echo XfAdmin::pageTitle([
 页面底部版权/链接区。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Footer`
-> **文件**：`src/Components/Layout/Footer.php`（53 行）
+> **文件**：`src/Components/Layout/Footer.php`（122 行）
 > **依赖插件**：无
 
 **用法示例**
 
 ```php
-XfAdmin::footer(['text' => '© 2026 XX公司', 'right' => '<a href="#">帮助</a>']);
+XfAdmin::footer([
+      'text' => '© 2026 XX公司',          // 版权文案（纯文本，自动转义）
+      'right' => '<a href="#">帮助</a>',  // 右侧自定义 HTML（调用方保证可信）
+      'icp'  => '粤ICP备2026000000号',     // ICP 备案号（自动跳转 beian.miit.gov.cn）
+      'icp_url' => 'https://beian.miit.gov.cn/', // 自定义 ICP 链接
+      'police' => '粤公网安备 44030000000000号', // 网安备案号（可选 police_icon）
+      'police_url' => 'https://www.beian.gov.cn/', // 网安备案链接
+      'links' => [                        // 底部导航链接组
+          ['label' => '关于我们', 'url' => '/about'],
+          ['label' => '联系我们', 'url' => '/contact'],
+      ],
+      'support' => '技术支持：XX团队',       // 技术支持文案
+      'groups' => [                       // 多列链接组（适合企业官网）
+          ['title' => '产品', 'items' => [['label'=>'A','url'=>'/a'], ...]],
+      ],
+  ]);
 ```
 
 <details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
@@ -465,12 +504,28 @@ XfAdmin::footer(['text' => '© 2026 XX公司', 'right' => '<a href="#">帮助</a
 echo XfAdmin::footer([
     'text' => null,
     'right' => null,
+    'container' => 'fluid',    // 外层容器：fluid=container-fluid / boxed=container / false=不包裹
+    'align' => 'start',    // start | center | end（版权与右侧内容的对齐）
+    'icp' => null,    // ICP 备案号
+    'icp_url' => null,    // ICP 链接（null 时自动使用默认）
+    'police' => null,    // 网安备案号
+    'police_url' => null,    // 网安链接（null 时自动使用默认）
+    'police_icon' => null,    // 网安备案图标（默认包内盾牌图标）
+    'links' => [],    // 底部导航链接组 [{label,url}]
+    'support' => null,    // 技术支持文案
+    'brand_url' => null,    // 版权品牌跳转链接
+    'groups' => [],    // 多列链接组 [{title, items:[{label,url}]}]
 ]);
 ```
 
 </details>
 
-> **渲染骨架**：主要 class `container-fluid` `row` `col-md-6` `text-center` `text-md-start` `text-md-end` `d-none` `d-md-block`
+**数据结构**（数组元素可用键，由源码 `foreach` 解析）
+
+- `links[]` 元素键：`url`（默认 `#`）、`label`
+- `groups[]` 元素键：`title`、`items`
+
+> **渲染骨架**：主要 class `row` `footer-groups` `py-4` `col-6` `col-md-3` `fw-semibold` `mb-2` `list-unstyled`
 
 **配置参数**
 
@@ -478,6 +533,17 @@ echo XfAdmin::footer([
 |---|---|---|---|
 | `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`$text = $this->get('text') ?? XfAdmin::setting('footer.text');` |
 | `right` | mixed | `null` | 源码用法：`$right = $this->get('right') ?? XfAdmin::setting('footer.right');` |
+| `container` | string | `'fluid'` | 枚举白名单 `'fluid' => 'container-fluid', 'boxed' => 'container', '' => ''` |
+| `align` | string | `'start'` | 枚举白名单 `'start' => 'start', 'center' => 'center', 'end' => 'end'`；可选值：`start` / `center` / `end` |
+| `icp` | mixed | `null` | ICP 备案号 |
+| `icp_url` | mixed | `null` | ICP 链接（null 时自动使用默认） |
+| `police` | mixed | `null` | 网安备案号 |
+| `police_url` | mixed | `null` | 网安链接（null 时自动使用默认） |
+| `police_icon` | mixed | `null` | 网安备案图标（默认包内盾牌图标） |
+| `links` | array | `[]` | 底部导航链接组 [{label,url}] |
+| `support` | mixed | `null` | 技术支持文案 |
+| `brand_url` | mixed | `null` | 版权品牌跳转链接 |
+| `groups` | array | `[]` | 多列链接组 [{title, items:[{label,url}]}] |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -488,7 +554,7 @@ echo XfAdmin::footer([
 右侧主题定制面板（明暗/配色/布局切换）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Customizer`
-> **文件**：`src/Components/Layout/Customizer.php`（120 行）
+> **文件**：`src/Components/Layout/Customizer.php`（108 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -523,8 +589,8 @@ echo XfAdmin::customizer([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'Admin Customizer'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `subtitle` | string | `'快速配置后台界面的布局、皮肤与偏好'` | 副标题文本；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `'Admin Customizer'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`.'<div><h5 class="mb-1 fw-bold text-white text-uppercase">'.$this->escape($this->get(…` |
+| `subtitle` | string | `'快速配置后台界面的布局、皮肤与偏好'` | 副标题文本；源码用法：`.'<p class="text-white text-opacity-75 fst-italic fw-medium mb-0">'.$this->escape($th…` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -535,7 +601,7 @@ echo XfAdmin::customizer([
 认证页统一入口（type+layout 控制 9 种语义×3 种布局）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\AuthPage` 等 `authPage` / `signIn` / `signUp` / `resetPass` / `newPass` / `twoFactor` / `deleteAccount` / `successMail` / `loginPin`
-> **文件**：`src/Components/Layout/AuthPage.php`（1592 行）
+> **文件**：`src/Components/Layout/AuthPage.php`（1560 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -553,7 +619,6 @@ echo XfAdmin::authPage([
     'class' => '',    // 附加到根容器 class
     'id' => '',    // 根容器 id
     'bodyClass' => '',    // 卡片 / 主体区域附加 class
-    'theme' => 'light',    // light | dark（split/card 侧栏风格）
     // brand
     'brand' => [
         'name' => 'XfAdmin',
@@ -569,6 +634,7 @@ echo XfAdmin::authPage([
     'action' => '',    // 表单提交地址（核心字段；formAttrs.action 兼容）
     'method' => 'POST',
     'ajax' => true,    // 表单以 AJAX 方式提交（data-xf-remote，组件内置支持）
+    'redirectDelay' => null,    // 成功后携带 data.url 时的跳转延迟（毫秒）；null 用默认 3 秒
     'fields' => [],    // 关联数组：['email' => [...], 'password' => [...]]
     'buttons' => [],    // 按钮数组（label/variant/type/...）
     'submit' => '提交',    // 默认提交按钮文案（未传 buttons 时使用）
@@ -590,7 +656,7 @@ echo XfAdmin::authPage([
     'sideImagePosition' => 'center',    // 背景定位（CSS background-position：center/top left...）
     'sideOverlay' => true,    // 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角）
     'sideTitle' => '企业级后台管理平台',    // 侧栏标题（默认官方文案，可按需覆盖）
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
     // sideList
     'sideList' => [
         [/* … */],
@@ -598,6 +664,7 @@ echo XfAdmin::authPage([
         [/* … */],
     ],
     'sideVariant' => 'primary',    // 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变）
+    'closeSideContent' => false,
     'user' => [],    // ['name'=>..., 'avatar'=>..., 'email'=>...]
     'showBackToTop' => false,
     'captcha' => false,    // bool=渲染占位；string=原样输出（如 web component HTML）
@@ -615,7 +682,7 @@ echo XfAdmin::authPage([
 - `footerLinks[]` 元素键：`url`（默认 `#`）、`text`
 - `socialButtons[]` 元素键：`url`（默认 `#`）、`text`
 - `sideList[]` 元素键：`url`（默认 `#`）、`text`
-- `user[]` 元素键：`name`（默认 `?`）、`avatar`、`email`
+- `user[]` 元素键：`name`、`avatar`、`email`
 
 **配置参数**
 
@@ -625,7 +692,6 @@ echo XfAdmin::authPage([
 | `class` | string | `''` | 附加到根容器 class |
 | `id` | string | `''` | 根容器 id |
 | `bodyClass` | string | `''` | 卡片 / 主体区域附加 class |
-| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
 | `title` | string | `''` | <title> |
 | `heading` | string | `''` | 主标题 |
@@ -636,6 +702,7 @@ echo XfAdmin::authPage([
 | `action` | string | `''` | 表单提交地址（核心字段；formAttrs.action 兼容） |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE）；源码用法：`if (($this->get('method') === 'POST') && isset($formAttrs['method'])) {` |
 | `ajax` | bool | `true` | 表单以 AJAX 方式提交（data-xf-remote，组件内置支持） |
+| `redirectDelay` | mixed | `null` | 成功后携带 data.url 时的跳转延迟（毫秒）；null 用默认 3 秒 |
 | `fields` | array | `[]` | 关联数组：['email' => [...], 'password' => [...]] |
 | `buttons` | array | `[]` | 按钮数组（label/variant/type/...） |
 | `submit` | string | `'提交'` | 默认提交按钮文案（未传 buttons 时使用） |
@@ -660,8 +727,9 @@ echo XfAdmin::authPage([
 | `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏文案 |
 | `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]`；源码用法：`$list = $this->get('sideList');` |
 | `sideVariant` | string | `'primary'` | 侧栏强调色（primary/info/success/...，无背景图时作为纯色渐变） |
+| `closeSideContent` | bool | `false` | 源码用法：`$closeSide = (bool) $this->get('closeSideContent');` |
 | `user` | array | `[]` | ['name'=>..., 'avatar'=>..., 'email'=>...] |
-| `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮；源码用法：`. ($this->get('showBackToTop') ? '<a href="#" class="back-to-top"><i class="ti ti-che…` |
+| `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮；源码用法：`.($this->get('showBackToTop') ? '<a href="#" class="back-to-top"><i class="ti ti-chev…` |
 | `captcha` | bool | `false` | bool=渲染占位；string=原样输出（如 web component HTML） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -771,7 +839,7 @@ echo XfAdmin::twoFactor([                    // 等价 authPage(['type' => 'two-
 锁屏页（auth lock-screen，密码解锁）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\LockScreen`
-> **文件**：`src/Components/Layout/LockScreen.php`（123 行）
+> **文件**：`src/Components/Layout/LockScreen.php`（103 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -825,13 +893,13 @@ echo XfAdmin::lockScreen([
 | `title` | mixed | `null` | <title>，默认取 heading |
 | `theme` | array | `[]` | 可选值：`light` / `dark` / `auto` |
 | `user` | array | `['name'=>'User', 'avatar'=>'']` | 用户信息（name/avatar/email/role 等）；源码用法：`$user = (array) $this->get('user');` |
-| `action` | string | `'#'` | 表单提交地址 / 动作类型；**文本槽位**：输出前自动 HTML 转义 |
-| `heading` | string | `'屏幕已锁定'` | **文本槽位**：输出前自动 HTML 转义 |
-| `text` | string | `'请输入密码以继续'` | 正文/按钮文案（纯文本语义，输出时转义）；**文本槽位**：输出前自动 HTML 转义 |
-| `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；**文本槽位**：输出前自动 HTML 转义 |
-| `below` | mixed | `null` | 卡片下方补充内容（如「切换账号」链接）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `copyright` | mixed | `null` | 版权文案；源码用法：`$copyright = $this->get('copyright') ?? ('© ' . date('Y') . ' ' . XfAdmin::setting('b…` |
-| `favicon` | mixed | `null` | 源码用法：`$favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url…` |
+| `action` | string | `'#'` | 表单提交地址 / 动作类型；URL：经协议白名单校验（拦截 `javascript:` 等） |
+| `heading` | string | `'屏幕已锁定'` | 源码用法：`.'<p class="text-muted mb-1">'.$this->escape($this->get('heading')).'</p>'` |
+| `text` | string | `'请输入密码以继续'` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`.'<p class="text-muted small">'.$this->escape($this->get('text')).'</p>'` |
+| `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；源码用法：`.'<a href="#" class="fs-3 fw-bold text-decoration-none">'.$this->escape($this->get('b…` |
+| `below` | mixed | `null` | 卡片下方补充内容（如「切换账号」链接）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `copyright` | mixed | `null` | 版权文案；源码用法：`$copyright = $this->get('copyright') ?? ('© '.date('Y').' '.XfAdmin::setting('brand.n…` |
+| `favicon` | mixed | `null` | URL：经协议白名单校验（拦截 `javascript:` 等） |
 | `head` | mixed | `null` | </head> 前附加内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `scripts` | mixed | `null` | </body> 前附加内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
@@ -892,7 +960,7 @@ echo XfAdmin::loginPin([                     // 等价 authPage(['type' => 'logi
 错误页（400/401/403/404/408/500 + maintenance）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\ErrorPage`
-> **文件**：`src/Components/Layout/ErrorPage.php`（75 行）
+> **文件**：`src/Components/Layout/ErrorPage.php`（58 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -914,7 +982,6 @@ echo XfAdmin::errorPage([
     'class' => '',    // 附加到根元素的自定义 class
     'id' => '',    // 根元素 id（留空自动生成唯一 id）
     'bodyClass' => '',    // 追加到 <form> 的 class
-    'theme' => 'light',    // 主题（light / dark / 图表主题名）
     // brand：品牌信息（name/logo/url）
     'brand' => [
         'name' => 'XfAdmin',
@@ -930,6 +997,7 @@ echo XfAdmin::errorPage([
     'action' => '',    // 表单提交地址 / 动作类型
     'method' => 'POST',    // HTTP 方法（GET/POST/PUT/DELETE）
     'ajax' => true,    // AJAX 地址或 DataTables 原生 ajax 配置
+    'redirectDelay' => null,
     'fields' => [],    // 字段定义数组（表单字段 / 详情字段）
     'buttons' => [],    // 按钮定义数组
     'submit' => '提交',    // 提交按钮配置（字符串或数组：text/class/variant/icon）
@@ -951,7 +1019,7 @@ echo XfAdmin::errorPage([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -959,6 +1027,7 @@ echo XfAdmin::errorPage([
         [/* … */],
     ],
     'sideVariant' => 'primary',    // 侧栏语义变体（primary/info/success/…）
+    'closeSideContent' => false,
     'user' => [],    // 用户信息（name/avatar/email/role 等）
     'showBackToTop' => false,    // 是否显示「回到顶部」按钮
     'captcha' => false,    // 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位
@@ -982,17 +1051,17 @@ echo XfAdmin::errorPage([
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
 | `bodyClass` | string | `''` | 追加到 <form> 的 class |
-| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
-| `heading` | string | `'Page Not Found'` | **文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `heading` | string | `'Page Not Found'` | 源码用法：`.'<h3 class="fw-bold text-uppercase">'.$this->escape($this->get('heading')).'</h3>'` |
 | `subheading` | string | `''` | 副标题（回退历史字段 subtitle） |
 | `copyright` | string | `''` | 版权文案 |
 | `status` | string | `''` | 状态值 / 状态映射 |
-| `message` | string | `''` | **文本槽位**：输出前自动 HTML 转义 |
+| `message` | string | `''` | 源码用法：`.'<p class="text-muted">'.$this->escape($this->get('message')).'</p>'` |
 | `action` | string | `''` | 表单提交地址 / 动作类型 |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `ajax` | bool | `true` | AJAX 地址或 DataTables 原生 ajax 配置 |
+| `redirectDelay` | mixed | `null` |  |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `buttons` | array | `[]` | 按钮定义数组 |
 | `submit` | string | `'提交'` | 提交按钮配置（字符串或数组：text/class/variant/icon） |
@@ -1017,13 +1086,14 @@ echo XfAdmin::errorPage([
 | `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏说明文本 |
 | `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]` |
 | `sideVariant` | string | `'primary'` | 侧栏语义变体（primary/info/success/…） |
+| `closeSideContent` | bool | `false` |  |
 | `user` | array | `[]` | 用户信息（name/avatar/email/role 等） |
 | `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮 |
 | `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
 | `code` | int | `404` | 源码用法：`$code = (string) $this->get('code');` |
 | `image` | mixed | `null` | 默认取包内 images/svg/{code}.svg |
 | `home_url` | string | `'/'` | URL：经协议白名单校验（拦截 `javascript:` 等） |
-| `home_text` | string | `'返回首页'` | **文本槽位**：输出前自动 HTML 转义 |
+| `home_text` | string | `'返回首页'` | 源码用法：`.'<a class="btn btn-primary mt-3 rounded-pill" href="'.$this->escape($this->safeUrl($…` |
 | `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1035,7 +1105,7 @@ echo XfAdmin::errorPage([
 即将上线页（倒计时 + 订阅）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\ComingSoon`
-> **文件**：`src/Components/Layout/ComingSoon.php`（81 行）
+> **文件**：`src/Components/Layout/ComingSoon.php`（63 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1058,7 +1128,6 @@ echo XfAdmin::comingSoon([
     'class' => '',    // 附加到根元素的自定义 class
     'id' => '',    // 根元素 id（留空自动生成唯一 id）
     'bodyClass' => '',    // 追加到 <form> 的 class
-    'theme' => 'light',    // 主题（light / dark / 图表主题名）
     // brand：品牌信息（name/logo/url）
     'brand' => [
         'name' => 'XfAdmin',
@@ -1074,6 +1143,7 @@ echo XfAdmin::comingSoon([
     'action' => '',    // 表单提交地址 / 动作类型
     'method' => 'POST',    // HTTP 方法（GET/POST/PUT/DELETE）
     'ajax' => true,    // AJAX 地址或 DataTables 原生 ajax 配置
+    'redirectDelay' => null,
     'fields' => [],    // 字段定义数组（表单字段 / 详情字段）
     'buttons' => [],    // 按钮定义数组
     'submit' => '提交',    // 提交按钮配置（字符串或数组：text/class/variant/icon）
@@ -1095,7 +1165,7 @@ echo XfAdmin::comingSoon([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -1103,6 +1173,7 @@ echo XfAdmin::comingSoon([
         [/* … */],
     ],
     'sideVariant' => 'primary',    // 侧栏语义变体（primary/info/success/…）
+    'closeSideContent' => false,
     'user' => [],    // 用户信息（name/avatar/email/role 等）
     'showBackToTop' => false,    // 是否显示「回到顶部」按钮
     'captcha' => false,    // 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位
@@ -1125,17 +1196,17 @@ echo XfAdmin::comingSoon([
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
 | `bodyClass` | string | `''` | 追加到 <form> 的 class |
-| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
-| `heading` | string | `'即将上线'` | **文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `heading` | string | `'即将上线'` | 源码用法：`$content .= '<h2 class="fw-bold">'.$this->escape($this->get('heading')).'</h2>';` |
 | `subheading` | string | `''` | 副标题（回退历史字段 subtitle） |
 | `copyright` | string | `''` | 版权文案 |
 | `status` | string | `''` | 状态值 / 状态映射 |
-| `message` | string | `'我们正在努力打造精彩内容，敬请期待。'` | **文本槽位**：输出前自动 HTML 转义 |
+| `message` | string | `'我们正在努力打造精彩内容，敬请期待。'` | 源码用法：`$content .= '<p class="text-muted">'.$this->escape($this->get('message')).'</p>';` |
 | `action` | string | `''` | 表单提交地址 / 动作类型 |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `ajax` | bool | `true` | AJAX 地址或 DataTables 原生 ajax 配置 |
+| `redirectDelay` | mixed | `null` |  |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `buttons` | array | `[]` | 按钮定义数组 |
 | `submit` | string | `'提交'` | 提交按钮配置（字符串或数组：text/class/variant/icon） |
@@ -1160,12 +1231,13 @@ echo XfAdmin::comingSoon([
 | `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏说明文本 |
 | `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]` |
 | `sideVariant` | string | `'primary'` | 侧栏语义变体（primary/info/success/…） |
+| `closeSideContent` | bool | `false` |  |
 | `user` | array | `[]` | 用户信息（name/avatar/email/role 等） |
 | `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮 |
 | `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
-| `deadline` | mixed | `null` | 截止时间（倒计时目标，任意可被 strtotime 解析的字符串）；开关：非空 / 真值时启用对应区块 |
-| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；开关：非空 / 真值时启用对应区块 |
-| `subscribe` | bool | `true` | 是否显示订阅表单；开关：非空 / 真值时启用对应区块 |
+| `deadline` | mixed | `null` | 截止时间（倒计时目标，任意可被 strtotime 解析的字符串）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `subscribe` | bool | `true` | 是否显示订阅表单；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1177,7 +1249,7 @@ echo XfAdmin::comingSoon([
 系统维护页（503 风格）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Maintenance`
-> **文件**：`src/Components/Layout/Maintenance.php`（63 行）
+> **文件**：`src/Components/Layout/Maintenance.php`（46 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1199,7 +1271,6 @@ echo XfAdmin::maintenance([
     'class' => '',    // 附加到根元素的自定义 class
     'id' => '',    // 根元素 id（留空自动生成唯一 id）
     'bodyClass' => '',    // 追加到 <form> 的 class
-    'theme' => 'light',    // 主题（light / dark / 图表主题名）
     // brand：品牌信息（name/logo/url）
     'brand' => [
         'name' => 'XfAdmin',
@@ -1215,6 +1286,7 @@ echo XfAdmin::maintenance([
     'action' => '',    // 表单提交地址 / 动作类型
     'method' => 'POST',    // HTTP 方法（GET/POST/PUT/DELETE）
     'ajax' => true,    // AJAX 地址或 DataTables 原生 ajax 配置
+    'redirectDelay' => null,
     'fields' => [],    // 字段定义数组（表单字段 / 详情字段）
     'buttons' => [],    // 按钮定义数组
     'submit' => '提交',    // 提交按钮配置（字符串或数组：text/class/variant/icon）
@@ -1236,7 +1308,7 @@ echo XfAdmin::maintenance([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -1244,6 +1316,7 @@ echo XfAdmin::maintenance([
         [/* … */],
     ],
     'sideVariant' => 'primary',    // 侧栏语义变体（primary/info/success/…）
+    'closeSideContent' => false,
     'user' => [],    // 用户信息（name/avatar/email/role 等）
     'showBackToTop' => false,    // 是否显示「回到顶部」按钮
     'captcha' => false,    // 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位
@@ -1265,17 +1338,17 @@ echo XfAdmin::maintenance([
 | `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | string | `''` | 根元素 id（留空自动生成唯一 id） |
 | `bodyClass` | string | `''` | 追加到 <form> 的 class |
-| `theme` | string | `'light'` | 可选值：`light` / `dark` / `auto` |
 | `brand` | array | `['name'=>'XfAdmin', 'url'=>'/', 'logo'=>{…}]` | 品牌信息（name/logo/url） |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；开关：非空 / 真值时启用对应区块 |
-| `heading` | string | `'网站维护中'` | **文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `heading` | string | `'网站维护中'` | 源码用法：`$content .= '<h2 class="fw-bold mt-3">'.$this->escape($this->get('heading')).'</h2>';` |
 | `subheading` | string | `''` | 副标题（回退历史字段 subtitle） |
 | `copyright` | string | `''` | 版权文案 |
 | `status` | string | `''` | 状态值 / 状态映射 |
-| `message` | string | `'我们正在进行例行维护，请稍后再访问。'` | **文本槽位**：输出前自动 HTML 转义 |
+| `message` | string | `'我们正在进行例行维护，请稍后再访问。'` | 源码用法：`$content .= '<p class="text-muted">'.$this->escape($this->get('message')).'</p>';` |
 | `action` | string | `''` | 表单提交地址 / 动作类型 |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `ajax` | bool | `true` | AJAX 地址或 DataTables 原生 ajax 配置 |
+| `redirectDelay` | mixed | `null` |  |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `buttons` | array | `[]` | 按钮定义数组 |
 | `submit` | string | `'提交'` | 提交按钮配置（字符串或数组：text/class/variant/icon） |
@@ -1300,11 +1373,12 @@ echo XfAdmin::maintenance([
 | `sideText` | string | `'XfAdmin 提供组件化、标准化的一站式企业后台管理解决方案，覆盖业务运营、流程审批与数据分析等核心场景，助力企业实现数字化、规范化的高效管理。'` | 侧栏说明文本 |
 | `sideList` | array | `[{…}, {…}, {…}]` | 侧栏要点列表 `['icon'=>..,'text'=>..]` |
 | `sideVariant` | string | `'primary'` | 侧栏语义变体（primary/info/success/…） |
+| `closeSideContent` | bool | `false` |  |
 | `user` | array | `[]` | 用户信息（name/avatar/email/role 等） |
 | `showBackToTop` | bool | `false` | 是否显示「回到顶部」按钮 |
 | `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
-| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；开关：非空 / 真值时启用对应区块 |
-| `contact` | mixed | `null` | 联系信息（渲染为 mailto 链接）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `contact` | mixed | `null` | 联系信息（渲染为 mailto 链接）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1316,7 +1390,7 @@ echo XfAdmin::maintenance([
 空状态页（无数据占位插画+文案）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\EmptyState`
-> **文件**：`src/Components/Layout/EmptyState.php`（61 行）
+> **文件**：`src/Components/Layout/EmptyState.php`（43 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1351,11 +1425,11 @@ echo XfAdmin::emptyState([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `icon` | string | `'ti ti-inbox'` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；开关：非空 / 真值时启用对应区块 |
-| `title` | string | `'暂无数据'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `action` | mixed | `null` | 表单提交地址 / 动作类型；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
+| `icon` | string | `'ti ti-inbox'` | Tabler 图标 class，如 `ti ti-user`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `title` | string | `'暂无数据'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<h4 class="mt-3">'.$this->escape($this->get('title')).'</h4>';` |
+| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `action` | mixed | `null` | 表单提交地址 / 动作类型；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -1366,7 +1440,7 @@ echo XfAdmin::emptyState([
 落地页/营销首页（英雄区+特性+CTA）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Landing`
-> **文件**：`src/Components/Layout/Landing.php`（235 行）
+> **文件**：`src/Components/Layout/Landing.php`（217 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1404,7 +1478,7 @@ echo XfAdmin::landing([
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
 - `nav[]` 元素键：`url`（默认 `#`）、`text`
-- `hero[]` 元素键：`image`、`title`、`subtitle`、`primary`（默认 `立即体验`）、`secondary`（默认 `了解更多`）
+- `hero[]` 元素键：`title`、`image`、`subtitle`、`primary`（默认 `立即体验`）、`secondary`（默认 `了解更多`）
 - `stats[]` 元素键：`value`、`label`
 - `features[]` 元素键：`icon`（默认 `ti ti-bolt`）、`title`、`text`
 - `pricing[]` 元素键：`highlight`、`title`、`price`、`features`、`button`（默认 `选择`）
@@ -1419,7 +1493,7 @@ echo XfAdmin::landing([
 |---|---|---|---|
 | `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；源码用法：`$brand = $this->get('brand');` |
 | `nav` | array | `[]` | 导航项数组 |
-| `hero` | array | `[]` | 输出到 `title` 属性 |
+| `hero` | array | `[]` |  |
 | `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
 | `features` | array | `[]` | 特性 / 功能列表 |
 | `pricing` | array | `[]` | 价格方案配置 |
@@ -1435,7 +1509,7 @@ echo XfAdmin::landing([
 账户设置面板（头像/密码/通知等卡片组）。
 
 > **类**：`zxf\XfAdmin\Components\Layout\AccountSettingsPanel`
-> **文件**：`src/Components/Layout/AccountSettingsPanel.php`（86 行）
+> **文件**：`src/Components/Layout/AccountSettingsPanel.php`（63 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1486,7 +1560,7 @@ echo XfAdmin::accountSettingsPanel([
 菜单数据组件（导航菜单 DSL，供 sidenav/topnav 使用）。
 
 > **类**：`zxf\XfAdmin\Components\Navigation\Menu`
-> **文件**：`src/Components/Navigation/Menu.php`（198 行）
+> **文件**：`src/Components/Navigation/Menu.php`（183 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1539,7 +1613,7 @@ echo XfAdmin::menu([
 栅格行容器（Bootstrap row 封装）。
 
 > **类**：`zxf\XfAdmin\Components\Grid\Row`
-> **文件**：`src/Components/Grid/Row.php`（95 行）
+> **文件**：`src/Components/Grid/Row.php`（74 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1578,8 +1652,8 @@ echo XfAdmin::row([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `gutter` | mixed | `null` | 栅格间距（数字或 `['x'=>2,'y'=>3]`）；源码用法：`$gutter = $this->get('gutter');` |
-| `align` | mixed | `null` | 开关：非空 / 真值时启用对应区块；可选值：`start` / `center` / `end` |
-| `justify` | mixed | `null` | start\|center\|end\|between\|around => justify-content-*；开关：非空 / 真值时启用对应区块 |
+| `align` | mixed | `null` | 枚举白名单 `'start', 'center', 'end'`；可选值：`start` / `center` / `end`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `justify` | mixed | `null` | 枚举白名单 `'start', 'center', 'end', 'between', 'around'`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `cols` | array | `[]` | 列数（栅格 / 分区列数） |
 | `content` | mixed | `null` | 直接传内容（可与 cols 混用）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
@@ -1592,7 +1666,7 @@ echo XfAdmin::row([
 栅格列（Bootstrap col 封装，支持响应式断点）。
 
 > **类**：`zxf\XfAdmin\Components\Grid\Col`
-> **文件**：`src/Components/Grid/Col.php`（118 行）
+> **文件**：`src/Components/Grid/Col.php`（104 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1630,60 +1704,42 @@ echo XfAdmin::col([
 
 ### `diyLayoutPage`
 
-DIY 可视化布局器：左侧组件菜单 / 中间可视化舞台 / 右侧属性面板的三栏编辑器，对标 LayoutIt，用于通过拖拽快速搭建后台页面原型，并一键导出可直接运行的 Laravel / ThinkPHP 代码。
+DIY 可视化布局器（左菜单/中舞台/右属性，对标 LayoutIt）。
 
-> **类**：`zxf\XfAdmin\Components\Layout\DiyLayoutPage`
-> **文件**：`src/Components/Layout/DiyLayoutPage.php` + `src/Support/DiyRenderer.php`（服务端渲染与组件目录）
-> **依赖插件**：`diy`（含 `xfadmin-diy.css` / `xfadmin-diy.js` 与 `sortablejs`）
+> **类**：`zxf\XfAdmin\Components\Layout\DiyLayoutPage` 等 `diyLayoutPage` / `diy`
+> **文件**：`src/Components/Layout/DiyLayoutPage.php`（221 行）
+> **依赖插件**：`diy`
 
 **用法示例**
 
 ```php
 XfAdmin::diyLayoutPage([
-    'render_url' => '/diy/render',   // 服务端实时渲染端点（返回 {html,css,js}）
-    'blocks'     => [...],           // 可选：初始块树；缺省为空舞台，可点击「载入示例」
-]);
+      'render_url' => '/diy/render',   // 服务端实时渲染端点（返回 {html,css,js} 或整页 HTML）
+      'blocks'     => [...],           // 可选：初始块树（缺省载入内置示例布局）
+  ]);
 ```
 
-<details><summary><b>全参数示例</b>（点击展开）</summary>
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
 
 ```php
 echo XfAdmin::diyLayoutPage([
-    'title'      => 'DIY 可视化布局器',
+    'title' => 'DIY 可视化布局器',
     'render_url' => '/diy/render',
-    'blocks'     => [],   // 初始块树；为空时显示引导空状态
-    'sample'     => [...], // 可选：自定义示例布局（缺省由包内置示例接管）
+    'blocks' => [],
 ]);
 ```
 
 </details>
 
-> **渲染骨架**：主要 class `xf-diy-editor` `xf-diy-palette` `xf-diy-stage` `xf-diy-props` `xf-diy-comp-item` `xf-diy-layout-list` `xf-diy-tpl-*`
-
-**编辑器核心能力**
-
-| 能力 | 说明 |
-|---|---|
-| 添加组件 | 从左侧列表**点击**或**拖拽**组件 / 模板 / 行 / 列到舞台；空舞台可点「载入示例」 |
-| 布局嵌套 | 将组件拖入**栅格行 / 列**实现任意层级嵌套；选中列可**拆分**为 2/3/4 列或**添加同级列** |
-| 属性编辑 | 点击舞台中的任意块，在右侧面板修改**全部配置参数**（颜色 / 图标 / 图片 / 链接 / 候选项） |
-| 撤销重做 | 所有操作均可撤销 / 重做；自动保存到本地草稿（`localStorage`），下次打开自动恢复 |
-| 设备预览 | 顶栏切换**桌面 / 平板 / 手机**预览设备宽度 |
-| 预览浮层 | 点击「预览」打开全屏浮层，克隆当前舞台并真实渲染（图表 / 地图按真实配置渲染）；浮层右上角「← 退出预览」按钮或按 **Esc** 返回舞台 |
-| 生成代码 | 一键导出 Laravel / ThinkPHP 控制器 + HTML 视图 / 块树 JSON，直接复制使用 |
-
-**关于图表 / 地图组件**
-
-编辑器舞台每次改动都会整体重渲染，而 ApexCharts / ECharts / 矢量地图等依赖异步渲染，节点易被替换导致「永不显示」。因此**编辑态舞台内**图表 / 地图以**静态占位**呈现（标注「预览中查看真实渲染效果」），**预览浮层 / 导出页**中则按真实配置渲染出完整图表与地图。
+> **渲染骨架**：主要 class `xf-diy-editor` `xf-diy-tpl-name` `xf-diy-tpl-cat` `xf-diy-layout-list` `xf-diy-comp-cat` `xf-diy-palette-head` `input-group` `input-group-sm`
 
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'DIY 可视化布局器'` | 标题文本 |
-| `render_url` | string | `'/diy/render'` | 服务端实时渲染端点；经协议白名单校验（拦截 `javascript:` 等危险协议） |
-| `blocks` | array | `[]` | 初始块树；为空时显示引导空状态 |
-| `sample` | array | 包内置示例 | 可选：自定义示例布局（`blocks` 为空且用户未载入示例时作为首屏引导） |
+| `title` | string | `'DIY 可视化布局器'` | 标题文本（部分组件为弹窗/tooltip 标题）；输出到 `title` 属性 |
+| `render_url` | string | `'/diy/render'` | URL：经协议白名单校验（拦截 `javascript:` 等） |
+| `blocks` | array | `[]` | 内容区块数组；源码用法：`$blocks = $this->get('blocks');` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

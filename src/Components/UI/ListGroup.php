@@ -73,13 +73,13 @@ class ListGroup extends Component
                 'd-flex justify-content-between align-items-center' => isset($item['badge']),
             ]);
 
-            $content = isset($item['content']) ? $this->raw($item['content']) : $this->e($item['text'] ?? '');
+            $content = isset($item['content']) ? $this->raw($item['content']) : $this->escape($item['text'] ?? '');
             if (isset($item['badge'])) {
                 $badge = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
-                $content .= '<span class="badge '.$this->e($badge['class'] ?? 'bg-primary').' rounded-pill">'.$this->e($badge['text'] ?? '').'</span>';
+                $content .= '<span class="badge '.$this->escape($badge['class'] ?? 'bg-primary').' rounded-pill">'.$this->escape($badge['text'] ?? '').'</span>';
             }
             $html .= isset($item['url'])
-                ? '<a href="'.$this->e($this->safeUrl($item['url'])).'" class="'.$cls.'">'.$content.'</a>'
+                ? '<a href="'.$this->escape($this->safeUrl($item['url'])).'" class="'.$cls.'">'.$content.'</a>'
                 : '<li class="'.$cls.'">'.$content.'</li>';
         }
 

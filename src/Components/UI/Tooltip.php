@@ -56,16 +56,16 @@ class Tooltip extends Component
             'data-bs-toggle' => 'tooltip',
             // placement 白名单（Bootstrap data-bs-placement），非法值回退默认 top
             'data-bs-placement' => $this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'top'),
-            'title' => $this->e($this->get('title')),
+            'title' => $this->escape($this->get('title')),
         ];
         if ($this->get('html')) {
             $attrs['data-bs-html'] = 'true';
         }
         if ($this->get('trigger')) {
-            $attrs['data-bs-trigger'] = $this->e($this->get('trigger'));
+            $attrs['data-bs-trigger'] = $this->escape($this->get('trigger'));
         }
         if ($this->get('custom_class')) {
-            $attrs['data-bs-custom-class'] = $this->e($this->get('custom_class'));
+            $attrs['data-bs-custom-class'] = $this->escape($this->get('custom_class'));
         }
         if ($tag === 'button') {
             $attrs['type'] = 'button';

@@ -44,7 +44,7 @@ class ContactList extends Component
         $contacts = (array) $this->get('contacts', []);
         $title = (string) $this->get('title', '团队成员');
 
-        $html = '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->e($title).'</h5></div><div class="card-body p-0"><ul class="list-group list-group-flush">';
+        $html = '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->escape($title).'</h5></div><div class="card-body p-0"><ul class="list-group list-group-flush">';
 
         if (empty($contacts)) {
             $html .= '<li class="list-group-item text-center text-muted py-4">暂无联系人</li></ul></div></div>';
@@ -60,10 +60,10 @@ class ContactList extends Component
 
             $html .= '<li class="list-group-item d-flex align-items-center gap-3">';
             $html .= '<div class="position-relative">';
-            $html .= '<img src="'.$this->e($avatar).'" class="rounded-circle avatar-sm" alt="'.$this->e($name).'">';
+            $html .= '<img src="'.$this->escape($avatar).'" class="rounded-circle avatar-sm" alt="'.$this->escape($name).'">';
             $html .= '<span class="position-absolute bottom-0 end-0 translate-middle p-1 rounded-circle '.($online ? 'bg-success' : 'bg-secondary').' border border-2 border-white"></span>';
             $html .= '</div>';
-            $html .= '<div class="flex-fill"><div class="fw-semibold">'.$this->e($name).'</div><small class="text-muted">'.$this->e($role).'</small></div>';
+            $html .= '<div class="flex-fill"><div class="fw-semibold">'.$this->escape($name).'</div><small class="text-muted">'.$this->escape($role).'</small></div>';
             $html .= '<button class="btn btn-sm btn-outline-primary" type="button"><i class="ti ti-message-circle"></i></button>';
             $html .= '</li>';
         }

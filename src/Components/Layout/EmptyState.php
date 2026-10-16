@@ -45,14 +45,14 @@ class EmptyState extends Component
     {
         $html = '<div'.$this->attrs(['class' => 'text-center py-5']).'>';
         if ($this->get('image')) {
-            $html .= '<img src="'.$this->e(XfAdmin::img((string) $this->get('image'))).'" alt="" style="max-height:180px;" class="mb-3">';
+            $html .= '<img src="'.$this->escape(XfAdmin::img((string) $this->get('image'))).'" alt="" style="max-height:180px;" class="mb-3">';
         } elseif ($this->get('icon')) {
             $html .= '<i class="'.$this->iconClass($this->get('icon')).'" style="font-size:64px;line-height:1;" ></i>';
         }
-        $html .= '<h4 class="mt-3">'.$this->e($this->get('title')).'</h4>';
+        $html .= '<h4 class="mt-3">'.$this->escape($this->get('title')).'</h4>';
         if ($this->get('text')) {
             // 与同库 UI/EmptyState 保持一致：text 是纯文本槽位（需要富文本请用 action）
-            $html .= '<p class="text-muted">'.$this->e($this->get('text')).'</p>';
+            $html .= '<p class="text-muted">'.$this->escape($this->get('text')).'</p>';
         }
         if ($this->get('action')) {
             $html .= '<div class="mt-3">'.$this->raw($this->get('action')).'</div>';

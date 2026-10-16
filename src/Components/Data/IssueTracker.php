@@ -65,7 +65,7 @@ class IssueTracker extends Component
         if ($title !== '' || $addText !== '' || $searchable) {
             $html .= '<div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 border-light">';
             if ($title !== '') {
-                $html .= '<h5 class="card-title mb-0">'.$this->e($title).'</h5>';
+                $html .= '<h5 class="card-title mb-0">'.$this->escape($title).'</h5>';
             }
             if ($searchable) {
                 $html .= '<div class="flex-grow-1" style="max-width:280px;">'
@@ -73,7 +73,7 @@ class IssueTracker extends Component
                     .'</div>';
             }
             if ($addText !== '') {
-                $html .= '<button type="button" class="btn btn-success btn-sm">'.$this->e($addText).'</button>';
+                $html .= '<button type="button" class="btn btn-success btn-sm">'.$this->escape($addText).'</button>';
             }
             $html .= '</div>';
         }
@@ -86,12 +86,12 @@ class IssueTracker extends Component
             $html .= '<tr class="xf-issue-row">';
 
             // 状态
-            $html .= '<td><span class="badge text-bg-'.$variant.' fs-xxs badge-label">'.$this->e($it['status'] ?? '').'</span></td>';
+            $html .= '<td><span class="badge text-bg-'.$variant.' fs-xxs badge-label">'.$this->escape($it['status'] ?? '').'</span></td>';
 
             // 编号 + 标题
             $itUrl = $this->safeUrl($it['url'] ?? '#', '#');
-            $html .= '<td><a href="'.$this->e($itUrl).'" class="link-reset text-uppercase fw-semibold">'.$this->e($it['id'] ?? '').'</a>'
-                .'<p class="mb-0 text-muted xf-issue-title">'.$this->e($it['title'] ?? '').'</p></td>';
+            $html .= '<td><a href="'.$this->escape($itUrl).'" class="link-reset text-uppercase fw-semibold">'.$this->escape($it['id'] ?? '').'</a>'
+                .'<p class="mb-0 text-muted xf-issue-title">'.$this->escape($it['title'] ?? '').'</p></td>';
 
             // 负责人
             $html .= '<td>';
@@ -99,29 +99,29 @@ class IssueTracker extends Component
             if (is_array($assignee)) {
                 $html .= '<div class="d-flex align-items-center gap-2">';
                 if (! empty($assignee['avatar'])) {
-                    $html .= '<div class="avatar avatar-xs"><img src="'.$this->e(XfAdmin::img((string) $assignee['avatar'])).'" class="img-fluid rounded-circle" alt=""></div>';
+                    $html .= '<div class="avatar avatar-xs"><img src="'.$this->escape(XfAdmin::img((string) $assignee['avatar'])).'" class="img-fluid rounded-circle" alt=""></div>';
                 } else {
                     $ini = mb_substr((string) ($assignee['name'] ?? '?'), 0, 1);
-                    $html .= '<div class="avatar avatar-xs"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->e($ini).'</span></div>';
+                    $html .= '<div class="avatar avatar-xs"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->escape($ini).'</span></div>';
                 }
-                $html .= '<h5 class="text-nowrap mb-0 lh-base fs-sm">'.$this->e($assignee['name'] ?? '').'</h5></div>';
+                $html .= '<h5 class="text-nowrap mb-0 lh-base fs-sm">'.$this->escape($assignee['name'] ?? '').'</h5></div>';
             }
             $html .= '</td>';
 
             // 日期
             $html .= '<td class="text-nowrap">';
             if (! empty($it['created'])) {
-                $html .= '<p class="mb-0 small"><i class="ti ti-calendar"></i> <span class="fw-semibold">创建:</span> '.$this->e($it['created']).'</p>';
+                $html .= '<p class="mb-0 small"><i class="ti ti-calendar"></i> <span class="fw-semibold">创建:</span> '.$this->escape($it['created']).'</p>';
             }
             if (! empty($it['due'])) {
-                $html .= '<p class="mb-0 small"><i class="ti ti-clock"></i> <span class="fw-semibold">截止:</span> '.$this->e($it['due']).'</p>';
+                $html .= '<p class="mb-0 small"><i class="ti ti-clock"></i> <span class="fw-semibold">截止:</span> '.$this->escape($it['due']).'</p>';
             }
             $html .= '</td>';
 
             // 标签
             $html .= '<td>';
             foreach ((array) ($it['labels'] ?? []) as $label) {
-                $html .= '<a href="#" class="badge badge-label badge-default me-1">'.$this->e($label).'</a>';
+                $html .= '<a href="#" class="badge badge-label badge-default me-1">'.$this->escape($label).'</a>';
             }
             $html .= '</td>';
 

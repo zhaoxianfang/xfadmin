@@ -30,7 +30,7 @@ count(XfAdmin::componentList());                  // 226
 |---|---|---|
 | `config` | `config(?array $config = null): array` | 传数组 = 递归合并并返回；不传 = 只读返回 |
 | `setting` | `setting(string $key, mixed $default = null): mixed` | 点号读取，如 `setting('brand.logo')` |
-| `version` | `version(): string` | 返回 `XfAdmin::VERSION`（`2.1.0`） |
+| `version` | `version(): string` | 返回 `XfAdmin::VERSION`（`1.0.2`） |
 
 `config()` 的副作用：
 
@@ -88,6 +88,32 @@ XfAdmin::setCsrfResolver(fn () => csrf_token());
 ⚠️ 注册表中 `lockScreen` **先指向 `AuthPage` 后被 `LockScreen::class` 覆盖**，
 因此 `XfAdmin::lockScreen()` 得到的是独立整页组件，注入的 `type` 不生效。
 要用 AuthPage 的锁屏语义：`XfAdmin::authPage(['type' => 'lock-screen'])`。
+
+### 1.7 即时片段助手（直接返回 HTML 字符串）
+
+下列方法**直接返回字符串**（不进入构建器链路），适合控制器内 `return XfAdmin::errorBlock(...)`
+这类即时返回场景，与 `AdminBuilder` 的链式方法（如 `errorText()`）互补。
+
+| 方法 | 签名 | 说明 |
+|---|---|---|
+| `errorBlock` | `errorBlock(string $message, string $variant = 'danger', ?string $icon = 'ti ti-alert-circle'): string` | 行内错误提示块 `p-3 text-{variant}` + 可选图标；`variant` 限 `danger/warning/info/success/primary/secondary`（非法值回落 `danger`）；`message` 与 `icon` 均经 `Support\Html::escape` 转义，杜绝 XSS |
+| `emptyHint` | `emptyHint(string $message = '暂无数据', array $options = []): string` | 空数据提示：默认返回 `<p class="text-muted mb-0">…</p>`；`options['center']=true` 时升级为居中卡片块 `<div class="p-4 text-center text-muted">`；`options['icon']` 追加图标；`message`/`icon` 均转义 | 
+| `emptyDash` | `emptyDash(): string` | 空占位符 `<span class="text-muted">-</span>`（表格空单元格惯用） | 
+
+```php
+return XfAdmin::errorBlock('配置不存在');                               // 默认 danger + ti ti-alert-circle 图标
+return XfAdmin::errorBlock('角色组不存在', 'danger', null);           // 无图标
+return XfAdmin::errorBlock('超级管理员受保护', 'danger', 'ti ti-lock'); // 自定义锁图标
+
+return XfAdmin::emptyHint('暂无数据');                                       // <p class="text-muted mb-0">暂无数据</p>
+return XfAdmin::emptyHint('暂无菜单数据，请先创建', ['center' => true, 'icon' => 'ti ti-folder-off']); // 居中卡片块 + 图标
+return XfAdmin::emptyDash();                                                 // <span class="text-muted">-</span>
+```
+
+> 后台 `Admin` 模块中原本散落的 `'<div class="p-3 text-danger">…</div>'` 手写错误块，
+> 现已统一经 `XfAdmin::errorBlock()` 产出（Config/Menu/Log/AdminUser/Role 五个控制器共 12 处）；
+> `暂无数据`/`text-muted`/`'-'` 等空状态片段亦统一经 `emptyHint()` / `emptyDash()` 产出
+> （Dashboard 4 处、Data/Log 的 `-` 占位符、Role 的空菜单块）。
 
 ## 2. 全局助手函数
 
@@ -156,7 +182,9 @@ protected static function getFacadeAccessor() { return 'xfadmin'; }
 ```php
 use zxf\XfAdmin\Support\Html;
 
-Html::e($value);                        // HTML 转义
+Html::escape($value);                   // HTML 转义（旧名 e() 保留为 @deprecated 别名，建议新代码改用语义化 escape）
+Html::tag('span', ['class' => 'x'], '<b>');   // 安全单标签：<span class="x">&lt;b&gt;</span>（自闭合自动 />，非法名回退 span）
+Html::style(['color' => 'red', 'x' => 'y;z']);// 安全内联样式：'color:red'（拦截 ;{}url(expression(<script 注入）
 Html::attrs(['class' => 'a', 'id' => 'b', 'disabled' => true]);
 // => ' class="a" id="b" disabled'
 Html::cls('a', ['b' => true, 'c' => false], 'd');   // => 'a b d'
@@ -184,7 +212,7 @@ DemoMenu::topNavMenu();   // 水平导航菜单（含 mega）
 
 ```php
 // 版本与组件数
-echo XfAdmin::version();                 // 2.1.0
+echo XfAdmin::version();                 // 1.0.2
 echo count(XfAdmin::componentList());    // 226
 
 // 资源 URL

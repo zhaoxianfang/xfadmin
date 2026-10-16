@@ -54,13 +54,13 @@ class FilterSidebar extends Component
             $g = (array) $g;
             $type = $g['type'] ?? 'check';
             $html .= '<div class="mb-3">';
-            $html .= '<div class="fw-semibold mb-2">'.$this->e($g['title'] ?? '').'</div>';
+            $html .= '<div class="fw-semibold mb-2">'.$this->escape($g['title'] ?? '').'</div>';
 
             if ($type === 'check') {
                 foreach ((array) ($g['items'] ?? []) as $it) {
                     $it = (array) $it;
-                    $html .= '<div class="form-check"><input class="form-check-input" type="checkbox" name="f_'.$this->e($g['title'] ?? 'x').'[]" value="'.$this->e($it['value'] ?? '').'">'
-                        .'<label class="form-check-label">'.$this->e($it['label'] ?? '').'</label></div>';
+                    $html .= '<div class="form-check"><input class="form-check-input" type="checkbox" name="f_'.$this->escape($g['title'] ?? 'x').'[]" value="'.$this->escape($it['value'] ?? '').'">'
+                        .'<label class="form-check-label">'.$this->escape($it['label'] ?? '').'</label></div>';
                 }
             } elseif ($type === 'price') {
                 $min = (int) ($g['min'] ?? 0);
@@ -73,7 +73,7 @@ class FilterSidebar extends Component
             }
             $html .= '</div>';
         }
-        $html .= '<button class="btn btn-'.$variant.' w-100">'.$this->e($btn['text'] ?? '应用筛选').'</button>';
+        $html .= '<button class="btn btn-'.$variant.' w-100">'.$this->escape($btn['text'] ?? '应用筛选').'</button>';
         $html .= '</div></div>';
 
         return $html;
@@ -95,8 +95,8 @@ class FilterSidebar extends Component
         foreach ($items as $it) {
             $it = (array) $it;
             $html .= '<li class="mb-1"><div class="form-check">'
-                .'<input class="form-check-input" type="checkbox" name="cat[]" value="'.$this->e($it['value'] ?? '').'">'
-                .'<label class="form-check-label">'.$this->e($it['label'] ?? '').'</label></div>';
+                .'<input class="form-check-input" type="checkbox" name="cat[]" value="'.$this->escape($it['value'] ?? '').'">'
+                .'<label class="form-check-label">'.$this->escape($it['label'] ?? '').'</label></div>';
             if (! empty($it['children'])) {
                 $html .= $this->renderTree((array) $it['children'], $depth + 1);
             }

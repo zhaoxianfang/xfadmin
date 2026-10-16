@@ -53,7 +53,7 @@ echo XfAdmin::fileManager(['folders' => [...], 'files' => [...]]);
 文章详情（通用内容页）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Article`
-> **文件**：`src/Components/Data/Article.php`（154 行）
+> **文件**：`src/Components/Data/Article.php`（114 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -104,7 +104,7 @@ echo XfAdmin::article([
 博客文章详情（正文+作者+评论）。
 
 > **类**：`zxf\XfAdmin\Components\Data\BlogArticle`
-> **文件**：`src/Components/Data/BlogArticle.php`（99 行）
+> **文件**：`src/Components/Data/BlogArticle.php`（78 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -153,7 +153,7 @@ echo XfAdmin::blogArticle([
 博客列表（文章卡片流）。
 
 > **类**：`zxf\XfAdmin\Components\Data\BlogList`
-> **文件**：`src/Components/Data/BlogList.php`（202 行）
+> **文件**：`src/Components/Data/BlogList.php`（171 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -214,7 +214,7 @@ echo XfAdmin::blogList([
 评论线程（嵌套回复列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\CommentThread`
-> **文件**：`src/Components/Data/CommentThread.php`（129 行）
+> **文件**：`src/Components/Data/CommentThread.php`（105 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -255,7 +255,7 @@ echo XfAdmin::commentThread([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明）；源码用法：`foreach (array_values((array) $this->get('items')) as $c) {` |
-| `form` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `form` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `maxDepth` | int | `4` | 源码用法：`if ($depth < (int) $this->get('maxDepth')) {` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -267,7 +267,7 @@ echo XfAdmin::commentThread([
 常见问题（问答卡片列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Faq`
-> **文件**：`src/Components/Data/Faq.php`（74 行）
+> **文件**：`src/Components/Data/Faq.php`（53 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -321,7 +321,7 @@ echo XfAdmin::faq([
 FAQ 手风琴（折叠问答）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FaqAccordion`
-> **文件**：`src/Components/Data/FaqAccordion.php`（74 行）
+> **文件**：`src/Components/Data/FaqAccordion.php`（53 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -369,7 +369,7 @@ echo XfAdmin::faqAccordion([
 论坛帖子（主题+回复线程）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ForumThread`
-> **文件**：`src/Components/Data/ForumThread.php`（122 行）
+> **文件**：`src/Components/Data/ForumThread.php`（102 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -398,7 +398,7 @@ echo XfAdmin::forumThread([
 
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
-- `thread[]` 元素键：`category`、`title`、`tags`、`author`、`created_at`、`views`、`replies`、`body`
+- `thread[]` 元素键：`author`、`category`、`title`、`tags`、`created_at`、`views`、`replies`、`body`
 - `posts[]` 元素键：`author`、`is_solution`、`created_at`、`body`、`attachments`、`likes`
 
 > **渲染骨架**：主要 class `card` `mb-3` `card-body` `mb-2` `badge` `bg-primary-subtle` `text-primary` `bg-light`
@@ -419,7 +419,7 @@ echo XfAdmin::forumThread([
 图片画廊（网格+灯箱）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Gallery`
-> **文件**：`src/Components/Data/Gallery.php`（219 行）
+> **文件**：`src/Components/Data/Gallery.php`（184 行）
 > **依赖插件**：`masonry`、`glightbox`
 
 **用法示例**
@@ -472,7 +472,7 @@ echo XfAdmin::gallery([
 | `masonry` | bool | `true` | 源码用法：`if ($this->get('masonry')) {` |
 | `lightbox` | bool | `true` | 灯箱配置 / 是否启用灯箱；源码用法：`if ($this->get('lightbox')) {` |
 | `search` | bool | `true` | 是否启用搜索；源码用法：`$search = (bool) $this->get('search');` |
-| `cols` | int | `4` | 列数（栅格 / 分区列数）；源码用法：`$wallCls = 'row g-2 ' . $this->rowColsClass((int) $this->get('cols'))` |
+| `cols` | int | `4` | 列数（栅格 / 分区列数）；源码用法：`$wallCls = 'row g-2 '.$this->rowColsClass((int) $this->get('cols'))` |
 | `ratio` | string | `'4x3'` | 宽高比（如 `16/9`）；CSS 比例：`N/M` 或纯数字 |
 | `gap` | string | `''` | 兼容旧参数；留空时用 INSPINIA 的 g-2 间距 |
 | `filter` | array | `[]` | ['all' => '全部', 'design' => '设计', ...] |
@@ -487,7 +487,7 @@ echo XfAdmin::gallery([
 服务条款页（长文本条款）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Terms`
-> **文件**：`src/Components/Data/Terms.php`（106 行）
+> **文件**：`src/Components/Data/Terms.php`（80 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -531,9 +531,9 @@ echo XfAdmin::terms([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'服务条款'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `updated_at` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `intro` | mixed | `null` | 导语 / 简介文本；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `title` | string | `'服务条款'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$body .= '<h3 class="mb-1">'.$this->escape($this->get('title')).'</h3>';` |
+| `updated_at` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `intro` | mixed | `null` | 导语 / 简介文本；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `sections` | array | `[]` | 分区数组 |
 | `toc` | bool | `true` | 目录（Table of Contents）列表 |
 | `accept` | mixed | `null` | 源码用法：`$accept = $this->get('accept');` |
@@ -547,7 +547,7 @@ echo XfAdmin::terms([
 隐私政策页（长文本）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PrivacyPolicy`
-> **文件**：`src/Components/Data/PrivacyPolicy.php`（110 行）
+> **文件**：`src/Components/Data/PrivacyPolicy.php`（87 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -605,7 +605,7 @@ echo XfAdmin::privacyPolicy([
 站点地图（层级链接导航）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Sitemap`
-> **文件**：`src/Components/Data/Sitemap.php`（123 行）
+> **文件**：`src/Components/Data/Sitemap.php`（92 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -664,7 +664,7 @@ echo XfAdmin::sitemap([
 社交动态流（朋友圈式信息流）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SocialFeed`
-> **文件**：`src/Components/Data/SocialFeed.php`（104 行）
+> **文件**：`src/Components/Data/SocialFeed.php`（68 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -727,7 +727,7 @@ echo XfAdmin::socialFeed([
 文件管理器（目录/文件网格）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FileManager`
-> **文件**：`src/Components/Data/FileManager.php`（116 行）
+> **文件**：`src/Components/Data/FileManager.php`（100 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -779,7 +779,7 @@ echo XfAdmin::fileManager([
 搜索结果列表（标题+摘要+链接）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SearchResults`
-> **文件**：`src/Components/Data/SearchResults.php`（122 行）
+> **文件**：`src/Components/Data/SearchResults.php`（96 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -826,8 +826,8 @@ echo XfAdmin::searchResults([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `query` | string | `''` | **文本槽位**：输出前自动 HTML 转义 |
-| `count` | int | `0` | 数量 / 计数徽标数字；源码用法：`$html .= '<p class="text-muted mb-0">找到 <span class="fw-semibold text-body">' . (int)…` |
+| `query` | string | `''` | 源码用法：`.$this->escape($this->get('query')).'” 相关的结果</p>';` |
+| `count` | int | `0` | 数量 / 计数徽标数字；源码用法：`$html .= '<p class="text-muted mb-0">找到 <span class="fw-semibold text-body">'.(int) $…` |
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 | `filters` | array | `[]` | 过滤条件定义；源码用法：`if (! empty($this->get('filters'))) {` |
 | `pagination` | string | `''` | 源码用法：`if ($pg = $this->get('pagination')) {` |
@@ -841,7 +841,7 @@ echo XfAdmin::searchResults([
 富搜索结果（分组+缩略图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SearchResultsRich`
-> **文件**：`src/Components/Data/SearchResultsRich.php`（81 行）
+> **文件**：`src/Components/Data/SearchResultsRich.php`（61 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -889,7 +889,7 @@ echo XfAdmin::searchResultsRich([
 价格方案卡（推荐标记/功能列表/按钮）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PricingCard`
-> **文件**：`src/Components/Data/PricingCard.php`（95 行）
+> **文件**：`src/Components/Data/PricingCard.php`（68 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -945,14 +945,14 @@ echo XfAdmin::pricingCard([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | string | `''` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义 |
-| `price` | string | `''` | 价格数值；**文本槽位**：输出前自动 HTML 转义 |
-| `period` | string | `'/ 月'` | **文本槽位**：输出前自动 HTML 转义 |
-| `desc` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$html .= '<h4 class="fw-bold">'.$this->escape($this->get('name')).'</h4>';` |
+| `price` | string | `''` | 价格数值；源码用法：`$html .= '<h2 class="my-3 fw-bold">'.$this->escape($this->get('price'))` |
+| `period` | string | `'/ 月'` | 源码用法：`.'<span class="fs-6 text-muted fw-normal">'.$this->escape($this->get('period')).'</sp…` |
+| `desc` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `features` | array | `[]` | 特性 / 功能列表 |
 | `featured` | bool | `false` | 源码用法：`$cls = Html::cls('card h-100', ['border-primary' => (bool) $this->get('featured')]);` |
-| `badge` | mixed | `null` | 徽标文本或 `['text'=>..,'class'=>..]`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `badge` | mixed | `null` | 徽标文本或 `['text'=>..,'class'=>..]`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `button` | array | `['label'=>'选择方案', 'href'=>'#', 'variant'=>'primary']` | 数组结构（见「全参数示例」）；源码用法：`$btn = (array) $this->get('button');` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -964,7 +964,7 @@ echo XfAdmin::pricingCard([
 用户证言（头像+评语+星标）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Testimonial`
-> **文件**：`src/Components/Data/Testimonial.php`（109 行）
+> **文件**：`src/Components/Data/Testimonial.php`（89 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1004,7 +1004,7 @@ echo XfAdmin::testimonial([
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 | `cols` | int | `3` | 列数（栅格 / 分区列数） |
-| `carousel` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
+| `carousel` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

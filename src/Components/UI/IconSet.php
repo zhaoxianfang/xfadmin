@@ -51,13 +51,13 @@ class IconSet extends Component
 
         if ($searchable) {
             $html .= '<div class="mb-4"><div class="input-group" style="max-width:400px"><span class="input-group-text"><i class="ti ti-search"></i></span>';
-            $html .= '<input type="text" class="form-control" id="'.$this->e($prefixId.'-search').'" placeholder="搜索图标..." oninput="';
-            $html .= 'var q=this.value.toLowerCase(),cards=document.querySelectorAll(\'#'.$this->e($prefixId).' .xf-icon-card\');';
+            $html .= '<input type="text" class="form-control" id="'.$this->escape($prefixId.'-search').'" placeholder="搜索图标..." oninput="';
+            $html .= 'var q=this.value.toLowerCase(),cards=document.querySelectorAll(\'#'.$this->escape($prefixId).' .xf-icon-card\');';
             $html .= 'cards.forEach(function(c){c.style.display=q===\'\'||c.querySelector(\'.xf-icon-name\').textContent.toLowerCase().indexOf(q)>-1?\'\':\'none\'})';
             $html .= '"></div></div>';
         }
         $colClass = 'row-cols-sm-'.min(12, max(2, (int) (12 / max(1, min(6, $columns)))));
-        $html .= '<div id="'.$this->e($prefixId).'" class="row row-cols-2 '.$colClass.' row-cols-xl-'.(12 / max(1, min(4, (int) ($columns / 2)))).' g-2">';
+        $html .= '<div id="'.$this->escape($prefixId).'" class="row row-cols-2 '.$colClass.' row-cols-xl-'.(12 / max(1, min(4, (int) ($columns / 2)))).' g-2">';
 
         if (empty($icons)) {
             $icons = $this->getDefaultTablerIcons();
@@ -76,10 +76,10 @@ class IconSet extends Component
                 $cls = (string) ($icon['class'] ?? 'ti ti-'.$name);
             }
             $html .= '<div class="col"><div class="card xf-icon-card border"><div class="card-body text-center py-3">';
-            $html .= '<i class="'.$this->e($cls).' fs-24 mb-2 d-block"></i>';
-            $html .= '<small class="text-muted xf-icon-name d-block text-truncate" title="'.$this->e($name).'">'.$this->e($name).'</small>';
+            $html .= '<i class="'.$this->escape($cls).' fs-24 mb-2 d-block"></i>';
+            $html .= '<small class="text-muted xf-icon-name d-block text-truncate" title="'.$this->escape($name).'">'.$this->escape($name).'</small>';
             if ($searchable) {
-                $html .= '<small class="text-muted xf-icon-name" style="display:none">'.$this->e($cls).'</small>';
+                $html .= '<small class="text-muted xf-icon-name" style="display:none">'.$this->escape($cls).'</small>';
             }
             $html .= '</div></div></div>';
         }

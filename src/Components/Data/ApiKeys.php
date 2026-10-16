@@ -59,12 +59,12 @@ class ApiKeys extends Component
             $key = $it['key'] ?? '';
             $masked = $this->mask($key);
             $html .= '<tr>'
-                .'<td class="fw-medium">'.$this->e($it['name'] ?? '').'</td>'
-                .'<td><code class="xf-key" data-real="'.$this->e($key).'">'.$this->e($masked).'</code></td>'
-                .'<td>'.$this->e($it['created'] ?? '').'</td>'
-                .'<td>'.$this->e($it['last_used'] ?? '').'</td>'
+                .'<td class="fw-medium">'.$this->escape($it['name'] ?? '').'</td>'
+                .'<td><code class="xf-key" data-real="'.$this->escape($key).'">'.$this->escape($masked).'</code></td>'
+                .'<td>'.$this->escape($it['created'] ?? '').'</td>'
+                .'<td>'.$this->escape($it['last_used'] ?? '').'</td>'
                 .'<td class="text-end d-flex gap-1 justify-content-end">'
-                .'<button type="button" class="btn btn-sm btn-soft-light" data-xf="copy" data-copy="'.$this->e($key).'" title="复制"><i class="ti ti-copy"></i></button>';
+                .'<button type="button" class="btn btn-sm btn-soft-light" data-xf="copy" data-copy="'.$this->escape($key).'" title="复制"><i class="ti ti-copy"></i></button>';
             if ($reveal) {
                 $html .= '<button type="button" class="btn btn-sm btn-soft-light" data-xf="key-toggle" data-idx="'.$idx.'" title="显示/隐藏"><i class="ti ti-eye"></i></button>';
             }

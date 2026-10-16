@@ -64,9 +64,9 @@ class Alert extends Component
         }
         $html .= '<div>';
         if ($this->get('heading')) {
-            $html .= '<h5 class="alert-heading">'.$this->e($this->get('heading')).'</h5>';
+            $html .= '<h5 class="alert-heading">'.$this->escape($this->get('heading')).'</h5>';
         }
-        $html .= $this->e($this->get('text')).'</div>';
+        $html .= $this->escape($this->get('text')).'</div>';
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
         }

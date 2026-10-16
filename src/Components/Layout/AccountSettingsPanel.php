@@ -64,21 +64,21 @@ class AccountSettingsPanel extends Component
         $nav = '<div class="list-group list-group-flush xf-asp-nav">';
         foreach ($tabs as $t) {
             $isActive = ($t['id'] ?? '') === $active;
-            $nav .= '<a href="#'.$this->e($id.'-'.($t['id'] ?? '')).'" class="list-group-item list-group-item-action d-flex align-items-center gap-2 '.($isActive ? 'active' : '').'" data-bs-toggle="list" role="tab">'
-                .'<i class="'.$this->e($t['icon'] ?? 'ti ti-point').'"></i>'.$this->e($t['label'] ?? '').'</a>';
+            $nav .= '<a href="#'.$this->escape($id.'-'.($t['id'] ?? '')).'" class="list-group-item list-group-item-action d-flex align-items-center gap-2 '.($isActive ? 'active' : '').'" data-bs-toggle="list" role="tab">'
+                .'<i class="'.$this->escape($t['icon'] ?? 'ti ti-point').'"></i>'.$this->escape($t['label'] ?? '').'</a>';
         }
         $nav .= '</div>';
 
         $panes = '<div class="tab-content xf-asp-content">';
         foreach ($tabs as $t) {
             $isActive = ($t['id'] ?? '') === $active;
-            $panes .= '<div class="tab-pane fade '.($isActive ? 'show active' : '').'" id="'.$this->e($id.'-'.($t['id'] ?? '')).'" role="tabpanel">'
+            $panes .= '<div class="tab-pane fade '.($isActive ? 'show active' : '').'" id="'.$this->escape($id.'-'.($t['id'] ?? '')).'" role="tabpanel">'
                 .$this->raw($t['content'] ?? '').'</div>';
         }
         $panes .= '</div>';
 
         return '<div class="card border-0 shadow-sm"><div class="card-body">'
-            .'<h5 class="mb-3">'.$this->e($title).'</h5>'
+            .'<h5 class="mb-3">'.$this->escape($title).'</h5>'
             .'<div class="row g-0"><div class="col-md-3 border-end">'.$nav.'</div>'
             .'<div class="col-md-9 ps-4">'.$panes.'</div></div>'
             .'</div></div>';

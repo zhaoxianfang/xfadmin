@@ -46,7 +46,7 @@ class TodoList extends Component
         $html = '<div'.$this->attrs(['class' => 'card xf-todo', 'data-xf' => 'todo']).'>';
         if ($this->get('title')) {
             $html .= '<div class="card-header bg-transparent border-bottom d-flex align-items-center">'.
-                '<h6 class="mb-0 fw-semibold">'.$this->e($this->get('title')).'</h6>'.
+                '<h6 class="mb-0 fw-semibold">'.$this->escape($this->get('title')).'</h6>'.
                 '<span class="badge bg-primary-subtle text-primary ms-auto xf-todo-count"></span></div>';
         }
         $html .= '<div class="card-body p-2">';
@@ -55,10 +55,10 @@ class TodoList extends Component
             $text = is_array($it) ? ($it['text'] ?? '') : $it;
             $done = is_array($it) ? ! empty($it['done']) : false;
             $prio = is_array($it) ? ($it['priority'] ?? '') : '';
-            $bar = $prio ? ' border-start border-3 border-'.Html::e($prio === 'high' ? 'danger' : ($prio === 'medium' ? 'warning' : 'success')) : '';
+            $bar = $prio ? ' border-start border-3 border-'.Html::escape($prio === 'high' ? 'danger' : ($prio === 'medium' ? 'warning' : 'success')) : '';
             $html .= '<li class="list-group-item d-flex align-items-center gap-2 px-2 py-2'.($done ? ' xf-todo-done' : '').$bar.'">';
             $html .= '<div class="form-check mb-0"><input class="form-check-input xf-todo-check" type="checkbox"'.($done ? ' checked' : '').'></div>';
-            $html .= '<span class="flex-grow-1">'.$this->e($text).'</span>';
+            $html .= '<span class="flex-grow-1">'.$this->escape($text).'</span>';
             $html .= '<button type="button" class="btn btn-sm btn-link text-muted xf-todo-del" aria-label="删除"><i class="ti ti-x"></i></button>';
             $html .= '</li>';
         }

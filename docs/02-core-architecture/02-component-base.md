@@ -24,12 +24,14 @@ abstract class Component implements Stringable
 
 | 方法 | 可见性 | 说明 |
 |---|---|---|
-| `__construct(array $options = [])` | public | `array_replace_recursive(defaults(), $options)` |
+| `__construct(array $options = [])` | public | `array_replace_recursive(defaults(), $options)` + `bootCommonOptions()` |
 | `make(array $options = []): static` | public static | 静态工厂，推荐用法 |
 | `defaults(): array` | protected | 默认配置（子类覆写） |
 | `assets(): array` | protected | 依赖插件名数组（子类覆写） |
 | `html(): string` | protected abstract | 生成 HTML（子类实现） |
-| `render(): string` | public | 注册资源 + 调用 `html()` |
+| `render(): string` | public | 注册资源 + `renderWithWrapper()` 统一后处理 |
+| `renderWithWrapper(): string` | protected | 条件渲染（hidden/when/visible）+ 栅格列宽（col）包裹 |
+| `bootCommonOptions(): void` | protected | 构造期归一化 id/class/style/attrs 到 `$attributes` |
 | `__toString(): string` | public | 同 `render()` |
 
 ```php
@@ -56,7 +58,59 @@ class MyWidget extends Component
 }
 ```
 
-## 3. 配置读写
+## 3. 通用控制参数（所有组件零改动获得）
+
+`Component` 基类通过「构造期归一化 + 渲染期统一后处理」，让**全部 219 个组件**（含所有子类）零改动即可获得以下通用控制参数，无需在 `defaults()` 中逐个声明：
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `id` | `string` | 根元素 id（等价 `->id()`） |
+| `class` | `string` | 根元素附加 class（等价 `->addClass()`，与组件内部 class 自动去重合并） |
+| `style` | `string\|array` | 根元素内联样式，**安全净化**（拦截 `url(javascript:)`/`expression()`/`;`/`}` 注入） |
+| `attrs` | `array` | 批量自定义属性（等价 `->attr([...])`） |
+| `hidden` | `bool` | `true` 时不渲染任何内容 |
+| `when` | `bool\|Closure` | 条件渲染；闭包惰性求值，入参为组件自身，`false` 不渲染 |
+| `visible` | `bool` | `false` 时不渲染（与 `hidden` 语义相反） |
+| `col` | `int\|array` | 响应式栅格列宽；`int` → `col-12 col-md-N col-xl-N`；`array` → `['md'=>6,'xl'=>3]` → `col-12 col-md-6 col-xl-3`；非空时用 `<div class="col-*">` 包裹 |
+
+```php
+// class / id / style / attrs 作为第一公民参数
+XfAdmin::button(['text' => '保存', 'class' => 'mt-2 shadow-sm', 'id' => 'btn-save',
+    'style' => 'border-radius:8px', 'attrs' => ['data-id' => 9]]);
+
+// 条件渲染
+XfAdmin::alert(['text' => '仅管理员可见', 'when' => auth()->user()->isAdmin()]);
+XfAdmin::alert(['text' => '隐藏', 'hidden' => $someFlag]);
+XfAdmin::badge(['text' => 'x', 'when' => fn ($c) => $count > 0]);   // 闭包惰性
+
+// 栅格列宽（任意组件可排进栅格）
+XfAdmin::progress(['value' => 60, 'col' => ['md' => 6, 'xl' => 3]]);
+XfAdmin::card(['title' => 'A', 'body' => 'x', 'col' => 4]);
+```
+
+**判定优先级**：`hidden` > `when` > `visible`，任一判定「不渲染」即返回空串 `''`。
+
+> ⚠️ `width` **不作为**统一栅格保留字。原因：`ApexChart`/`Skeleton`/`VideoPlayer` 用 `width` 表渲染尺寸、`Grid/Col` 用 `width` 表栅格原语、`StatCard` 已在自身内部用 `width` 包裹，基类若再处理会造成语义冲突或双重包裹。**栅格列宽统一用 `col`**。
+
+### 3.1 `style` 安全净化规则
+
+`style` 支持两种写法，均经过 `safeStyle()` 净化：
+
+```php
+'style' => 'color:red;font-size:14px;'           // 字符串（prop:value 分号分隔）
+'style' => ['color' => 'red', 'font-size' => '14px']  // 数组（key => value）
+```
+
+拦截项（命中即丢弃该声明）：
+
+- `;` `{` `}` —— 防声明追加/块逃逸；
+- `url(...)` —— 防 `url(javascript:)`；
+- `expression(...)` —— 防 IE CSS 表达式；
+- `<script`、`javascript:` —— 防脚本注入。
+
+> 注意：`position:fixed` 等**合法 CSS 声明**不会被拦截（这是「用户显式自定义样式」的第一公民语义，与「从不可信数据拼进属性」性质不同）。
+
+## 4. 配置读写
 
 ```php
 $card = XfAdmin::card(['title' => 'A']);
@@ -71,7 +125,7 @@ $card->get('missing', '默认');             // '默认'
 $card->options();                         // 完整配置数组
 ```
 
-## 4. 属性与 class
+## 5. 属性与 class
 
 ```php
 XfAdmin::card(['title' => 'x'])
@@ -100,9 +154,9 @@ protected function attrs(array $base = []): string
 
 ⚠️ `attr('x', true)` 输出 `x`（布尔属性）；`attr('x', false)` 或 `null` 则**不输出该属性**。
 
-## 5. 安全助手（重点）
+## 6. 安全助手（重点）
 
-### 5.1 `e(mixed $value): string` —— 文本转义
+### 6.1 `e(mixed $value): string` —— 文本转义
 
 ```php
 $this->e($title);
@@ -110,7 +164,7 @@ $this->e($title);
 // null → ''；数组/不可字符串化对象 → json_encode 后转义
 ```
 
-### 5.2 `raw(mixed $value): string` —— 内容槽位（原样输出）
+### 6.2 `raw(mixed $value): string` —— 内容槽位（原样输出）
 
 ```php
 $this->raw($body);
@@ -126,7 +180,7 @@ $this->raw($body);
 'body' => [$comp1, '<hr>', $comp2],                // 数组
 ```
 
-### 5.3 `text(mixed $value): string` —— 「语义纯文本但允许传组件」
+### 6.3 `text(mixed $value): string` —— 「语义纯文本但允许传组件」
 
 ```php
 $this->text($title);
@@ -135,7 +189,7 @@ $this->text($title);
 
 与 `raw()` 的区别：传字符串时**一律转义**。用于标题、版权、按钮文案这类字段。
 
-### 5.4 `enum(mixed $value, array $allowed, string $default): string`
+### 6.4 `enum(mixed $value, array $allowed, string $default): string`
 
 枚举白名单，非法值回退默认 —— 防止任意 CSS 类 / 属性注入。
 
@@ -156,7 +210,7 @@ protected const ENUM_PLACEMENT = ['top','bottom','left','right','start','end'];
 protected const ENUM_BREAKPOINT = ['sm','md','lg','xl','xxl'];
 ```
 
-### 5.5 CSS 值安全助手（防 `style` 注入）
+### 6.5 CSS 值安全助手（防 `style` 注入）
 
 `e()` 不转义 `; : ( ) /`，无法阻止 `10px;position:fixed;inset:0` 这类分号注入。
 因此涉及 `style` 属性的选项必须用以下方法：
@@ -173,7 +227,7 @@ protected const ENUM_BREAKPOINT = ['sm','md','lg','xl','xxl'];
 'height' => '320px;position:fixed',  // ❌ 被拒绝，回退默认
 ```
 
-### 5.6 `safeUrl(mixed $value, string $default = '#'): string`
+### 6.6 `safeUrl(mixed $value, string $default = '#'): string`
 
 | 判定 | 结果 |
 |---|---|
@@ -184,7 +238,7 @@ protected const ENUM_BREAKPOINT = ['sm','md','lg','xl','xxl'];
 
 用于所有 `href` / `url` / `src` 选项。
 
-### 5.7 `img(mixed $path): string`
+### 6.7 `img(mixed $path): string`
 
 ```php
 protected function img(mixed $path): string
@@ -201,7 +255,7 @@ protected function img(mixed $path): string
 ⚠️ **禁止**在组件内直接拼接 `XfAdmin::asset('images/' . ltrim($path))` —— 会丢失
 外链 / data URI 支持。一律用 `$this->img()` 或 `XfAdmin::img()`。
 
-## 6. 栅格助手 `gridCol()`
+## 7. 栅格助手 `gridCol()`
 
 ```php
 $this->gridCol(6);                        // 'col-12 col-md-6 col-xl-6'
@@ -215,7 +269,7 @@ $this->gridCol(null);                     // ''（不需要包裹列）
 > ⚠️ `Col` 组件自身**未使用** `gridCol()`，其 `width/offset/order` 为直接拼接，
 > 需调用方保证值可信。
 
-## 7. 唯一 ID
+## 8. 唯一 ID
 
 ```php
 protected function uid(string $prefix = 'xf'): string   // 'xf-1'、'xf-2'…
@@ -227,7 +281,7 @@ protected function resolveId(string $prefix): string
 }
 ```
 
-## 8. 声明式初始化属性 `initAttrs()`
+## 9. 声明式初始化属性 `initAttrs()`
 
 ```php
 protected function initAttrs(string $widget, array $config = []): array
@@ -257,7 +311,7 @@ $attrs = $this->initAttrs('apexchart', ['type' => 'line', 'series' => $series]);
 - `HEX_APOS` / `HEX_QUOT` —— 防属性引号逃逸；
 - `HEX_AMP` —— 防 `&` 被误解析为实体。
 
-## 9. 资源注册
+## 10. 资源注册
 
 ```php
 protected function assets(): array
@@ -280,13 +334,15 @@ if ($plugins !== []) {
 
 详见 [03-资源与插件](03-assets.md)。
 
-## 10. 完整方法清单
+## 11. 完整方法清单
 
 | 分类 | 方法 | 签名 |
 |---|---|---|
 | 工厂 | `make` | `static make(array $options = []): static` |
 | 渲染 | `render` | `render(): string` |
+| 渲染 | `renderWithWrapper` | `protected renderWithWrapper(): string` |
 | 渲染 | `__toString` | `__toString(): string` |
+| 归一化 | `bootCommonOptions` | `protected bootCommonOptions(): void` |
 | 配置 | `set` | `set(string\|array $key, mixed $value = null): static` |
 | 配置 | `get` | `get(string $key, mixed $default = null): mixed` |
 | 配置 | `options` | `options(): array` |
@@ -302,6 +358,9 @@ if ($plugins !== []) {
 | 受控 | `cssRatio` | `protected cssRatio(mixed $v, string $default = '4/3'): string` |
 | 受控 | `cssColor` | `protected cssColor(mixed $v, string $default = ''): string` |
 | 受控 | `cssBackground` | `protected cssBackground(mixed $v, string $default = ''): string` |
+| 受控 | `safeStyle` | `protected safeStyle(mixed $v): string` |
+| 受控 | `safeCssValue` | `protected safeCssValue(mixed $v): string` |
+| 受控 | `boolOpt` | `protected boolOpt(string $key): bool` |
 | 受控 | `safeUrl` | `protected safeUrl(mixed $v, string $default = '#'): string` |
 | 栅格 | `gridCol` | `protected gridCol(mixed $width): string` |
 | 资源 | `img` | `protected img(mixed $path): string` |
@@ -312,7 +371,7 @@ if ($plugins !== []) {
 | 子类实现 | `assets` | `protected assets(): array` |
 | 子类实现 | `html` | `protected html(): string` |
 
-## 11. 编写组件的检查清单
+## 12. 编写组件的检查清单
 
 1. ✅ 类名避开 PHP 保留字（`switch` → `Toggle`、`empty` → `EmptyState`）；
 2. ✅ `defaults()` 声明全部参数，列表型可覆盖选项默认值留 `[]`；

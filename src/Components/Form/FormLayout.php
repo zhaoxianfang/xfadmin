@@ -62,7 +62,7 @@ class FormLayout extends Component
                 $html .= '<div class="row g-3 align-items-end">';
                 foreach ($fields as $f) {
                     $f = (array) $f;
-                    $html .= '<div class="col-auto"><label class="form-label">'.$this->e($f['label'] ?? '').'</label>'
+                    $html .= '<div class="col-auto"><label class="form-label">'.$this->escape($f['label'] ?? '').'</label>'
                         .$this->renderInput($f).'</div>';
                 }
                 $html .= '<div class="col-auto"><button class="btn btn-primary">提交</button></div></div>';
@@ -71,9 +71,9 @@ class FormLayout extends Component
             case 'horizontal':
                 foreach ($fields as $f) {
                     $f = (array) $f;
-                    $html .= '<div class="row mb-3"><label class="col-sm-3 col-form-label">'.$this->e($f['label'] ?? '').'</label>'
+                    $html .= '<div class="row mb-3"><label class="col-sm-3 col-form-label">'.$this->escape($f['label'] ?? '').'</label>'
                         .'<div class="col-sm-9">'.$this->renderInput($f)
-                        .(! empty($f['help']) ? '<div class="form-text">'.$this->e($f['help']).'</div>' : '')
+                        .(! empty($f['help']) ? '<div class="form-text">'.$this->escape($f['help']).'</div>' : '')
                         .'</div></div>';
                 }
                 $html .= '<div class="row"><div class="col-sm-9 offset-sm-3"><button class="btn btn-primary">保存</button></div></div>';
@@ -82,7 +82,7 @@ class FormLayout extends Component
             case 'floating':
                 foreach ($fields as $f) {
                     $f = (array) $f;
-                    $html .= '<div class="form-floating mb-3">'.$this->renderInput($f, true).'<label>'.$this->e($f['label'] ?? '').'</label></div>';
+                    $html .= '<div class="form-floating mb-3">'.$this->renderInput($f, true).'<label>'.$this->escape($f['label'] ?? '').'</label></div>';
                 }
                 $html .= '<button class="btn btn-primary">提交</button>';
                 break;
@@ -92,9 +92,9 @@ class FormLayout extends Component
                 $html .= '<div class="row g-3">';
                 foreach ($fields as $f) {
                     $f = (array) $f;
-                    $html .= '<div class="'.$colClass.'"><label class="form-label">'.$this->e($f['label'] ?? '').'</label>'
+                    $html .= '<div class="'.$colClass.'"><label class="form-label">'.$this->escape($f['label'] ?? '').'</label>'
                         .$this->renderInput($f)
-                        .(! empty($f['help']) ? '<div class="form-text">'.$this->e($f['help']).'</div>' : '')
+                        .(! empty($f['help']) ? '<div class="form-text">'.$this->escape($f['help']).'</div>' : '')
                         .'</div>';
                 }
                 $html .= '<div class="col-12"><button class="btn btn-primary">提交</button></div></div>';
@@ -157,11 +157,11 @@ class FormLayout extends Component
     private function renderInput(array $field, bool $floating = false): string
     {
         $type = (string) ($field['type'] ?? 'text');
-        $name = $this->e($field['name'] ?? '');
-        $placeholder = $this->e($field['placeholder'] ?? '');
+        $name = $this->escape($field['name'] ?? '');
+        $placeholder = $this->escape($field['placeholder'] ?? '');
         // selected 比较用原始值、输出用转义值：含 &、" 等字符的选项值不再失配
         $valueRaw = (string) ($field['value'] ?? '');
-        $value = $this->e($valueRaw);
+        $value = $this->escape($valueRaw);
         $required = ! empty($field['required']) ? ' required' : '';
         $disabled = ! empty($field['disabled']) ? ' disabled' : '';
 
@@ -173,7 +173,7 @@ class FormLayout extends Component
             }
             foreach ($options as $k => $v) {
                 $selected = ((string) $k === $valueRaw) ? ' selected' : '';
-                $html .= '<option value="'.$this->e((string) $k).'"'.$selected.'>'.$this->e((string) $v).'</option>';
+                $html .= '<option value="'.$this->escape((string) $k).'"'.$selected.'>'.$this->escape((string) $v).'</option>';
             }
             $html .= '</select>';
 
@@ -188,6 +188,6 @@ class FormLayout extends Component
             $cls .= ' form-floating-input';
         }
 
-        return '<input type="'.$this->e($type).'" class="'.$cls.'" name="'.$name.'" value="'.$value.'" placeholder="'.$placeholder.'"'.$required.$disabled.'>';
+        return '<input type="'.$this->escape($type).'" class="'.$cls.'" name="'.$name.'" value="'.$value.'" placeholder="'.$placeholder.'"'.$required.$disabled.'>';
     }
 }

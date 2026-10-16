@@ -56,10 +56,10 @@ class Landing extends Component
         $navHtml = '';
         foreach ($nav as $n) {
             $n = (array) $n;
-            $navHtml .= '<a href="'.$this->e($this->safeUrl($n['url'] ?? '#')).'" class="nav-link">'.$this->e($n['text'] ?? '').'</a>';
+            $navHtml .= '<a href="'.$this->escape($this->safeUrl($n['url'] ?? '#')).'" class="nav-link">'.$this->escape($n['text'] ?? '').'</a>';
         }
         $header = '<header class="landing-header"><nav class="container d-flex align-items-center py-3">'
-            .'<a href="#" class="navbar-brand fw-bold fs-4 text-primary"><i class="ti ti-layout-dashboard me-1"></i>'.$this->e($brand).'</a>'
+            .'<a href="#" class="navbar-brand fw-bold fs-4 text-primary"><i class="ti ti-layout-dashboard me-1"></i>'.$this->escape($brand).'</a>'
             .'<div class="d-none d-md-flex gap-3 ms-4">'.$navHtml.'</div>'
             .'<div class="ms-auto"><a href="#" class="btn btn-primary btn-sm">免费开始</a></div>'
             .'</nav></header>';
@@ -100,11 +100,11 @@ class Landing extends Component
         $img = ! empty($h['image']) ? XfAdmin::img((string) $h['image']) : '';
 
         return '<section class="landing-hero"><div class="container"><div class="row align-items-center g-4">'
-            .'<div class="col-lg-6"><h1 class="display-4 fw-bold mb-3">'.$this->e($h['title'] ?? '').'</h1>'
-            .'<p class="lead text-muted mb-4">'.$this->e($h['subtitle'] ?? '').'</p>'
-            .'<div class="d-flex gap-2"><a href="#" class="btn btn-primary btn-lg">'.$this->e($h['primary'] ?? '立即体验').'</a>'
-            .'<a href="#" class="btn btn-outline-secondary btn-lg">'.$this->e($h['secondary'] ?? '了解更多').'</a></div></div>'
-            .'<div class="col-lg-6">'.($img ? '<img src="'.$this->e($img).'" class="img-fluid rounded shadow-lg" alt="">' : '').'</div>'
+            .'<div class="col-lg-6"><h1 class="display-4 fw-bold mb-3">'.$this->escape($h['title'] ?? '').'</h1>'
+            .'<p class="lead text-muted mb-4">'.$this->escape($h['subtitle'] ?? '').'</p>'
+            .'<div class="d-flex gap-2"><a href="#" class="btn btn-primary btn-lg">'.$this->escape($h['primary'] ?? '立即体验').'</a>'
+            .'<a href="#" class="btn btn-outline-secondary btn-lg">'.$this->escape($h['secondary'] ?? '了解更多').'</a></div></div>'
+            .'<div class="col-lg-6">'.($img ? '<img src="'.$this->escape($img).'" class="img-fluid rounded shadow-lg" alt="">' : '').'</div>'
             .'</div></div></section>';
     }
 
@@ -122,7 +122,7 @@ class Landing extends Component
         $html = '<section class="py-5 bg-light"><div class="container"><div class="row text-center g-4">';
         foreach ($stats as $s) {
             $s = (array) $s;
-            $html .= '<div class="col-6 col-md-3"><div class="display-6 fw-bold text-primary">'.$this->e($s['value'] ?? '').'</div><div class="text-muted">'.$this->e($s['label'] ?? '').'</div></div>';
+            $html .= '<div class="col-6 col-md-3"><div class="display-6 fw-bold text-primary">'.$this->escape($s['value'] ?? '').'</div><div class="text-muted">'.$this->escape($s['label'] ?? '').'</div></div>';
         }
 
         return $html.'</div></div></section>';
@@ -143,8 +143,8 @@ class Landing extends Component
         foreach ($feats as $f) {
             $f = (array) $f;
             $html .= '<div class="col-md-4"><div class="card h-100 border-0 shadow-sm"><div class="card-body text-center p-4">'
-                .'<div class="avatar avatar-lg bg-primary-subtle text-primary mx-auto mb-3"><i class="'.$this->e($f['icon'] ?? 'ti ti-bolt').' fs-3"></i></div>'
-                .'<h5>'.$this->e($f['title'] ?? '').'</h5><p class="text-muted mb-0">'.$this->e($f['text'] ?? '').'</p></div></div></div>';
+                .'<div class="avatar avatar-lg bg-primary-subtle text-primary mx-auto mb-3"><i class="'.$this->escape($f['icon'] ?? 'ti ti-bolt').' fs-3"></i></div>'
+                .'<h5>'.$this->escape($f['title'] ?? '').'</h5><p class="text-muted mb-0">'.$this->escape($f['text'] ?? '').'</p></div></div></div>';
         }
 
         return $html.'</div></div></section>';
@@ -170,14 +170,14 @@ class Landing extends Component
                 $html .= '<div class="ribbon"><span>推荐</span></div>';
             }
             $html .= '<div class="card-body p-4 text-center">';
-            $html .= '<h5 class="mb-1">'.$this->e($p['title'] ?? '').'</h5>';
-            $html .= '<div class="display-6 fw-bold my-3">'.$this->e($p['price'] ?? '').'<small class="text-muted fs-6">/年</small></div>';
+            $html .= '<h5 class="mb-1">'.$this->escape($p['title'] ?? '').'</h5>';
+            $html .= '<div class="display-6 fw-bold my-3">'.$this->escape($p['price'] ?? '').'<small class="text-muted fs-6">/年</small></div>';
             $html .= '<ul class="list-unstyled text-start mb-4">';
             foreach ((array) ($p['features'] ?? []) as $ft) {
-                $html .= '<li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>'.$this->e($ft).'</li>';
+                $html .= '<li class="mb-2"><i class="ti ti-circle-check text-success me-2"></i>'.$this->escape($ft).'</li>';
             }
             $html .= '</ul>';
-            $html .= '<a href="#" class="btn '.($highlight ? 'btn-primary' : 'btn-outline-primary').' w-100">'.$this->e($p['button'] ?? '选择').'</a>';
+            $html .= '<a href="#" class="btn '.($highlight ? 'btn-primary' : 'btn-outline-primary').' w-100">'.$this->escape($p['button'] ?? '选择').'</a>';
             $html .= '</div></div></div>';
         }
 
@@ -201,8 +201,8 @@ class Landing extends Component
             $av = ! empty($t['avatar']) ? XfAdmin::img((string) $t['avatar']) : '';
             $html .= '<div class="col-md-4"><div class="card h-100"><div class="card-body p-4">'
                 .'<div class="text-warning mb-2"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>'
-                .'<p class="text-muted">“'.$this->e($t['text'] ?? '').'”</p>'
-                .'<div class="d-flex align-items-center mt-3"><div class="avatar avatar-sm me-2"><img src="'.$this->e($av).'" class="rounded-circle" alt=""></div><div><div class="fw-semibold small">'.$this->e($t['name'] ?? '').'</div><small class="text-muted">'.$this->e($t['role'] ?? '').'</small></div></div>'
+                .'<p class="text-muted">“'.$this->escape($t['text'] ?? '').'”</p>'
+                .'<div class="d-flex align-items-center mt-3"><div class="avatar avatar-sm me-2"><img src="'.$this->escape($av).'" class="rounded-circle" alt=""></div><div><div class="fw-semibold small">'.$this->escape($t['name'] ?? '').'</div><small class="text-muted">'.$this->escape($t['role'] ?? '').'</small></div></div>'
                 .'</div></div></div>';
         }
 
@@ -230,11 +230,11 @@ class Landing extends Component
         $links = '';
         foreach ((array) ($f['links'] ?? []) as $l) {
             $l = (array) $l;
-            $links .= '<a href="'.$this->e($this->safeUrl($l['url'] ?? '#')).'" class="text-white-50 me-3">'.$this->e($l['text'] ?? '').'</a>';
+            $links .= '<a href="'.$this->escape($this->safeUrl($l['url'] ?? '#')).'" class="text-white-50 me-3">'.$this->escape($l['text'] ?? '').'</a>';
         }
 
         return '<footer class="landing-footer py-4"><div class="container d-flex flex-wrap justify-content-between align-items-center">'
-            .'<span class="text-white-50">'.$this->e($f['text'] ?? '© 2026 '.$this->get('brand')).'</span>'
+            .'<span class="text-white-50">'.$this->escape($f['text'] ?? '© 2026 '.$this->get('brand')).'</span>'
             .'<div>'.$links.'</div></div></footer>';
     }
 }

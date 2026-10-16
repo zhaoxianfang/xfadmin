@@ -60,7 +60,7 @@ class Customers extends Component
                 .'<div class="col-md-6 text-md-end"><button class="btn btn-primary"><i class="ti ti-plus me-1"></i>新增客户</button></div>'
                 .'</div>';
         }
-        $title = $this->get('title') ? '<h5 class="mb-3">'.$this->e($this->get('title')).'</h5>' : '';
+        $title = $this->get('title') ? '<h5 class="mb-3">'.$this->escape($this->get('title')).'</h5>' : '';
         $body = $this->get('view') === 'list' ? $this->renderList($items) : $this->renderGrid($items);
 
         return $toolbar.$title.$body;
@@ -88,27 +88,27 @@ class Customers extends Component
 
             $tags = '';
             foreach ((array) ($it['tags'] ?? []) as $t) {
-                $tags .= '<span class="badge bg-light text-dark me-1">'.$this->e($t).'</span>';
+                $tags .= '<span class="badge bg-light text-dark me-1">'.$this->escape($t).'</span>';
             }
             $html .= '<div class="col-lg-4 col-md-6">';
             $html .= '<div class="card h-100">';
             $html .= '<div class="card-body">';
             $html .= '<div class="d-flex align-items-center mb-3">';
-            $html .= '<div class="avatar avatar-md me-3"><img src="'.$this->e($avatar).'" class="rounded-circle" alt=""></div>';
+            $html .= '<div class="avatar avatar-md me-3"><img src="'.$this->escape($avatar).'" class="rounded-circle" alt=""></div>';
             $html .= '<div class="flex-grow-1 min-w-0">';
-            $html .= '<h6 class="mb-0 text-truncate">'.$this->e($it['name'] ?? '').'</h6>';
-            $html .= '<small class="text-muted">'.$this->e($it['company'] ?? '').'</small>';
+            $html .= '<h6 class="mb-0 text-truncate">'.$this->escape($it['name'] ?? '').'</h6>';
+            $html .= '<small class="text-muted">'.$this->escape($it['company'] ?? '').'</small>';
             $html .= '</div>';
             $html .= '<span class="badge bg-'.$sCls.'-subtle text-'.$sCls.'">'.$sTxt.'</span>';
             $html .= '</div>';
 
             $html .= '<ul class="list-unstyled mb-3 small text-muted">';
-            $html .= '<li class="mb-1"><i class="ti ti-mail me-2"></i>'.$this->e($it['email'] ?? '').'</li>';
+            $html .= '<li class="mb-1"><i class="ti ti-mail me-2"></i>'.$this->escape($it['email'] ?? '').'</li>';
             if (! empty($it['phone'])) {
-                $html .= '<li class="mb-1"><i class="ti ti-phone me-2"></i>'.$this->e($it['phone']).'</li>';
+                $html .= '<li class="mb-1"><i class="ti ti-phone me-2"></i>'.$this->escape($it['phone']).'</li>';
             }
             if (! empty($it['location'])) {
-                $html .= '<li><i class="ti ti-map-pin me-2"></i>'.$this->e($it['location']).'</li>';
+                $html .= '<li><i class="ti ti-map-pin me-2"></i>'.$this->escape($it['location']).'</li>';
             }
             $html .= '</ul>';
 
@@ -116,7 +116,7 @@ class Customers extends Component
                 $html .= '<div class="mb-3">'.$tags.'</div>';
             }
             $html .= '<div class="d-flex justify-content-between align-items-center border-top pt-3">';
-            $html .= '<div class="small"><span class="fw-semibold">'.$this->e($it['orders'] ?? 0).'</span> 订单 · <span class="fw-semibold">'.$this->e($it['spent'] ?? '¥0').'</span></div>';
+            $html .= '<div class="small"><span class="fw-semibold">'.$this->escape($it['orders'] ?? 0).'</span> 订单 · <span class="fw-semibold">'.$this->escape($it['spent'] ?? '¥0').'</span></div>';
             $html .= $this->rowActions();
             $html .= '</div></div></div></div>';
         }
@@ -143,12 +143,12 @@ class Customers extends Component
             $avatar = ! empty($it['avatar']) ? XfAdmin::img((string) $it['avatar']) : '';
 
             $html .= '<tr>';
-            $html .= '<td><div class="d-flex align-items-center"><div class="avatar avatar-sm me-2"><img src="'.$this->e($avatar).'" class="rounded-circle" alt=""></div><div><div class="fw-semibold">'.$this->e($it['name'] ?? '').'</div><small class="text-muted">'.$this->e($it['email'] ?? '').'</small></div></div></td>';
-            $html .= '<td>'.$this->e($it['company'] ?? '-').'</td>';
-            $html .= '<td>'.$this->e($it['location'] ?? '-').'</td>';
+            $html .= '<td><div class="d-flex align-items-center"><div class="avatar avatar-sm me-2"><img src="'.$this->escape($avatar).'" class="rounded-circle" alt=""></div><div><div class="fw-semibold">'.$this->escape($it['name'] ?? '').'</div><small class="text-muted">'.$this->escape($it['email'] ?? '').'</small></div></div></td>';
+            $html .= '<td>'.$this->escape($it['company'] ?? '-').'</td>';
+            $html .= '<td>'.$this->escape($it['location'] ?? '-').'</td>';
             $html .= '<td><span class="badge bg-'.$sCls.'-subtle text-'.$sCls.'">'.$sTxt.'</span></td>';
-            $html .= '<td>'.$this->e($it['orders'] ?? 0).'</td>';
-            $html .= '<td class="fw-semibold">'.$this->e($it['spent'] ?? '¥0').'</td>';
+            $html .= '<td>'.$this->escape($it['orders'] ?? 0).'</td>';
+            $html .= '<td class="fw-semibold">'.$this->escape($it['spent'] ?? '¥0').'</td>';
             $html .= '<td class="text-end">'.$this->rowActions().'</td>';
             $html .= '</tr>';
         }

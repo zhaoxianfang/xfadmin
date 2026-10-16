@@ -89,8 +89,8 @@ class Checkout extends Component
             $badgeClass = $isDone ? 'bg-primary' : ($isActive ? 'bg-primary' : 'bg-light text-muted');
             $textClass = $isActive ? 'fw-semibold text-dark' : ($isDone ? 'text-primary' : 'text-muted');
             $html .= '<div class="d-flex flex-column align-items-center"><div class="rounded-circle d-inline-flex align-items-center justify-content-center '
-                .$badgeClass.'" style="width:36px;height:36px"><i class="ti '.$this->e($icon).'"></i></div>';
-            $html .= '<small class="mt-1 '.$textClass.'">'.$this->e($label).'</small></div>';
+                .$badgeClass.'" style="width:36px;height:36px"><i class="ti '.$this->escape($icon).'"></i></div>';
+            $html .= '<small class="mt-1 '.$textClass.'">'.$this->escape($label).'</small></div>';
         }
         $html .= '</div></div></div>';
 
@@ -149,7 +149,7 @@ class Checkout extends Component
             foreach ($items as $item) {
                 $item = (array) $item;
                 $html .= '<div class="d-flex justify-content-between mb-2"><span class="small">'
-                    .$this->e($item['name'] ?? '').' x'.(int) ($item['qty'] ?? 1).'</span>'
+                    .$this->escape($item['name'] ?? '').' x'.(int) ($item['qty'] ?? 1).'</span>'
                     .'<span>'.$this->formatPrice((float) ($item['price'] ?? 0), $currency).'</span></div>';
             }
             $html .= '</div>';

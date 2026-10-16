@@ -60,11 +60,11 @@ class Chip extends Component
         }
         $html = '<'.$tag.$this->attrs($attrs).'>';
         if ($this->get('avatar')) {
-            $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle" alt=""></span>';
+            $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle" alt=""></span>';
         } elseif ($this->get('icon')) {
             $html .= '<i class="'.$this->iconClass($this->get('icon')).'"></i>';
         }
-        $html .= '<span>'.$this->e($this->get('label')).'</span>';
+        $html .= '<span>'.$this->escape($this->get('label')).'</span>';
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close btn-close-sm ms-1" data-xf="chip-close" aria-label="关闭"></button>';
         }

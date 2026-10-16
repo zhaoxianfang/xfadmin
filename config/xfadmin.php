@@ -11,7 +11,7 @@ return [
     'assets_url' => '/zxf/xfadmin',
 
     // 资源版本号（附加 ?v= 用于浏览器缓存刷新，与 XfAdmin::VERSION 保持一致）
-    'version' => '1.0.1',
+    'version' => '1.0.2',
 
     // 主题默认外观（渲染到 <html> 的 data-* 属性，运行时可被浏览器端 config.js 持久化覆盖）
     //
@@ -43,6 +43,15 @@ return [
     // 页脚
     'footer' => [
         'text' => null,              // null 时自动生成版权文案
-        'right' => null,
+        'right' => null,             // 右侧自定义 HTML（调用方保证可信）
+        'icp' => null,               // ICP 备案号，如 '粤ICP备2026000000号'
+        'icp_url' => null,           // ICP 链接（null 时默认 https://beian.miit.gov.cn/）
+        'police' => null,            // 网安备案号，如 '粤公网安备 44030000000000号'
+        'police_url' => null,        // 网安链接（null 时默认 https://www.beian.gov.cn/）
+        'police_icon' => null,       // 网安备案图标（null 时用包内 police.png）
+        'links' => [],               // 底部导航链接组 [{label, url}]
+        'support' => null,           // 技术支持文案
+        'brand_url' => null,         // 版权品牌跳转链接
+        'groups' => [],              // 多列链接组 [{title, items:[{label,url}]}]
     ],
 ];

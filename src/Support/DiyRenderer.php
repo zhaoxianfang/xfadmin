@@ -167,16 +167,16 @@ final class DiyRenderer
     {
         $curated = self::curatedFields()[$alias] ?? [];
         $schema = [];
-        foreach ($curated as $f) {
-            if (is_array($f) && isset($f['name'])) {
-                $schema[$f['name']] = $f;
+        foreach ($curated as $field) {
+            if (is_array($field) && isset($field['name'])) {
+                $schema[$field['name']] = $field;
             }
         }
-        foreach ($defaults as $k => $v) {
-            if (isset($schema[$k])) {
+        foreach ($defaults as $key => $value) {
+            if (isset($schema[$key])) {
                 continue;
             }
-            $schema[$k] = self::inferField($k, $v);
+            $schema[$key] = self::inferField($key, $value);
         }
 
         return array_values($schema);
@@ -190,7 +190,7 @@ final class DiyRenderer
      */
     private static function inferField(string $key, mixed $value): array
     {
-        $k = strtolower($key);
+        $lowerKey = strtolower($key);
         $label = self::humanLabel($key);
 
         if (is_bool($value)) {
@@ -200,44 +200,44 @@ final class DiyRenderer
             return ['name' => $key, 'type' => 'number', 'label' => $label, 'group' => '基础'];
         }
         if (is_array($value) || is_object($value)) {
-            return ['name' => $key, 'type' => 'json', 'label' => $label, 'group' => '数据', 'hint' => self::jsonHint($k)];
+            return ['name' => $key, 'type' => 'json', 'label' => $label, 'group' => '数据', 'hint' => self::jsonHint($lowerKey)];
         }
         $str = (string) $value;
 
-        if (preg_match('/^(variant|theme)$/i', $k)) {
+        if (preg_match('/^(variant|theme)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '样式', 'options' => self::VARIANT_OPTIONS, 'hint' => '配色变体'];
         }
-        if ($k === 'size') {
+        if ($lowerKey === 'size') {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '样式', 'options' => self::SIZE_OPTIONS, 'hint' => '尺寸规格'];
         }
-        if (preg_match('/^(placement|position)$/i', $k)) {
+        if (preg_match('/^(placement|position)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '样式', 'options' => ['start', 'end', 'top', 'bottom', 'left', 'right', 'top-start', 'top-end', 'bottom-start', 'bottom-end'], 'hint' => '方位 / 浮层位置'];
         }
-        if (preg_match('/^(align|alignment|valign|text_align)$/i', $k)) {
+        if (preg_match('/^(align|alignment|valign|text_align)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '样式', 'options' => ['start', 'center', 'end', 'between', 'around'], 'hint' => '对齐方式'];
         }
-        if (preg_match('/^(direction|orientation)$/i', $k)) {
+        if (preg_match('/^(direction|orientation)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '布局', 'options' => ['horizontal', 'vertical', 'up', 'down', 'left', 'right'], 'hint' => '排列方向'];
         }
-        if (preg_match('/^trigger$/i', $k)) {
+        if (preg_match('/^trigger$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '行为', 'options' => ['click', 'hover', 'focus', 'manual'], 'hint' => '触发方式'];
         }
-        if (preg_match('/^(type|chart_type)$/i', $k)) {
+        if (preg_match('/^(type|chart_type)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'select', 'label' => $label, 'group' => '数据', 'options' => ['bar', 'line', 'area', 'pie', 'donut', 'radar', 'scatter', 'bubble'], 'hint' => '图表类型'];
         }
-        if (preg_match('/(icon|ico)$/i', $k)) {
+        if (preg_match('/(icon|ico)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'icon', 'label' => $label, 'group' => '样式', 'hint' => 'Tabler 图标，如 ti ti-star'];
         }
-        if (preg_match('/(image|img|avatar|cover|logo|background|bg|thumbnail|picture|photo|poster|src)$/i', $k)) {
+        if (preg_match('/(image|img|avatar|cover|logo|background|bg|thumbnail|picture|photo|poster|src)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'image', 'label' => $label, 'group' => '样式', 'hint' => '图片地址（支持 http(s)/data URI）'];
         }
-        if (preg_match('/(url|href|link)$/i', $k) || $k === 'link') {
+        if (preg_match('/(url|href|link)$/i', $lowerKey) || $lowerKey === 'link') {
             return ['name' => $key, 'type' => 'url', 'label' => $label, 'group' => '内容', 'hint' => '链接地址'];
         }
-        if (preg_match('/(color|colour)$/i', $k)) {
+        if (preg_match('/(color|colour)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'color', 'label' => $label, 'group' => '样式', 'hint' => '颜色值'];
         }
-        if (preg_match('/^(class|id|style|wrapper_class|container_class|wrapperClass)$/i', $k)) {
+        if (preg_match('/^(class|id|style|wrapper_class|container_class|wrapperClass)$/i', $lowerKey)) {
             return ['name' => $key, 'type' => 'text', 'label' => $label, 'group' => '样式', 'hint' => '附加类名 / 行内样式'];
         }
         if (mb_strlen($str) > 50 || strpos($str, "\n") !== false) {
@@ -276,7 +276,7 @@ final class DiyRenderer
             return $map[$key];
         }
         $words = preg_split('/[_\-]+/', $key);
-        $words = array_map(static fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)).mb_substr($w, 1), $words);
+        $words = array_map(static fn ($word) => mb_strtoupper(mb_substr($word, 0, 1)).mb_substr($word, 1), $words);
 
         return implode(' ', $words);
     }
@@ -284,7 +284,7 @@ final class DiyRenderer
     /**
      * JSON 数据字段的「数据格式 / 结构」提示
      */
-    private static function jsonHint(string $k): string
+    private static function jsonHint(string $jsonKey): string
     {
         $examples = [
             'items' => 'JSON 数组，每项例：{"title":"标题","text":"描述"}',
@@ -311,7 +311,7 @@ final class DiyRenderer
             'badge' => 'JSON 对象，例：{"text":"新","variant":"primary"}',
         ];
         foreach ($examples as $key => $hint) {
-            if ($k === $key || str_ends_with($k, $key)) {
+            if ($jsonKey === $key || str_ends_with($jsonKey, $key)) {
                 return $hint;
             }
         }
@@ -722,7 +722,7 @@ final class DiyRenderer
      */
     private static function diyDefaults(): array
     {
-        $img = static fn (string $p): string => XfAdmin::img($p);
+        $img = static fn (string $path): string => XfAdmin::img($path);
 
         return [
             'pageTitle' => ['title' => '页面标题', 'subtitle' => '副标题说明文字'],
@@ -1239,7 +1239,7 @@ final class DiyRenderer
 
             $assets = Assets::instance();
             $mk = static fn (array $files): array => array_map(
-                static fn (string $f) => XfAdmin::asset($f),
+                static fn (string $file) => XfAdmin::asset($file),
                 $files
             );
 
@@ -1302,7 +1302,7 @@ final class DiyRenderer
             $cls = 'row '.($opt['gutters'] ?? 'g-3');
             $inner = self::renderTree((array) ($block['children'] ?? []), $depth + 1);
 
-            return '<div class="'.Html::e(trim($cls)).'">'.$inner.'</div>';
+            return '<div class="'.Html::escape(trim($cls)).'">'.$inner.'</div>';
         }
 
         if ($kind === 'col') {
@@ -1310,7 +1310,7 @@ final class DiyRenderer
             $cls = self::colClass($opt['width'] ?? null);
             $inner = self::renderTree((array) ($block['children'] ?? []), $depth + 1);
 
-            return '<div class="'.Html::e($cls).'">'.$inner.'</div>';
+            return '<div class="'.Html::escape($cls).'">'.$inner.'</div>';
         }
 
         return self::renderComponent((string) ($block['alias'] ?? ''), (array) ($block['options'] ?? []));
@@ -1322,7 +1322,7 @@ final class DiyRenderer
     private static function renderComponent(string $alias, array $options): string
     {
         if ($alias === '' || ! XfAdmin::has($alias)) {
-            return '<div class="alert alert-warning mb-0">未知组件：'.Html::e($alias).'</div>';
+            return '<div class="alert alert-warning mb-0">未知组件：'.Html::escape($alias).'</div>';
         }
 
         return (string) XfAdmin::component($alias, $options);
@@ -1343,19 +1343,19 @@ final class DiyRenderer
                 if (! in_array($bp, $bps, true)) {
                     continue;
                 }
-                $n = (int) $cols;
-                if ($n < 1 || $n > 12) {
+                $columnCount = (int) $cols;
+                if ($columnCount < 1 || $columnCount > 12) {
                     continue;
                 }
-                $cls .= ' col-'.$bp.'-'.$n;
+                $cls .= ' col-'.$bp.'-'.$columnCount;
             }
 
             return $cls;
         }
         if (is_numeric($width)) {
-            $n = (int) $width;
+            $columnCount = (int) $width;
 
-            return ($n < 1 || $n > 12) ? 'col-12' : 'col-12 col-md-'.$n.' col-xl-'.$n;
+            return ($columnCount < 1 || $columnCount > 12) ? 'col-12' : 'col-12 col-md-'.$columnCount.' col-xl-'.$columnCount;
         }
 
         return 'col-12';
@@ -1397,8 +1397,8 @@ final class DiyRenderer
         }
         if (is_array($value)) {
             $out = [];
-            foreach ($value as $k => $v) {
-                $out[$k] = self::sanitizeForJson($v);
+            foreach ($value as $key => $item) {
+                $out[$key] = self::sanitizeForJson($item);
             }
 
             return $out;
@@ -1409,8 +1409,8 @@ final class DiyRenderer
 
     private static function categoryOf(string $class): array
     {
-        if (preg_match('#\\\\Components\\\\(\w+)\\\\#', $class, $m)) {
-            $key = $m[1];
+        if (preg_match('#\\\\Components\\\\(\w+)\\\\#', $class, $matches)) {
+            $key = $matches[1];
             if (isset(self::CATEGORIES[$key])) {
                 return ['key' => $key, 'label' => self::CATEGORIES[$key]];
             }

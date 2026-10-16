@@ -77,7 +77,7 @@ class Pagination extends Component
             $li = '<li class="'.Html::cls('page-item', ['active' => $active, 'disabled' => $disabled]).'">';
             $li .= $disabled || $page === null
                 ? '<span class="page-link">'.$label.'</span>'
-                : '<a class="page-link" href="'.$this->e($this->link($page)).'">'.$label.'</a>';
+                : '<a class="page-link" href="'.$this->escape($this->link($page)).'">'.$label.'</a>';
 
             return $li.'</li>';
         };

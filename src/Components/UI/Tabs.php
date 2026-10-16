@@ -83,23 +83,23 @@ class Tabs extends Component
             $paneId = $item['id'] ?? $this->uid('xf-tab');
             $tabId = $paneId.'-tab';
             $active = ! empty($item['active']);
-            $icon = isset($item['icon']) ? '<i class="'.$this->e($item['icon']).' me-1"></i>' : '';
+            $icon = isset($item['icon']) ? '<i class="'.$this->escape($item['icon']).' me-1"></i>' : '';
             $badge = '';
             if (! empty($item['badge'])) {
                 $b = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
-                $badge = ' <span class="badge '.$this->e($b['class'] ?? 'bg-danger-subtle text-danger').'">'.$this->e($b['text'] ?? '').'</span>';
+                $badge = ' <span class="badge '.$this->escape($b['class'] ?? 'bg-danger-subtle text-danger').'">'.$this->escape($b['text'] ?? '').'</span>';
             }
             // 完整 ARIA tabs 模式：aria-selected / aria-controls / roving tabindex，
             // 供屏幕阅读器与键盘导航正确识别当前页签与对应面板。
             $nav .= '<li class="nav-item" role="presentation">'
-                .'<a href="#'.$this->e($paneId).'" id="'.$this->e($tabId).'" data-bs-toggle="tab" role="tab"'
-                .' aria-controls="'.$this->e($paneId).'"'
+                .'<a href="#'.$this->escape($paneId).'" id="'.$this->escape($tabId).'" data-bs-toggle="tab" role="tab"'
+                .' aria-controls="'.$this->escape($paneId).'"'
                 .' aria-selected="'.($active ? 'true' : 'false').'"'
                 .' tabindex="'.($active ? '0' : '-1').'"'
                 .' class="'.Html::cls('nav-link', ['active' => $active, 'disabled' => ! empty($item['disabled'])]).'">'
-                .$icon.$this->e($item['title'] ?? '').$badge.'</a></li>';
+                .$icon.$this->escape($item['title'] ?? '').$badge.'</a></li>';
 
-            $pane .= '<div class="'.Html::cls('tab-pane', ['fade' => $this->get('fade'), 'show' => $active && $this->get('fade'), 'active' => $active]).'" id="'.$this->e($paneId).'" role="tabpanel" aria-labelledby="'.$this->e($tabId).'">'
+            $pane .= '<div class="'.Html::cls('tab-pane', ['fade' => $this->get('fade'), 'show' => $active && $this->get('fade'), 'active' => $active]).'" id="'.$this->escape($paneId).'" role="tabpanel" aria-labelledby="'.$this->escape($tabId).'">'
                 .$this->raw($item['content'] ?? '').'</div>';
         }
         $nav .= '</ul>';

@@ -116,14 +116,14 @@ class DiyLayoutPage extends Component
     {
         $catOpts = '';
         foreach ($categories as $key => $label) {
-            $catOpts .= '<option value="'.$this->e($key).'">'.$this->e($label).'</option>';
+            $catOpts .= '<option value="'.$this->escape($key).'">'.$this->escape($label).'</option>';
         }
 
         $tplHtml = '';
         foreach ($templates as $i => $t) {
             $tplHtml .= '<button type="button" class="xf-diy-tpl" data-tpl="'.$i.'" draggable="true" title="拖入或点击添加到舞台">'
-                .'<i class="'.$this->e($t['icon']).' xf-diy-tpl-ico"></i>'
-                .'<span class="xf-diy-tpl-name">'.$this->e($t['name']).'</span>'
+                .'<i class="'.$this->escape($t['icon']).' xf-diy-tpl-ico"></i>'
+                .'<span class="xf-diy-tpl-name">'.$this->escape($t['name']).'</span>'
                 .'<span class="xf-diy-tpl-cat">模板</span></button>';
         }
 

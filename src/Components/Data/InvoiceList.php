@@ -58,7 +58,7 @@ class InvoiceList extends Component
     {
         $id = $this->resolveId('invoice-list');
         $items = array_values((array) $this->get('items', []));
-        $cur = $this->e($this->get('currency'));
+        $cur = $this->escape($this->get('currency'));
 
         $html = '<div'.$this->attrs(['class' => 'xf-invoice-list', 'id' => $id]).'>';
 
@@ -70,8 +70,8 @@ class InvoiceList extends Component
                 // variant 走白名单校验，防止任意值拼入 class 属性
                 $variant = $this->enum($s['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
                 $html .= '<div class="col-md-3 col-6"><div class="card border-0 shadow-sm"><div class="card-body">'
-                    .'<div class="text-muted small">'.$this->e($s['label'] ?? '').'</div>'
-                    .'<div class="h4 mb-0 text-'.$this->e($variant).'">'.$this->e($s['value'] ?? '').'</div></div></div></div>';
+                    .'<div class="text-muted small">'.$this->escape($s['label'] ?? '').'</div>'
+                    .'<div class="h4 mb-0 text-'.$this->escape($variant).'">'.$this->escape($s['value'] ?? '').'</div></div></div></div>';
             }
             $html .= '</div>';
         }
@@ -86,14 +86,14 @@ class InvoiceList extends Component
             $status = self::$statusMap[$it['status'] ?? ''] ?? ['text' => $it['status'] ?? '未知', 'variant' => 'secondary'];
             $amount = is_numeric($it['amount'] ?? null)
                 ? $cur.number_format((float) $it['amount'], 2)
-                : $this->e($it['amount'] ?? '');
+                : $this->escape($it['amount'] ?? '');
             $html .= '<tr>'
-                .'<td class="fw-medium">'.$this->e($it['id'] ?? '').'</td>'
-                .'<td>'.$this->e($it['client'] ?? '').'</td>'
+                .'<td class="fw-medium">'.$this->escape($it['id'] ?? '').'</td>'
+                .'<td>'.$this->escape($it['client'] ?? '').'</td>'
                 .'<td class="fw-semibold">'.$amount.'</td>'
                 .'<td>'.(string) XfAdmin::badge(['text' => $status['text'], 'variant' => $status['variant']]).'</td>'
-                .'<td>'.$this->e($it['issued'] ?? '').'</td>'
-                .'<td>'.$this->e($it['due'] ?? '').'</td>'
+                .'<td>'.$this->escape($it['issued'] ?? '').'</td>'
+                .'<td>'.$this->escape($it['due'] ?? '').'</td>'
                 .'<td class="text-end">'.$this->raw($it['actions'] ?? '').'</td>'
                 .'</tr>';
         }

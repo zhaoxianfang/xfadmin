@@ -376,14 +376,14 @@ final class Assets
     {
         $this->headRendered = true;
 
-        $html = '<script src="'.Html::e($this->url('js/config.js')).'"></script>'."\n";
-        $html .= '<link href="'.Html::e($this->url('css/vendors.min.css')).'" rel="stylesheet" type="text/css">'."\n";
+        $html = '<script src="'.Html::escape($this->url('js/config.js')).'"></script>'."\n";
+        $html .= '<link href="'.Html::escape($this->url('css/vendors.min.css')).'" rel="stylesheet" type="text/css">'."\n";
 
         foreach (array_keys($this->css) as $css) {
-            $html .= '<link href="'.Html::e($this->url($css)).'" rel="stylesheet" type="text/css">'."\n";
+            $html .= '<link href="'.Html::escape($this->url($css)).'" rel="stylesheet" type="text/css">'."\n";
         }
-        $html .= '<link href="'.Html::e($this->url('css/app.min.css')).'" rel="stylesheet" type="text/css">'."\n";
-        $html .= '<link href="'.Html::e($this->url('css/xfadmin.css')).'" rel="stylesheet" type="text/css">'."\n";
+        $html .= '<link href="'.Html::escape($this->url('css/app.min.css')).'" rel="stylesheet" type="text/css">'."\n";
+        $html .= '<link href="'.Html::escape($this->url('css/xfadmin.css')).'" rel="stylesheet" type="text/css">'."\n";
 
         foreach ($this->inlineCss as $css) {
             $html .= "<style>\n{$css}\n</style>\n";
@@ -404,18 +404,18 @@ final class Assets
         $this->scriptsRendered = true;
         $html = '';
 
-        $html .= '<script src="'.Html::e($this->url('js/vendors.min.js')).'"></script>'."\n";
+        $html .= '<script src="'.Html::escape($this->url('js/vendors.min.js')).'"></script>'."\n";
 
         foreach (array_keys($this->js) as $js) {
-            $html .= '<script src="'.Html::e($this->url($js)).'"></script>'."\n";
+            $html .= '<script src="'.Html::escape($this->url($js)).'"></script>'."\n";
         }
-        $html .= '<script src="'.Html::e($this->url('js/app.js')).'"></script>'."\n";
-        $html .= '<script src="'.Html::e($this->url('js/xfadmin.js')).'"></script>'."\n";
+        $html .= '<script src="'.Html::escape($this->url('js/app.js')).'"></script>'."\n";
+        $html .= '<script src="'.Html::escape($this->url('js/xfadmin.js')).'"></script>'."\n";
 
         // 兜底：head() 之后组件渲染期新注册的 CSS / 内联 CSS（避免插件样式丢失）
         foreach (array_keys($this->css) as $css) {
             if (! in_array($css, $this->headCssEmitted, true)) {
-                $html .= '<link href="'.Html::e($this->url($css)).'" rel="stylesheet" type="text/css">'."\n";
+                $html .= '<link href="'.Html::escape($this->url($css)).'" rel="stylesheet" type="text/css">'."\n";
             }
         }
         foreach ($this->inlineCss as $key => $css) {

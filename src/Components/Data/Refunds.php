@@ -44,7 +44,7 @@ class Refunds extends Component
         $currency = (string) $this->get('currency', '¥');
         $title = (string) $this->get('title', '退款管理');
 
-        $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">'.$this->e($title).'</h5>';
+        $html = '<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">'.$this->escape($title).'</h5>';
         $html .= '<div class="d-flex gap-2"><select class="form-select form-select-sm" style="width:auto"><option>全部状态</option>'
             .'<option>待处理</option><option>已批准</option><option>已拒绝</option><option>已完成</option></select>';
         $html .= '<div class="input-group input-group-sm" style="width:250px"><input type="text" class="form-control" placeholder="搜索...">'
@@ -69,13 +69,13 @@ class Refunds extends Component
                 'approved' => '<span class="badge text-bg-info">已批准</span>',
                 'rejected' => '<span class="badge text-bg-danger">已拒绝</span>',
                 'completed' => '<span class="badge text-bg-success">已完成</span>',
-                default => '<span class="badge text-bg-secondary">'.$this->e($status).'</span>',
+                default => '<span class="badge text-bg-secondary">'.$this->escape($status).'</span>',
             };
 
-            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">'.$this->e($id).'</a></td>';
-            $html .= '<td>'.$this->e($orderId).'</td><td>'.$this->e($customer).'</td>';
-            $html .= '<td class="fw-semibold text-danger">'.$this->e($currency).number_format($amount, 2).'</td>';
-            $html .= '<td>'.$items.'</td><td>'.$this->e($reason).'</td><td>'.$this->e($date).'</td>';
+            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)" class="fw-semibold">'.$this->escape($id).'</a></td>';
+            $html .= '<td>'.$this->escape($orderId).'</td><td>'.$this->escape($customer).'</td>';
+            $html .= '<td class="fw-semibold text-danger">'.$this->escape($currency).number_format($amount, 2).'</td>';
+            $html .= '<td>'.$items.'</td><td>'.$this->escape($reason).'</td><td>'.$this->escape($date).'</td>';
             $html .= '<td>'.$statusBadge.'</td>';
             $html .= '<td class="text-end pe-3"><div class="btn-group btn-group-sm">';
             if ($status === 'pending') {

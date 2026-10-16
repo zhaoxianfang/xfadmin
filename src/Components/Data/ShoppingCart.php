@@ -57,7 +57,7 @@ class ShoppingCart extends Component
 
         if (empty($items)) {
             return '<div class="text-center py-5"><div class="mb-3"><i class="ti ti-shopping-cart fs-48 text-muted"></i></div>'
-                .'<h5 class="text-muted">'.$this->e($this->get('emptyMessage')).'</h5>'
+                .'<h5 class="text-muted">'.$this->escape($this->get('emptyMessage')).'</h5>'
                 .'<a href="javascript:void(0)" class="btn btn-primary mt-2">继续购物</a></div>';
         }
         $html = '<div class="row g-4"><div class="col-lg-8">';
@@ -85,19 +85,19 @@ class ShoppingCart extends Component
             $html .= '<tr class="align-middle border-bottom">';
             $html .= '<td class="ps-3 py-3"><div class="d-flex align-items-center gap-3">';
             if ($img) {
-                $html .= '<img src="'.$this->e($img).'" width="64" height="64" class="rounded border object-fit-cover" alt="" style="width:64px;height:64px">';
+                $html .= '<img src="'.$this->escape($img).'" width="64" height="64" class="rounded border object-fit-cover" alt="" style="width:64px;height:64px">';
             }
-            $html .= '<div><div class="fw-semibold">'.$this->e($name).'</div>';
+            $html .= '<div><div class="fw-semibold">'.$this->escape($name).'</div>';
             if ($sku) {
-                $html .= '<small class="text-muted">'.$this->e($sku).'</small>';
+                $html .= '<small class="text-muted">'.$this->escape($sku).'</small>';
             }
             if ($color || $size) {
                 $meta = [];
                 if ($color) {
-                    $meta[] = '颜色: '.$this->e($color);
+                    $meta[] = '颜色: '.$this->escape($color);
                 }
                 if ($size) {
-                    $meta[] = '尺寸: '.$this->e($size);
+                    $meta[] = '尺寸: '.$this->escape($size);
                 }
                 $html .= '<div><small class="text-muted">'.implode(' / ', $meta).'</small></div>';
             }

@@ -46,7 +46,7 @@ class ReportPage extends Component
      */
     protected function html(): string
     {
-        $title = $this->e($this->get('title', '报表'));
+        $title = $this->escape($this->get('title', '报表'));
         // filters / table 是 HTML 内容槽位（Form / DataTable 组件实例或开发者自定义 HTML），按 raw 原样输出
         $filters = $this->raw($this->get('filters', ''));
         $charts = (array) $this->get('charts', []);
@@ -66,7 +66,7 @@ class ReportPage extends Component
                 $w = (int) ($c['width'] ?? 12);
                 $width = ($w >= 1 && $w <= 12) ? $w : 12;
                 $body = $this->raw($c['body'] ?? '');
-                $ctitle = $this->e($c['title'] ?? '');
+                $ctitle = $this->escape($c['title'] ?? '');
                 $html .= '<div class="col-xl-'.$width.'">'
                     .'<div class="card h-100"><div class="card-header"><h6 class="mb-0">'.$ctitle.'</h6></div>'
                     .'<div class="card-body">'.$body.'</div></div></div>';

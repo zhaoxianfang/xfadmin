@@ -95,7 +95,7 @@ class PasswordStrength extends Component
         }
         $html = '<input'.Html::attrs($attrs).'>';
         if ($hint = $this->get('hint')) {
-            $html .= '<div class="form-text" id="'.$this->e($id).'-hint">'.$this->e($hint).'</div>';
+            $html .= '<div class="form-text" id="'.$this->escape($id).'-hint">'.$this->escape($hint).'</div>';
         }
         $html .= '<div class="mt-2">'
             .'<div class="progress" style="height:6px;"><div class="progress-bar" role="progressbar" style="width:0%"></div></div>'
@@ -141,6 +141,6 @@ class PasswordStrength extends Component
      */
     private function rule(string $key, string $text): string
     {
-        return '<li data-rule="'.$key.'"><i class="ti ti-circle-x me-1"></i>'.$this->e($text).'</li>';
+        return '<li data-rule="'.$key.'"><i class="ti ti-circle-x me-1"></i>'.$this->escape($text).'</li>';
     }
 }

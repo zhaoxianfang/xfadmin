@@ -59,7 +59,7 @@ class CodeBlock extends Component
 
         if ($this->get('title') !== '') {
             $header = '<div class="xf-code-header d-flex align-items-center justify-content-between">'
-                .'<span class="xf-code-lang">'.$this->e($this->get('language') !== '' ? $this->get('language') : $this->get('title')).'</span>'
+                .'<span class="xf-code-lang">'.$this->escape($this->get('language') !== '' ? $this->get('language') : $this->get('title')).'</span>'
                 .$copyBtn
                 .'</div>';
         } elseif ($copyBtn !== '') {
@@ -79,7 +79,7 @@ class CodeBlock extends Component
             .$header
             .'<pre class="xf-code-pre"><code'
             .($lang !== '' ? ' class="language-'.$lang.'"' : '')
-            .'>'.$this->e((string) $this->get('code')).'</code></pre>'
+            .'>'.$this->escape((string) $this->get('code')).'</code></pre>'
             .'</div>';
     }
 }

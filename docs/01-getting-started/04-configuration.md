@@ -15,7 +15,7 @@ return [
     'assets_url' => '/zxf/xfadmin',
 
     // 资源版本号（附加 ?v= 用于浏览器缓存刷新）
-    'version' => '2.1.0',
+    'version' => '1.0.2',
 
     // 主题默认外观
     'theme' => [
@@ -64,7 +64,7 @@ return [
 ⚠️ 修改后必须保证该 URL 可访问，否则整站无样式无 JS。
 `Assets::url()` 对已含基址的路径具备**幂等性**，不会拼接两遍。
 
-### 2.2 `version`（string，默认 `2.1.0`）
+### 2.2 `version`（string，默认 `1.0.2`）
 
 资源版本号，追加到所有资源 URL 末尾 `?v={version}`。
 
@@ -147,7 +147,7 @@ XfAdmin::setting('theme.skin');            // 'modern'
 XfAdmin::setting('theme.nonexist', 'x');   // 'x'（默认值）
 
 // 更多静态 API
-XfAdmin::version();            // '2.1.0'
+XfAdmin::version();            // '1.0.2'
 XfAdmin::componentList();      // 全部组件别名 => 类名
 XfAdmin::has('dataTable');     // true
 XfAdmin::asset('images/logo.png');
@@ -167,7 +167,7 @@ php artisan vendor:publish --tag=xfadmin-config
 ```php
 // config/xfadmin.php
 'assets_url' => env('XFADMIN_ASSETS_URL', '/zxf/xfadmin'),
-'version'    => env('XFADMIN_VERSION', '2.1.0'),
+'version'    => env('XFADMIN_VERSION', '1.0.2'),
 ```
 
 ⚠️ 修改配置后执行 `php artisan config:clear`（配置缓存会让修改不生效）。
@@ -190,7 +190,7 @@ echo XfAdmin::page([
 ```php
 // 确认配置已生效
 echo XfAdmin::setting('assets_url');                // /zxf/xfadmin
-echo XfAdmin::asset('css/app.min.css');             // /zxf/xfadmin/css/app.min.css?v=2.1.0
+echo XfAdmin::asset('css/app.min.css');             // /zxf/xfadmin/css/app.min.css?v=1.0.2
 print_r(XfAdmin::setting('theme'));
 ```
 

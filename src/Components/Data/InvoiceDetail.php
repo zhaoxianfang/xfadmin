@@ -64,19 +64,19 @@ class InvoiceDetail extends Component
         $html .= '<div class="d-flex flex-wrap justify-content-between align-items-start mb-4">';
         $html .= '<div>';
         if ($this->get('logo')) {
-            $html .= '<img src="'.$this->e($this->img($this->get('logo'))).'" alt="logo" style="height:36px;" class="mb-2 d-block">';
+            $html .= '<img src="'.$this->escape($this->img($this->get('logo'))).'" alt="logo" style="height:36px;" class="mb-2 d-block">';
         } elseif ($this->get('title')) {
-            $html .= '<h4 class="mb-2">'.$this->e($this->get('title')).'</h4>';
+            $html .= '<h4 class="mb-2">'.$this->escape($this->get('title')).'</h4>';
         }
-        $html .= '<div class="text-muted">发票号：<span class="fw-semibold text-body">'.$this->e($this->get('number')).'</span></div>';
+        $html .= '<div class="text-muted">发票号：<span class="fw-semibold text-body">'.$this->escape($this->get('number')).'</span></div>';
         $html .= '</div><div class="text-end">';
         $status = (array) $this->get('status', []);
         if ($status) {
-            $sc = $this->e($status['color'] ?? 'secondary');
-            $html .= '<span class="badge bg-'.$sc.'-subtle text-'.$sc.' fs-6 mb-2">'.$this->e($status['text'] ?? '').'</span>';
+            $sc = $this->escape($status['color'] ?? 'secondary');
+            $html .= '<span class="badge bg-'.$sc.'-subtle text-'.$sc.' fs-6 mb-2">'.$this->escape($status['text'] ?? '').'</span>';
         }
         foreach ((array) $this->get('meta', []) as $m) {
-            $html .= '<div class="small text-muted">'.$this->e($m['label'] ?? '').'：<span class="text-body">'.$this->e($m['value'] ?? '').'</span></div>';
+            $html .= '<div class="small text-muted">'.$this->escape($m['label'] ?? '').'：<span class="text-body">'.$this->escape($m['value'] ?? '').'</span></div>';
         }
         $html .= '</div></div>';
 
@@ -85,10 +85,10 @@ class InvoiceDetail extends Component
             if (! $p) {
                 return '';
             }
-            $s = '<div class="col-md-6"><div class="text-muted text-uppercase small mb-1">'.$this->e($caption).'</div>'
-                .'<div class="fw-semibold">'.$this->e($p['name'] ?? '').'</div>';
+            $s = '<div class="col-md-6"><div class="text-muted text-uppercase small mb-1">'.$this->escape($caption).'</div>'
+                .'<div class="fw-semibold">'.$this->escape($p['name'] ?? '').'</div>';
             foreach ((array) ($p['lines'] ?? []) as $line) {
-                $s .= '<div class="text-muted small">'.$this->e($line).'</div>';
+                $s .= '<div class="text-muted small">'.$this->escape($line).'</div>';
             }
 
             return $s.'</div>';
@@ -108,11 +108,11 @@ class InvoiceDetail extends Component
                 $qty = (float) ($it['qty'] ?? 1);
                 $price = (float) ($it['price'] ?? 0);
                 $amount = $it['amount'] ?? $qty * $price;
-                $html .= '<tr><td>'.++$i.'</td><td><span class="fw-semibold">'.$this->e($it['name'] ?? '').'</span>'
-                    .(! empty($it['desc']) ? '<div class="small text-muted">'.$this->e($it['desc']).'</div>' : '')
-                    .'</td><td class="text-center">'.$this->e($qty).'</td>'
-                    .'<td class="text-end">'.$this->e($cur.number_format($price, 2)).'</td>'
-                    .'<td class="text-end">'.$this->e(is_numeric($amount) ? $cur.number_format((float) $amount, 2) : (string) $amount).'</td></tr>';
+                $html .= '<tr><td>'.++$i.'</td><td><span class="fw-semibold">'.$this->escape($it['name'] ?? '').'</span>'
+                    .(! empty($it['desc']) ? '<div class="small text-muted">'.$this->escape($it['desc']).'</div>' : '')
+                    .'</td><td class="text-center">'.$this->escape($qty).'</td>'
+                    .'<td class="text-end">'.$this->escape($cur.number_format($price, 2)).'</td>'
+                    .'<td class="text-end">'.$this->escape(is_numeric($amount) ? $cur.number_format((float) $amount, 2) : (string) $amount).'</td></tr>';
             }
             $html .= '</tbody></table></div>';
         }
@@ -123,25 +123,25 @@ class InvoiceDetail extends Component
             foreach ($summary as $s) {
                 $strong = ! empty($s['strong']);
                 $html .= '<div class="d-flex justify-content-between py-1'.($strong ? ' border-top fw-bold fs-5' : '').'">'
-                    .'<span class="'.($strong ? '' : 'text-muted').'">'.$this->e($s['label'] ?? '').'</span>'
-                    .'<span>'.$this->e($s['value'] ?? '').'</span></div>';
+                    .'<span class="'.($strong ? '' : 'text-muted').'">'.$this->escape($s['label'] ?? '').'</span>'
+                    .'<span>'.$this->escape($s['value'] ?? '').'</span></div>';
             }
             $html .= '</div></div>';
         }
         // ---- 备注 + 操作 ----
         if ($this->get('notes')) {
-            $html .= '<div class="alert alert-light mt-4 mb-0"><i class="ti ti-info-circle me-1"></i>'.$this->e($this->get('notes')).'</div>';
+            $html .= '<div class="alert alert-light mt-4 mb-0"><i class="ti ti-info-circle me-1"></i>'.$this->escape($this->get('notes')).'</div>';
         }
         $actions = (array) $this->get('actions', []);
         if ($actions) {
             $html .= '<div class="d-flex gap-2 justify-content-end mt-4 d-print-none">';
             foreach ($actions as $a) {
-                $attrsExtra = ! empty($a['onclick']) ? ' onclick="'.$this->e($a['onclick']).'"' : '';
+                $attrsExtra = ! empty($a['onclick']) ? ' onclick="'.$this->escape($a['onclick']).'"' : '';
                 // url 经 safeUrl 校验，默认回退 '#'（原 'javascript:;' 无操作协议）
                 $aUrl = $this->safeUrl($a['url'] ?? '#', '#');
-                $html .= '<a href="'.$this->e($aUrl).'" class="btn '.$this->e($a['class'] ?? 'btn-soft-secondary').'"'.$attrsExtra.'>'
-                    .(! empty($a['icon']) ? '<i class="'.$this->e($a['icon']).' me-1"></i>' : '')
-                    .$this->e($a['text'] ?? '').'</a>';
+                $html .= '<a href="'.$this->escape($aUrl).'" class="btn '.$this->escape($a['class'] ?? 'btn-soft-secondary').'"'.$attrsExtra.'>'
+                    .(! empty($a['icon']) ? '<i class="'.$this->escape($a['icon']).' me-1"></i>' : '')
+                    .$this->escape($a['text'] ?? '').'</a>';
             }
             $html .= '</div>';
         }

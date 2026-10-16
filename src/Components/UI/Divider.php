@@ -46,7 +46,7 @@ class Divider extends Component
         if ($text !== '' || $icon !== '') {
             $inner = '<span class="xf-divider-inner">'
                 .($icon !== '' ? '<i class="'.$this->iconClass($icon).' me-1"></i>' : '')
-                .$this->e($text).'</span>';
+                .$this->escape($text).'</span>';
         }
         $cls = 'xf-divider'.($variant !== '' ? ' xf-divider-'.$variant : '');
 

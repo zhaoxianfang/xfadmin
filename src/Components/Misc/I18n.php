@@ -102,10 +102,10 @@ class I18n extends Component
 
         foreach ($defaultLocales as $code => $info) {
             $info = (array) $info;
-            $name = $this->e($info['name'] ?? $code);
+            $name = $this->escape($info['name'] ?? $code);
             // 先解析 URL 再转义，避免 & 被实体化破坏查询串
             $flagRaw = (string) ($info['flag'] ?? '');
-            $flag = $flagRaw !== '' ? $this->e($this->img($flagRaw)) : '';
+            $flag = $flagRaw !== '' ? $this->escape($this->img($flagRaw)) : '';
             $active = $code === $currentLocale ? ' active' : '';
             $check = $code === $currentLocale ? ' <i class="ti ti-check text-success ms-auto"></i>' : '';
 
@@ -119,15 +119,15 @@ class I18n extends Component
 
         // 右侧：翻译键值对
         $html .= '<div class="col-lg-8"><div class="card"><div class="card-header d-flex justify-content-between">'
-            .'<h5 class="card-title mb-0">翻译键值 · '.$this->e($currentLocale).'</h5>'
+            .'<h5 class="card-title mb-0">翻译键值 · '.$this->escape($currentLocale).'</h5>'
             .'<button class="btn btn-sm btn-outline-primary"><i class="ti ti-plus me-1"></i>添加</button></div>'
             .'<div class="table-responsive"><table class="table table-hover mb-0"><thead><tr>'
             .'<th style="width:35%">键 (Key)</th><th>翻译值 (Value)</th><th style="width:80px"></th>'
             .'</tr></thead><tbody>';
 
         foreach ($defaultKeys as $key => $value) {
-            $html .= '<tr><td><code>'.$this->e($key).'</code></td>'
-                .'<td><input type="text" class="form-control form-control-sm" value="'.$this->e($value).'"></td>'
+            $html .= '<tr><td><code>'.$this->escape($key).'</code></td>'
+                .'<td><input type="text" class="form-control form-control-sm" value="'.$this->escape($value).'"></td>'
                 .'<td><button class="btn btn-sm btn-ghost-danger"><i class="ti ti-trash"></i></button></td></tr>';
         }
         $html .= '</tbody></table></div><div class="card-footer text-end">'
@@ -153,7 +153,7 @@ class I18n extends Component
 
         foreach ($locales as $code => $info) {
             $info = (array) $info;
-            $name = $this->e($info['name'] ?? $code);
+            $name = $this->escape($info['name'] ?? $code);
             $active = $code === $currentLocale ? ' btn-primary' : ' btn-outline-secondary';
             $html .= '<button class="btn'.$active.'">'.$name.'</button>';
         }
@@ -161,8 +161,8 @@ class I18n extends Component
             .'<th>键</th><th>翻译值</th><th>状态</th></tr></thead><tbody>';
 
         foreach ($demoKeys as $key => $value) {
-            $html .= '<tr><td><code>'.$this->e($key).'</code></td>'
-                .'<td><input type="text" class="form-control form-control-sm" value="'.$this->e((string) $value).'"></td>'
+            $html .= '<tr><td><code>'.$this->escape($key).'</code></td>'
+                .'<td><input type="text" class="form-control form-control-sm" value="'.$this->escape((string) $value).'"></td>'
                 .'<td><span class="badge text-bg-success">已翻译</span></td></tr>';
         }
         $html .= '</tbody></table></div><div class="card-footer text-end">'

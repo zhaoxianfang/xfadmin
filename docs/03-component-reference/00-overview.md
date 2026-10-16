@@ -1,14 +1,14 @@
 # 组件总览
 
 > 本文件由 `php tools/gen_component_docs.php` 自动生成。
-> 组件别名共 **228** 个（对应 **216** 个组件类，部分类别名重复指向同一类）。
+> 组件别名共 **234** 个（对应 **222** 个组件类，部分类别名重复指向同一类）。
 
 ## 分类统计
 
 | 分类文档 | 组件数 |
 |---|---|
 | [布局 · 导航 · 栅格](01-layout.md) | 29 |
-| [UI 基础组件](02-ui.md) | 55 |
+| [UI 基础组件](02-ui.md) | 61 |
 | [表单组件](03-form.md) | 23 |
 | [表格组件](04-table.md) | 4 |
 | [图表与地图](05-chart.md) | 7 |
@@ -59,7 +59,7 @@
 
 ## [UI 基础组件](02-ui.md)
 
-卡片、按钮、徽章、模态框、选项卡、进度、头像、时间线、轮播等通用界面元素，共 55 个。
+卡片、按钮、徽章、模态框、选项卡、进度、头像、时间线、轮播等通用界面元素，共 61 个。
 
 | 别名 | 说明 | 组件类 | 依赖插件 |
 |---|---|---|---|
@@ -118,6 +118,12 @@
 | [`countdown`](02-ui.md#countdown) | 倒计时 | `UI\Countdown` | — |
 | [`countUp`](02-ui.md#countup) | 数字滚动递增动画 | `UI\CountUp` | — |
 | [`invoicePrintButton`](02-ui.md#invoiceprintbutton) | 发票打印 / 下载按钮 触发 window.print() | `UI\InvoicePrintButton` | — |
+| [`statusTag`](02-ui.md#statustag) | 状态标签 | `UI\StatusTag` | — |
+| [`statRow`](02-ui.md#statrow) | 指标卡横排 | `UI\StatRow` | — |
+| [`confirmDialog`](02-ui.md#confirmdialog) | 确认对话框 | `UI\ConfirmDialog` | — |
+| [`actionBar`](02-ui.md#actionbar) | 操作按钮工具条 | `UI\ActionBar` | — |
+| [`filterBar`](02-ui.md#filterbar) | 列表筛选条 | `UI\FilterBar` | — |
+| [`dataSourceSwitcher`](02-ui.md#datasourceswitcher) | 数据源切换器 | `UI\DataSourceSwitcher` | — |
 
 ---
 
@@ -147,7 +153,7 @@
 | [`quantityStepper`](03-form.md#quantitystepper) | 数量步进器 − 数字 + 按钮组，含 min / max / step，复刻电商购物车数量控件 | `Form\QuantityStepper` | — |
 | [`formElements`](03-form.md#formelements) | 表单元素集合 | `Form\FormElements` | — |
 | [`formLayout`](03-form.md#formlayout) | 表单布局 | `Form\FormLayout` | — |
-| [`formOtherPlugin`](03-form.md#formotherplugin) | 其它表单插件 | `Form\FormOtherPlugin` | — |
+| [`formOtherPlugin`](03-form.md#formotherplugin) | 其它表单插件 | `Form\FormOtherPlugin` | `inputmask` |
 | [`formValidation`](03-form.md#formvalidation) | 表单校验 | `Form\FormValidation` | — |
 
 ---

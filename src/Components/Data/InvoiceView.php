@@ -60,7 +60,7 @@ class InvoiceView extends Component
         $items = (array) $this->get('items', []);
         $taxRate = (float) $this->get('tax_rate', 0.06);
         $currency = (string) $this->get('currency', '¥');
-        $safeCur = $this->e($currency);
+        $safeCur = $this->escape($currency);
 
         $fmt = fn ($n) => $safeCur.number_format((float) $n, 2);
 
@@ -69,13 +69,13 @@ class InvoiceView extends Component
             $address = (string) ($p['address'] ?? '');
             $tax = (string) ($p['tax'] ?? '');
 
-            $h = '<div><small class="text-muted text-uppercase">'.$this->e($label).'</small>';
-            $h .= '<div class="fw-semibold">'.$this->e($name).'</div>';
+            $h = '<div><small class="text-muted text-uppercase">'.$this->escape($label).'</small>';
+            $h .= '<div class="fw-semibold">'.$this->escape($name).'</div>';
             if ($address !== '') {
-                $h .= '<div class="text-muted small">'.$this->e($address).'</div>';
+                $h .= '<div class="text-muted small">'.$this->escape($address).'</div>';
             }
             if ($tax !== '') {
-                $h .= '<div class="text-muted small">税号：'.$this->e($tax).'</div>';
+                $h .= '<div class="text-muted small">税号：'.$this->escape($tax).'</div>';
             }
 
             return $h.'</div>';
@@ -85,8 +85,8 @@ class InvoiceView extends Component
 
         // 头部
         $html .= '<div class="d-flex justify-content-between align-items-start mb-4">';
-        $html .= '<div><h4 class="mb-1">发票 INVOICE</h4><div class="text-muted">#'.$this->e($invoiceNo).'</div></div>';
-        $html .= '<div class="text-end"><div class="text-muted small">开票日期：'.$this->e($issuedAt).'</div><div class="text-muted small">到期日期：'.$this->e($dueAt).'</div></div>';
+        $html .= '<div><h4 class="mb-1">发票 INVOICE</h4><div class="text-muted">#'.$this->escape($invoiceNo).'</div></div>';
+        $html .= '<div class="text-end"><div class="text-muted small">开票日期：'.$this->escape($issuedAt).'</div><div class="text-muted small">到期日期：'.$this->escape($dueAt).'</div></div>';
         $html .= '</div>';
 
         // 双方
@@ -107,7 +107,7 @@ class InvoiceView extends Component
             $amount = $qty * $price;
             $subtotal += $amount;
 
-            $html .= '<tr><td>'.$this->e($desc).'</td><td class="text-end">'.$qty.'</td><td class="text-end">'.$fmt($price).'</td><td class="text-end">'.$fmt($amount).'</td></tr>';
+            $html .= '<tr><td>'.$this->escape($desc).'</td><td class="text-end">'.$qty.'</td><td class="text-end">'.$fmt($price).'</td><td class="text-end">'.$fmt($amount).'</td></tr>';
         }
         $tax = $subtotal * $taxRate;
         $html .= '</tbody><tfoot>';

@@ -79,12 +79,12 @@ class Lightbox extends Component
             $gTitle = isset($image['title']) ? 'title: '.str_replace(';', '', (string) $image['title']) : null;
             $html .= '<div class="'.$colClass.'">'
                 // href/src 均需过安全助手：拦截 javascript: 等伪协议，缩略图走 img() 解析相对路径
-                .'<a href="'.$this->e($this->safeUrl($image['src'] ?? '')).'"'.Html::attrs([
+                .'<a href="'.$this->escape($this->safeUrl($image['src'] ?? '')).'"'.Html::attrs([
                     'class' => 'glightbox d-block',
                     'data-gallery' => $gallery,
                     'data-glightbox' => $gTitle,
                 ]).'>'
-                .'<img src="'.$this->e($this->img($image['thumb'] ?? $image['src'] ?? '')).'" alt="'.$this->e($image['title'] ?? '').'" class="img-fluid rounded">'
+                .'<img src="'.$this->escape($this->img($image['thumb'] ?? $image['src'] ?? '')).'" alt="'.$this->escape($image['title'] ?? '').'" class="img-fluid rounded">'
                 .'</a></div>';
         }
 

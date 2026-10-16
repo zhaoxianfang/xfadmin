@@ -104,22 +104,22 @@ trait FieldWrapper
     {
         $label = '';
         if ($this->get('label') !== null) {
-            $label = '<label for="'.$this->e($forId).'" class="form-label">'.$this->e($this->get('label'))
+            $label = '<label for="'.$this->escape($forId).'" class="form-label">'.$this->escape($this->get('label'))
                 .($this->get('required') ? ' <span class="text-danger">*</span>' : '')
                 .'</label>';
         }
         $extra = '';
         $feedback = (array) ($this->get('feedback') ?? []);
         if (isset($feedback['valid'])) {
-            $extra .= '<div class="valid-feedback" id="'.$this->e($forId).'-valid">'.$this->e($feedback['valid']).'</div>';
+            $extra .= '<div class="valid-feedback" id="'.$this->escape($forId).'-valid">'.$this->escape($feedback['valid']).'</div>';
         }
         if (isset($feedback['invalid'])) {
-            $extra .= '<div class="invalid-feedback" id="'.$this->e($forId).'-invalid">'.$this->e($feedback['invalid']).'</div>';
+            $extra .= '<div class="invalid-feedback" id="'.$this->escape($forId).'-invalid">'.$this->escape($feedback['invalid']).'</div>';
         }
         if ($this->get('help') !== null) {
             // help 是「说明文本」槽位（与 feedback 同为纯文本语义），必须转义：
             // 帮助文案常来自数据库/语言包，raw() 会形成存储型 XSS 汇点
-            $extra .= '<div class="form-text" id="'.$this->e($forId).'-help">'.$this->e($this->get('help')).'</div>';
+            $extra .= '<div class="form-text" id="'.$this->escape($forId).'-help">'.$this->escape($this->get('help')).'</div>';
         }
         $inner = $label.$control.$extra;
 
@@ -128,6 +128,6 @@ trait FieldWrapper
             return $inner;
         }
 
-        return '<div class="'.$this->e($wrapper).'">'.$inner.'</div>';
+        return '<div class="'.$this->escape($wrapper).'">'.$inner.'</div>';
     }
 }

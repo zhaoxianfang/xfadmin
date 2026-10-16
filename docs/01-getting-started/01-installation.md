@@ -190,7 +190,7 @@ php -S 127.0.0.1:8900 demo/router.php
 
 | 场景 | 资源 URL | 服务方 |
 |---|---|---|
-| 未发布（默认） | `/zxf/xfadmin/css/app.min.css?v=2.1.0` | Laravel：`AssetController` 路由；ThinkPHP/原生：需自行配置路由或直接发布 |
+| 未发布（默认） | `/zxf/xfadmin/css/app.min.css?v=1.0.2` | Laravel：`AssetController` 路由；ThinkPHP/原生：需自行配置路由或直接发布 |
 | 已发布 | `/zxf/xfadmin/...` | Web 服务器直接读取 `public/zxf/xfadmin` |
 | 远程 CDN | 配置 `assets_url` 为 `https://cdn.example.com/xfadmin` | CDN（`assets_url` 含 `http(s)://` 时不再注册自托管路由） |
 
@@ -202,17 +202,17 @@ php -S 127.0.0.1:8900 demo/router.php
 
 ```php
 XfAdmin::asset('images/logo.png');
-// => /zxf/xfadmin/images/logo.png?v=2.1.0
+// => /zxf/xfadmin/images/logo.png?v=1.0.2
 
 XfAdmin::asset('/zxf/xfadmin/images/logo.png?v=1.0.0');  // 幂等
-// => /zxf/xfadmin/images/logo.png?v=2.1.0
+// => /zxf/xfadmin/images/logo.png?v=1.0.2
 ```
 
 ## 7. 验证安装
 
 ```php
 // 版本自检
-echo XfAdmin::version();          // 2.1.0（XfAdmin::VERSION）
+echo XfAdmin::version();          // 1.0.2（XfAdmin::VERSION）
 
 // 组件注册表自检
 $list = XfAdmin::componentList();

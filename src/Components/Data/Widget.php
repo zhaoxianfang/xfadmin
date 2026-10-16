@@ -55,8 +55,8 @@ class Widget extends Component
         $html .= '<div class="d-flex align-items-center justify-content-between">';
 
         $html .= '<div>';
-        $html .= '<h4 class="mb-1">'.$this->e($this->get('value')).'</h4>';
-        $html .= '<p class="text-muted mb-0">'.$this->e($this->get('title')).'</p>';
+        $html .= '<h4 class="mb-1">'.$this->escape($this->get('value')).'</h4>';
+        $html .= '<p class="text-muted mb-0">'.$this->escape($this->get('title')).'</p>';
         $html .= '</div>';
 
         if ($this->get('icon')) {
@@ -71,7 +71,7 @@ class Widget extends Component
             $up = ! empty($t['up']);
             $cls = $up ? 'text-success' : 'text-danger';
             $arrow = $up ? 'ti-arrow-up-right' : 'ti-arrow-down-right';
-            $html .= '<p class="mb-0 mt-2"><span class="'.$cls.'"><i class="ti '.$arrow.'"></i> '.$this->e($t['value'] ?? '').'</span> <span class="text-muted">'.$this->e($t['text'] ?? '').'</span></p>';
+            $html .= '<p class="mb-0 mt-2"><span class="'.$cls.'"><i class="ti '.$arrow.'"></i> '.$this->escape($t['value'] ?? '').'</span> <span class="text-muted">'.$this->escape($t['text'] ?? '').'</span></p>';
         }
         // 进度条
         if ($this->get('style') === 'progress' && $this->get('progress') !== null) {

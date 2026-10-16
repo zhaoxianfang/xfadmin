@@ -55,7 +55,7 @@ class EcommerceSettings extends Component
         $navItems = ['店铺信息', '支付方式', '配送设置', '税费规则', '通知设置', '高级选项'];
         foreach ($navItems as $i => $item) {
             $active = $i === 0 ? ' active' : '';
-            $html .= '<a href="javascript:void(0)" class="list-group-item list-group-item-action'.$active.'">'.$this->e($item).'</a>';
+            $html .= '<a href="javascript:void(0)" class="list-group-item list-group-item-action'.$active.'">'.$this->escape($item).'</a>';
         }
         $html .= '</div></div></div>';
 
@@ -64,17 +64,17 @@ class EcommerceSettings extends Component
 
         // 店铺信息表单
         $html .= '<h5 class="mb-3">店铺信息</h5><div class="row g-3">';
-        $html .= '<div class="col-md-6"><label class="form-label">店铺名称</label><input type="text" class="form-control" value="'.$this->e($store['name'] ?? '').'"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">邮箱</label><input type="email" class="form-control" value="'.$this->e($store['email'] ?? '').'"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">电话</label><input type="text" class="form-control" value="'.$this->e($store['phone'] ?? '').'"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">货币</label><select class="form-select"><option>'.$this->e($store['currency'] ?? 'CNY').'</option><option>USD</option><option>EUR</option></select></div>';
-        $html .= '<div class="col-md-6"><label class="form-label">时区</label><select class="form-select"><option>'.$this->e($store['timezone'] ?? 'Asia/Shanghai').'</option></select></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">店铺名称</label><input type="text" class="form-control" value="'.$this->escape($store['name'] ?? '').'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">邮箱</label><input type="email" class="form-control" value="'.$this->escape($store['email'] ?? '').'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">电话</label><input type="text" class="form-control" value="'.$this->escape($store['phone'] ?? '').'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">货币</label><select class="form-select"><option>'.$this->escape($store['currency'] ?? 'CNY').'</option><option>USD</option><option>EUR</option></select></div>';
+        $html .= '<div class="col-md-6"><label class="form-label">时区</label><select class="form-select"><option>'.$this->escape($store['timezone'] ?? 'Asia/Shanghai').'</option></select></div>';
         $html .= '</div>';
 
         // 自定义章节
         foreach ($sections as $i => $section) {
             $section = (array) $section;
-            $html .= '<hr class="my-4"><h5 class="mb-3">'.$this->e($section['title'] ?? '').'</h5>';
+            $html .= '<hr class="my-4"><h5 class="mb-3">'.$this->escape($section['title'] ?? '').'</h5>';
             $html .= $this->raw($section['content'] ?? '');
         }
         $html .= '<hr class="my-4"><button class="btn btn-primary">保存设置</button>';

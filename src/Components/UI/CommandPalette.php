@@ -58,11 +58,11 @@ class CommandPalette extends Component
         foreach ($cmds as $c) {
             // 标量容错：PHP 8 对字符串取下标会抛 TypeError（致命），与 Wizard/Tabs/Dropdown 等保持一致
             $c = is_array($c) ? $c : ['label' => (string) $c];
-            $label = $this->e($c['label'] ?? '');
-            $icon = $this->e($c['icon'] ?? 'ti ti-command');
-            $hint = $this->e($c['hint'] ?? '');
-            $url = $this->e($this->safeUrl($c['url'] ?? ''));
-            $action = $this->e($c['action'] ?? '');
+            $label = $this->escape($c['label'] ?? '');
+            $icon = $this->escape($c['icon'] ?? 'ti ti-command');
+            $hint = $this->escape($c['hint'] ?? '');
+            $url = $this->escape($this->safeUrl($c['url'] ?? ''));
+            $action = $this->escape($c['action'] ?? '');
             $attrs = 'data-cmd '.($url ? 'data-url="'.$url.'"' : '').($action ? 'data-action="'.$action.'"' : '');
             $list .= '<button type="button" class="list-group-item list-group-item-action d-flex align-items-center gap-2 xf-cmd-item" '.$attrs.'>'
                 .'<i class="'.$icon.'"></i><span class="flex-grow-1 text-start">'.$label.'</span>'
@@ -79,10 +79,10 @@ class CommandPalette extends Component
             .'<div class="modal-body p-2">'
             .'<div class="input-group input-group-sm">'
             .'<span class="input-group-text bg-transparent border-0"><i class="ti ti-search"></i></span>'
-            .'<input type="text" class="form-control border-0 shadow-none xf-cmd-input" placeholder="'.$this->e($this->get('placeholder')).'" autocomplete="off">'
+            .'<input type="text" class="form-control border-0 shadow-none xf-cmd-input" placeholder="'.$this->escape($this->get('placeholder')).'" autocomplete="off">'
             .'</div>'
             .'<div class="list-group list-group-flush xf-cmd-list mt-1" style="max-height:340px;overflow:auto">'.$list.'</div>'
-            .'<div class="text-muted small text-center py-3 xf-cmd-empty d-none">'.$this->e($this->get('empty')).'</div>'
+            .'<div class="text-muted small text-center py-3 xf-cmd-empty d-none">'.$this->escape($this->get('empty')).'</div>'
             .'</div></div></div></div>';
 
         // 快捷键 + 交互脚本：注册为内联 JS（同 key 去重，重复 render 不重复输出）

@@ -69,16 +69,16 @@ class Sales extends Component
                 $icon = (string) ($stat['icon'] ?? 'ti-trending-up');
                 $html .= '<div class="'.$colClass.'"><div class="card"><div class="card-body">';
                 $html .= '<div class="d-flex justify-content-between align-items-start">';
-                $html .= '<div><span class="text-muted small">'.$this->e($stat['title'] ?? '').'</span>';
-                $html .= '<h3 class="mt-2 mb-0">'.$this->e($stat['value'] ?? '').'</h3>';
+                $html .= '<div><span class="text-muted small">'.$this->escape($stat['title'] ?? '').'</span>';
+                $html .= '<h3 class="mt-2 mb-0">'.$this->escape($stat['value'] ?? '').'</h3>';
                 if (! empty($stat['change'])) {
                     $changeClass = str_starts_with((string) $stat['change'], '+') ? 'success' : 'danger';
                     $html .= '<small class="text-'.$changeClass.'"><i class="ti ti-arrow-'.($changeClass === 'success' ? 'up' : 'down').'-right"></i> '
-                        .$this->e($stat['change']).' vs上月</small>';
+                        .$this->escape($stat['change']).' vs上月</small>';
                 }
                 $html .= '</div>';
-                $html .= '<div class="bg-'.$this->e($color).' bg-opacity-10 rounded p-2">'
-                    .'<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($color).'"></i></div>';
+                $html .= '<div class="bg-'.$this->escape($color).' bg-opacity-10 rounded p-2">'
+                    .'<i class="ti '.$this->escape($icon).' fs-24 text-'.$this->escape($color).'"></i></div>';
                 $html .= '</div></div></div></div>';
             }
             $html .= '</div>';
@@ -95,13 +95,13 @@ class Sales extends Component
                 'completed' => '<span class="badge text-bg-success">已完成</span>',
                 'pending' => '<span class="badge text-bg-warning">待处理</span>',
                 'cancelled' => '<span class="badge text-bg-danger">已取消</span>',
-                default => '<span class="badge text-bg-secondary">'.$this->e($status).'</span>',
+                default => '<span class="badge text-bg-secondary">'.$this->escape($status).'</span>',
             };
 
-            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)">'.$this->e($order['id'] ?? '').'</a></td>';
-            $html .= '<td>'.$this->e($order['customer'] ?? '').'</td>';
-            $html .= '<td>'.$this->e($currency).number_format((float) ($order['amount'] ?? 0), 2).'</td>';
-            $html .= '<td>'.$this->e($order['date'] ?? '').'</td><td>'.$statusBadge.'</td></tr>';
+            $html .= '<tr><td class="ps-3"><a href="javascript:void(0)">'.$this->escape($order['id'] ?? '').'</a></td>';
+            $html .= '<td>'.$this->escape($order['customer'] ?? '').'</td>';
+            $html .= '<td>'.$this->escape($currency).number_format((float) ($order['amount'] ?? 0), 2).'</td>';
+            $html .= '<td>'.$this->escape($order['date'] ?? '').'</td><td>'.$statusBadge.'</td></tr>';
         }
         if (empty($recentOrders)) {
             $html .= '<tr><td colspan="5" class="text-center text-muted py-3">暂无近期订单</td></tr>';
@@ -120,9 +120,9 @@ class Sales extends Component
             $growthClass = $growth >= 0 ? 'text-success' : 'text-danger';
 
             $html .= '<tr><td class="ps-3 text-muted">'.$rank.'</td>';
-            $html .= '<td>'.$this->e($p['name'] ?? '').'</td>';
+            $html .= '<td>'.$this->escape($p['name'] ?? '').'</td>';
             $html .= '<td>'.number_format((int) ($p['sold'] ?? 0)).'</td>';
-            $html .= '<td>'.$this->e($currency).number_format((float) ($p['revenue'] ?? 0), 2).'</td>';
+            $html .= '<td>'.$this->escape($currency).number_format((float) ($p['revenue'] ?? 0), 2).'</td>';
             $html .= '<td class="'.$growthClass.'"><i class="ti ti-arrow-'.($growth >= 0 ? 'up' : 'down').'-right"></i> '.abs($growth).'%</td></tr>';
         }
         if (empty($topProducts)) {

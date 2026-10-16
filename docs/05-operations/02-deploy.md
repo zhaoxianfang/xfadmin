@@ -67,7 +67,7 @@ php think clear
 资源 URL 末尾追加 `?v={version}`：
 
 ```php
-'version' => '2.1.0',
+'version' => '1.0.2',
 ```
 
 升级包版本后：
@@ -93,13 +93,13 @@ chmod -R 755 public/zxf/xfadmin
 ```env
 # .env
 XFADMIN_ASSETS_URL=/zxf/xfadmin
-XFADMIN_VERSION=2.1.0
+XFADMIN_VERSION=1.0.2
 ```
 
 ```php
 // config/xfadmin.php
 'assets_url' => env('XFADMIN_ASSETS_URL', '/zxf/xfadmin'),
-'version'    => env('XFADMIN_VERSION', '2.1.0'),
+'version'    => env('XFADMIN_VERSION', '1.0.2'),
 ```
 
 ## 8. 多环境配置

@@ -59,12 +59,12 @@ class Sellers extends Component
         $html = '<div'.$this->attrs(['class' => 'card xf-sellers']).'>';
 
         $html .= '<div class="card-header border-light justify-content-between">';
-        $html .= '<h5 class="card-title mb-0">'.$this->e($this->get('title')).'</h5>';
+        $html .= '<h5 class="card-title mb-0">'.$this->escape($this->get('title')).'</h5>';
         $html .= '<div class="d-flex gap-2">';
         if ($this->get('searchable')) {
             $html .= '<div class="search-box"><input type="text" class="form-control form-control-sm" placeholder="搜索卖家…"></div>';
         }
-        $html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>'.$this->e($this->get('add_text')).'</button>';
+        $html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>'.$this->escape($this->get('add_text')).'</button>';
         $html .= '</div></div>';
 
         $html .= '<div class="card-body p-0"><div class="table-responsive"><table class="table table-custom table-centered table-select table-hover w-100 mb-0">';
@@ -79,18 +79,18 @@ class Sellers extends Component
             $html .= '<td><div class="d-flex align-items-center">';
             $html .= '<div class="avatar-md me-3">';
             if (! empty($s['avatar'])) {
-                $html .= '<img src="'.$this->e(XfAdmin::img((string) $s['avatar'])).'" alt="" class="img-fluid rounded">';
+                $html .= '<img src="'.$this->escape(XfAdmin::img((string) $s['avatar'])).'" alt="" class="img-fluid rounded">';
             } else {
-                $html .= '<span class="avatar-title rounded bg-primary-subtle text-primary">'.$this->e(mb_substr((string) ($s['name'] ?? '?'), 0, 1)).'</span>';
+                $html .= '<span class="avatar-title rounded bg-primary-subtle text-primary">'.$this->escape(mb_substr((string) ($s['name'] ?? '?'), 0, 1)).'</span>';
             }
-            $html .= '</div><div><h6 class="mb-1"><a href="#" class="link-reset">'.$this->e($s['name'] ?? '').'</a></h6>'
-                .'<p class="text-muted fs-xs mb-0">'.$this->e($s['location'] ?? '').'</p></div></div></td>';
-            $html .= '<td class="text-nowrap">'.$this->e($s['products'] ?? 0).'</td>';
-            $html .= '<td class="text-nowrap">'.$this->e(number_format((int) ($s['orders'] ?? 0))).'</td>';
+            $html .= '</div><div><h6 class="mb-1"><a href="#" class="link-reset">'.$this->escape($s['name'] ?? '').'</a></h6>'
+                .'<p class="text-muted fs-xs mb-0">'.$this->escape($s['location'] ?? '').'</p></div></div></td>';
+            $html .= '<td class="text-nowrap">'.$this->escape($s['products'] ?? 0).'</td>';
+            $html .= '<td class="text-nowrap">'.$this->escape(number_format((int) ($s['orders'] ?? 0))).'</td>';
             $html .= '<td>'.$this->stars((float) ($s['rating'] ?? 0)).'</td>';
-            $html .= '<td>'.$this->e($s['location'] ?? '').'</td>';
-            $html .= '<td class="text-nowrap fw-medium">'.$this->e($s['balance'] ?? '').'</td>';
-            $html .= '<td><span class="badge text-bg-light">'.$this->e($s['rank'] ?? '').'</span></td>';
+            $html .= '<td>'.$this->escape($s['location'] ?? '').'</td>';
+            $html .= '<td class="text-nowrap fw-medium">'.$this->escape($s['balance'] ?? '').'</td>';
+            $html .= '<td><span class="badge text-bg-light">'.$this->escape($s['rank'] ?? '').'</span></td>';
             $html .= '<td><a href="#" class="btn btn-light btn-sm"><i class="ti ti-download me-1"></i>报表</a></td>';
             $html .= '</tr>';
         }

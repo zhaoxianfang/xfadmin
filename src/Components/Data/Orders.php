@@ -89,13 +89,13 @@ class Orders extends Component
 
         // 根节点：card 容器；交互能力交给 xftable 模块（前端搜索/筛选/分页/全选/批删）
         $html = '<div'.$this->attrs(['class' => 'card', 'id' => $id])
-            .($interactive ? ' data-xf="xftable" data-xf-config="'.$this->e(json_encode(['pageSize' => $pageSize > 0 ? $pageSize : 100000], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"' : '').'>';
+            .($interactive ? ' data-xf="xftable" data-xf-config="'.$this->escape(json_encode(['pageSize' => $pageSize > 0 ? $pageSize : 100000], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"' : '').'>';
 
         /* ---------- 卡片头：标题 + 搜索 + 筛选 + 批量操作（对齐模板 card-header 布局） ---------- */
         if ($this->get('title') || $interactive) {
             $html .= '<div class="card-header border-light d-flex flex-wrap align-items-center gap-2">';
             if ($this->get('title')) {
-                $html .= '<h5 class="card-title mb-0 me-2">'.$this->e($this->get('title')).'</h5>';
+                $html .= '<h5 class="card-title mb-0 me-2">'.$this->escape($this->get('title')).'</h5>';
             }
             if ($searchable) {
                 // 模板同款 app-search 搜索框（图标覆盖样式复用画廊段的定位规则）
@@ -142,33 +142,33 @@ class Orders extends Component
             $paidKey = $paidRaw === 'refund' ? 'refund' : ($paidRaw ? '1' : '0');
 
             // 行 data-* 供 xftable 下拉筛选精确匹配
-            $html .= '<tr data-status="'.$this->e($status).'" data-paid="'.$paidKey.'">';
+            $html .= '<tr data-status="'.$this->escape($status).'" data-paid="'.$paidKey.'">';
 
             if ($selectable) {
                 $html .= '<td class="ps-3"><input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox"></td>';
             }
             // 订单号：模板同款 h5.fs-sm + link-reset
             $url = $this->safeUrl($o['url'] ?? '#', '#');
-            $html .= '<td><h5 class="fs-sm mb-0 fw-medium"><a href="'.$this->e($url).'" class="link-reset">'.$this->e($o['id'] ?? '').'</a></h5></td>';
+            $html .= '<td><h5 class="fs-sm mb-0 fw-medium"><a href="'.$this->escape($url).'" class="link-reset">'.$this->escape($o['id'] ?? '').'</a></h5></td>';
 
             // 日期 + 弱化时间
-            $html .= '<td>'.$this->e($o['date'] ?? '')
-                .(! empty($o['time']) ? ' <small class="text-muted">'.$this->e($o['time']).'</small>' : '').'</td>';
+            $html .= '<td>'.$this->escape($o['date'] ?? '')
+                .(! empty($o['time']) ? ' <small class="text-muted">'.$this->escape($o['time']).'</small>' : '').'</td>';
 
             // 客户：.avatar avatar-sm 包裹头像 + 姓名/邮箱（模板同款结构）
             $html .= '<td><div class="d-flex justify-content-start align-items-center gap-2">';
             if (! empty($o['avatar'])) {
-                $html .= '<div class="avatar avatar-sm"><img src="'.$this->e(XfAdmin::img((string) $o['avatar'])).'" alt="" class="img-fluid rounded-circle"></div>';
+                $html .= '<div class="avatar avatar-sm"><img src="'.$this->escape(XfAdmin::img((string) $o['avatar'])).'" alt="" class="img-fluid rounded-circle"></div>';
             } else {
                 $ini = mb_substr((string) ($o['customer'] ?? '?'), 0, 1);
-                $html .= '<div class="avatar avatar-sm"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->e($ini).'</span></div>';
+                $html .= '<div class="avatar avatar-sm"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->escape($ini).'</span></div>';
             }
-            $html .= '<div><h5 class="text-nowrap fs-base mb-0 lh-base">'.$this->e($o['customer'] ?? '').'</h5>'
-                .(! empty($o['email']) ? '<p class="text-muted fs-xs mb-0">'.$this->e($o['email']).'</p>' : '')
+            $html .= '<div><h5 class="text-nowrap fs-base mb-0 lh-base">'.$this->escape($o['customer'] ?? '').'</h5>'
+                .(! empty($o['email']) ? '<p class="text-muted fs-xs mb-0">'.$this->escape($o['email']).'</p>' : '')
                 .'</div></div></td>';
 
             // 金额
-            $html .= '<td class="fw-semibold">'.$this->e($o['total'] ?? '').'</td>';
+            $html .= '<td class="fw-semibold">'.$this->escape($o['total'] ?? '').'</td>';
 
             // 付款状态：模板同款 ti-point-filled 圆点 + 语义色文字
             $paidMap = ['1' => ['success', '已付款'], '0' => ['danger', '未付款'], 'refund' => ['warning', '退款中']];
@@ -179,11 +179,11 @@ class Orders extends Component
             $html .= '<td><span class="badge badge-soft-'.$sCls.' fs-xxs">'.$sTxt.'</span></td>';
 
             // 支付方式
-            $html .= '<td>'.$this->e($o['payment'] ?? '-').'</td>';
+            $html .= '<td>'.$this->escape($o['payment'] ?? '-').'</td>';
 
             // 操作：模板同款圆形浅色图标钮（查看/编辑/删除）
             $html .= '<td><div class="d-flex justify-content-center gap-1">'
-                .'<a href="'.$this->e($url).'" class="btn btn-light btn-icon btn-sm rounded-circle" title="查看"><i class="ti ti-eye fs-lg"></i></a>'
+                .'<a href="'.$this->escape($url).'" class="btn btn-light btn-icon btn-sm rounded-circle" title="查看"><i class="ti ti-eye fs-lg"></i></a>'
                 .'<a href="#" class="btn btn-light btn-icon btn-sm rounded-circle" title="编辑"><i class="ti ti-edit fs-lg"></i></a>'
                 .'<a href="#" data-xftable-delete-row class="btn btn-light btn-icon btn-sm rounded-circle" title="删除"><i class="ti ti-trash fs-lg"></i></a>'
                 .'</div></td>';

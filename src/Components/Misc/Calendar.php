@@ -95,13 +95,13 @@ class Calendar extends Component
         }
         // 两栏：左 外部事件 + 右 日历
         $side = '<div class="col-xl-3 col-lg-4 border-end p-3">';
-        $side .= '<button class="btn btn-primary w-100 mb-3 btn-new-event"><i class="ti ti-plus me-1"></i>'.$this->e($addText).'</button>';
+        $side .= '<button class="btn btn-primary w-100 mb-3 btn-new-event"><i class="ti ti-plus me-1"></i>'.$this->escape($addText).'</button>';
         $side .= '<div id="external-events">';
         $side .= '<p class="text-muted small mb-2">拖动事件到日历</p>';
         foreach ($external as $ev) {
             $ev = is_array($ev) ? $ev : ['label' => (string) $ev, 'className' => 'bg-primary-subtle text-primary border-start border-3 border-primary'];
             $cls = $ev['className'] ?? 'bg-primary-subtle text-primary border-start border-3 border-primary';
-            $side .= '<div class="external-event fc-event '.$this->e($cls).' fw-semibold mb-2 p-2 rounded" data-class="'.$this->e($cls).'">'.$this->e($ev['label'] ?? '').'</div>';
+            $side .= '<div class="external-event fc-event '.$this->escape($cls).' fw-semibold mb-2 p-2 rounded" data-class="'.$this->escape($cls).'">'.$this->escape($ev['label'] ?? '').'</div>';
         }
         $side .= '</div></div>';
 

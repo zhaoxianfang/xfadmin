@@ -101,7 +101,7 @@ class TopNav extends Component
         if ($this->get('search')) {
             $html .= '<div class="app-search topnav-search d-none d-lg-flex">'
                 .'<input type="search" class="form-control topbar-search" name="search" placeholder="'
-                .$this->e($this->get('search_placeholder')).'">'
+                .$this->escape($this->get('search_placeholder')).'">'
                 .'<i class="ti ti-search app-search-icon text-muted"></i></div>';
         }
         $html .= $this->renderApps();
@@ -155,16 +155,16 @@ class TopNav extends Component
 
         $nameHtml = $name !== ''
             ? '<span class="logo-text d-none d-sm-inline-block text-truncate ms-2">'
-              .$this->e($name).'</span>'
+              .$this->escape($name).'</span>'
             : '';
 
         return '<div class="logo-topbar d-flex align-items-center">'
-            .'<a href="'.$this->e($this->safeUrl($url)).'" class="logo-light">'
-            .'<span class="logo-lg"><img src="'.$this->e($logo).'" alt="logo"></span>'
-            .'<span class="logo-sm"><img src="'.$this->e($logoSm).'" alt="small logo"></span></a>'
-            .'<a href="'.$this->e($this->safeUrl($url)).'" class="logo-dark">'
-            .'<span class="logo-lg"><img src="'.$this->e($logoDk).'" alt="dark logo"></span>'
-            .'<span class="logo-sm"><img src="'.$this->e($logoSm).'" alt="small logo"></span></a>'
+            .'<a href="'.$this->escape($this->safeUrl($url)).'" class="logo-light">'
+            .'<span class="logo-lg"><img src="'.$this->escape($logo).'" alt="logo"></span>'
+            .'<span class="logo-sm"><img src="'.$this->escape($logoSm).'" alt="small logo"></span></a>'
+            .'<a href="'.$this->escape($this->safeUrl($url)).'" class="logo-dark">'
+            .'<span class="logo-lg"><img src="'.$this->escape($logoDk).'" alt="dark logo"></span>'
+            .'<span class="logo-sm"><img src="'.$this->escape($logoSm).'" alt="small logo"></span></a>'
             .$nameHtml
             .'</div>';
     }
@@ -195,7 +195,7 @@ class TopNav extends Component
         if ($this->get('search')) {
             $html .= '<div class="app-search topnav-search d-lg-none p-2 border-bottom">'
                 .'<input type="search" class="form-control topbar-search" name="search" placeholder="'
-                .$this->e($this->get('search_placeholder')).'">'
+                .$this->escape($this->get('search_placeholder')).'">'
                 .'<i class="ti ti-search app-search-icon text-muted"></i></div>';
         }
         $html .= '<ul class="navbar-nav">';
@@ -219,9 +219,9 @@ class TopNav extends Component
         $html = '<li class="'.$liClass.'">';
 
         $icon = ! empty($item['icon'])
-            ? '<span class="menu-icon"><i class="'.$this->e($item['icon']).'"></i></span>'
+            ? '<span class="menu-icon"><i class="'.$this->escape($item['icon']).'"></i></span>'
             : '';
-        $text = '<span class="menu-text"> '.$this->e($item['text'] ?? '').' </span>';
+        $text = '<span class="menu-text"> '.$this->escape($item['text'] ?? '').' </span>';
         $badge = $this->renderBadge($item);
 
         if ($hasDrop) {
@@ -238,7 +238,7 @@ class TopNav extends Component
                 ? $this->renderMegaPanel((array) $mega, $id)
                 : $this->renderDropdown($children, $id);
         } else {
-            $html .= '<a class="nav-link" href="'.$this->e($this->safeUrl($item['url'] ?? '#')).'">'
+            $html .= '<a class="nav-link" href="'.$this->escape($this->safeUrl($item['url'] ?? '#')).'">'
                 .$icon.$text.$badge.'</a>';
         }
 
@@ -248,7 +248,7 @@ class TopNav extends Component
     /** 下拉面板（无限级递归） */
     protected function renderDropdown(array $items, string $labelledBy): string
     {
-        $html = '<div class="dropdown-menu" aria-labelledby="'.$this->e($labelledBy).'">';
+        $html = '<div class="dropdown-menu" aria-labelledby="'.$this->escape($labelledBy).'">';
         foreach ($items as $child) {
             $child = (array) $child;
 
@@ -260,12 +260,12 @@ class TopNav extends Component
             }
             if (isset($child['title']) && ! isset($child['text'])) {
                 $html .= '<div class="dropdown-header fs-xs text-uppercase fw-semibold">'
-                    .$this->e($child['title']).'</div>';
+                    .$this->escape($child['title']).'</div>';
 
                 continue;
             }
             $children = (array) ($child['children'] ?? []);
-            $icon = ! empty($child['icon']) ? '<i class="'.$this->e($child['icon']).'"></i> ' : '';
+            $icon = ! empty($child['icon']) ? '<i class="'.$this->escape($child['icon']).'"></i> ' : '';
             $badge = $this->renderBadge($child);
 
             if ($children !== []) {
@@ -274,7 +274,7 @@ class TopNav extends Component
                 $html .= '<div class="dropdown">'
                     .'<a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="'.$id.'"'
                     .' role="button" aria-haspopup="true" aria-expanded="false">'
-                    .$icon.$this->e($child['text'] ?? '').$badge.' <div class="menu-arrow"></div></a>'
+                    .$icon.$this->escape($child['text'] ?? '').$badge.' <div class="menu-arrow"></div></a>'
                     .$this->renderDropdown($children, $id)
                     .'</div>';
 
@@ -282,8 +282,8 @@ class TopNav extends Component
             }
             $cls = 'dropdown-item'.(! empty($child['disabled']) ? ' disabled' : '')
                 .($this->isActive($child) ? ' active' : '');
-            $html .= '<a href="'.$this->e($this->safeUrl($child['url'] ?? '#!')).'" class="'.$cls.'">'
-                .$icon.$this->e($child['text'] ?? '').$badge.'</a>';
+            $html .= '<a href="'.$this->escape($this->safeUrl($child['url'] ?? '#!')).'" class="'.$cls.'">'
+                .$icon.$this->escape($child['text'] ?? '').$badge.'</a>';
         }
 
         return $html.'</div>';
@@ -296,13 +296,13 @@ class TopNav extends Component
         $cols = max(1, min(4, $cols));
         $colClass = 'col-md-'.(int) (12 / $cols);
 
-        $html = '<div class="dropdown-menu dropdown-menu-xxl p-0" aria-labelledby="'.$this->e($labelledBy).'">'
+        $html = '<div class="dropdown-menu dropdown-menu-xxl p-0" aria-labelledby="'.$this->escape($labelledBy).'">'
             .'<div class="h-100" style="max-height: 380px;" data-simplebar>';
 
         if (! empty($mega['title'])) {
             $html .= '<div class="row g-0"><div class="col-12">'
                 .'<div class="p-3 text-center bg-light bg-opacity-50">'
-                .'<h4 class="mb-0 fs-lg fw-semibold">'.$this->e($mega['title']).'</h4>'
+                .'<h4 class="mb-0 fs-lg fw-semibold">'.$this->escape($mega['title']).'</h4>'
                 .'</div></div></div>';
         }
         $html .= '<div class="row g-0">';
@@ -310,14 +310,14 @@ class TopNav extends Component
             $column = (array) $column;
             $html .= '<div class="'.$colClass.'"><div class="p-3">';
             if (! empty($column['title'])) {
-                $html .= '<h5 class="mb-2 fw-semibold fs-sm dropdown-header">'.$this->e($column['title']).'</h5>';
+                $html .= '<h5 class="mb-2 fw-semibold fs-sm dropdown-header">'.$this->escape($column['title']).'</h5>';
             }
             $html .= '<ul class="list-unstyled megamenu-list">';
             foreach ((array) ($column['items'] ?? []) as $link) {
                 $link = (array) $link;
-                $icon = ! empty($link['icon']) ? '<i class="'.$this->e($link['icon']).'"></i> ' : '';
-                $html .= '<li><a href="'.$this->e($this->safeUrl($link['url'] ?? 'javascript:void(0);')).'" class="dropdown-item">'
-                    .$icon.$this->e($link['text'] ?? '').$this->renderBadge($link).'</a></li>';
+                $icon = ! empty($link['icon']) ? '<i class="'.$this->escape($link['icon']).'"></i> ' : '';
+                $html .= '<li><a href="'.$this->escape($this->safeUrl($link['url'] ?? 'javascript:void(0);')).'" class="dropdown-item">'
+                    .$icon.$this->escape($link['text'] ?? '').$this->renderBadge($link).'</a></li>';
             }
             $html .= '</ul></div></div>';
         }
@@ -344,7 +344,7 @@ class TopNav extends Component
         return '<div class="topbar-item d-none d-md-flex"><div class="dropdown">'
             .'<button class="topbar-link btn fw-medium btn-link dropdown-toggle drop-arrow-none" id="'.$id.'"'
             .' data-bs-toggle="dropdown" data-bs-offset="0,16" type="button" aria-haspopup="false" aria-expanded="false">'
-            .$this->e($mega['text'] ?? 'Mega Menu').'<i class="ti ti-chevron-down ms-1"></i></button>'
+            .$this->escape($mega['text'] ?? 'Mega Menu').'<i class="ti ti-chevron-down ms-1"></i></button>'
             .$this->renderMegaPanel($mega, $id)
             .'</div></div>';
     }
@@ -362,8 +362,8 @@ class TopNav extends Component
         }
         $badge = is_array($item['badge']) ? $item['badge'] : ['text' => $item['badge']];
 
-        return ' <span class="badge '.$this->e($badge['class'] ?? 'text-bg-danger').' ms-1">'
-            .$this->e($badge['text'] ?? '').'</span>';
+        return ' <span class="badge '.$this->escape($badge['class'] ?? 'text-bg-danger').' ms-1">'
+            .$this->escape($badge['text'] ?? '').'</span>';
     }
 
     /** 当前项是否激活：显式 active，或 url 命中 current_url */
@@ -411,21 +411,21 @@ class TopNav extends Component
             .'<button class="topbar-link fw-bold" data-bs-toggle="dropdown" data-bs-offset="0,21" type="button"'
             .' aria-haspopup="false" aria-expanded="false">';
         if (! empty($current['flag'])) {
-            $html .= '<img src="'.$this->e($this->img($current['flag'])).'" alt="language"'
+            $html .= '<img src="'.$this->escape($this->img($current['flag'])).'" alt="language"'
                 .' class="rounded me-2" height="18" style="height:18px;" id="selected-language-image">';
         }
-        $html .= '<span id="selected-language-code">'.$this->e($current['name'] ?? '').'</span>';
+        $html .= '<span id="selected-language-code">'.$this->escape($current['name'] ?? '').'</span>';
         $html .= '</button><div class="dropdown-menu dropdown-menu-end">';
         foreach ($languages as $lang) {
             $lang = (array) $lang;
             $flag = ! empty($lang['flag'])
-                ? '<img src="'.$this->e($this->img($lang['flag'])).'" alt="'.$this->e($lang['name'] ?? '')
+                ? '<img src="'.$this->escape($this->img($lang['flag'])).'" alt="'.$this->escape($lang['name'] ?? '')
                   .'" class="me-1 rounded" height="18" style="height:18px;">'
                 : '';
-            $html .= '<a href="'.$this->e($this->safeUrl($lang['url'] ?? 'javascript:void(0);')).'" class="dropdown-item"'
-                .(isset($lang['code']) ? ' data-lang-code="'.$this->e($lang['code']).'"' : '')
-                .' title="'.$this->e($lang['name'] ?? '').'">'
-                .$flag.'<span class="align-middle">'.$this->e($lang['name'] ?? '').'</span></a>';
+            $html .= '<a href="'.$this->escape($this->safeUrl($lang['url'] ?? 'javascript:void(0);')).'" class="dropdown-item"'
+                .(isset($lang['code']) ? ' data-lang-code="'.$this->escape($lang['code']).'"' : '')
+                .' title="'.$this->escape($lang['name'] ?? '').'">'
+                .$flag.'<span class="align-middle">'.$this->escape($lang['name'] ?? '').'</span></a>';
         }
 
         return $html.'</div></div></div>';
@@ -452,22 +452,22 @@ class TopNav extends Component
             .'<i class="ti ti-mail fs-xxl"></i>';
         if ($count > 0) {
             $html .= '<span class="badge text-bg-success badge-circle topbar-badge position-absolute">'
-                .$this->e($count).'</span>';
+                .$this->escape($count).'</span>';
         }
         $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">'
             .'<div class="px-3 py-2 border-bottom"><div class="row align-items-center"><div class="col">'
-            .'<h6 class="m-0 fs-md fw-semibold">'.$this->e($conf['title'] ?? '消息').'</h6></div>';
+            .'<h6 class="m-0 fs-md fw-semibold">'.$this->escape($conf['title'] ?? '消息').'</h6></div>';
         if (! empty($conf['label'])) {
             $html .= '<div class="col text-end"><span class="badge badge-soft-success badge-label py-1">'
-                .$this->e($conf['label']).'</span></div>';
+                .$this->escape($conf['label']).'</span></div>';
         }
         $html .= '</div></div><div style="max-height: 300px;" data-simplebar>';
         $html .= $this->renderFeedItems($items);
         $html .= '</div>';
         if (! empty($conf['all_url'])) {
-            $html .= '<a href="'.$this->e($this->safeUrl($conf['all_url'])).'" class="dropdown-item text-center text-reset'
+            $html .= '<a href="'.$this->escape($this->safeUrl($conf['all_url'])).'" class="dropdown-item text-center text-reset'
                 .' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
-                .$this->e($conf['all_text'] ?? '查看全部').'</a>';
+                .$this->escape($conf['all_text'] ?? '查看全部').'</a>';
         }
 
         return $html.'</div></div></div>';
@@ -494,19 +494,19 @@ class TopNav extends Component
             .'<i class="ti ti-bell fs-xxl"></i>';
         if ($count > 0) {
             $html .= '<span class="position-absolute topbar-badge fs-xxs badge bg-danger rounded-pill">'
-                .$this->e($count).'</span>';
+                .$this->escape($count).'</span>';
         }
         $html .= '</button><div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg" style="min-height: 300px;">'
             .'<div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">'
             .'<div class="row align-items-center"><div class="col">'
-            .'<h6 class="m-0 fs-md fw-semibold">'.$this->e($conf['title'] ?? '通知').'</h6>'
+            .'<h6 class="m-0 fs-md fw-semibold">'.$this->escape($conf['title'] ?? '通知').'</h6>'
             .'</div></div></div><div style="max-height: 300px;" data-simplebar>';
         $html .= $this->renderFeedItems($items);
         $html .= '</div>';
         if (! empty($conf['all_url'])) {
-            $html .= '<a href="'.$this->e($this->safeUrl($conf['all_url'])).'" class="dropdown-item text-center text-reset'
+            $html .= '<a href="'.$this->escape($this->safeUrl($conf['all_url'])).'" class="dropdown-item text-center text-reset'
                 .' text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">'
-                .$this->e($conf['all_text'] ?? '查看全部').'</a>';
+                .$this->escape($conf['all_text'] ?? '查看全部').'</a>';
         }
 
         return $html.'</div></div></div>';
@@ -520,24 +520,24 @@ class TopNav extends Component
             $item = (array) $item;
             $media = '';
             if (! empty($item['avatar'])) {
-                $media = '<img src="'.$this->e($this->img($item['avatar']))
+                $media = '<img src="'.$this->escape($this->img($item['avatar']))
                     .'" class="avatar-md rounded-circle" alt="avatar">';
             } elseif (! empty($item['icon'])) {
-                $variant = $this->e($item['variant'] ?? 'primary');
+                $variant = $this->escape($item['variant'] ?? 'primary');
                 $media = '<span class="avatar-md"><span class="avatar-title bg-'.$variant
-                    .'-subtle text-'.$variant.' rounded-circle"><i class="'.$this->e($item['icon'])
+                    .'-subtle text-'.$variant.' rounded-circle"><i class="'.$this->escape($item['icon'])
                     .' fs-22"></i></span></span>';
             }
             $html .= '<div class="dropdown-item notification-item py-2 text-wrap'
                 .(! empty($item['unread']) ? ' active' : '').'">'
-                .'<a href="'.$this->e($this->safeUrl($item['url'] ?? 'javascript:void(0);')).'" class="d-flex gap-2 text-reset">'
+                .'<a href="'.$this->escape($this->safeUrl($item['url'] ?? 'javascript:void(0);')).'" class="d-flex gap-2 text-reset">'
                 .'<span class="flex-shrink-0">'.$media.'</span>'
                 .'<span class="flex-grow-1 text-muted">'
                 .(isset($item['title']) || isset($item['from'])
-                    ? '<span class="fw-medium text-body">'.$this->e($item['title'] ?? $item['from']).'</span> '
+                    ? '<span class="fw-medium text-body">'.$this->escape($item['title'] ?? $item['from']).'</span> '
                     : '')
-                .$this->e($item['text'] ?? '')
-                .(isset($item['time']) ? '<br><span class="fs-xs">'.$this->e($item['time']).'</span>' : '')
+                .$this->escape($item['text'] ?? '')
+                .(isset($item['time']) ? '<br><span class="fs-xs">'.$this->escape($item['time']).'</span>' : '')
                 .'</span></a></div>';
         }
 
@@ -561,28 +561,28 @@ class TopNav extends Component
         $html = '<div class="topbar-item nav-user"><div class="dropdown">'
             .'<a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown"'
             .' data-bs-offset="0,16" href="#!" aria-haspopup="false" aria-expanded="false">'
-            .'<img src="'.$this->e($avatar).'" width="32" class="rounded-circle me-lg-2 d-flex" alt="user-image">'
+            .'<img src="'.$this->escape($avatar).'" width="32" class="rounded-circle me-lg-2 d-flex" alt="user-image">'
             .'<div class="d-lg-flex align-items-center gap-1 d-none">'
-            .'<h5 class="my-0">'.$this->e($user['name'] ?? '').'</h5>'
+            .'<h5 class="my-0">'.$this->escape($user['name'] ?? '').'</h5>'
             .'<i class="ti ti-chevron-down align-middle"></i></div></a>'
             .'<div class="dropdown-menu dropdown-menu-end">';
         // 用户信息卡：头像 / 昵称 / 角色 / 签名
         $html .= '<div class="dropdown-header noti-title bg-primary-subtle rounded-top">'
             .'<div class="d-flex align-items-center">'
-            .'<img src="'.$this->e($avatar).'" class="rounded-circle avatar-md me-2" alt="user-image">'
+            .'<img src="'.$this->escape($avatar).'" class="rounded-circle avatar-md me-2" alt="user-image">'
             .'<div class="flex-grow-1 overflow-hidden">'
-            .'<h6 class="mb-0 text-truncate">'.$this->e($user['name'] ?? '').'</h6>'
+            .'<h6 class="mb-0 text-truncate">'.$this->escape($user['name'] ?? '').'</h6>'
             .'<span class="fs-xs text-muted text-truncate d-block">'
-            .$this->e($user['role'] ?? ($user['subtitle'] ?? '')).'</span>'
+            .$this->escape($user['role'] ?? ($user['subtitle'] ?? '')).'</span>'
             .'</div></div>';
         if (! empty($user['signature'])) {
             $html .= '<p class="mt-2 mb-0 fs-xs text-muted text-truncate-2">'
-                .$this->e($user['signature']).'</p>';
+                .$this->escape($user['signature']).'</p>';
         }
         $html .= '</div>';
         if (! empty($user['header'])) {
             $html .= '<div class="dropdown-header noti-title">'
-                .'<h6 class="text-overflow m-0">'.$this->e($user['header']).'</h6></div>';
+                .'<h6 class="text-overflow m-0">'.$this->escape($user['header']).'</h6></div>';
         }
         foreach ((array) ($user['items'] ?? []) as $item) {
             $item = (array) $item;
@@ -592,10 +592,10 @@ class TopNav extends Component
                 continue;
             }
             $icon = ! empty($item['icon'])
-                ? '<i class="'.$this->e($item['icon']).' me-2 fs-17 align-middle"></i>' : '';
-            $html .= '<a href="'.$this->e($this->safeUrl($item['url'] ?? '#!')).'" class="dropdown-item '
-                .$this->e($item['class'] ?? '').'">'
-                .$icon.'<span class="align-middle">'.$this->e($item['text'] ?? '').'</span></a>';
+                ? '<i class="'.$this->escape($item['icon']).' me-2 fs-17 align-middle"></i>' : '';
+            $html .= '<a href="'.$this->escape($this->safeUrl($item['url'] ?? '#!')).'" class="dropdown-item '
+                .$this->escape($item['class'] ?? '').'">'
+                .$icon.'<span class="align-middle">'.$this->escape($item['text'] ?? '').'</span></a>';
         }
 
         return $html.'</div></div></div>';
@@ -632,7 +632,7 @@ class TopNav extends Component
         $menuCls = 'dropdown-menu dropdown-menu-end p-2'.($rounded ? ' apps-dropdown-rounded-menu' : '');
         $html .= '<div class="'.$menuCls.'"'.($rounded ? ' id="apps-dropdown-rounded"' : '').' style="min-width: 300px;">';
         if (! empty($conf['title'])) {
-            $html .= '<h6 class="dropdown-header">'.$this->e($conf['title']).'</h6>';
+            $html .= '<h6 class="dropdown-header">'.$this->escape($conf['title']).'</h6>';
         }
         $html .= '<div class="row g-1 app-launcher-grid'.($rounded ? ' app-launcher-rounded' : '').'">';
         foreach ($items as $item) {
@@ -640,11 +640,11 @@ class TopNav extends Component
             $iv = $item['variant'] ?? 'primary';
             $shape = $rounded ? 'rounded-circle' : 'rounded';
             $html .= '<div class="col-4">'
-                .'<a href="'.$this->e($this->safeUrl($item['url'] ?? 'javascript:void(0);')).'"'
+                .'<a href="'.$this->escape($this->safeUrl($item['url'] ?? 'javascript:void(0);')).'"'
                 .' class="d-flex flex-column align-items-center text-reset text-decoration-none rounded p-2 app-launcher-item">'
-                .'<span class="avatar-md mb-1"><span class="avatar-title bg-'.$this->e($iv).'-subtle text-'.$this->e($iv).' '.$shape.'">'
-                .'<i class="'.$this->e($item['icon'] ?? 'ti ti-apps').' fs-22"></i></span></span>'
-                .'<small class="text-truncate">'.$this->e($item['text'] ?? '').'</small>'
+                .'<span class="avatar-md mb-1"><span class="avatar-title bg-'.$this->escape($iv).'-subtle text-'.$this->escape($iv).' '.$shape.'">'
+                .'<i class="'.$this->escape($item['icon'] ?? 'ti ti-apps').' fs-22"></i></span></span>'
+                .'<small class="text-truncate">'.$this->escape($item['text'] ?? '').'</small>'
                 .'</a></div>';
         }
         $html .= '</div>';
@@ -652,12 +652,12 @@ class TopNav extends Component
         if (! empty($conf['all_url']) || ! empty($conf['add_url'])) {
             $foot .= '<div class="d-flex gap-2 mt-2 pt-2 border-top app-launcher-foot">';
             if (! empty($conf['all_url'])) {
-                $foot .= '<a href="'.$this->e($this->safeUrl($conf['all_url'])).'" class="btn btn-sm btn-soft-primary flex-fill">'
-                    .$this->e($conf['all_text'] ?? '查看全部应用').'</a>';
+                $foot .= '<a href="'.$this->escape($this->safeUrl($conf['all_url'])).'" class="btn btn-sm btn-soft-primary flex-fill">'
+                    .$this->escape($conf['all_text'] ?? '查看全部应用').'</a>';
             }
             if (! empty($conf['add_url'])) {
-                $foot .= '<a href="'.$this->e($this->safeUrl($conf['add_url'])).'" class="btn btn-sm btn-soft-secondary flex-fill">'
-                    .'<i class="ti ti-plus me-1"></i>'.$this->e($conf['add_text'] ?? '添加应用').'</a>';
+                $foot .= '<a href="'.$this->escape($this->safeUrl($conf['add_url'])).'" class="btn btn-sm btn-soft-secondary flex-fill">'
+                    .'<i class="ti ti-plus me-1"></i>'.$this->escape($conf['add_text'] ?? '添加应用').'</a>';
             }
             $foot .= '</div>';
         }

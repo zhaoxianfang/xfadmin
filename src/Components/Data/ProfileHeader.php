@@ -57,7 +57,7 @@ class ProfileHeader extends Component
 
         // 封面：background 走 cssBackground 白名单校验，防止 style 属性注入
         if ($this->get('cover')) {
-            $bg = $this->cssBackground('url('.$this->e(XfAdmin::img((string) $this->get('cover'))).')');
+            $bg = $this->cssBackground('url('.$this->escape(XfAdmin::img((string) $this->get('cover'))).')');
             $html .= '<div class="profile-cover" style="height:180px;background:'.$bg.' center/cover no-repeat;"></div>';
         } else {
             $html .= '<div class="profile-cover bg-primary" style="height:120px;"></div>';
@@ -65,16 +65,16 @@ class ProfileHeader extends Component
         $html .= '<div class="card-body">';
         $html .= '<div class="d-flex flex-wrap align-items-center gap-3" style="margin-top:-56px;">';
         // 个人主页大头像：INSPINIA 规范 .avatar 包裹（avatar-xxl=80px）+ 白色描边压在封面上
-        $html .= '<span class="avatar avatar-xxl flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle border border-3 border-white bg-white" alt="avatar" style="object-fit:cover;"></span>';
+        $html .= '<span class="avatar avatar-xxl flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle border border-3 border-white bg-white" alt="avatar" style="object-fit:cover;"></span>';
         $html .= '<div class="flex-grow-1" style="margin-top:56px;">';
-        $html .= '<h4 class="mb-1">'.$this->e($this->get('name'));
+        $html .= '<h4 class="mb-1">'.$this->escape($this->get('name'));
         if ($this->get('verified')) {
             $html .= ' <i class="ti ti-rosette-discount-check-filled text-primary"></i>';
         }
         $html .= '</h4>';
         $meta = array_filter([$this->get('role'), $this->get('location')]);
         if ($meta) {
-            $html .= '<p class="text-muted mb-0">'.$this->e(implode(' · ', $meta)).'</p>';
+            $html .= '<p class="text-muted mb-0">'.$this->escape(implode(' · ', $meta)).'</p>';
         }
         $html .= '</div>';
 
@@ -88,7 +88,7 @@ class ProfileHeader extends Component
         if ($stats) {
             $html .= '<div class="d-flex flex-wrap gap-4 mt-3">';
             foreach ($stats as $s) {
-                $html .= '<div class="text-center"><h5 class="mb-0">'.$this->e($s['value'] ?? '').'</h5><small class="text-muted">'.$this->e($s['label'] ?? '').'</small></div>';
+                $html .= '<div class="text-center"><h5 class="mb-0">'.$this->escape($s['value'] ?? '').'</h5><small class="text-muted">'.$this->escape($s['label'] ?? '').'</small></div>';
             }
             $html .= '</div>';
         }
@@ -101,11 +101,11 @@ class ProfileHeader extends Component
             foreach ($tabs as $t) {
                 $active = ! empty($t['active']) ? ' active' : '';
                 $tHref = $this->safeUrl($t['href'] ?? '#', '#');
-                $html .= '<li class="nav-item"><a class="nav-link'.$active.'" href="'.$this->e($tHref).'"';
+                $html .= '<li class="nav-item"><a class="nav-link'.$active.'" href="'.$this->escape($tHref).'"';
                 if (! empty($t['toggle'])) {
                     $html .= ' data-bs-toggle="tab"';
                 }
-                $html .= '>'.$this->e($t['label'] ?? '').'</a></li>';
+                $html .= '>'.$this->escape($t['label'] ?? '').'</a></li>';
             }
             $html .= '</ul>';
         }

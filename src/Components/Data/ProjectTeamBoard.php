@@ -62,16 +62,16 @@ class ProjectTeamBoard extends Component
 
         $html = '<div'.$this->attrs(['class' => 'xf-project-board']).'>';
         $html .= '<div class="d-flex align-items-sm-center flex-sm-row flex-column mb-3">'
-            .'<h5 class="mb-0 me-3">'.$this->e($this->get('title')).'</h5>'
+            .'<h5 class="mb-0 me-3">'.$this->escape($this->get('title')).'</h5>'
             .'<button class="btn btn-sm btn-success ms-sm-auto"><i class="ti ti-plus me-1"></i>新建团队</button></div>';
 
         $html .= '<div class="row">';
         foreach ($teams as $t) {
             $html .= '<div class="'.$colCls.'"><div class="card card-h-100"><div class="card-header">';
-            $html .= '<h4 class="card-title">'.$this->e($t['code'] ?? '').' - '.$this->e($t['name'] ?? '');
+            $html .= '<h4 class="card-title">'.$this->escape($t['code'] ?? '').' - '.$this->escape($t['name'] ?? '');
             if (! empty($t['badge'])) {
                 $b = $t['badge'];
-                $html .= ' <span class="ms-2 badge badge-label text-bg-'.$this->e($b['variant'] ?? 'primary').'">'.$this->e($b['text'] ?? '').'</span>';
+                $html .= ' <span class="ms-2 badge badge-label text-bg-'.$this->escape($b['variant'] ?? 'primary').'">'.$this->escape($b['text'] ?? '').'</span>';
             }
             $html .= '</h4>';
             $html .= '<div class="dropdown ms-auto"><a href="#" class="text-muted fs-xl" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>'
@@ -91,7 +91,7 @@ class ProjectTeamBoard extends Component
                 }
                 $html .= '<div class="avatar">';
                 if (! empty($m)) {
-                    $html .= '<img src="'.$this->e(XfAdmin::img((string) $m)).'" alt="" class="rounded-circle avatar-sm">';
+                    $html .= '<img src="'.$this->escape(XfAdmin::img((string) $m)).'" alt="" class="rounded-circle avatar-sm">';
                 }
                 $html .= '</div>';
                 $shown++;
@@ -99,12 +99,12 @@ class ProjectTeamBoard extends Component
             $html .= '</div>';
 
             if (! empty($t['about'])) {
-                $html .= '<div class="mb-3"><h6 class="fs-base mb-2">About Team:</h6><p class="text-muted mb-0">'.$this->e($t['about']).'</p></div>';
+                $html .= '<div class="mb-3"><h6 class="fs-base mb-2">About Team:</h6><p class="text-muted mb-0">'.$this->escape($t['about']).'</p></div>';
             }
             $html .= '<div class="row">';
             foreach ([['ti ti-layout-kanban', 'Projects', $t['projects'] ?? '0'], ['ti ti-award', 'Ranking', $t['ranking'] ?? '-'], ['ti ti-wallet', 'Budgets', $t['budgets'] ?? '-']] as [$icon, $label, $value]) {
                 $html .= '<div class="col-4"><div class="d-flex gap-2 mb-3 mb-xl-0"><div class="avatar-sm flex-shrink-0"><span class="avatar-title text-bg-light rounded-circle"><i class="'.$icon.' fs-lg text-primary"></i></span></div>'
-                    .'<div><h6 class="mb-1 text-muted text-uppercase fs-xs">'.$this->e($label).'</h6><p class="fw-medium mb-0">'.$this->e($value).'</p></div></div></div>';
+                    .'<div><h6 class="mb-1 text-muted text-uppercase fs-xs">'.$this->escape($label).'</h6><p class="fw-medium mb-0">'.$this->escape($value).'</p></div></div></div>';
             }
             $html .= '</div>';
 
@@ -115,8 +115,8 @@ class ProjectTeamBoard extends Component
                 .'<div class="progress progress-md"><div class="progress-bar" style="width:'.$progress.'%;"></div></div></div>';
 
             $html .= '<div class="d-flex justify-content-between align-items-center">'
-                .'<span class="text-muted fs-xs"><i class="ti ti-clock me-1"></i>Updated '.$this->e($t['updated'] ?? '').'</span>'
-                .'<a href="'.$this->e($this->safeUrl($t['url'] ?? '#')).'" class="btn btn-sm btn-primary rounded-pill">Details</a></div>';
+                .'<span class="text-muted fs-xs"><i class="ti ti-clock me-1"></i>Updated '.$this->escape($t['updated'] ?? '').'</span>'
+                .'<a href="'.$this->escape($this->safeUrl($t['url'] ?? '#')).'" class="btn btn-sm btn-primary rounded-pill">Details</a></div>';
 
             $html .= '</div></div></div>';
         }

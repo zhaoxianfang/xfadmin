@@ -74,7 +74,7 @@ class Utilities extends Component
     private function card(string $title, string $body): string
     {
         return '<div class="card">'
-            .'<div class="card-header"><h4 class="card-title">'.$this->e($title).'</h4></div>'
+            .'<div class="card-header"><h4 class="card-title">'.$this->escape($title).'</h4></div>'
             .'<div class="card-body">'.$body.'</div>'
             .'</div><!-- end card--><!--SPLIT-->';
     }

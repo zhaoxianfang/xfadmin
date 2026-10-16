@@ -54,12 +54,12 @@ class ProductDetails extends Component
 
         // 画廊（主图用 class 定位、事件委托切换，支持同页多实例互不干扰）
         $html .= '<div class="col-lg-5">';
-        $html .= '<div class="border rounded overflow-hidden mb-2"><img src="'.$this->e($mainUrl).'" class="w-100 object-fit-cover pd-main" alt=""></div>';
+        $html .= '<div class="border rounded overflow-hidden mb-2"><img src="'.$this->escape($mainUrl).'" class="w-100 object-fit-cover pd-main" alt=""></div>';
         if (count($images) > 1) {
             $html .= '<div class="d-flex gap-2 flex-wrap">';
             foreach ($images as $img) {
                 $url = XfAdmin::img((string) $img);
-                $html .= '<img src="'.$this->e($url).'" width="64" height="64" class="rounded border pd-thumb object-fit-cover" style="width:64px;height:64px;cursor:pointer" alt="" data-full="'.$this->e($url).'">';
+                $html .= '<img src="'.$this->escape($url).'" width="64" height="64" class="rounded border pd-thumb object-fit-cover" style="width:64px;height:64px;cursor:pointer" alt="" data-full="'.$this->escape($url).'">';
             }
             $html .= '</div>';
         }
@@ -67,41 +67,41 @@ class ProductDetails extends Component
 
         // 信息
         $html .= '<div class="col-lg-7">';
-        $html .= '<small class="text-primary fw-semibold">'.$this->e($p['category'] ?? '').'</small>';
-        $html .= '<h3 class="mt-1">'.$this->e($p['name'] ?? '').'</h3>';
+        $html .= '<small class="text-primary fw-semibold">'.$this->escape($p['category'] ?? '').'</small>';
+        $html .= '<h3 class="mt-1">'.$this->escape($p['name'] ?? '').'</h3>';
 
         if (! empty($p['rating']) || ! empty($p['reviews'])) {
             $html .= '<div class="d-flex align-items-center gap-2 mb-3">';
             $html .= $this->stars((float) ($p['rating'] ?? 0));
             if (! empty($p['reviews'])) {
-                $html .= '<small class="text-muted">'.$this->e($p['rating'] ?? 0).' · '.(int) $p['reviews'].' 条评价</small>';
+                $html .= '<small class="text-muted">'.$this->escape($p['rating'] ?? 0).' · '.(int) $p['reviews'].' 条评价</small>';
             }
             $html .= '</div>';
         }
         $html .= '<div class="d-flex align-items-baseline gap-2 mb-3">';
-        $html .= '<span class="fs-3 fw-bold text-primary">'.$this->e($p['price'] ?? '').'</span>';
+        $html .= '<span class="fs-3 fw-bold text-primary">'.$this->escape($p['price'] ?? '').'</span>';
         if (! empty($p['old_price'])) {
-            $html .= '<span class="text-muted text-decoration-line-through">'.$this->e($p['old_price']).'</span>';
+            $html .= '<span class="text-muted text-decoration-line-through">'.$this->escape($p['old_price']).'</span>';
         }
         $html .= '</div>';
 
         if (! empty($p['stock'])) {
-            $html .= '<div class="mb-3"><span class="badge bg-success-subtle text-success"><i class="ti ti-circle-check me-1"></i>'.$this->e($p['stock']).'</span></div>';
+            $html .= '<div class="mb-3"><span class="badge bg-success-subtle text-success"><i class="ti ti-circle-check me-1"></i>'.$this->escape($p['stock']).'</span></div>';
         }
         if (! empty($p['description'])) {
-            $html .= '<p class="text-muted">'.$this->e($p['description']).'</p>';
+            $html .= '<p class="text-muted">'.$this->escape($p['description']).'</p>';
         }
         // 变体
         foreach ((array) ($p['variants'] ?? []) as $label => $opts) {
             $opts = (array) $opts;
             $isColor = $label === 'color' || $label === '颜色';
-            $html .= '<div class="mb-3"><span class="text-muted small d-block mb-1">'.$this->e($label).'</span><div class="d-flex gap-2 flex-wrap">';
+            $html .= '<div class="mb-3"><span class="text-muted small d-block mb-1">'.$this->escape($label).'</span><div class="d-flex gap-2 flex-wrap">';
             foreach ($opts as $opt) {
                 if ($isColor) {
                     // 背景色走 cssColor 白名单校验，防止 style 属性注入
-                    $html .= '<button class="btn btn-sm rounded-circle p-0 border" style="width:28px;height:28px;background:'.$this->cssColor($opt).'" title="'.$this->e($opt).'"></button>';
+                    $html .= '<button class="btn btn-sm rounded-circle p-0 border" style="width:28px;height:28px;background:'.$this->cssColor($opt).'" title="'.$this->escape($opt).'"></button>';
                 } else {
-                    $html .= '<button class="btn btn-sm btn-outline-secondary">'.$this->e($opt).'</button>';
+                    $html .= '<button class="btn btn-sm btn-outline-secondary">'.$this->escape($opt).'</button>';
                 }
             }
             $html .= '</div></div>';
@@ -115,7 +115,7 @@ class ProductDetails extends Component
         if (! empty($p['features'])) {
             $html .= '<ul class="list-inline mb-0">';
             foreach ((array) $p['features'] as $f) {
-                $html .= '<li class="list-inline-item"><span class="badge bg-light text-dark"><i class="ti ti-circle-check text-success me-1"></i>'.$this->e($f).'</span></li>';
+                $html .= '<li class="list-inline-item"><span class="badge bg-light text-dark"><i class="ti ti-circle-check text-success me-1"></i>'.$this->escape($f).'</span></li>';
             }
             $html .= '</ul>';
         }
@@ -131,7 +131,7 @@ class ProductDetails extends Component
             foreach ((array) $p['related'] as $r) {
                 $r = (array) $r;
                 $rImg = ! empty($r['image']) ? XfAdmin::img((string) $r['image']) : '';
-                $html .= '<div class="col-lg-3 col-6"><div class="card h-100"><img src="'.$this->e($rImg).'" class="card-img-top object-fit-cover" height="140" alt="" style="height:140px;"><div class="card-body p-2"><div class="fw-semibold small text-truncate">'.$this->e($r['title'] ?? '').'</div><div class="text-primary small fw-bold">'.$this->e($r['price'] ?? '').'</div></div></div></div>';
+                $html .= '<div class="col-lg-3 col-6"><div class="card h-100"><img src="'.$this->escape($rImg).'" class="card-img-top object-fit-cover" height="140" alt="" style="height:140px;"><div class="card-body p-2"><div class="fw-semibold small text-truncate">'.$this->escape($r['title'] ?? '').'</div><div class="text-primary small fw-bold">'.$this->escape($r['price'] ?? '').'</div></div></div></div>';
             }
             $html .= '</div></div>';
         }
@@ -177,14 +177,14 @@ class ProductDetails extends Component
             $t = (array) $t;
             $active = $i === 0 ? ' active' : '';
             $id = $prefix.'-'.$i;
-            $html .= '<li class="nav-item" role="presentation"><button class="nav-link'.$active.'" data-bs-toggle="tab" data-bs-target="#'.$this->e($id).'" type="button" role="tab">'.$this->e($t['title'] ?? '').'</button></li>';
+            $html .= '<li class="nav-item" role="presentation"><button class="nav-link'.$active.'" data-bs-toggle="tab" data-bs-target="#'.$this->escape($id).'" type="button" role="tab">'.$this->escape($t['title'] ?? '').'</button></li>';
         }
         $html .= '</ul></div><div class="card-body"><div class="tab-content">';
         foreach ($tabs as $i => $t) {
             $t = (array) $t;
             $show = $i === 0 ? ' show active' : '';
             $id = $prefix.'-'.$i;
-            $html .= '<div class="tab-pane fade'.$show.'" id="'.$this->e($id).'" role="tabpanel">'.$this->raw($t['body'] ?? '').'</div>';
+            $html .= '<div class="tab-pane fade'.$show.'" id="'.$this->escape($id).'" role="tabpanel">'.$this->raw($t['body'] ?? '').'</div>';
         }
 
         return $html.'</div></div></div>';

@@ -65,10 +65,10 @@ class FileManager extends Component
             $html .= '<i class="'.$icon.' fs-1 text-'.$variant.'"></i>';
             $html .= '<div class="flex-grow-1 overflow-hidden">';
             $href = $this->safeUrl($f['href'] ?? '#', '#');
-            $html .= '<h5 class="mb-0 text-truncate"><a href="'.$this->e($href).'" class="text-body">'.$this->e($f['name'] ?? '').'</a></h5>';
+            $html .= '<h5 class="mb-0 text-truncate"><a href="'.$this->escape($href).'" class="text-body">'.$this->escape($f['name'] ?? '').'</a></h5>';
             $meta = array_filter([$f['size'] ?? null, $f['meta'] ?? null]);
             if ($meta) {
-                $html .= '<small class="text-muted">'.$this->e(implode(' · ', $meta)).'</small>';
+                $html .= '<small class="text-muted">'.$this->escape(implode(' · ', $meta)).'</small>';
             }
             $html .= '</div>';
             $html .= '<div class="dropdown"><a href="#" class="text-muted" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>';

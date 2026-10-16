@@ -72,7 +72,7 @@ class FormOtherPlugin extends Component
                 $attrs['class'] = 'form-control';
                 $attrs['id'] = $m['id'];
                 $attrs['placeholder'] = $m['ph'];
-                $cards .= '<div class="col-md-6"><label class="form-label">'.$this->e($m['label']).'</label>'
+                $cards .= '<div class="col-md-6"><label class="form-label">'.$this->escape($m['label']).'</label>'
                     .'<input'.Html::attrs($attrs).'></div>';
             }
             $html .= '<div class="card mb-3"><div class="card-header"><h5 class="card-title mb-0">输入掩码 Mask</h5></div><div class="card-body"><div class="row g-3">'
@@ -105,12 +105,12 @@ class FormOtherPlugin extends Component
                 if ($m['tag'] === 'textarea') {
                     $attrs['rows'] = '3';
                     $attrs['placeholder'] = '最多输入 '.$m['max'].' 个字符';
-                    $cards .= '<div class="col-md-6"><label class="form-label">'.$this->e($m['label']).'</label>'
+                    $cards .= '<div class="col-md-6"><label class="form-label">'.$this->escape($m['label']).'</label>'
                         .'<textarea'.Html::attrs($attrs).'></textarea></div>';
                 } else {
                     $attrs['type'] = 'text';
                     $attrs['placeholder'] = '最多输入 '.$m['max'].' 个字符';
-                    $cards .= '<div class="col-md-6"><label class="form-label">'.$this->e($m['label']).'</label>'
+                    $cards .= '<div class="col-md-6"><label class="form-label">'.$this->escape($m['label']).'</label>'
                         .'<input'.Html::attrs($attrs).'></div>';
                 }
             }

@@ -46,14 +46,14 @@ class FaqAccordion extends Component
 
         $id = $this->uid('xf-faq');
 
-        $html = '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->e($title).'</h5></div><div class="card-body">';
+        $html = '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->escape($title).'</h5></div><div class="card-body">';
 
         if (empty($items)) {
             $html .= '<div class="text-center text-muted py-4">暂无常见问题</div></div></div>';
 
             return $html;
         }
-        $html .= '<div class="accordion" id="'.$this->e($id).'">';
+        $html .= '<div class="accordion" id="'.$this->escape($id).'">';
 
         foreach ($items as $i => $it) {
             $it = (array) $it;
@@ -63,8 +63,8 @@ class FaqAccordion extends Component
             $expanded = $i === 0;
 
             $html .= '<div class="accordion-item">';
-            $html .= '<h2 class="accordion-header"><button class="accordion-button'.($expanded ? '' : ' collapsed').'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$this->e($itemId).'" aria-expanded="'.($expanded ? 'true' : 'false').'">'.$this->e($q).'</button></h2>';
-            $html .= '<div id="'.$this->e($itemId).'" class="accordion-collapse collapse'.($expanded ? ' show' : '').'" data-bs-parent="#'.$this->e($id).'"><div class="accordion-body">'.$this->e($a).'</div></div>';
+            $html .= '<h2 class="accordion-header"><button class="accordion-button'.($expanded ? '' : ' collapsed').'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$this->escape($itemId).'" aria-expanded="'.($expanded ? 'true' : 'false').'">'.$this->escape($q).'</button></h2>';
+            $html .= '<div id="'.$this->escape($itemId).'" class="accordion-collapse collapse'.($expanded ? ' show' : '').'" data-bs-parent="#'.$this->escape($id).'"><div class="accordion-body">'.$this->escape($a).'</div></div>';
             $html .= '</div>';
         }
         $html .= '</div></div></div>';

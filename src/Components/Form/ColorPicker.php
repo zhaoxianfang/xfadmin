@@ -62,7 +62,7 @@ class ColorPicker extends Component
         ], $this->describeAttrs($id), $this->stateAria());
 
         $control = '<div class="d-flex align-items-center gap-2">'
-            .'<div id="'.$this->e($id).'" data-xf="pickr" data-xf-config="'.$this->e(json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"></div>'
+            .'<div id="'.$this->escape($id).'" data-xf="pickr" data-xf-config="'.$this->escape(json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"></div>'
             .($this->get('name') ? '<input'.Html::attrs($hiddenAttrs).'>' : '')
             .'</div>';
 

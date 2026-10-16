@@ -89,7 +89,7 @@ class LoadingButton extends Component
             $attrs[$k] = $k === 'class' ? Html::cls($attrs['class'] ?? '', $v) : $v;
         }
         $html = '<button'.$this->attrs($attrs).'>';
-        $html .= '<span class="xf-lbtn-label">'.$icon.$this->e($this->get('text')).'</span>';
+        $html .= '<span class="xf-lbtn-label">'.$icon.$this->escape($this->get('text')).'</span>';
         $html .= '<span class="xf-lbtn-spinner spinner-border spinner-border-sm d-none" role="status"></span>';
         $html .= '</button>';
 

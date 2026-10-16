@@ -56,17 +56,17 @@ class Countdown extends Component
 
         $html = '<div'.$this->attrs(['class' => 'xf-countdown']).'>';
         if ($title !== '') {
-            $html .= '<div class="xf-countdown-title small text-muted mb-1">'.$this->e($title).'</div>';
+            $html .= '<div class="xf-countdown-title small text-muted mb-1">'.$this->escape($title).'</div>';
         }
         $html .= '<div class="xf-countdown-blocks d-inline-flex align-items-center gap-2" data-xf="countdown"'
-            .' data-xf-config="'.$this->e(json_encode(
+            .' data-xf-config="'.$this->escape(json_encode(
                 $cfg,
                 JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             )).'">';
         $units = ['d', 'h', 'm', 's'];
         foreach ($units as $i => $u) {
             $html .= '<span class="xf-countdown-unit"><b class="xf-cd-num" data-u="'.$u.'">00</b>'
-                .'<small class="xf-cd-label">'.$this->e($labels[$i] ?? '').'</small></span>';
+                .'<small class="xf-cd-label">'.$this->escape($labels[$i] ?? '').'</small></span>';
         }
         $html .= '</div></div>';
 

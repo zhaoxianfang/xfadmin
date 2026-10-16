@@ -51,9 +51,9 @@ class CountUp extends Component
         ];
 
         return '<span'.$this->attrs(['class' => 'xf-countup'])
-            .' data-xf="countup" data-xf-config="'.$this->e(json_encode(
+            .' data-xf="countup" data-xf-config="'.$this->escape(json_encode(
                 $cfg,
                 JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
-            )).'">'.$this->e($cfg['prefix'].'0'.$cfg['suffix']).'</span>';
+            )).'">'.$this->escape($cfg['prefix'].'0'.$cfg['suffix']).'</span>';
     }
 }

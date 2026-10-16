@@ -65,10 +65,10 @@ class DescriptionList extends Component
             $valHtml = $raw ? $this->raw($value) : $this->text($value);
 
             if ($horizontal) {
-                $html .= '<dt class="col-sm-'.$lw.' text-muted fw-normal py-1">'.$this->e($label).'</dt>';
+                $html .= '<dt class="col-sm-'.$lw.' text-muted fw-normal py-1">'.$this->escape($label).'</dt>';
                 $html .= '<dd class="col-sm-'.(12 - $lw).' mb-0 py-1">'.$valHtml.'</dd>';
             } else {
-                $html .= '<dt class="text-muted fw-normal">'.$this->e($label).'</dt><dd class="mb-2">'.$valHtml.'</dd>';
+                $html .= '<dt class="text-muted fw-normal">'.$this->escape($label).'</dt><dd class="mb-2">'.$valHtml.'</dd>';
             }
         }
 

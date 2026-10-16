@@ -47,10 +47,10 @@ class ComingSoon extends AuthPage
 
         $content = '<div class="text-center">';
         if ($this->get('image')) {
-            $content .= '<img src="'.$this->e(XfAdmin::img((string) $this->get('image'))).'" class="img-fluid mb-3" alt="">';
+            $content .= '<img src="'.$this->escape(XfAdmin::img((string) $this->get('image'))).'" class="img-fluid mb-3" alt="">';
         }
-        $content .= '<h2 class="fw-bold">'.$this->e($this->get('heading')).'</h2>';
-        $content .= '<p class="text-muted">'.$this->e($this->get('message')).'</p>';
+        $content .= '<h2 class="fw-bold">'.$this->escape($this->get('heading')).'</h2>';
+        $content .= '<p class="text-muted">'.$this->escape($this->get('message')).'</p>';
 
         if ($this->get('deadline')) {
             // strtotime 解析失败返回 false，直接乘 1000 会得到 0（1970 起点）导致倒计时异常；

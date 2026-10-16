@@ -72,8 +72,8 @@ class Slider extends Component
         $control = '<div'.Html::attrs($sliderAttrs).'></div>';
 
         if ($this->get('name')) {
-            $control .= '<input type="hidden" name="'.$this->e($this->get('name')).'" value="'
-                .$this->e(is_array($value) ? implode(',', $value) : $value).'">';
+            $control .= '<input type="hidden" name="'.$this->escape($this->get('name')).'" value="'
+                .$this->escape(is_array($value) ? implode(',', $value) : $value).'">';
         }
 
         return $this->wrapField($control, $id);

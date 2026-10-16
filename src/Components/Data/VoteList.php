@@ -57,7 +57,7 @@ class VoteList extends Component
 
         $html = '<div'.$this->attrs(['class' => 'card xf-vote-list', 'data-xf' => 'votelist']).'>';
         if ($title !== '') {
-            $html .= '<div class="card-header border-light"><h5 class="card-title mb-0">'.$this->e($title).'</h5></div>';
+            $html .= '<div class="card-header border-light"><h5 class="card-title mb-0">'.$this->escape($title).'</h5></div>';
         }
         $html .= '<div class="card-body p-0">';
 
@@ -76,9 +76,9 @@ class VoteList extends Component
             // 内容区
             $html .= '<div class="flex-grow-1">';
             $itUrl = $this->safeUrl($it['url'] ?? '#', '#');
-            $html .= '<h4 class="fs-md mb-1"><a href="'.$this->e($itUrl).'" class="link-reset">'.$this->e($it['title'] ?? '').'</a></h4>';
+            $html .= '<h4 class="fs-md mb-1"><a href="'.$this->escape($itUrl).'" class="link-reset">'.$this->escape($it['title'] ?? '').'</a></h4>';
             if (! empty($it['desc'])) {
-                $html .= '<p class="text-muted mb-2">'.$this->e($it['desc']).'</p>';
+                $html .= '<p class="text-muted mb-2">'.$this->escape($it['desc']).'</p>';
             }
             $html .= '<p class="d-flex flex-wrap gap-3 text-muted mb-1 align-items-center fs-base">';
             $author = $it['author'] ?? null;
@@ -86,21 +86,21 @@ class VoteList extends Component
                 $html .= '<span class="d-flex align-items-center gap-1">';
                 if (! empty($author['avatar'])) {
                     // 作者头像：统一用 .avatar 包裹（avatar-xs = 1.5rem/24px），替代裸 img + 尺寸类写法
-                    $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $author['avatar'])).'" class="img-fluid rounded-circle" alt=""></span>';
+                    $html .= '<span class="avatar avatar-xs flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $author['avatar'])).'" class="img-fluid rounded-circle" alt=""></span>';
                 }
-                $html .= '<a href="#" class="link-reset fw-semibold">'.$this->e($author['name'] ?? '').'</a></span>';
+                $html .= '<a href="#" class="link-reset fw-semibold">'.$this->escape($author['name'] ?? '').'</a></span>';
             }
             if (! empty($it['date'])) {
-                $html .= '<span><i class="ti ti-calendar"></i> 发布于 '.$this->e($it['date']).'</span>';
+                $html .= '<span><i class="ti ti-calendar"></i> 发布于 '.$this->escape($it['date']).'</span>';
             }
             if (! empty($it['tag'])) {
-                $html .= '<span class="d-flex align-items-center gap-1"><i class="ti ti-tag"></i> <span class="badge bg-light text-primary">'.$this->e($it['tag']).'</span></span>';
+                $html .= '<span class="d-flex align-items-center gap-1"><i class="ti ti-tag"></i> <span class="badge bg-light text-primary">'.$this->escape($it['tag']).'</span></span>';
             }
             if (isset($it['comments'])) {
                 $html .= '<span><i class="ti ti-message-circle"></i> 评论 '.(int) $it['comments'].'</span>';
             }
             if (! empty($it['ends'])) {
-                $html .= '<span><i class="ti ti-clock"></i> 截止：'.$this->e($it['ends']).'</span>';
+                $html .= '<span><i class="ti ti-clock"></i> 截止：'.$this->escape($it['ends']).'</span>';
             }
             if (isset($it['total'])) {
                 $html .= '<span><i class="ti ti-users"></i> 投票数 '.number_format((int) $it['total']).'</span>';
@@ -108,7 +108,7 @@ class VoteList extends Component
             if (! empty($it['status'])) {
                 // variant 走白名单校验，防止任意值拼入 class 属性
                 $variant = $this->enum($it['variant'] ?? 'secondary', self::ENUM_VARIANT, 'secondary');
-                $html .= '<span class="d-flex align-items-center gap-1"><i class="ti ti-lock"></i> <span class="badge text-bg-'.$variant.'">'.$this->e($it['status']).'</span></span>';
+                $html .= '<span class="d-flex align-items-center gap-1"><i class="ti ti-lock"></i> <span class="badge text-bg-'.$variant.'">'.$this->escape($it['status']).'</span></span>';
             }
             $html .= '</p></div></div></div>';
         }

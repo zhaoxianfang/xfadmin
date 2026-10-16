@@ -61,7 +61,7 @@
 日历（FullCalendar 事件视图）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Calendar`
-> **文件**：`src/Components/Misc/Calendar.php`（112 行）
+> **文件**：`src/Components/Misc/Calendar.php`（88 行）
 > **依赖插件**：`fullcalendar`
 
 **用法示例**
@@ -119,7 +119,7 @@ echo XfAdmin::calendar([
 树形视图（可展开节点）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\TreeView`
-> **文件**：`src/Components/Misc/TreeView.php`（75 行）
+> **文件**：`src/Components/Misc/TreeView.php`（53 行）
 > **依赖插件**：`jstree`
 
 **用法示例**
@@ -160,8 +160,8 @@ echo XfAdmin::treeView([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `data` | array | `[]` | 数据数组（行数据 / 图表数据） |
-| `checkbox` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
-| `dnd` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
+| `checkbox` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `dnd` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -173,7 +173,7 @@ echo XfAdmin::treeView([
 可拖拽排序列表（嵌套 sortable）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Nestable`
-> **文件**：`src/Components/Misc/Nestable.php`（100 行）
+> **文件**：`src/Components/Misc/Nestable.php`（73 行）
 > **依赖插件**：`sortablejs`
 
 **用法示例**
@@ -215,7 +215,7 @@ echo XfAdmin::nestable([
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 | `handle` | bool | `false` | 源码用法：`$handle = (bool) $this->get('handle');` |
-| `input` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `input` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -227,7 +227,7 @@ echo XfAdmin::nestable([
 灯箱（点击图片放大预览）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Lightbox`
-> **文件**：`src/Components/Misc/Lightbox.php`（92 行）
+> **文件**：`src/Components/Misc/Lightbox.php`（71 行）
 > **依赖插件**：`glightbox`、`masonry`
 
 **用法示例**
@@ -260,7 +260,7 @@ echo XfAdmin::lightbox([
 
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
-- `images[]` 元素键：`thumb`、`src`、`title`
+- `images[]` 元素键：`title`、`src`、`thumb`
 
 **配置参数**
 
@@ -269,7 +269,7 @@ echo XfAdmin::lightbox([
 | `images` | array | `[]` |  |
 | `columns` | int | `3` | 列定义数组；源码用法：`$cols = max(1, (int) $this->get('columns'));` |
 | `masonry` | bool | `false` | 源码用法：`return $this->get('masonry') ? ['glightbox', 'masonry'] : ['glightbox'];` |
-| `gallery` | string | `'xf-gallery'` | 输出到 `data-gallery` 属性 |
+| `gallery` | string | `'xf-gallery'` | 源码用法：`$gallery = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $this->get('gallery'));` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -281,7 +281,7 @@ echo XfAdmin::lightbox([
 新手指引漫游（分步高亮引导）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Tour`
-> **文件**：`src/Components/Misc/Tour.php`（68 行）
+> **文件**：`src/Components/Misc/Tour.php`（49 行）
 > **依赖插件**：`tourguide`
 
 **用法示例**
@@ -325,7 +325,7 @@ echo XfAdmin::tour([
 剪贴板复制按钮（clipboard.js）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\ClipboardButton` 等 `clipboard` / `clipboardButton`
-> **文件**：`src/Components/Misc/ClipboardButton.php`（64 行）
+> **文件**：`src/Components/Misc/ClipboardButton.php`（51 行）
 > **依赖插件**：`clipboard`
 
 **用法示例**
@@ -353,10 +353,10 @@ echo XfAdmin::clipboard([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `target` | mixed | `null` | 目标（组件语义不同：链接打开方式 `_blank` / 倒计时目标时间 / 数值目标）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `label` | string | `'复制'` | 标签文案（表单字段标签 / 按钮文案）；**文本槽位**：输出前自动 HTML 转义 |
-| `variant` | string | `'light'` | 源码用法：`'class' => 'btn btn-sm btn-' . $this->enum($this->get('variant'), array_merge(self::E…`；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
+| `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `target` | mixed | `null` | 目标（组件语义不同：链接打开方式 `_blank` / 倒计时目标时间 / 数值目标）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `label` | string | `'复制'` | 标签文案（表单字段标签 / 按钮文案）；源码用法：`return '<button'.$this->attrs($attrs).'><i class="ti ti-copy me-1"></i>'.$this->escap…` |
+| `variant` | string | `'light'` | 源码用法：`'class' => 'btn btn-sm btn-'.$this->enum($this->get('variant'), array_merge(self::ENU…`；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `success` | string | `'已复制！'` | 源码用法：`'data-xf-config' => json_encode(['success' => $this->get('success')], JSON_UNESCAPED_…` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -382,7 +382,7 @@ echo XfAdmin::clipboardButton([              // 等价 XfAdmin::clipboard()
 SweetAlert2 弹窗（confirm/toast 等）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\SweetAlert`
-> **文件**：`src/Components/Misc/SweetAlert.php`（99 行）
+> **文件**：`src/Components/Misc/SweetAlert.php`（76 行）
 > **依赖插件**：`sweetalert2`
 
 **用法示例**
@@ -424,8 +424,8 @@ echo XfAdmin::sweetAlert([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `trigger` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块；可选值：`hover` / `click` / `focus` |
-| `trigger_variant` | string | `'primary'` | 触发按钮的语义变体（primary/secondary/…）；源码用法：`'class' => 'btn btn-' . $this->enum($this->get('trigger_variant'), array_merge(self::…` |
+| `trigger` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块；可选值：`hover` / `click` / `focus` |
+| `trigger_variant` | string | `'primary'` | 触发按钮的语义变体（primary/secondary/…）；源码用法：`'class' => 'btn btn-'.$this->enum($this->get('trigger_variant'), array_merge(self::EN…` |
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；输出到 `title` 属性 |
 | `text` | mixed | `null` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`'text' => $this->get('text'),` |
 | `icon` | mixed | `null` | success \| error \| warning \| info \| question |
@@ -445,7 +445,7 @@ echo XfAdmin::sweetAlert([
 原生 HTML 透传（不包裹任何结构的原样输出组件）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Raw`
-> **文件**：`src/Components/Misc/Raw.php`（59 行）
+> **文件**：`src/Components/Misc/Raw.php`（47 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -475,9 +475,9 @@ echo XfAdmin::raw([
 |---|---|---|---|
 | `html` | string | `''` | 自定义 HTML（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `plugins` | array | `[]` | 启用的插件列表 |
-| `js` | mixed | `null` | 追加内联 JS（自动去重可传 js_key）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `js` | mixed | `null` | 追加内联 JS（自动去重可传 js_key）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `js_key` | mixed | `null` | 源码用法：`$assets->inlineJs((string) $this->get('js'), $this->get('js_key'));` |
-| `css` | mixed | `null` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `css` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `css_key` | mixed | `null` | 源码用法：`$assets->inlineCss((string) $this->get('css'), $this->get('css_key'));` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -489,7 +489,7 @@ echo XfAdmin::raw([
 动态 favicon 角标（未读消息数）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Tinycon`
-> **文件**：`src/Components/Misc/Tinycon.php`（69 行）
+> **文件**：`src/Components/Misc/Tinycon.php`（54 行）
 > **依赖插件**：`tinycon`
 
 **用法示例**
@@ -514,9 +514,9 @@ echo XfAdmin::tinycon([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `count` | int | `0` | 数量 / 计数徽标数字；源码用法：`$this->set('data-count', (int) $this->get('count'));` |
-| `color` | string | `'#e63757'` | 颜色值（#hex / rgb() / 具名色）；源码用法：`$this->set('data-color', $this->get('color'));` |
-| `background` | string | `'#3e60d5'` | 源码用法：`$this->set('data-bg', $this->get('background'));` |
+| `count` | int | `0` | 数量 / 计数徽标数字；源码用法：`'data-count' => (int) $this->get('count'),` |
+| `color` | string | `'#e63757'` | 颜色值（#hex / rgb() / 具名色）；源码用法：`'data-color' => $this->escape($this->get('color')),` |
+| `background` | string | `'#3e60d5'` | 源码用法：`'data-bg' => $this->escape($this->get('background')),` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -527,7 +527,7 @@ echo XfAdmin::tinycon([
 空闲计时器（用户无操作超时处理）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\IdleTimer`
-> **文件**：`src/Components/Misc/IdleTimer.php`（93 行）
+> **文件**：`src/Components/Misc/IdleTimer.php`（73 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -563,7 +563,7 @@ echo XfAdmin::idleTimer([
 | `timeout` | int | `60` | 源码用法：`'timeout' => (int) $this->get('timeout'),` |
 | `warn` | int | `0` | 源码用法：`'warn' => (int) $this->get('warn'),` |
 | `warnText` | string | `'您已闲置，即将自动锁定'` | 源码用法：`'warnText' => $this->get('warnText'),` |
-| `onIdleUrl` | string | `''` | 源码用法：`'onIdleUrl'=> $this->get('onIdleUrl'),` |
+| `onIdleUrl` | string | `''` | URL：经协议白名单校验（拦截 `javascript:` 等） |
 | `onIdle` | string | `''` | 源码用法：`'onIdle' => $this->get('onIdle'),` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -575,7 +575,7 @@ echo XfAdmin::idleTimer([
 入场动画（滚动触发元素动画）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Animate`
-> **文件**：`src/Components/Misc/Animate.php`（113 行）
+> **文件**：`src/Components/Misc/Animate.php`（85 行）
 > **依赖插件**：`animate`
 
 **用法示例**
@@ -616,11 +616,11 @@ echo XfAdmin::animate([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `animation` | string | `'bounce'` | 动画类名 |
-| `trigger` | string | `'load'` | 可选值：`hover` / `click` / `focus` |
-| `infinite` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
-| `delay` | mixed | `null` | 延迟（毫秒）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `speed` | mixed | `null` | 开关：非空 / 真值时启用对应区块 |
-| `repeat` | mixed | `null` | 开关：非空 / 真值时启用对应区块 |
+| `trigger` | string | `'load'` | 枚举白名单 `'load', 'hover', 'click', 'scroll'`；可选值：`hover` / `click` / `focus` |
+| `infinite` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `delay` | mixed | `null` | 延迟（毫秒）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `speed` | mixed | `null` | 源码用法：`$speed = $this->enum((string) $this->get('speed'), ['slower', 'slow', 'normal', 'fast…` |
+| `repeat` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `content` | string | `''` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `tag` | string | `'div'` | 标签 / 渲染标签名 |
 
@@ -633,7 +633,7 @@ echo XfAdmin::animate([
 PDF 预览（pdf.js 内嵌查看）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\PdfViewer`
-> **文件**：`src/Components/Misc/PdfViewer.php`（110 行）
+> **文件**：`src/Components/Misc/PdfViewer.php`（98 行）
 > **依赖插件**：`pdfjs`
 
 **用法示例**
@@ -667,8 +667,8 @@ echo XfAdmin::pdfViewer([
 |---|---|---|---|
 | `url` | string | `''` | 链接地址（自动做安全协议校验）；源码用法：`$raw = (string) $this->get('url');` |
 | `height` | int | `600` | 高度（CSS 长度，受安全白名单约束）；源码用法：`$html .= '<div class="card-body p-2 overflow-auto" data-role="viewport" style="height…` |
-| `toolbar` | bool | `true` | 是否显示工具条；开关：非空 / 真值时启用对应区块 |
-| `download` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `toolbar` | bool | `true` | 是否显示工具条；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `download` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -679,7 +679,7 @@ echo XfAdmin::pdfViewer([
 文本差异对比（merge-diff 高亮）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\TextDiff`
-> **文件**：`src/Components/Misc/TextDiff.php`（74 行）
+> **文件**：`src/Components/Misc/TextDiff.php`（56 行）
 > **依赖插件**：`diff`
 
 **用法示例**
@@ -723,7 +723,7 @@ echo XfAdmin::textDiff([
 钉板（瀑布流便签卡片）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\PinBoard`
-> **文件**：`src/Components/Misc/PinBoard.php`（64 行）
+> **文件**：`src/Components/Misc/PinBoard.php`（46 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -759,7 +759,7 @@ echo XfAdmin::pinBoard([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `notes` | array | `[]` | 备注 |
-| `addable` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `addable` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -770,7 +770,7 @@ echo XfAdmin::pinBoard([
 瀑布流布局（错落卡片墙）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\Masonry`
-> **文件**：`src/Components/Misc/Masonry.php`（73 行）
+> **文件**：`src/Components/Misc/Masonry.php`（48 行）
 > **依赖插件**：`masonry`
 
 **用法示例**
@@ -819,7 +819,7 @@ echo XfAdmin::masonry([
 视频播放器（plyr 等）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\VideoPlayer`
-> **文件**：`src/Components/Misc/VideoPlayer.php`（103 行）
+> **文件**：`src/Components/Misc/VideoPlayer.php`（90 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -865,7 +865,7 @@ echo XfAdmin::videoPlayer([
 | `src` | string | `''` | 资源地址（图片 / iframe / 文件） |
 | `poster` | string | `''` | 视频封面图 |
 | `type` | string | `'video/mp4'` | 类型（各组件语义不同，详见该组件说明） |
-| `width` | string | `'100%'` | 宽度（数字=栅格列数或 CSS 长度） |
+| `width` | string | `'100%'` | 宽度（数字=栅格列数或 CSS 长度）；CSS 长度：仅接受 `数字+单位`（px/%/rem/em/vh/vw/pt/ch/fr） |
 | `autoplay` | bool | `false` | 是否自动播放 |
 | `controls` | bool | `true` | 控件配置（播放器 / 轮播控件等） |
 | `loop` | bool | `false` | 是否循环 |
@@ -881,7 +881,7 @@ echo XfAdmin::videoPlayer([
 国际化（多语言切换演示）。
 
 > **类**：`zxf\XfAdmin\Components\Misc\I18n`
-> **文件**：`src/Components/Misc/I18n.php`（175 行）
+> **文件**：`src/Components/Misc/I18n.php`（147 行）
 > **依赖插件**：无
 
 **用法示例**

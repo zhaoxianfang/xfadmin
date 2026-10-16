@@ -72,11 +72,11 @@ class AnalyticsDashboard extends Component
                 $color = $this->enum((string) ($activity['color'] ?? 'primary'), ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark'], 'primary');
                 $icon = (string) ($activity['icon'] ?? 'ti-activity');
                 $html .= '<div class="d-flex mb-3">';
-                $html .= '<div class="bg-'.$this->e($color).' bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:36px;height:36px">'
-                    .'<i class="ti '.$this->e($icon).' text-'.$this->e($color).'"></i></div>';
-                $html .= '<div><strong>'.$this->e($activity['user'] ?? '').'</strong> '
-                    .$this->e($activity['action'] ?? '').' '.$this->e($activity['target'] ?? '');
-                $html .= '<br><small class="text-muted">'.$this->e($activity['time'] ?? '').'</small></div></div>';
+                $html .= '<div class="bg-'.$this->escape($color).' bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:36px;height:36px">'
+                    .'<i class="ti '.$this->escape($icon).' text-'.$this->escape($color).'"></i></div>';
+                $html .= '<div><strong>'.$this->escape($activity['user'] ?? '').'</strong> '
+                    .$this->escape($activity['action'] ?? '').' '.$this->escape($activity['target'] ?? '');
+                $html .= '<br><small class="text-muted">'.$this->escape($activity['time'] ?? '').'</small></div></div>';
             }
         } else {
             $html .= '<div class="text-center text-muted py-3">暂无活动</div>';
@@ -109,12 +109,12 @@ class AnalyticsDashboard extends Component
             $changeArrow = $changeNum >= 0 ? 'ti-arrow-up-right' : 'ti-arrow-down-right';
 
             $html .= '<div class="col-md-3 col-sm-6"><div class="card"><div class="card-body"><div class="d-flex justify-content-between">';
-            $html .= '<div><span class="text-muted small">'.$this->e($stat['title'] ?? '').'</span>';
-            $html .= '<h3 class="mt-1 mb-0">'.$this->e($stat['value'] ?? '').'</h3>';
+            $html .= '<div><span class="text-muted small">'.$this->escape($stat['title'] ?? '').'</span>';
+            $html .= '<h3 class="mt-1 mb-0">'.$this->escape($stat['value'] ?? '').'</h3>';
             $html .= '<div class="mt-2"><span class="'.$changeClass.' small"><i class="ti '.$changeArrow.' me-1"></i>'
                 .$changeSign.abs($changeNum).'%</span></div>';
             $html .= '</div>';
-            $html .= '<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($color).' bg-'.$this->e($color).' bg-opacity-10 rounded p-2 align-self-start"></i>';
+            $html .= '<i class="ti '.$this->escape($icon).' fs-24 text-'.$this->escape($color).' bg-'.$this->escape($color).' bg-opacity-10 rounded p-2 align-self-start"></i>';
             $html .= '</div></div></div></div>';
         }
         $html .= '</div>';

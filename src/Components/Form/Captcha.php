@@ -67,7 +67,7 @@ class Captcha extends Component
 
         $html = '<div class="mb-3">';
         if (! empty($label)) {
-            $html .= '<label for="'.$this->e($id).'" class="form-label">'.$this->e($label);
+            $html .= '<label for="'.$this->escape($id).'" class="form-label">'.$this->escape($label);
             if ($req) {
                 $html .= ' <span class="text-danger">*</span>';
             }
@@ -83,12 +83,12 @@ class Captcha extends Component
             // 调用方可通过 captcha_answer 传入预期答案（留空表示完全由服务端校验）
             $this->storeCaptcha($src, $this->get('captcha_answer'));
             $html .= '<div class="input-group">'
-                .'<input type="text" class="form-control" id="'.$this->e($id).'" name="'.$this->e($name).'" placeholder="'.$this->e($this->get('placeholder')).'" autocomplete="off"'.($req ? ' required' : '').'>'
-                .'<button type="button" class="btn btn-light border" data-xf-captcha-refresh="'.$this->e($id).'" title="刷新验证码">'
+                .'<input type="text" class="form-control" id="'.$this->escape($id).'" name="'.$this->escape($name).'" placeholder="'.$this->escape($this->get('placeholder')).'" autocomplete="off"'.($req ? ' required' : '').'>'
+                .'<button type="button" class="btn btn-light border" data-xf-captcha-refresh="'.$this->escape($id).'" title="刷新验证码">'
                 .'<i class="ti ti-refresh fs-lg"></i></button></div>';
-            $html .= '<div class="mt-2"><img src="'.$this->e($src).'" class="xf-captcha-img rounded border" alt="captcha" height="42" style="cursor:pointer;height:42px;" data-xf-captcha="'.$this->e($id).'"></div>';
+            $html .= '<div class="mt-2"><img src="'.$this->escape($src).'" class="xf-captcha-img rounded border" alt="captcha" height="42" style="cursor:pointer;height:42px;" data-xf-captcha="'.$this->escape($id).'"></div>';
             if ($this->get('refreshable')) {
-                $html .= '<div class="form-text"><a href="javascript:void(0)" class="text-decoration-underline" data-xf-captcha-refresh="'.$this->e($id).'">看不清？换一张</a></div>';
+                $html .= '<div class="form-text"><a href="javascript:void(0)" class="text-decoration-underline" data-xf-captcha-refresh="'.$this->escape($id).'">看不清？换一张</a></div>';
             }
         } elseif ($mode === 'math') {
             // 题目/答案落 session：刷新或多次渲染时复用「同一题目」，后端才能校验用户输入
@@ -109,16 +109,16 @@ class Captcha extends Component
                 }
             }
             $this->storeCaptcha($question, $answer);
-            $html .= '<div class="alert alert-light border mb-2 py-2"><code>'.$this->e($question).'</code></div>';
-            $html .= '<input type="text" class="form-control" id="'.$this->e($id).'" name="'.$this->e($name).'" placeholder="'.$this->e($this->get('placeholder')).'" autocomplete="off"'.($req ? ' required' : '').'>';
+            $html .= '<div class="alert alert-light border mb-2 py-2"><code>'.$this->escape($question).'</code></div>';
+            $html .= '<input type="text" class="form-control" id="'.$this->escape($id).'" name="'.$this->escape($name).'" placeholder="'.$this->escape($this->get('placeholder')).'" autocomplete="off"'.($req ? ' required' : '').'>';
         } else { // slide
-            $html .= '<div class="xf-captcha-slide border rounded d-flex align-items-center px-2 py-2" data-xf-captcha-slide="'.$this->e($id).'">'
+            $html .= '<div class="xf-captcha-slide border rounded d-flex align-items-center px-2 py-2" data-xf-captcha-slide="'.$this->escape($id).'">'
                 .'<span class="badge bg-light text-dark me-2"><i class="ti ti-arrow-right"></i></span>'
                 .'<span class="text-muted small flex-grow-1">向右滑动完成验证</span></div>';
-            $html .= '<input type="hidden" name="'.$this->e($name).'" value="">';
+            $html .= '<input type="hidden" name="'.$this->escape($name).'" value="">';
         }
         if ($this->get('help')) {
-            $html .= '<div class="form-text">'.$this->e($this->get('help')).'</div>';
+            $html .= '<div class="form-text">'.$this->escape($this->get('help')).'</div>';
         }
         $html .= '</div>';
 

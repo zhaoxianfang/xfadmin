@@ -52,13 +52,13 @@ class EmailApp extends Component
 
         // 左侧文件夹
         $html .= '<div class="col-xl-2 col-lg-3 border-end p-3 email-sidebar">';
-        $html .= '<button class="btn btn-primary w-100 mb-3"><i class="ti ti-pencil me-1"></i>'.$this->e($composeText).'</button>';
+        $html .= '<button class="btn btn-primary w-100 mb-3"><i class="ti ti-pencil me-1"></i>'.$this->escape($composeText).'</button>';
         $html .= '<div class="list-group list-group-flush list-custom">';
         foreach ($folders as $f) {
             $f = (array) $f;
             $active = ! empty($f['active']) ? ' active' : '';
             $count = ! empty($f['count']) ? '<span class="badge bg-light ms-auto">'.(int) $f['count'].'</span>' : '';
-            $html .= '<a href="#" class="list-group-item list-group-item-action d-flex align-items-center'.$active.'"><i class="'.$this->e($f['icon'] ?? 'ti ti-folder').' me-2"></i><span>'.$this->e($f['name'] ?? '').'</span>'.$count.'</a>';
+            $html .= '<a href="#" class="list-group-item list-group-item-action d-flex align-items-center'.$active.'"><i class="'.$this->escape($f['icon'] ?? 'ti ti-folder').' me-2"></i><span>'.$this->escape($f['name'] ?? '').'</span>'.$count.'</a>';
         }
         $html .= '</div></div>';
 
@@ -80,10 +80,10 @@ class EmailApp extends Component
             $html .= '<tr class="'.ltrim($unread).'">';
             $html .= '<td style="width:40px"><div class="form-check email-item-check"><input class="form-check-input" type="checkbox"></div></td>';
             $html .= '<td style="width:40px"><button class="btn btn-icon btn-sm btn-ghost-light rounded-circle email-action-btn'.(! empty($m['starred']) ? ' active' : '').'" type="button" aria-label="'.(! empty($m['starred']) ? '取消星标' : '标记为星标').'"><i class="'.$star.'"></i></button></td>';
-            $html .= '<td style="width:45px"><div class="avatar"><img src="'.$this->e($av).'" class="rounded-circle avatar-xs" alt=""></div></td>';
-            $html .= '<td class="text-nowrap"><h5 class="fs-base fw-medium mb-0">'.$this->e($m['from'] ?? '').'</h5></td>';
-            $html .= '<td><a href="#" class="link-reset fs-base'.(! empty($m['unread']) ? ' fw-semibold' : '').' stretched-link">'.$this->e($m['subject'] ?? '').'</a><div class="text-muted text-truncate">'.$this->e($m['preview'] ?? '').'</div></td>';
-            $html .= '<td class="text-nowrap" style="width:90px"><span class="fs-sm text-muted">'.$this->e($m['time'] ?? '').'</span></td>';
+            $html .= '<td style="width:45px"><div class="avatar"><img src="'.$this->escape($av).'" class="rounded-circle avatar-xs" alt=""></div></td>';
+            $html .= '<td class="text-nowrap"><h5 class="fs-base fw-medium mb-0">'.$this->escape($m['from'] ?? '').'</h5></td>';
+            $html .= '<td><a href="#" class="link-reset fs-base'.(! empty($m['unread']) ? ' fw-semibold' : '').' stretched-link">'.$this->escape($m['subject'] ?? '').'</a><div class="text-muted text-truncate">'.$this->escape($m['preview'] ?? '').'</div></td>';
+            $html .= '<td class="text-nowrap" style="width:90px"><span class="fs-sm text-muted">'.$this->escape($m['time'] ?? '').'</span></td>';
             $html .= $att;
             $html .= '</tr>';
         }
@@ -108,20 +108,20 @@ class EmailApp extends Component
         $html = '<div class="col-xl-6 col-lg-4 p-0 email-read">';
         if ($sel) {
             $selAvHtml = ! empty($sel['avatar'])
-                ? '<img src="'.$this->e(XfAdmin::img((string) $sel['avatar'])).'" class="rounded-circle" alt="">'
-                : '<span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->e(mb_substr((string) ($sel['from'] ?? '?'), 0, 1)).'</span>';
+                ? '<img src="'.$this->escape(XfAdmin::img((string) $sel['avatar'])).'" class="rounded-circle" alt="">'
+                : '<span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->escape(mb_substr((string) ($sel['from'] ?? '?'), 0, 1)).'</span>';
             $html .= '<div class="p-3 border-bottom d-flex justify-content-between align-items-center">';
-            $html .= '<div><h6 class="mb-0">'.$this->e($sel['subject'] ?? '').'</h6><small class="text-muted">'.$this->e($sel['time'] ?? '').'</small></div>';
+            $html .= '<div><h6 class="mb-0">'.$this->escape($sel['subject'] ?? '').'</h6><small class="text-muted">'.$this->escape($sel['time'] ?? '').'</small></div>';
             $html .= '<div><button class="btn btn-sm btn-icon btn-light" type="button" aria-label="归档"><i class="ti ti-archive"></i></button><button class="btn btn-sm btn-icon btn-light" type="button" aria-label="删除"><i class="ti ti-trash"></i></button><button class="btn btn-sm btn-icon btn-light" type="button" aria-label="更多操作"><i class="ti ti-dots-vertical"></i></button></div>';
             $html .= '</div>';
             $html .= '<div class="p-3" style="overflow-y:auto;max-height:520px">';
-            $html .= '<div class="d-flex align-items-center mb-3"><div class="avatar avatar-md me-2">'.$selAvHtml.'</div><div><div class="fw-semibold">'.$this->e($sel['from'] ?? '').'</div><small class="text-muted">'.$this->e($sel['from_email'] ?? '').'</small></div><span class="ms-auto text-muted small">收件人：我</span></div>';
-            $html .= '<div class="email-body">'.nl2br($this->e($sel['body'] ?? '')).'</div>';
+            $html .= '<div class="d-flex align-items-center mb-3"><div class="avatar avatar-md me-2">'.$selAvHtml.'</div><div><div class="fw-semibold">'.$this->escape($sel['from'] ?? '').'</div><small class="text-muted">'.$this->escape($sel['from_email'] ?? '').'</small></div><span class="ms-auto text-muted small">收件人：我</span></div>';
+            $html .= '<div class="email-body">'.nl2br($this->escape($sel['body'] ?? '')).'</div>';
             if (! empty($sel['attachments'])) {
                 $html .= '<div class="mt-3 d-flex gap-2 flex-wrap">';
                 foreach ((array) $sel['attachments'] as $a) {
                     $a = (array) $a;
-                    $html .= '<a href="#" class="btn btn-sm btn-light"><i class="ti ti-file-text text-primary me-1"></i>'.$this->e($a['name'] ?? '').' <small class="text-muted">'.$this->e($a['size'] ?? '').'</small></a>';
+                    $html .= '<a href="#" class="btn btn-sm btn-light"><i class="ti ti-file-text text-primary me-1"></i>'.$this->escape($a['name'] ?? '').' <small class="text-muted">'.$this->escape($a['size'] ?? '').'</small></a>';
                 }
                 $html .= '</div>';
             }

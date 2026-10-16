@@ -65,23 +65,23 @@ class ContactCard extends Component
             $html .= '<div class="me-3 position-relative">';
             if (! empty($c['avatar'])) {
                 // 联系人头像：包裹进 .avatar 结构（固定尺寸 + 圆形裁切），替代原先依赖 width/height 表现属性的写法
-                $html .= '<span class="avatar avatar-lg"><img src="'.$this->e(XfAdmin::img((string) $c['avatar'])).'" alt="" class="img-fluid rounded-circle" style="object-fit:cover;"></span>';
+                $html .= '<span class="avatar avatar-lg"><img src="'.$this->escape(XfAdmin::img((string) $c['avatar'])).'" alt="" class="img-fluid rounded-circle" style="object-fit:cover;"></span>';
             } else {
                 $ini = mb_substr((string) ($c['name'] ?? '?'), 0, 1);
                 // 首字母占位：尺寸类挂在 .avatar 包裹元素上
-                $html .= '<span class="avatar avatar-lg d-inline-block"><span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-4">'.$this->e($ini).'</span></span>';
+                $html .= '<span class="avatar avatar-lg d-inline-block"><span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-4">'.$this->escape($ini).'</span></span>';
             }
             if (isset($c['rating'])) {
-                $html .= '<span class="position-absolute bottom-0 end-0 badge bg-warning rounded-circle p-1 shadow-sm" title="评分 '.$this->e((string) $c['rating']).'"><i class="ti ti-star text-white"></i></span>';
+                $html .= '<span class="position-absolute bottom-0 end-0 badge bg-warning rounded-circle p-1 shadow-sm" title="评分 '.$this->escape((string) $c['rating']).'"><i class="ti ti-star text-white"></i></span>';
             }
             $html .= '</div>';
 
-            $html .= '<div><h5 class="mb-1"><a href="'.$this->e($c['url'] ?? '#').'" class="link-reset">'.$this->e($c['name'] ?? '').'</a></h5>';
+            $html .= '<div><h5 class="mb-1"><a href="'.$this->escape($c['url'] ?? '#').'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h5>';
             if (! empty($c['role'])) {
-                $html .= '<p class="text-muted mb-1 small">'.$this->e($c['role']).'</p>';
+                $html .= '<p class="text-muted mb-1 small">'.$this->escape($c['role']).'</p>';
             }
             if (! empty($c['tag'])) {
-                $html .= '<span class="badge text-bg-light badge-label">'.$this->e($c['tag']).'</span>';
+                $html .= '<span class="badge text-bg-light badge-label">'.$this->escape($c['tag']).'</span>';
             }
             $html .= '</div></div>';
 
@@ -89,7 +89,7 @@ class ContactCard extends Component
             $html .= '<ul class="list-unstyled text-muted mb-3 small">';
             foreach ([['email', 'ti ti-mail'], ['phone', 'ti ti-phone'], ['location', 'ti ti-map-pin']] as [$key, $icon]) {
                 if (! empty($c[$key])) {
-                    $html .= '<li class="mb-2 d-flex align-items-center gap-2"><i class="'.$icon.' text-muted"></i><span>'.$this->e($c[$key]).'</span></li>';
+                    $html .= '<li class="mb-2 d-flex align-items-center gap-2"><i class="'.$icon.' text-muted"></i><span>'.$this->escape($c[$key]).'</span></li>';
                 }
             }
             $html .= '</ul>';
@@ -97,7 +97,7 @@ class ContactCard extends Component
             // 操作
             $html .= '<div class="d-flex gap-2">'
                 .'<a href="#" class="btn btn-sm btn-soft-primary flex-fill"><i class="ti ti-message-circle me-1"></i>发消息</a>'
-                .'<a href="'.$this->e($c['url'] ?? '#').'" class="btn btn-sm btn-soft-secondary flex-fill"><i class="ti ti-user me-1"></i>查看资料</a>'
+                .'<a href="'.$this->escape($c['url'] ?? '#').'" class="btn btn-sm btn-soft-secondary flex-fill"><i class="ti ti-user me-1"></i>查看资料</a>'
                 .'</div>';
 
             $html .= '</div></div></div>';

@@ -91,12 +91,12 @@ class WidgetsDashboard extends Component
 
         $html = '<div class="row g-2 mb-3">';
         foreach ($stats as $i => $stat) {
-            $label = $this->e($stat['label']);
+            $label = $this->escape($stat['label']);
             $value = $stat['value'];
-            $icon = $this->e($stat['icon']);
-            $color = $this->e($stat['color']);
-            $trend = $this->e($stat['trend']);
-            $suffix = $this->e($stat['suffix'] ?? '');
+            $icon = $this->escape($stat['icon']);
+            $color = $this->escape($stat['color']);
+            $trend = $this->escape($stat['trend']);
+            $suffix = $this->escape($stat['suffix'] ?? '');
             $trendClass = str_starts_with($trend, '+') ? 'text-success' : 'text-danger';
             // 非货币值需保留小数（如转化率 3.45），此前一律 (int) 会把 3.45 显示成 3
             $displayValue = ! empty($stat['currency'])
@@ -149,7 +149,7 @@ class WidgetsDashboard extends Component
 
         $html = '<div class="card mb-3"><div class="card-header"><h5 class="card-title mb-0">月度趋势</h5></div>'
             .'<div class="card-body"><div style="height:250px">'
-            .'<canvas id="'.$uid.'" data-xf="echart" data-xf-config="'.$this->e($cfg ?: '{}').'"></canvas>'
+            .'<canvas id="'.$uid.'" data-xf="echart" data-xf-config="'.$this->escape($cfg ?: '{}').'"></canvas>'
             .'</div></div></div>';
 
         return $html;
@@ -175,10 +175,10 @@ class WidgetsDashboard extends Component
 
         foreach ($msgs as $m) {
             // 先解析 URL 再统一转义（顺序反了会把查询串 & 变成 &amp;，且外链可逃逸 src 属性）
-            $avatar = $m['avatar'] ? $this->e($this->img($m['avatar'])) : '';
-            $name = $this->e($m['name']);
-            $text = $this->e($m['text']);
-            $time = $this->e($m['time']);
+            $avatar = $m['avatar'] ? $this->escape($this->img($m['avatar'])) : '';
+            $name = $this->escape($m['name']);
+            $text = $this->escape($m['text']);
+            $time = $this->escape($m['time']);
             $badge = $m['badge'] ?? '';
 
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
@@ -186,7 +186,7 @@ class WidgetsDashboard extends Component
                 : '<div class="rounded-circle bg-light me-3 d-flex align-items-center justify-content-center" style="width:36px;height:36px"><i class="ti ti-user text-muted"></i></div>')
                 .'<div class="flex-grow-1 min-w-0"><h6 class="mb-0 text-truncate">'.$name.'</h6>'
                 .'<small class="text-muted text-truncate d-block">'.$text.'</small></div>'
-                .($badge ? '<span class="badge text-bg-danger rounded-pill ms-2">'.$this->e($badge).'</span>' : '')
+                .($badge ? '<span class="badge text-bg-danger rounded-pill ms-2">'.$this->escape($badge).'</span>' : '')
                 .'<small class="text-muted ms-2">'.$time.'</small></div></div>';
         }
         $html .= '</div><div class="card-footer text-center"><a href="#">查看所有消息</a></div></div>';
@@ -224,7 +224,7 @@ class WidgetsDashboard extends Component
 
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
                 .'<input class="form-check-input me-3" type="checkbox"'.$checked.'>'
-                .'<span class="flex-grow-1'.$textClass.'">'.$this->e($t['text']).'</span>'
+                .'<span class="flex-grow-1'.$textClass.'">'.$this->escape($t['text']).'</span>'
                 .$priorityBadge.'</div></div>';
         }
         $html .= '</div><div class="card-footer"><div class="input-group input-group-sm">'
@@ -254,10 +254,10 @@ class WidgetsDashboard extends Component
 
         foreach ($activities as $a) {
             $html .= '<div class="list-group-item"><div class="d-flex align-items-center">'
-                .'<span class="badge bg-'.$this->e($a['color']).'-subtle text-'.$this->e($a['color']).' rounded-3 p-2 me-3">'
-                .'<i class="ti '.$this->e($a['icon']).' fs-16"></i></span>'
-                .'<div class="flex-grow-1"><small>'.$this->e($a['text']).'</small></div>'
-                .'<small class="text-muted">'.$this->e($a['time']).'</small></div></div>';
+                .'<span class="badge bg-'.$this->escape($a['color']).'-subtle text-'.$this->escape($a['color']).' rounded-3 p-2 me-3">'
+                .'<i class="ti '.$this->escape($a['icon']).' fs-16"></i></span>'
+                .'<div class="flex-grow-1"><small>'.$this->escape($a['text']).'</small></div>'
+                .'<small class="text-muted">'.$this->escape($a['time']).'</small></div></div>';
         }
         $html .= '</div></div>';
 

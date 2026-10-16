@@ -6742,5 +6742,34 @@
         });
     };
 
+    /* ------------------------------------------------------------------
+     * 数据源切换器：在同一区块内切换多个面板（tabs/pills 语义）
+     * ---------------------------------------------------------------- */
+    XFAdmin.register('dataSourceSwitcher', function (el, cfg) {
+        cfg = cfg || {};
+        var buttons = el.querySelectorAll('[data-xf-dsw-key]');
+        var panes = el.querySelectorAll('.tab-pane');
+        function activate(key) {
+            Array.prototype.forEach.call(buttons, function (btn) {
+                var on = btn.getAttribute('data-xf-dsw-key') === key;
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-selected', on ? 'true' : 'false');
+            });
+            Array.prototype.forEach.call(panes, function (pane) {
+                var on = pane.id === 'ds-pane-' + key || pane.id === (cfg.prefix || 'ds') + '-pane-' + key || pane.getAttribute('data-pane-key') === key;
+                pane.classList.toggle('show', on);
+                pane.classList.toggle('active', on);
+            });
+        }
+        Array.prototype.forEach.call(buttons, function (btn) {
+            btn.addEventListener('click', function () {
+                activate(btn.getAttribute('data-xf-dsw-key'));
+            });
+        });
+        // 初始激活
+        if (cfg.active != null) activate(String(cfg.active));
+        return null;
+    });
+
     global.XFAdmin = XFAdmin;
 })(window);

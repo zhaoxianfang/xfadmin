@@ -87,7 +87,7 @@ echo XfAdmin::form([
 表单容器（统一字段包装与提交处理）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Form`
-> **文件**：`src/Components/Form/Form.php`（138 行）
+> **文件**：`src/Components/Form/Form.php`（114 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -125,7 +125,7 @@ echo XfAdmin::form([
     'fields' => [],
     'content' => null,
     'buttons' => null,
-    'csrf' => [],
+    'csrf' => true,
 ]);
 ```
 
@@ -141,22 +141,22 @@ echo XfAdmin::form([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `action` | string | `''` | 表单提交地址 / 动作类型；源码用法：`'action' => $this->get('action'),` |
+| `action` | string | `''` | 表单提交地址 / 动作类型；URL：经协议白名单校验（拦截 `javascript:` 等） |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `enctype` | mixed | `null` | 源码用法：`'enctype' => $this->get('enctype'),` |
 | `validation` | bool | `false` | 源码用法：`'needs-validation' => $this->get('validation'),` |
-| `ajax` | bool | `false` | true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）；开关：非空 / 真值时启用对应区块 |
+| `ajax` | bool | `false` | true：标记 data-xf-remote，由 JS 拦截为 AJAX 提交（含文件 FormData / CSRF / 统一响应）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `remote` | bool | `false` | 兼容别名（= ajax），保留旧调用方式 |
 | `redirect` | string | `''` | AJAX 成功且后端未返回 url 时前端兜底跳转地址（整页） |
-| `reset` | bool | `false` | AJAX 成功后是否重置表单（默认 false；与 reload 二选一）；开关：非空 / 真值时启用对应区块 |
+| `reset` | bool | `false` | AJAX 成功后是否重置表单（默认 false；与 reload 二选一）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `reload` | bool | `true` | AJAX 成功且无 url/redirect 时是否刷新当前页（false=仅 toast） |
 | `inline` | bool | `false` | 兼容旧写法（等价 layout=inline） |
 | `layout` | mixed | `null` | vertical \| horizontal \| inline（form-layouts.html） |
 | `label_width` | int | `180` | horizontal 布局标签列宽（px） |
 | `fields` | array | `[]` | 字段定义数组（表单字段 / 详情字段） |
 | `content` | mixed | `null` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
-| `buttons` | mixed | `null` | 按钮定义数组；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `csrf` | array | `[]` | 是否注入 CSRF 隐藏域（`true` 注入；`[]`/`false` 不注入；数组为自定义隐藏域） |
+| `buttons` | mixed | `null` | 按钮定义数组；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `csrf` | bool | `true` | 是否注入 CSRF 隐藏域（`true` 注入；`[]`/`false` 不注入；数组为自定义隐藏域） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -167,7 +167,7 @@ echo XfAdmin::form([
 文本输入框（含前后缀/帮助/校验态）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Input`
-> **文件**：`src/Components/Form/Input.php`（119 行）
+> **文件**：`src/Components/Form/Input.php`（101 行）
 > **依赖插件**：`inputmask`、`tagify`
 
 **用法示例**
@@ -194,6 +194,7 @@ echo XfAdmin::input([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'type' => 'text',
     'size' => null,    // sm | lg
     'mask' => null,    // inputmask 表达式
@@ -227,11 +228,12 @@ echo XfAdmin::input([
 | `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `type` | string | `'text'` | 类型（各组件语义不同，详见该组件说明）；输出到 `type` 属性 |
 | `size` | mixed | `null` | 可选值：`sm` / `lg` |
-| `mask` | mixed | `null` | inputmask 表达式；开关：非空 / 真值时启用对应区块 |
-| `tags` | bool | `false` | tagify 标签输入；开关：非空 / 真值时启用对应区块 |
-| `prepend` | mixed | `null` | 前缀内容（原样输出，如输入组文本/图标）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `mask` | mixed | `null` | inputmask 表达式；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `tags` | bool | `false` | tagify 标签输入；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `prepend` | mixed | `null` | 前缀内容（原样输出，如输入组文本/图标）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `append` | mixed | `null` | 后缀内容（原样输出，常用于协议说明）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；为 `null` 时不渲染该区块 |
 | `min` | mixed | `null` | 最小值；源码用法：`'min' => $this->get('min'),` |
 | `max` | mixed | `null` | 最大值；源码用法：`'max' => $this->get('max'),` |
@@ -248,7 +250,7 @@ echo XfAdmin::input([
 多行文本域。
 
 > **类**：`zxf\XfAdmin\Components\Form\Textarea`
-> **文件**：`src/Components/Form/Textarea.php`（60 行）
+> **文件**：`src/Components/Form/Textarea.php`（45 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -272,12 +274,15 @@ echo XfAdmin::textarea([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'rows' => 3,
     'maxlength' => null,
 ]);
 ```
 
 </details>
+
+> **渲染骨架**：主要 class `form-control`
 
 **配置参数**
 
@@ -290,10 +295,11 @@ echo XfAdmin::textarea([
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
 | `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
 | `readonly` | bool | `false` | 是否只读；源码用法：`'readonly' => (bool) $this->get('readonly'),` |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；源码用法：`$control = '<textarea'.$this->attrs($attrs).'>'.$this->escape($this->get('value')).'<…` |
 | `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `rows` | int | `3` | 行数据数组；源码用法：`'rows' => $this->get('rows'),` |
 | `maxlength` | mixed | `null` | 源码用法：`'maxlength' => $this->get('maxlength'),` |
 
@@ -306,7 +312,7 @@ echo XfAdmin::textarea([
 下拉选择框（原生/select2/tom-select）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Select`
-> **文件**：`src/Components/Form/Select.php`（145 行）
+> **文件**：`src/Components/Form/Select.php`（121 行）
 > **依赖插件**：`choices`、`select2`
 
 **用法示例**
@@ -339,6 +345,7 @@ echo XfAdmin::select([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'options' => [],
     'groups' => [],
     'multiple' => false,
@@ -370,14 +377,15 @@ echo XfAdmin::select([
 | `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
 | `readonly` | bool | `false` | 是否只读 |
 | `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；源码用法：`$selected = (array) ($this->get('value') ?? []);` |
-| `placeholder` | mixed | `null` | 占位提示文案；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `placeholder` | mixed | `null` | 占位提示文案；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 | `groups` | array | `[]` | 分组数据（下拉分组 / 权限分组 / 设置分组） |
-| `multiple` | bool | `false` | 是否多选；源码用法：`'name' => $this->get('name') . ($this->get('multiple') && $this->get('name') && ! str…` |
-| `size` | mixed | `null` | 可选值：`sm` / `lg` |
-| `enhance` | mixed | `null` | 增强插件：choices \| select2；开关：非空 / 真值时启用对应区块 |
+| `multiple` | bool | `false` | 是否多选；源码用法：`'name' => $this->get('name').($this->get('multiple') && $this->get('name') && ! str_e…` |
+| `size` | mixed | `null` | 源码用法：`$size = $this->enum($this->get('size'), self::ENUM_SIZE, '');`；可选值：`sm` / `lg` |
+| `enhance` | mixed | `null` | 枚举白名单 `'choices', 'select2'` |
 | `enhance_options` | array | `[]` | 透传给增强插件（choices/select2）的原生配置 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -389,7 +397,7 @@ echo XfAdmin::select([
 多选/单选框（check/radio 统一封装）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Check`
-> **文件**：`src/Components/Form/Check.php`（167 行）
+> **文件**：`src/Components/Form/Check.php`（148 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -420,6 +428,8 @@ echo XfAdmin::check([
     'disabled' => false,
     'required' => false,
     'wrapper' => 'mb-3',
+    'help' => null,    // 说明文本（组模式渲染在组下方，单模式渲染在控件下方，转义）
+    'state' => null,    // 'valid' | 'invalid' | null（显式校验着色）
 ]);
 ```
 
@@ -427,15 +437,17 @@ echo XfAdmin::check([
 
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
-- `options[]`：`值 => 文案` 键值数组；为空时进入「单控件模式」
+- `options[]` 元素键：`value`、`text`、`label`；补充：`值 => 文案` 键值数组；为空时进入「单控件模式」
+
+> **渲染骨架**：主要 class `form-text`
 
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `type` | string | `'checkbox'` | checkbox \| radio \| switch |
-| `name` | mixed | `null` | 表单字段名 / 语义名称；源码用法：`'name' => $this->get('name'),` |
-| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案）；**文本槽位**：输出前自动 HTML 转义；为 `null` 时不渲染该区块 |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；源码用法：`'name' => $name ?? $this->get('name'),` |
+| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案）；为 `null` 时不渲染该区块 |
 | `options` | array | `[]` | 一组：value => label |
 | `value` | mixed | `null` | 选中值（组模式）；单个模式用 checked |
 | `checked` | bool | `false` | 源码用法：`(bool) $this->get('checked'),` |
@@ -444,6 +456,8 @@ echo XfAdmin::check([
 | `disabled` | bool | `false` | 是否禁用；源码用法：`'disabled' => (bool) $this->get('disabled'),` |
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`'required' => (bool) $this->get('required'),` |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹）；源码用法：`$wrapper = $this->get('wrapper');` |
+| `help` | mixed | `null` | 说明文本（组模式渲染在组下方，单模式渲染在控件下方，转义）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `state` | mixed | `null` | 'valid' \| 'invalid' \| null（显式校验着色） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -454,7 +468,7 @@ echo XfAdmin::check([
 滑块/范围选择器（ion-rangeSlider/noUiSlider）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Slider`
-> **文件**：`src/Components/Form/Slider.php`（81 行）
+> **文件**：`src/Components/Form/Slider.php`（66 行）
 > **依赖插件**：`nouislider`
 
 **用法示例**
@@ -478,6 +492,7 @@ echo XfAdmin::slider([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'min' => 0,
     'max' => 100,
     'step' => 1,
@@ -497,7 +512,7 @@ echo XfAdmin::slider([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-slider');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
@@ -508,6 +523,7 @@ echo XfAdmin::slider([
 | `placeholder` | mixed | `null` | 占位提示文案 |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `min` | int | `0` | 最小值；源码用法：`$value = $this->get('value') ?? $this->get('min');` |
 | `max` | int | `100` | 最大值；源码用法：`'range' => ['min' => (float) $this->get('min'), 'max' => (float) $this->get('max')],` |
 | `step` | int | `1` | 步长；源码用法：`'step' => (float) $this->get('step'),` |
@@ -524,7 +540,7 @@ echo XfAdmin::slider([
 日期范围选择器（daterangepicker）。
 
 > **类**：`zxf\XfAdmin\Components\Form\DateRangePicker` 等 `dateRange` / `dateRangePicker`
-> **文件**：`src/Components/Form/DateRangePicker.php`（83 行）
+> **文件**：`src/Components/Form/DateRangePicker.php`（67 行）
 > **依赖插件**：`daterangepicker`
 
 **用法示例**
@@ -549,6 +565,7 @@ echo XfAdmin::dateRange([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'single' => false,
     'timepicker' => false,
     'format' => 'YYYY-MM-DD',
@@ -562,6 +579,8 @@ echo XfAdmin::dateRange([
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
 - `options[]`：透传 daterangepicker 原生配置（递归合并，优先级最高）
+
+> **渲染骨架**：主要 class `form-control`
 
 **配置参数**
 
@@ -578,6 +597,7 @@ echo XfAdmin::dateRange([
 | `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `single` | bool | `false` | 单日期模式（singleDatePicker）；源码用法：`'singleDatePicker' => (bool) $this->get('single'),` |
 | `timepicker` | bool | `false` | 是否带时间选择；源码用法：`'timePicker' => (bool) $this->get('timepicker'),` |
 | `format` | string | `'YYYY-MM-DD'` | 格式化闭包或格式字符串；源码用法：`'locale' => ['format' => $this->get('format')],` |
@@ -609,7 +629,7 @@ echo XfAdmin::dateRangePicker([              // 等价 XfAdmin::dateRange()
 单日期/日期时间选择器（singleDatePicker 模式）。
 
 > **类**：`zxf\XfAdmin\Components\Form\DatePicker`
-> **文件**：`src/Components/Form/DatePicker.php`（97 行）
+> **文件**：`src/Components/Form/DatePicker.php`（73 行）
 > **依赖插件**：`daterangepicker`
 
 **用法示例**
@@ -634,6 +654,7 @@ echo XfAdmin::datePicker([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'timepicker' => false,
     'format' => 'YYYY-MM-DD',
     'min' => null,
@@ -650,6 +671,8 @@ echo XfAdmin::datePicker([
 
 - `options[]`：透传 daterangepicker 原生配置（singleDatePicker 恒为 true）
 
+> **渲染骨架**：主要 class `form-control`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -665,13 +688,14 @@ echo XfAdmin::datePicker([
 | `placeholder` | mixed | `null` | 占位提示文案；源码用法：`'placeholder' => $this->get('placeholder'),` |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `timepicker` | bool | `false` | 是否带时间选择；源码用法：`'timePicker' => (bool) $this->get('timepicker'),` |
 | `format` | string | `'YYYY-MM-DD'` | 格式化闭包或格式字符串；源码用法：`'locale' => ['format' => $this->get('format')],` |
 | `min` | mixed | `null` | 最小值；源码用法：`'minDate' => $this->get('min'),` |
 | `max` | mixed | `null` | 最大值；源码用法：`'maxDate' => $this->get('max'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
-| `prepend` | string | `''` | 前缀内容（原样输出，如输入组文本/图标） |
-| `append` | string | `''` | 后缀内容（原样输出，常用于协议说明） |
+| `prepend` | string | `''` | 前缀内容（原样输出，如输入组文本/图标）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `append` | string | `''` | 后缀内容（原样输出，常用于协议说明）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -682,7 +706,7 @@ echo XfAdmin::datePicker([
 富文本编辑器（TinyMCE/Quill 等）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Editor`
-> **文件**：`src/Components/Form/Editor.php`（100 行）
+> **文件**：`src/Components/Form/Editor.php`（85 行）
 > **依赖插件**：`quill`、`summernote`
 
 **用法示例**
@@ -706,6 +730,7 @@ echo XfAdmin::editor([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'driver' => 'quill',    // quill | summernote
     'theme' => 'snow',    // quill: snow | bubble
     'height' => 260,
@@ -719,22 +744,25 @@ echo XfAdmin::editor([
 
 - `options[]`：透传编辑器原生配置（quill 可传 `modules`，summernote 直接传选项）
 
+> **渲染骨架**：主要 class `form-control`
+
 **配置参数**
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；输出到 `name` 属性 |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；输出到 `name` 属性 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
 | `disabled` | bool | `false` | 是否禁用 |
 | `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；**文本槽位**：输出前自动 HTML 转义 |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；输出到 `value` 属性 |
 | `placeholder` | mixed | `null` | 占位提示文案 |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
-| `driver` | string | `'quill'` | quill \| summernote |
+| `state` | mixed | `null` |  |
+| `driver` | string | `'quill'` | 枚举白名单 `'quill', 'summernote'` |
 | `theme` | string | `'snow'` | 可选值：`light` / `dark` / `auto` |
 | `height` | int | `260` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'height' => (int) $this->get('height'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
@@ -748,7 +776,7 @@ echo XfAdmin::editor([
 文件上传（native/dropzone/filepond 驱动）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Upload`
-> **文件**：`src/Components/Form/Upload.php`（144 行）
+> **文件**：`src/Components/Form/Upload.php`（127 行）
 > **依赖插件**：`dropzone`、`filepond`
 
 **用法示例**
@@ -774,6 +802,7 @@ echo XfAdmin::upload([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'driver' => 'native',    // native | dropzone | filepond
     'url' => null,    // 上传地址
     'multiple' => false,
@@ -790,7 +819,7 @@ echo XfAdmin::upload([
 
 - `options[]`：透传 dropzone / filepond 原生配置
 
-> **渲染骨架**：主要 class `dz-message` `needsclick`
+> **渲染骨架**：主要 class `dz-message` `needsclick` `form-control`
 
 **配置参数**
 
@@ -807,12 +836,13 @@ echo XfAdmin::upload([
 | `placeholder` | mixed | `null` | 占位提示文案 |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `driver` | string | `'native'` | native \| dropzone \| filepond |
 | `url` | mixed | `null` | 上传地址 |
 | `multiple` | bool | `false` | 是否多选；源码用法：`'allowMultiple' => (bool) $this->get('multiple'),` |
 | `accept` | mixed | `null` | 源码用法：`'acceptedFiles' => $this->get('accept'),` |
 | `max_size` | mixed | `null` | MB |
-| `text` | string | `'点击或拖拽文件到此处上传'` | 正文/按钮文案（纯文本语义，输出时转义）；**文本槽位**：输出前自动 HTML 转义 |
+| `text` | string | `'点击或拖拽文件到此处上传'` | 正文/按钮文案（纯文本语义，输出时转义）；源码用法：`$control = '<div'.Html::attrs($dzAttrs).'><div class="dz-message needsclick"><i class…` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -824,7 +854,7 @@ echo XfAdmin::upload([
 颜色选择器（pickr）。
 
 > **类**：`zxf\XfAdmin\Components\Form\ColorPicker`
-> **文件**：`src/Components/Form/ColorPicker.php`（71 行）
+> **文件**：`src/Components/Form/ColorPicker.php`（56 行）
 > **依赖插件**：`pickr`
 
 **用法示例**
@@ -848,6 +878,7 @@ echo XfAdmin::colorPicker([
     'placeholder' => null,    // 占位提示文案
     'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
     'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
+    'state' => null,
     'theme' => 'classic',    // classic | monolith | nano
     'options' => [],
 ]);
@@ -865,17 +896,18 @@ echo XfAdmin::colorPicker([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `name` | mixed | `null` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义 |
+| `name` | mixed | `null` | 表单字段名 / 语义名称；输出到 `name` 属性 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-color');` |
 | `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
 | `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
 | `disabled` | bool | `false` | 是否禁用 |
 | `readonly` | bool | `false` | 是否只读 |
-| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
+| `value` | mixed | `null` | 当前值（表单控件值 / 展示数值）；输出到 `value` 属性 |
 | `placeholder` | mixed | `null` | 占位提示文案 |
 | `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
 | `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
+| `state` | mixed | `null` |  |
 | `theme` | string | `'classic'` | 可选值：`light` / `dark` / `auto` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
@@ -888,7 +920,7 @@ echo XfAdmin::colorPicker([
 标签输入（Tagify 多标签）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Tags`
-> **文件**：`src/Components/Form/Tags.php`（95 行）
+> **文件**：`src/Components/Form/Tags.php`（73 行）
 > **依赖插件**：`tagify`
 
 **用法示例**
@@ -909,13 +941,20 @@ XfAdmin::tags([
 ```php
 echo XfAdmin::tags([
     'name' => '',
-    'label' => null,
     'value' => [],
     'whitelist' => [],
     'max' => null,
     'placeholder' => '',
     'help' => null,
+    'state' => null,    // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
     'col' => null,
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
 ]);
 ```
 
@@ -932,13 +971,20 @@ echo XfAdmin::tags([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$attrs['name'] = $this->get('name');` |
-| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `value` | array | `[]` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value');` |
 | `whitelist` | array | `[]` | 标签输入候选词数组；源码用法：`'whitelist' => $this->get('whitelist') ?: null,` |
 | `max` | mixed | `null` | 最大值；源码用法：`'maxTags' => $this->get('max'),` |
-| `placeholder` | string | `''` | 占位提示文案；开关：非空 / 真值时启用对应区块 |
+| `placeholder` | string | `''` | 占位提示文案；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
+| `state` | mixed | `null` | 'valid' \| 'invalid' \| null（显式校验着色，配合服务端回显） |
 | `col` | mixed | `null` | 列宽（栅格列数 1-12） |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-tags');` |
+| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
+| `disabled` | bool | `false` | 是否禁用 |
+| `readonly` | bool | `false` | 是否只读 |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -949,7 +995,7 @@ echo XfAdmin::tags([
 输入掩码（电话/日期格式约束）。
 
 > **类**：`zxf\XfAdmin\Components\Form\MaskedInput`
-> **文件**：`src/Components/Form/MaskedInput.php`（91 行）
+> **文件**：`src/Components/Form/MaskedInput.php`（70 行）
 > **依赖插件**：`inputmask`
 
 **用法示例**
@@ -969,13 +1015,20 @@ XfAdmin::maskedInput([
 ```php
 echo XfAdmin::maskedInput([
     'name' => '',
-    'label' => null,
     'mask' => null,
     'alias' => null,
     'value' => '',
     'placeholder' => null,
     'help' => null,
+    'state' => null,    // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
     'col' => null,
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'label' => null,    // 标签文案（表单字段标签 / 按钮文案）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
 ]);
 ```
 
@@ -988,13 +1041,20 @@ echo XfAdmin::maskedInput([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$attrs['name'] = $this->get('name');` |
-| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
 | `mask` | mixed | `null` | 输入掩码表达式，如 `999-9999-9999`；源码用法：`'mask' => $this->get('mask'),` |
 | `alias` | mixed | `null` | 掩码别名（部分驱动支持）；源码用法：`'alias' => $this->get('alias'),` |
 | `value` | string | `''` | 当前值（表单控件值 / 展示数值）；源码用法：`$attrs['value'] = $this->get('value');` |
-| `placeholder` | mixed | `null` | 占位提示文案；开关：非空 / 真值时启用对应区块 |
+| `placeholder` | mixed | `null` | 占位提示文案；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
+| `state` | mixed | `null` | 'valid' \| 'invalid' \| null（显式校验着色，配合服务端回显） |
 | `col` | mixed | `null` | 列宽（栅格列数 1-12） |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-mask');` |
+| `label` | mixed | `null` | 标签文案（表单字段标签 / 按钮文案） |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
+| `disabled` | bool | `false` | 是否禁用 |
+| `readonly` | bool | `false` | 是否只读 |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -1005,7 +1065,7 @@ echo XfAdmin::maskedInput([
 向导（多步表单分步导航）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Wizard`
-> **文件**：`src/Components/Form/Wizard.php`（136 行）
+> **文件**：`src/Components/Form/Wizard.php`（112 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1038,8 +1098,9 @@ echo XfAdmin::wizard([
         'finish' => '提交',
     ],
     'action' => '',    // 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit）
-    'method' => 'post',    // 提交方法
+    'method' => 'post',    // 提交方法（GET/POST 原样输出，PUT/PATCH/DELETE 以 POST + _method 隐藏域伪装）
     'remote' => false,    // 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管）
+    'csrf' => true,
 ]);
 ```
 
@@ -1059,11 +1120,12 @@ echo XfAdmin::wizard([
 | `steps` | array | `[]` | 步骤数组（向导 / 步骤条） |
 | `variant` | string | `'primary'` | 可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `vertical` | bool | `false` | 是否纵向排列；源码用法：`$vertical = (bool) $this->get('vertical');` |
-| `progress` | bool | `true` | 进度百分比（0-100）；开关：非空 / 真值时启用对应区块 |
+| `progress` | bool | `true` | 进度百分比（0-100）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `labels` | array | `['prev'=>'上一步', 'next'=>'下一步', 'finish'=>'提交']` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签）；源码用法：`$labels = (array) $this->get('labels');` |
 | `action` | string | `''` | 提交地址（配置后整体以 <form> 包裹，由 JS 在最后一步 requestSubmit） |
-| `method` | string | `'post'` | 提交方法；**文本槽位**：输出前自动 HTML 转义 |
+| `method` | string | `'post'` | 提交方法（GET/POST 原样输出，PUT/PATCH/DELETE 以 POST + _method 隐藏域伪装） |
 | `remote` | bool | `false` | 是否走 AJAX 托管（data-xf-remote，由全局 bindRemoteForms 接管） |
+| `csrf` | bool | `true` | 是否注入 CSRF 隐藏域（`true` 注入；`[]`/`false` 不注入；数组为自定义隐藏域） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -1074,7 +1136,7 @@ echo XfAdmin::wizard([
 密码强度计（实时弱/中/强提示）。
 
 > **类**：`zxf\XfAdmin\Components\Form\PasswordStrength`
-> **文件**：`src/Components/Form/PasswordStrength.php`（146 行）
+> **文件**：`src/Components/Form/PasswordStrength.php`（124 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1094,12 +1156,20 @@ XfAdmin::passwordStrength([
 ```php
 echo XfAdmin::passwordStrength([
     'name' => 'password',
-    'id' => null,
     'label' => '密码',
     'value' => '',
     'showRules' => true,
     'minScore' => 0,
     'hint' => '',
+    'state' => null,    // 'valid' | 'invalid' | null（显式校验着色，配合服务端回显）
+    'id' => null,    // 根元素 id（留空自动生成唯一 id）
+    'help' => null,    // 帮助说明文本（转义输出，渲染为 .form-text）
+    'required' => false,    // 是否必填（渲染 required 属性 + 红色星号）
+    'disabled' => false,    // 是否禁用
+    'readonly' => false,    // 是否只读
+    'placeholder' => null,    // 占位提示文案
+    'wrapper' => 'mb-3',    // 外层包裹容器 class（`false`/`null` 时不包裹）
+    'feedback' => null,    // 校验反馈文案 `['valid'=>..,'invalid'=>..]`
 ]);
 ```
 
@@ -1112,12 +1182,20 @@ echo XfAdmin::passwordStrength([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `name` | string | `'password'` | 表单字段名 / 语义名称；输出到 `name` 属性 |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 | `label` | string | `'密码'` | 标签文案（表单字段标签 / 按钮文案） |
 | `value` | string | `''` | 当前值（表单控件值 / 展示数值）；输出到 `value` 属性 |
-| `showRules` | bool | `true` | 是否展示密码规则清单；开关：非空 / 真值时启用对应区块 |
+| `showRules` | bool | `true` | 是否展示密码规则清单；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `minScore` | int | `0` | 最低分数要求（低于则禁用提交按钮）；源码用法：`'data-min' => (int) $this->get('minScore'),` |
-| `hint` | string | `''` | 输入框下方提示文本；源码用法：`if ($hint = $this->get('hint')) {` |
+| `hint` | string | `''` | 输入框下方提示文本；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `state` | mixed | `null` | 'valid' \| 'invalid' \| null（显式校验着色，配合服务端回显） |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
+| `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text） |
+| `required` | bool | `false` | 是否必填（渲染 required 属性 + 红色星号） |
+| `disabled` | bool | `false` | 是否禁用 |
+| `readonly` | bool | `false` | 是否只读 |
+| `placeholder` | mixed | `null` | 占位提示文案 |
+| `wrapper` | string | `'mb-3'` | 外层包裹容器 class（`false`/`null` 时不包裹） |
+| `feedback` | mixed | `null` | 校验反馈文案 `['valid'=>..,'invalid'=>..]` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -1128,7 +1206,7 @@ echo XfAdmin::passwordStrength([
 验证码（image/math/slide 三种模式）。
 
 > **类**：`zxf\XfAdmin\Components\Form\Captcha`
-> **文件**：`src/Components/Form/Captcha.php`（190 行）
+> **文件**：`src/Components/Form/Captcha.php`（160 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1170,12 +1248,12 @@ echo XfAdmin::captcha([
 | `mode` | string | `'image'` | 枚举白名单 `'image', 'math', 'slide'` |
 | `label` | string | `'验证码'` | 标签文案（表单字段标签 / 按钮文案）；源码用法：`$label = $this->get('label');` |
 | `name` | string | `'captcha'` | 表单字段名 / 语义名称；源码用法：`$name = $this->get('name');` |
-| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? ('captcha_' . $this->uid('cap'));` |
-| `src` | mixed | `null` | image 模式图片地址（默认走 XfAdmin 通用 /captcha 约定） |
+| `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id）；源码用法：`$id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-captcha');` |
+| `src` | mixed | `null` | image 模式图片地址（默认走 XfAdmin 通用 /captcha 约定）；URL：经协议白名单校验（拦截 `javascript:` 等） |
 | `question` | mixed | `null` | math 模式题目，默认随机生成 |
-| `placeholder` | string | `'请输入计算结果'` | 占位提示文案；**文本槽位**：输出前自动 HTML 转义 |
-| `refreshable` | bool | `true` | image 模式点击刷新；开关：非空 / 真值时启用对应区块 |
-| `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `placeholder` | string | `'请输入计算结果'` | 占位提示文案；源码用法：`.'<input type="text" class="form-control" id="'.$this->escape($id).'" name="'.$this->…` |
+| `refreshable` | bool | `true` | image 模式点击刷新；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `help` | mixed | `null` | 帮助说明文本（转义输出，渲染为 .form-text）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `required` | bool | `true` | 是否必填（渲染 required 属性 + 红色星号）；源码用法：`$req = ! empty($this->get('required'));` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1187,7 +1265,7 @@ echo XfAdmin::captcha([
 两步验证 / OTP 验证码输入框 6 格独立输入，自动跳格、退格回退、粘贴自动填充， 复刻 inspinia auth-two-factor.html 的验证码交互。 'length'    => 6, 'name'      => 'code', 'value'     => '', 'mask'      => 'name@example.com',  // 展示邮箱掩码提示 'autofocus' => true, ])。
 
 > **类**：`zxf\XfAdmin\Components\Form\TwoFactorInput`
-> **文件**：`src/Components/Form/TwoFactorInput.php`（76 行）
+> **文件**：`src/Components/Form/TwoFactorInput.php`（55 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1239,7 +1317,7 @@ echo XfAdmin::twoFactorInput([
 数量步进器 − 数字 + 按钮组，含 min / max / step，复刻电商购物车数量控件。 'name'  => 'qty', 'value' => 1, 'min'   => 1, 'max'   => 99, 'step'  => 1, 'size'  => 'md',   // sm | md | lg ])。
 
 > **类**：`zxf\XfAdmin\Components\Form\QuantityStepper`
-> **文件**：`src/Components/Form/QuantityStepper.php`（68 行）
+> **文件**：`src/Components/Form/QuantityStepper.php`（46 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1290,7 +1368,7 @@ echo XfAdmin::quantityStepper([
 表单元素集合（所有输入控件演示）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormElements`
-> **文件**：`src/Components/Form/FormElements.php`（171 行）
+> **文件**：`src/Components/Form/FormElements.php`（153 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1329,7 +1407,7 @@ echo XfAdmin::formElements([
 表单布局（水平/垂直/网格排布）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormLayout`
-> **文件**：`src/Components/Form/FormLayout.php`（194 行）
+> **文件**：`src/Components/Form/FormLayout.php`（176 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1371,8 +1449,8 @@ echo XfAdmin::formLayout([
 其它表单插件（掩码/校验等组合）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormOtherPlugin`
-> **文件**：`src/Components/Form/FormOtherPlugin.php`（130 行）
-> **依赖插件**：无
+> **文件**：`src/Components/Form/FormOtherPlugin.php`（113 行）
+> **依赖插件**：`inputmask`
 
 **用法示例**
 
@@ -1402,7 +1480,7 @@ echo XfAdmin::formOtherPlugin([
 
 - `plugins[]`：启用哪些插件段：`mask`、`autosize`、`maxlength`、`touchspin`
 
-> **渲染骨架**：主要 class `text-center` `text-muted` `py-4` `card` `mb-3` `card-header` `card-body` `row`
+> **渲染骨架**：主要 class `text-center` `text-muted` `py-4` `col-md-6` `card` `mb-3` `card-header` `card-body`
 
 **配置参数**
 
@@ -1419,7 +1497,7 @@ echo XfAdmin::formOtherPlugin([
 表单校验（实时反馈示例）。
 
 > **类**：`zxf\XfAdmin\Components\Form\FormValidation`
-> **文件**：`src/Components/Form/FormValidation.php`（151 行）
+> **文件**：`src/Components/Form/FormValidation.php`（129 行）
 > **依赖插件**：无
 
 **用法示例**

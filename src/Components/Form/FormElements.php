@@ -56,7 +56,7 @@ class FormElements extends Component
         $html = '<div class="row g-4">';
         foreach ($sections as $section) {
             $section = (array) $section;
-            $title = $this->e($section['title'] ?? '');
+            $title = $this->escape($section['title'] ?? '');
             $items = (array) ($section['items'] ?? []);
             $cols = (int) ($section['cols'] ?? 2);
 
@@ -149,9 +149,9 @@ class FormElements extends Component
      */
     private function renderFormItem(array $item): string
     {
-        $label = $this->e($item['label'] ?? '');
+        $label = $this->escape($item['label'] ?? '');
         $content = $item['content'] ?? '';
-        $help = $this->e($item['help'] ?? '');
+        $help = $this->escape($item['help'] ?? '');
 
         $html = '<label class="form-label">'.$label.'</label>';
         // content 支持组件实例/闭包：非字符串走 raw() 渲染，不再静默丢弃
@@ -168,6 +168,6 @@ class FormElements extends Component
      */
     private function formGroup(string $label, string $content, int $colMd = 6): string
     {
-        return '<div class="col-md-'.$colMd.'"><label class="form-label">'.$this->e($label).'</label>'.$content.'</div>';
+        return '<div class="col-md-'.$colMd.'"><label class="form-label">'.$this->escape($label).'</label>'.$content.'</div>';
     }
 }

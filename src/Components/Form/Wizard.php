@@ -79,15 +79,15 @@ class Wizard extends Component
             // CSRF 注入（与 Form 一致）：true 自动注入 _token；false 不注入；数组自定义隐藏域
             $csrf = $this->get('csrf', true);
             if ($csrf === true) {
-                $open .= '<input type="hidden" name="_token" value="'.$this->e(XfAdmin::csrfToken()).'">';
+                $open .= '<input type="hidden" name="_token" value="'.$this->escape(XfAdmin::csrfToken()).'">';
             } elseif (is_array($csrf) && $csrf !== []) {
                 foreach ($csrf as $name => $value) {
-                    $open .= '<input type="hidden" name="'.$this->e($name).'" value="'.$this->e($value).'">';
+                    $open .= '<input type="hidden" name="'.$this->escape($name).'" value="'.$this->escape($value).'">';
                 }
             }
             // 非 GET/POST 方法追加 _method 隐藏域，保证后端 REST 方法伪装可识别
             if (! in_array($method, ['GET', 'POST'], true)) {
-                $open .= '<input type="hidden" name="_method" value="'.$this->e($method).'">';
+                $open .= '<input type="hidden" name="_method" value="'.$this->escape($method).'">';
             }
         }
         $html = $open.'<div'.$this->attrs(['class' => $wrapCls, 'id' => $id]).' data-xf="wizard">';
@@ -103,10 +103,10 @@ class Wizard extends Component
             $active = $i === 0 ? ' active' : '';
             $html .= '<li class="nav-item"><span class="nav-link'.$active.'" data-step="'.$i.'">';
             if (! empty($s['icon'])) {
-                $html .= '<i class="'.$this->e($s['icon']).' me-1"></i>';
+                $html .= '<i class="'.$this->escape($s['icon']).' me-1"></i>';
             }
             $html .= '<span class="badge rounded-pill bg-'.$variant.'-subtle text-'.$variant.' me-1">'.($i + 1).'</span>';
-            $html .= $this->e($s['title'] ?? '').'</span></li>';
+            $html .= $this->escape($s['title'] ?? '').'</span></li>';
         }
         $html .= '</ul>';
 
@@ -126,8 +126,8 @@ class Wizard extends Component
         }
         // 按钮
         $html .= '<div class="d-flex justify-content-between mt-3">';
-        $html .= '<button type="button" class="btn btn-light xf-wizard-prev" disabled>'.$this->e($labels['prev'] ?? '上一步').'</button>';
-        $html .= '<button type="button" class="btn btn-'.$variant.' xf-wizard-next" data-finish-label="'.$this->e($labels['finish'] ?? '提交').'">'.$this->e($labels['next'] ?? '下一步').'</button>';
+        $html .= '<button type="button" class="btn btn-light xf-wizard-prev" disabled>'.$this->escape($labels['prev'] ?? '上一步').'</button>';
+        $html .= '<button type="button" class="btn btn-'.$variant.' xf-wizard-next" data-finish-label="'.$this->escape($labels['finish'] ?? '提交').'">'.$this->escape($labels['next'] ?? '下一步').'</button>';
         $html .= '</div>';
         $html .= '</div>';
 

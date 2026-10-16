@@ -59,7 +59,7 @@ class SocialFeed extends Component
         $posts = (array) $this->get('posts', []);
         $title = (string) $this->get('title', '团队动态');
 
-        $html = '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->e($title).'</h5></div><div class="card-body">';
+        $html = '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->escape($title).'</h5></div><div class="card-body">';
 
         if (empty($posts)) {
             $html .= '<div class="text-center text-muted py-4">暂无动态</div></div></div>';
@@ -79,17 +79,17 @@ class SocialFeed extends Component
             $shares = (int) ($p['shares'] ?? 0);
 
             $html .= '<div class="d-flex gap-3 mb-4 pb-4 border-bottom">';
-            $html .= '<img src="'.$this->e($avatar).'" class="rounded-circle avatar-sm" alt="'.$this->e($name).'">';
+            $html .= '<img src="'.$this->escape($avatar).'" class="rounded-circle avatar-sm" alt="'.$this->escape($name).'">';
             $html .= '<div class="flex-fill">';
             $html .= '<div class="d-flex justify-content-between align-items-center mb-1">';
-            $html .= '<div><span class="fw-semibold">'.$this->e($name).'</span>';
+            $html .= '<div><span class="fw-semibold">'.$this->escape($name).'</span>';
             if ($handle !== '') {
-                $html .= ' <span class="text-muted">'.$this->e($handle).'</span>';
+                $html .= ' <span class="text-muted">'.$this->escape($handle).'</span>';
             }
-            $html .= '</div><small class="text-muted">'.$this->e($time).'</small></div>';
-            $html .= '<p class="mb-2">'.$this->e($text).'</p>';
+            $html .= '</div><small class="text-muted">'.$this->escape($time).'</small></div>';
+            $html .= '<p class="mb-2">'.$this->escape($text).'</p>';
             if ($image !== '') {
-                $html .= '<img src="'.$this->e($this->img($image)).'" class="img-fluid rounded mb-2" alt="">';
+                $html .= '<img src="'.$this->escape($this->img($image)).'" class="img-fluid rounded mb-2" alt="">';
             }
             $html .= '<div class="d-flex gap-4 text-muted small">';
             $html .= '<span><i class="ti ti-heart me-1"></i>'.$likes.'</span>';

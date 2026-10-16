@@ -80,9 +80,9 @@ class MetricCard extends Component
 
         // ---------- 数值区：数字自动启用滚动计数动画 ----------
         $valueHtml = is_numeric($value)
-            ? '<span class="xf-count" data-xf-count="'.$this->e($value).'" data-xf-decimals="'.(int) $this->get('decimals').'">0</span>'
-            : $this->e((string) $value);
-        $valueHtml = '<h3 class="mb-1 fw-bold">'.$this->e($this->get('prefix', '')).$valueHtml.$this->e($this->get('suffix', '')).'</h3>';
+            ? '<span class="xf-count" data-xf-count="'.$this->escape($value).'" data-xf-decimals="'.(int) $this->get('decimals').'">0</span>'
+            : $this->escape((string) $value);
+        $valueHtml = '<h3 class="mb-1 fw-bold">'.$this->escape($this->get('prefix', '')).$valueHtml.$this->escape($this->get('suffix', '')).'</h3>';
 
         // ---------- 趋势徽标：正=绿升 负=红降 ----------
         $trendHtml = '';
@@ -90,8 +90,8 @@ class MetricCard extends Component
             $up = (float) $trend >= 0;
             $trendHtml = '<p class="mb-0 text-muted small">'
                 .'<span class="'.($up ? 'text-success' : 'text-danger').' me-1">'
-                .'<i class="ti ti-arrow-'.($up ? 'up' : 'down').'-right"></i> '.$this->e(abs((float) $trend)).'%</span>'
-                .$this->e($this->get('trend_text', '')).'</p>';
+                .'<i class="ti ti-arrow-'.($up ? 'up' : 'down').'-right"></i> '.$this->escape(abs((float) $trend)).'%</span>'
+                .$this->escape($this->get('trend_text', '')).'</p>';
         }
         // ---------- 迷你图 ----------
         $chartHtml = '';
@@ -103,7 +103,7 @@ class MetricCard extends Component
                 'color' => (string) $this->get('color'),
             ];
             $chartHtml = '<div class="xf-metric-chart" data-xf="metric-chart" data-xf-config="'
-                .$this->e(json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP)).'"></div>';
+                .$this->escape(json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP)).'"></div>';
         } elseif ($this->get('icon')) {
             $chartHtml = '<div class="avatar-lg d-flex align-items-center justify-content-center rounded bg-primary-subtle">'
                 .'<i class="'.$this->iconClass($this->get('icon')).' fs-2 text-primary"></i></div>';
@@ -112,7 +112,7 @@ class MetricCard extends Component
             .'<div class="flex-grow-1">'
             .'<h5 class="text-muted fs-13 text-uppercase mb-2">'
             .($this->get('icon') && $this->get('chart') ? '<i class="'.$this->iconClass($this->get('icon')).' me-1"></i>' : '')
-            .$this->e($this->get('title')).'</h5>'
+            .$this->escape($this->get('title')).'</h5>'
             .$valueHtml.$trendHtml
             .'</div>'.$chartHtml.'</div>';
 
@@ -121,7 +121,7 @@ class MetricCard extends Component
         }
         $body = '<div class="card-body">'.$inner.'</div>';
         $card = $this->get('url')
-            ? '<a href="'.$this->e($this->safeUrl($this->get('url'))).'" class="card xf-metric-card text-reset" id="'.$id.'">'.$body.'</a>'
+            ? '<a href="'.$this->escape($this->safeUrl($this->get('url'))).'" class="card xf-metric-card text-reset" id="'.$id.'">'.$body.'</a>'
             : '<div'.$this->attrs(['class' => 'card xf-metric-card', 'id' => $id]).'>'.$body.'</div>';
 
         return $card;

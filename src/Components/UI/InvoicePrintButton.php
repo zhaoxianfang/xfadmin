@@ -57,10 +57,10 @@ class InvoicePrintButton extends Component
 
         $attrStr = '';
         foreach ($attrs as $k => $v) {
-            $attrStr .= ' '.$k.'="'.$this->e($v).'"';
+            $attrStr .= ' '.$k.'="'.$this->escape($v).'"';
         }
 
         return '<button type="button" class="btn btn-'.$variant.'"'.$attrStr.'>'
-            .($icon ? '<i class="'.$this->iconClass($icon).' me-1"></i>' : '').$this->e($text).'</button>';
+            .($icon ? '<i class="'.$this->iconClass($icon).' me-1"></i>' : '').$this->escape($text).'</button>';
     }
 }

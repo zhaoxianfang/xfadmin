@@ -104,17 +104,17 @@ class Deals extends Component
                 $cards .= '<div class="card xf-deal-card mb-2 border shadow-none">'
                     .'<div class="card-body p-2">'
                     .'<div class="d-flex justify-content-between align-items-start">'
-                    .'<span class="fw-medium">'.$this->e($it['title'] ?? '').'</span>'
-                    .'<span class="text-'.$color.' fw-semibold">'.$this->e($amount).'</span></div>'
-                    .'<div class="small text-muted mt-1">'.$this->e($it['customer'] ?? '').'</div>'
+                    .'<span class="fw-medium">'.$this->escape($it['title'] ?? '').'</span>'
+                    .'<span class="text-'.$color.' fw-semibold">'.$this->escape($amount).'</span></div>'
+                    .'<div class="small text-muted mt-1">'.$this->escape($it['customer'] ?? '').'</div>'
                     .$probBar
-                    .($owner !== '' ? '<div class="small mt-1"><i class="ti ti-user me-1"></i>'.$this->e($owner).($prob !== null ? ' · 赢单率 '.((int) $prob).'%' : '').'</div>' : '')
+                    .($owner !== '' ? '<div class="small mt-1"><i class="ti ti-user me-1"></i>'.$this->escape($owner).($prob !== null ? ' · 赢单率 '.((int) $prob).'%' : '').'</div>' : '')
                     .'</div></div>';
             }
             $html .= '<div class="col-xl-3 col-lg-4 col-sm-6">'
                 .'<div class="card h-100">'
                 .'<div class="card-header bg-'.$color.'-subtle d-flex justify-content-between align-items-center py-2">'
-                .'<span class="fw-semibold text-'.$color.'"><i class="ti ti-flag-3 me-1"></i>'.$this->e($name).'</span>'
+                .'<span class="fw-semibold text-'.$color.'"><i class="ti ti-flag-3 me-1"></i>'.$this->escape($name).'</span>'
                 .'<span class="badge bg-'.$color.' rounded-pill">'.count($items).'</span></div>'
                 .'<div class="card-body"><div class="small text-muted mb-2">合计 ¥'.number_format($total, 0).'</div>'.$cards.'</div>'
                 .'</div></div>';

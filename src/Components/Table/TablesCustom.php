@@ -82,15 +82,15 @@ class TablesCustom extends Component
         if (! empty($columns)) {
             $html .= '<thead>';
             if ($headerBg) {
-                $html .= '<tr class="table-'.$this->e($headerBg).'">';
+                $html .= '<tr class="table-'.$this->escape($headerBg).'">';
             } else {
                 $html .= '<tr>';
             }
             foreach ($columns as $col) {
                 if (is_array($col)) {
-                    $html .= '<th class="'.$this->e($col['class'] ?? '').'">'.$this->e($col['label'] ?? '').'</th>';
+                    $html .= '<th class="'.$this->escape($col['class'] ?? '').'">'.$this->escape($col['label'] ?? '').'</th>';
                 } else {
-                    $html .= '<th>'.$this->e((string) $col).'</th>';
+                    $html .= '<th>'.$this->escape((string) $col).'</th>';
                 }
             }
             $html .= '</tr></thead>';
@@ -112,9 +112,9 @@ class TablesCustom extends Component
                     $value = $rowValues[$i] ?? '';
                 }
                 if (is_array($value)) {
-                    $html .= '<td class="'.$this->e($value['class'] ?? '').'">'.$this->raw($value['html'] ?? '').'</td>';
+                    $html .= '<td class="'.$this->escape($value['class'] ?? '').'">'.$this->raw($value['html'] ?? '').'</td>';
                 } else {
-                    $html .= '<td>'.$this->e((string) $value).'</td>';
+                    $html .= '<td>'.$this->escape((string) $value).'</td>';
                 }
             }
             $html .= '</tr>';
@@ -133,9 +133,9 @@ class TablesCustom extends Component
                 $html .= '<tr>';
                 foreach ($row as $value) {
                     if (is_array($value)) {
-                        $html .= '<td class="'.$this->e($value['class'] ?? '').'">'.$this->raw($value['html'] ?? '').'</td>';
+                        $html .= '<td class="'.$this->escape($value['class'] ?? '').'">'.$this->raw($value['html'] ?? '').'</td>';
                     } else {
-                        $html .= '<td>'.$this->e((string) $value).'</td>';
+                        $html .= '<td>'.$this->escape((string) $value).'</td>';
                     }
                 }
                 $html .= '</tr>';

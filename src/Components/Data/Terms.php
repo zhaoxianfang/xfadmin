@@ -62,23 +62,23 @@ class Terms extends Component
                 .'<nav class="nav flex-column nav-pills xf-terms-nav" id="'.$id.'-toc">';
             foreach ($sections as $i => $sec) {
                 $sid = (string) ($sec['id'] ?? 'sec-'.$i);
-                $tocHtml .= '<a class="nav-link py-1 px-2" href="#'.$this->e($id.'-'.$sid).'">'.$this->e($sec['title'] ?? '').'</a>';
+                $tocHtml .= '<a class="nav-link py-1 px-2" href="#'.$this->escape($id.'-'.$sid).'">'.$this->escape($sec['title'] ?? '').'</a>';
             }
             $tocHtml .= '</nav></div></div>';
         }
         // ---------- 正文 ----------
         $body = '<div class="'.($showToc ? 'col-lg-9' : 'col-12').'"><div class="card"><div class="card-body p-4 xf-terms-body">';
-        $body .= '<h3 class="mb-1">'.$this->e($this->get('title')).'</h3>';
+        $body .= '<h3 class="mb-1">'.$this->escape($this->get('title')).'</h3>';
         if ($this->get('updated_at')) {
-            $body .= '<p class="text-muted mb-3"><i class="ti ti-clock me-1"></i>最近更新：'.$this->e($this->get('updated_at')).'</p>';
+            $body .= '<p class="text-muted mb-3"><i class="ti ti-clock me-1"></i>最近更新：'.$this->escape($this->get('updated_at')).'</p>';
         }
         if ($this->get('intro') !== null) {
             $body .= '<div class="xf-terms-intro text-muted mb-4">'.$this->raw($this->get('intro')).'</div>';
         }
         foreach ($sections as $i => $sec) {
             $sid = (string) ($sec['id'] ?? 'sec-'.$i);
-            $body .= '<section class="xf-terms-section mb-4" id="'.$this->e($id.'-'.$sid).'">'
-                .'<h5 class="mb-2">'.$this->e($sec['title'] ?? '').'</h5>'
+            $body .= '<section class="xf-terms-section mb-4" id="'.$this->escape($id.'-'.$sid).'">'
+                .'<h5 class="mb-2">'.$this->escape($sec['title'] ?? '').'</h5>'
                 .'<div class="text-muted">'.$this->raw($sec['content'] ?? '').'</div></section>';
         }
         // ---------- 底部「同意」按钮（可选） ----------
@@ -87,8 +87,8 @@ class Terms extends Component
             if (is_array($accept)) {
                 $acceptUrl = $this->safeUrl($accept['url'] ?? 'javascript:void(0);', 'javascript:void(0);');
                 $body .= '<div class="border-top pt-3 mt-4 text-end">'
-                    .'<a href="'.$this->e($acceptUrl).'" class="btn btn-primary">'
-                    .'<i class="ti ti-check me-1"></i>'.$this->e($accept['label'] ?? '我已阅读并同意').'</a></div>';
+                    .'<a href="'.$this->escape($acceptUrl).'" class="btn btn-primary">'
+                    .'<i class="ti ti-check me-1"></i>'.$this->escape($accept['label'] ?? '我已阅读并同意').'</a></div>';
             } else {
                 $body .= '<div class="border-top pt-3 mt-4">'.$this->raw($accept).'</div>';
             }

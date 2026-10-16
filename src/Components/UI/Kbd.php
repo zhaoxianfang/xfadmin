@@ -38,11 +38,11 @@ class Kbd extends Component
     {
         $text = (string) $this->get('text');
         if ($text !== '') {
-            $inner = '<kbd>'.$this->e($text).'</kbd>';
+            $inner = '<kbd>'.$this->escape($text).'</kbd>';
         } else {
             $parts = [];
             foreach ((array) $this->get('keys', []) as $k) {
-                $parts[] = '<kbd>'.$this->e($k).'</kbd>';
+                $parts[] = '<kbd>'.$this->escape($k).'</kbd>';
             }
             $inner = implode('<span class="xf-kbd-plus">+</span>', $parts);
         }

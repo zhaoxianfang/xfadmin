@@ -50,7 +50,7 @@ class NotificationCenter extends Component
      */
     protected function html(): string
     {
-        $id = $this->e($this->get('id'));
+        $id = $this->escape($this->get('id'));
         $items = (array) $this->get('items');
         $badge = (int) $this->get('badge');
         $list = '';
@@ -58,14 +58,14 @@ class NotificationCenter extends Component
             // 先解析 URL 再统一转义（先 e() 再拼 URL 会把查询串里的 & 变成 &amp;，破坏地址）；
             // 空值时保持空，避免 img() 的 1x1 占位图被误判为「有头像」
             $avatarRaw = (string) ($it['avatar'] ?? '');
-            $avatar = $avatarRaw !== '' ? $this->e($this->img($avatarRaw)) : '';
-            $icon = $this->e($it['icon'] ?? 'ti ti-bell');
+            $avatar = $avatarRaw !== '' ? $this->escape($this->img($avatarRaw)) : '';
+            $icon = $this->escape($it['icon'] ?? 'ti ti-bell');
             $variant = $this->enum($it['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
-            $title = $this->e($it['title'] ?? '');
-            $text = $this->e($it['text'] ?? '');
-            $time = $this->e($it['time'] ?? '');
+            $title = $this->escape($it['title'] ?? '');
+            $text = $this->escape($it['text'] ?? '');
+            $time = $this->escape($it['time'] ?? '');
             $unread = ! empty($it['unread']);
-            $url = $this->e($this->safeUrl($it['url'] ?? ''));
+            $url = $this->escape($this->safeUrl($it['url'] ?? ''));
             $media = $avatar
                 ? '<img src="'.$avatar.'" class="rounded-circle" width="38" height="38" alt="">'
                 : '<span class="avatar-sm d-inline-flex align-items-center justify-content-center rounded-circle bg-soft-'.$variant.' text-'.$variant.'"><i class="'.$icon.'"></i></span>';
@@ -84,19 +84,19 @@ class NotificationCenter extends Component
             $footHtml = '<div class="d-flex justify-content-between p-2 border-top">';
             $footHtml .= ! empty($footer['all'])
                 // 「查看全部」链接：safeUrl 拦截伪协议后再统一转义（与列表项 url 处理一致）
-                ? '<a href="'.$this->e($this->safeUrl($footer['all'])).'" class="small">查看全部</a>'
+                ? '<a href="'.$this->escape($this->safeUrl($footer['all'])).'" class="small">查看全部</a>'
                 : '<span></span>';
             $footHtml .= ! empty($footer['clear'])
                 ? '<button type="button" class="btn btn-sm btn-link p-0 xf-notify-clear">标记已读</button>'
                 : '';
             $footHtml .= '</div>';
         }
-        $html = '<div class="offcanvas offcanvas-end xf-notify-center" tabindex="-1" id="'.$id.'" aria-label="'.$this->e($this->get('title')).'">'
-            .'<div class="offcanvas-header"><h6 class="offcanvas-title mb-0">'.$this->e($this->get('title')).'</h6>'
+        $html = '<div class="offcanvas offcanvas-end xf-notify-center" tabindex="-1" id="'.$id.'" aria-label="'.$this->escape($this->get('title')).'">'
+            .'<div class="offcanvas-header"><h6 class="offcanvas-title mb-0">'.$this->escape($this->get('title')).'</h6>'
             .'<button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>'
             .'<div class="offcanvas-body p-0">'
             .'<div class="list-group list-group-flush xf-notify-list">'.$list.'</div>'
-            .'<div class="text-muted small text-center py-4 xf-notify-empty'.($items ? ' d-none' : '').'">'.$this->e($this->get('empty')).'</div>'
+            .'<div class="text-muted small text-center py-4 xf-notify-empty'.($items ? ' d-none' : '').'">'.$this->escape($this->get('empty')).'</div>'
             .'</div>'.$footHtml.'</div>';
 
         return $html;

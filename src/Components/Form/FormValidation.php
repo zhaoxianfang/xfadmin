@@ -105,15 +105,15 @@ class FormValidation extends Component
      */
     private function renderCustomForm(string $formId, array $fields): string
     {
-        $html = '<div class="card"><div class="card-body"><form id="'.$this->e($formId).'" class="needs-validation" novalidate><div class="row g-3">';
+        $html = '<div class="card"><div class="card-body"><form id="'.$this->escape($formId).'" class="needs-validation" novalidate><div class="row g-3">';
 
         foreach ($fields as $f) {
             $f = (array) $f;
-            $label = $this->e($f['label'] ?? '');
-            $name = $this->e($f['name'] ?? '');
-            $type = $this->e($f['type'] ?? 'text');
+            $label = $this->escape($f['label'] ?? '');
+            $name = $this->escape($f['name'] ?? '');
+            $type = $this->escape($f['type'] ?? 'text');
             $rules = (string) ($f['rules'] ?? '');
-            $placeholder = $this->e($f['placeholder'] ?? '');
+            $placeholder = $this->escape($f['placeholder'] ?? '');
             $col = 'col-md-'.(int) ($f['col'] ?? 6);
 
             $required = str_contains($rules, 'required') ? ' required' : '';

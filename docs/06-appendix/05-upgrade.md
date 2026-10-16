@@ -24,8 +24,8 @@ bash tests/run-all.sh
 
 | 版本 | PHP | Laravel | ThinkPHP | 说明 |
 |---|---|---|---|---|
-| 2.x | ≥ 8.2 | 11 / 12 | 8+ | 当前版本 |
-| 1.x | ≥ 8.1 | 9 / 10 | 6 / 8 | 已停止维护 |
+| 1.x | ≥ 8.2 | 11 / 12 | 8+ | 当前版本（1.0.2） |
+| 0.x | ≥ 8.1 | 9 / 10 | 6 / 8 | 已停止维护（历史版本） |
 
 ## 3. 破坏性变更清单
 
@@ -109,11 +109,11 @@ php artisan optimize:clear
 
 同时回滚 `config/xfadmin.php` 的 `version` 与自定义修改。
 
-## 6. 从 1.x 升级到 2.x
+## 6. 从早期版本升级到 1.x（当前）
 
 主要差异：
 
-| 项 | 1.x | 2.x |
+| 项 | 早期版本（≤ 0.x） | 1.x（当前，1.0.2） |
 |---|---|---|
 | PHP | ≥ 8.1 | ≥ 8.2 |
 | 组件数 | ~142 | 226 个别名 / 215 类 |
@@ -125,7 +125,7 @@ php artisan optimize:clear
 升级步骤：
 
 1. 升级 PHP 到 8.2+；
-2. `composer require zxf/xfadmin:^2.0`；
+2. `composer require zxf/xfadmin:^1.0`；
 3. 全局替换 `data-lucide` → `ti ti-*` 图标；
 4. 自定义 `options.dom` 改为 `options.layout`；
 5. 检查上文的破坏性变更清单；

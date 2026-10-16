@@ -42,7 +42,7 @@ echo XfAdmin::chatConversationPanel(['messages' => \$messages, 'action' => '/cha
 聊天应用整页（会话+消息）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatApp`
-> **文件**：`src/Components/Data/ChatApp.php`（120 行）
+> **文件**：`src/Components/Data/ChatApp.php`（96 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -92,8 +92,8 @@ echo XfAdmin::chatApp([
 | `conversations` | array | `[]` | 会话列表（聊天） |
 | `peer` | array | `[]` | 对方（会话对象）信息 |
 | `messages` | array | `[]` | 消息列表（聊天/通知/消息中心条目） |
-| `search` | string | `'搜索联系人…'` | 是否启用搜索；**文本槽位**：输出前自动 HTML 转义 |
-| `placeholder` | string | `'输入消息…'` | 占位提示文案；**文本槽位**：输出前自动 HTML 转义 |
+| `search` | string | `'搜索联系人…'` | 是否启用搜索；源码用法：`$left = '<div class="p-2 border-bottom"><input class="form-control" placeholder="'.$t…` |
+| `placeholder` | string | `'输入消息…'` | 占位提示文案；源码用法：`.'<input class="form-control" placeholder="'.$this->escape($this->get('placeholder'))…` |
 | `height` | string | `'60vh'` | 高度（CSS 长度，受安全白名单约束） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -105,7 +105,7 @@ echo XfAdmin::chatApp([
 聊天框（消息气泡容器）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatBox`
-> **文件**：`src/Components/Data/ChatBox.php`（112 行）
+> **文件**：`src/Components/Data/ChatBox.php`（87 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -152,13 +152,13 @@ echo XfAdmin::chatBox([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `status` | mixed | `null` | 状态值 / 状态映射；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `avatar` | mixed | `null` | 头像地址（自动解析为包内图片 URL）；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<div><h5 class="mb-0">'.$this->escape($this->get('title')).'</h5>';` |
+| `status` | mixed | `null` | 状态值 / 状态映射；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `avatar` | mixed | `null` | 头像地址（自动解析为包内图片 URL）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `height` | string | `'460px'` | 高度（CSS 长度，受安全白名单约束）；CSS 长度：仅接受 `数字+单位`（px/%/rem/em/vh/vw/pt/ch/fr） |
 | `messages` | array | `[]` | 消息列表（聊天/通知/消息中心条目） |
-| `input` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
-| `header` | bool | `true` | 头部内容（原样输出）；开关：非空 / 真值时启用对应区块 |
+| `input` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `header` | bool | `true` | 头部内容（原样输出）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -169,7 +169,7 @@ echo XfAdmin::chatBox([
 聊天会话面板（单会话消息区）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatConversationPanel`
-> **文件**：`src/Components/Data/ChatConversationPanel.php`（88 行）
+> **文件**：`src/Components/Data/ChatConversationPanel.php`（66 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -222,7 +222,7 @@ echo XfAdmin::chatConversationPanel([
 聊天气泡（单条消息）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ChatMessageBubble`
-> **文件**：`src/Components/Data/ChatMessageBubble.php`（81 行）
+> **文件**：`src/Components/Data/ChatMessageBubble.php`（58 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -275,7 +275,7 @@ echo XfAdmin::chatMessageBubble([
 邮件应用整页（列表+阅读+撰写）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EmailApp`
-> **文件**：`src/Components/Data/EmailApp.php`（135 行）
+> **文件**：`src/Components/Data/EmailApp.php`（111 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -333,7 +333,7 @@ echo XfAdmin::emailApp([
 邮件撰写（收件人/主题/正文/附件）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EmailCompose`
-> **文件**：`src/Components/Data/EmailCompose.php`（88 行）
+> **文件**：`src/Components/Data/EmailCompose.php`（70 行）
 > **依赖插件**：`quill`
 
 **用法示例**
@@ -366,10 +366,10 @@ echo XfAdmin::emailCompose([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `to` | string | `''` | 结束值 / 目标地址；**文本槽位**：输出前自动 HTML 转义 |
-| `subject` | string | `''` | **文本槽位**：输出前自动 HTML 转义 |
-| `body` | string | `''` | 主体内容（可为 HTML 字符串、组件实例或数组，原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；**文本槽位**：输出前自动 HTML 转义 |
-| `action` | string | `'#'` | 表单提交地址 / 动作类型；源码用法：`$html = '<form' . $this->attrs(['class' => 'xf-mail-compose card', 'id' => $id, 'meth…` |
+| `to` | string | `''` | 结束值 / 目标地址；源码用法：`.'<input type="text" name="to" class="form-control" value="'.$this->escape($this->get…` |
+| `subject` | string | `''` | 源码用法：`.'<input type="text" name="subject" class="form-control" value="'.$this->escape($this…` |
+| `body` | string | `''` | 主体内容（可为 HTML 字符串、组件实例或数组，原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
+| `action` | string | `'#'` | 表单提交地址 / 动作类型；URL：经协议白名单校验（拦截 `javascript:` 等） |
 | `editor` | string | `'quill'` | 源码用法：`return $this->get('editor') === 'quill' ? ['quill'] : [];` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -381,7 +381,7 @@ echo XfAdmin::emailCompose([
 邮件列表（收件箱条目）。
 
 > **类**：`zxf\XfAdmin\Components\Data\MailList`
-> **文件**：`src/Components/Data/MailList.php`（79 行）
+> **文件**：`src/Components/Data/MailList.php`（55 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -412,7 +412,7 @@ echo XfAdmin::mailList([
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
 - `action[]` 元素键：`url`（默认 `#`）、`text`（默认 `查看全部`）
-- `items[]` 元素键：`unread`、`starred`、`avatar`、`badge`、`badgeVariant`（默认 `primary`）、`attachments`、`from`、`subject`、`preview`、`time`
+- `items[]` 元素键：`unread`、`starred`、`avatar`、`badgeVariant`（默认 `primary`）、`badge`、`attachments`、`from`、`subject`、`preview`、`time`
 
 > **渲染骨架**：主要 class `card` `card-header` `bg-light` `bg-opacity-25` `card-body` `p-0` `table-responsive` `table`
 
@@ -433,7 +433,7 @@ echo XfAdmin::mailList([
 Outlook 风格邮件客户端。
 
 > **类**：`zxf\XfAdmin\Components\Data\Outlook`
-> **文件**：`src/Components/Data/Outlook.php`（109 行）
+> **文件**：`src/Components/Data/Outlook.php`（89 行）
 > **依赖插件**：无
 
 **用法示例**

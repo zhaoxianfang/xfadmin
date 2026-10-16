@@ -66,7 +66,7 @@ class PdfViewer extends Component
             $safe = $this->safeUrl($raw);
             $url = $safe === $raw ? XfAdmin::asset(ltrim($raw, '/')) : '';
         }
-        $url = $this->e($url);
+        $url = $this->escape($url);
 
         $html = '<div'.$this->attrs(['class' => 'xf-pdf card border-0 shadow-sm', 'id' => $id]).'>';
         if ($this->get('toolbar')) {
@@ -85,7 +85,7 @@ class PdfViewer extends Component
         $html .= '<div class="card-body p-2 overflow-auto" data-role="viewport" style="height:'.(int) $this->get('height').'px"></div>';
         $html .= '</div>';
 
-        $worker = $this->e(XfAdmin::asset('plugins/pdfjs/pdf.worker.min.js'));
+        $worker = $this->escape(XfAdmin::asset('plugins/pdfjs/pdf.worker.min.js'));
         $js = 'XFAdmin.onReady(function(){'
             .'var root=document.getElementById('.Html::scriptJson($id).');if(!root)return;'
             .'var vp=root.querySelector("[data-role=viewport]");var url='.Html::scriptJson($url).';if(!url){fail("未提供 PDF 文件地址");return;}'

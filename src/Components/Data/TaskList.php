@@ -69,7 +69,7 @@ class TaskList extends Component
     protected function html(): string
     {
         $tasks = (array) $this->get('tasks');
-        $title = $this->e($this->get('title'));
+        $title = $this->escape($this->get('title'));
 
         $head = '';
         if ($title !== '' || $this->get('filterable') || $this->get('addable')) {
@@ -84,7 +84,7 @@ class TaskList extends Component
                     .'</div>';
             }
             if ($this->get('addable')) {
-                $head .= '<a href="'.$this->e($this->safeUrl($this->get('add_url'))).'" class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>新建</a>';
+                $head .= '<a href="'.$this->escape($this->safeUrl($this->get('add_url'))).'" class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>新建</a>';
             }
             $head .= '</div></div>';
         }
@@ -104,22 +104,22 @@ class TaskList extends Component
             $tag = $t['tag'] ?? '';
             $meta = [];
             if ($tag !== '') {
-                $meta[] = '<span class="badge bg-secondary-subtle text-secondary">'.$this->e($tag).'</span>';
+                $meta[] = '<span class="badge bg-secondary-subtle text-secondary">'.$this->escape($tag).'</span>';
             }
             $meta[] = '<span class="badge bg-'.$pv.'-subtle text-'.$pv.'">优先级·'.$pl.'</span>';
             if ($assignee !== '') {
                 $av = $avatar !== ''
-                    ? '<img src="'.$this->e($avatar).'" class="avatar-xs rounded-circle me-1" alt="">'
+                    ? '<img src="'.$this->escape($avatar).'" class="avatar-xs rounded-circle me-1" alt="">'
                     : '<span class="avatar-xs rounded-circle bg-'.$pv.'-subtle text-'.$pv.' me-1 d-inline-flex align-items-center justify-content-center"><i class="ti ti-user fs-xs"></i></span>';
-                $meta[] = '<span class="d-inline-flex align-items-center">'.$av.$this->e($assignee).'</span>';
+                $meta[] = '<span class="d-inline-flex align-items-center">'.$av.$this->escape($assignee).'</span>';
             }
             if ($due !== '') {
-                $meta[] = '<span class="text-muted"><i class="ti ti-calendar-event me-1"></i>'.$this->e($due).'</span>';
+                $meta[] = '<span class="text-muted"><i class="ti ti-calendar-event me-1"></i>'.$this->escape($due).'</span>';
             }
             $list .= '<label class="list-group-item xf-task-item d-flex align-items-start gap-2 py-2'.($done ? ' xf-task-done' : '').'" data-done="'.($done ? '1' : '0').'">'
-                .'<input class="form-check-input mt-1 xf-task-check" type="checkbox"'.($done ? ' checked' : '').' data-id="'.$this->e((string) $id).'">'
+                .'<input class="form-check-input mt-1 xf-task-check" type="checkbox"'.($done ? ' checked' : '').' data-id="'.$this->escape((string) $id).'">'
                 .'<div class="flex-grow-1">'
-                .'<div class="xf-task-title fw-medium">'.$this->e($t['title'] ?? '').'</div>'
+                .'<div class="xf-task-title fw-medium">'.$this->escape($t['title'] ?? '').'</div>'
                 .'<div class="d-flex flex-wrap align-items-center gap-2 mt-1 small">'.implode('', $meta).'</div>'
                 .'</div></label>';
         }

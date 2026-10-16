@@ -58,7 +58,7 @@ class Scrollspy extends Component
         $nav = '<nav id="'.$navId.'" class="nav nav-pills flex-column">';
         foreach ($items as $item) {
             $itemId = $item['id'];
-            $nav .= '<a class="nav-link" href="#'.$this->e($itemId).'">'.$this->e($item['label'] ?? $itemId).'</a>';
+            $nav .= '<a class="nav-link" href="#'.$this->escape($itemId).'">'.$this->escape($item['label'] ?? $itemId).'</a>';
         }
         $nav .= '</nav>';
 
@@ -76,7 +76,7 @@ class Scrollspy extends Component
         foreach ($items as $item) {
             // 与 nav 循环共用同一份 $items：此处 id 即 nav 中 href 指向的锚点
             $itemId = $item['id'];
-            $body .= '<h5 id="'.$this->e($itemId).'">'.$this->e($item['label'] ?? $itemId).'</h5>';
+            $body .= '<h5 id="'.$this->escape($itemId).'">'.$this->escape($item['label'] ?? $itemId).'</h5>';
             $body .= '<div class="mb-3">'.$this->raw($item['content'] ?? '').'</div>';
         }
         $body .= '</div>';

@@ -52,10 +52,10 @@ class Callout extends Component
         }
         $html .= '<div class="xf-callout-body">';
         if ($title !== '') {
-            $html .= '<div class="xf-callout-title">'.$this->e($title).'</div>';
+            $html .= '<div class="xf-callout-title">'.$this->escape($title).'</div>';
         }
         if ($body !== '') {
-            $html .= '<div class="xf-callout-text">'.$this->e($body).'</div>';
+            $html .= '<div class="xf-callout-text">'.$this->escape($body).'</div>';
         }
         $html .= '</div></div>';
 

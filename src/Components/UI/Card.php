@@ -60,16 +60,16 @@ class Card extends Component
 
         // 标题标签白名单（非法值回落 h4），避免注入任意标签
         $titleTag = $this->enum($this->get('title_tag'), ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'p'], 'h4');
-        $headerCls = 'card-header justify-content-between align-items-center d-flex'.($this->get('header_class') ? ' '.$this->e($this->get('header_class')) : '');
+        $headerCls = 'card-header justify-content-between align-items-center d-flex'.($this->get('header_class') ? ' '.$this->escape($this->get('header_class')) : '');
 
         if ($this->get('title') !== null || $this->get('actions') !== null || $this->get('tools') !== []) {
             $html .= '<div class="'.$headerCls.'">';
             $html .= '<div>';
             if ($this->get('title') !== null) {
-                $html .= '<'.$titleTag.' class="card-title mb-0">'.$this->e($this->get('title')).'</'.$titleTag.'>';
+                $html .= '<'.$titleTag.' class="card-title mb-0">'.$this->escape($this->get('title')).'</'.$titleTag.'>';
             }
             if ($this->get('subtitle') !== null) {
-                $html .= '<p class="card-subtitle text-muted mt-1 mb-0">'.$this->e($this->get('subtitle')).'</p>';
+                $html .= '<p class="card-subtitle text-muted mt-1 mb-0">'.$this->escape($this->get('subtitle')).'</p>';
             }
             $html .= '</div>';
 
@@ -95,7 +95,7 @@ class Card extends Component
             }
             $html .= '</div>';
         }
-        $html .= '<div class="'.Html::cls('card-body', ['p-0' => ! $this->get('padding')]).($this->get('body_class') ? ' '.$this->e($this->get('body_class')) : '').'">'.$this->raw($this->get('body')).'</div>';
+        $html .= '<div class="'.Html::cls('card-body', ['p-0' => ! $this->get('padding')]).($this->get('body_class') ? ' '.$this->escape($this->get('body_class')) : '').'">'.$this->raw($this->get('body')).'</div>';
 
         if ($this->get('footer') !== null) {
             $html .= '<div class="card-footer">'.$this->raw($this->get('footer')).'</div>';

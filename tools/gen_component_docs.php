@@ -73,7 +73,7 @@ $GROUPS = [
     ],
     '02-ui.md' => [
         'title' => 'UI 基础组件',
-        'desc' => '卡片、按钮、徽章、模态框、选项卡、进度、头像、时间线、轮播等通用界面元素，共 55 个。',
+        'desc' => '卡片、按钮、徽章、模态框、选项卡、进度、头像、时间线、轮播等通用界面元素，共 61 个。',
         'intro' => [
             '## 本章导读',
             '',
@@ -114,6 +114,7 @@ $GROUPS = [
             'empty', 'toolbar', 'searchBox', 'colorPalette', 'typography', 'utilities',
             'videoEmbed', 'commandPalette', 'notificationCenter', 'dropzoneUpload',
             'backToTop', 'callout', 'countdown', 'countUp', 'invoicePrintButton',
+            'statusTag', 'statRow', 'confirmDialog', 'actionBar', 'filterBar', 'dataSourceSwitcher',
         ],
     ],
     '03-form.md' => [
@@ -699,6 +700,12 @@ $STRUCT_NOTES = [
     ],
     'countdown' => [
         'labels' => '四个单位文案，顺序为 `[\'天\',\'时\',\'分\',\'秒\']`',
+    ],
+    'actionBar' => [
+        'items' => '按钮配置数组（透传 `XfAdmin::button()`，默认 size=sm）或 HTML 字符串 / 组件实例混排',
+    ],
+    'filterBar' => [
+        'fields' => '字段配置：`name`（字段名）、`label`（标签）、`type`（text|select）、`placeholder`、`options`（select 的 `值=>文案`）、`width`（栅格类如 col-md-3）、`value`、`required`',
     ],
     'tags' => [
         'whitelist' => '候选词字符串数组（Tagify 建议列表）',
@@ -1491,9 +1498,9 @@ function paramHints(string $src, string $key, string $methodSrc, bool $withUsage
         $hints[] = '栅格宽度：数字（1-12）或 `[\'md\'=>6]`（断点白名单 sm/md/lg/xl/xxl）';
     }
 
-    // 开关语义
+    // 条件渲染语义（可选参数：非空 / 真值时输出对应区块）
     if (preg_match("#if\s*\(\s*!?\s*\\\$\s*this\s*->\s*get\s*\(\s*'".preg_quote($key, '#')."'\s*\)#", $methodSrc)) {
-        $hints[] = '开关：非空 / 真值时启用对应区块';
+        $hints[] = '可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染';
     }
     if (preg_match("#\\\$\s*this\s*->\s*get\s*\(\s*'".preg_quote($key, '#')."'\s*\)\s*!==\s*(?:null|''|\w+)#", $methodSrc)) {
         $hints[] = '为 `null` 时不渲染该区块';

@@ -49,25 +49,25 @@ class ActivityFeed extends Component
             $html .= '<div class="d-flex gap-3 pb-3 mb-3 border-bottom">';
             if (! empty($it['avatar'])) {
                 // 动态头像：INSPINIA 规范 .avatar 包裹（avatar-md=36px，与 .activity-feed .avatar 的 36px 约束一致）
-                $html .= '<span class="avatar avatar-md flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $it['avatar'])).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
+                $html .= '<span class="avatar avatar-md flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $it['avatar'])).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
             } else {
                 $variant = $this->enum($it['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
                 $icon = $it['icon'] ?? 'ti ti-point';
                 // 图标占位：与图片头像同尺寸（avatar-md），保证时间线左侧对齐
-                $html .= '<span class="avatar avatar-md flex-shrink-0"><span class="avatar-title bg-'.$variant.'-subtle text-'.$variant.' rounded-circle"><i class="'.$this->e($icon).'"></i></span></span>';
+                $html .= '<span class="avatar avatar-md flex-shrink-0"><span class="avatar-title bg-'.$variant.'-subtle text-'.$variant.' rounded-circle"><i class="'.$this->escape($icon).'"></i></span></span>';
             }
             $html .= '<div class="flex-grow-1">';
-            $html .= '<p class="mb-0"><strong>'.$this->e($it['user'] ?? '').'</strong> '.$this->e($it['action'] ?? '');
+            $html .= '<p class="mb-0"><strong>'.$this->escape($it['user'] ?? '').'</strong> '.$this->escape($it['action'] ?? '');
             if (! empty($it['target'])) {
                 $href = $this->safeUrl($it['href'] ?? '#', '#');
-                $html .= ' <a href="'.$this->e($href).'">'.$this->e($it['target']).'</a>';
+                $html .= ' <a href="'.$this->escape($href).'">'.$this->escape($it['target']).'</a>';
             }
             $html .= '</p>';
             if (! empty($it['text'])) {
                 // text 为动态正文（多为用户生成内容），按纯文本转义输出，避免 XSS
-                $html .= '<p class="text-muted mb-1">'.$this->e($it['text'] ?? '').'</p>';
+                $html .= '<p class="text-muted mb-1">'.$this->escape($it['text'] ?? '').'</p>';
             }
-            $html .= '<small class="text-muted">'.$this->e($it['time'] ?? '').'</small>';
+            $html .= '<small class="text-muted">'.$this->escape($it['time'] ?? '').'</small>';
             $html .= '</div></div>';
         }
 

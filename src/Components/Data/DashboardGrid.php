@@ -69,7 +69,7 @@ class DashboardGrid extends Component
                 $w = (int) ($c['width'] ?? 6);
                 $width = ($w >= 1 && $w <= 12) ? $w : 12;
                 $body = $this->raw($c['body'] ?? '');
-                $title = $this->e($c['title'] ?? '');
+                $title = $this->escape($c['title'] ?? '');
                 $html .= '<div class="col-xl-'.$width.'">'
                     .'<div class="card h-100"><div class="card-header"><h5 class="mb-0">'.$title.'</h5></div>'
                     .'<div class="card-body">'.$body.'</div></div></div>';
@@ -78,7 +78,7 @@ class DashboardGrid extends Component
         }
         if ($bottom !== '' && $bottom !== null) {
             $html .= '<div class="mt-3">'
-                .'<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->e($this->get('bottom_title', '综合看板')).'</h5></div>'
+                .'<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->escape($this->get('bottom_title', '综合看板')).'</h5></div>'
                 // bottom 是 HTML 内容槽位（Tabs 等组件实例渲染出的字符串 / 开发者自定义 HTML），按 raw 原样输出
                 .'<div class="card-body">'.$this->raw($bottom).'</div></div></div>';
         }
@@ -104,10 +104,10 @@ class DashboardGrid extends Component
 
         return '<div class="col-sm-6 col-xl-3">'
             .'<div class="card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start">'
-            .'<div><span class="text-muted small">'.$this->e($s['title'] ?? '').'</span>'
-            .'<h3 class="mt-1 mb-1">'.$this->e($s['value'] ?? '').'</h3>'
+            .'<div><span class="text-muted small">'.$this->escape($s['title'] ?? '').'</span>'
+            .'<h3 class="mt-1 mb-1">'.$this->escape($s['value'] ?? '').'</h3>'
             .'<span class="'.$trendClass.' small"><i class="ti '.$trendArrow.' me-1"></i>'.$trendText.'</span></div>'
-            .'<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($variant).' bg-'.$this->e($variant).' bg-opacity-10 rounded p-2"></i>'
+            .'<i class="ti '.$this->escape($icon).' fs-24 text-'.$this->escape($variant).' bg-'.$this->escape($variant).' bg-opacity-10 rounded p-2"></i>'
             .'</div></div></div></div>';
     }
 }

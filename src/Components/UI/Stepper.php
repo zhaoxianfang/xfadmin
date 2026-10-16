@@ -62,9 +62,9 @@ class Stepper extends Component
             };
             $html .= '<div class="xf-stepper-item '.$status.'">';
             $html .= '<div class="xf-stepper-dot '.$dotCls.'">'.$icon.'</div>';
-            $html .= '<div class="xf-stepper-body"><h5 class="mb-0">'.$this->e($s['title'] ?? '').'</h5>';
+            $html .= '<div class="xf-stepper-body"><h5 class="mb-0">'.$this->escape($s['title'] ?? '').'</h5>';
             if (! empty($s['text'])) {
-                $html .= '<small class="text-muted">'.$this->e($s['text']).'</small>';
+                $html .= '<small class="text-muted">'.$this->escape($s['text']).'</small>';
             }
             $html .= '</div></div>';
         }

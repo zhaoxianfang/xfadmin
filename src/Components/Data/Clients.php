@@ -63,7 +63,7 @@ class Clients extends Component
 
         // 头部工具栏
         $html .= '<div class="card-header border-light justify-content-between">';
-        $html .= '<h5 class="card-title mb-0">'.$this->e($this->get('title')).'</h5>';
+        $html .= '<h5 class="card-title mb-0">'.$this->escape($this->get('title')).'</h5>';
         $html .= '<div class="d-flex gap-2">';
         if ($this->get('searchable')) {
             $html .= '<div class="search-box"><input type="text" class="form-control form-control-sm" placeholder="搜索客户…"></div>';
@@ -72,11 +72,11 @@ class Clients extends Component
         if (! empty($filters)) {
             $html .= '<select class="form-select form-select-sm my-1 my-md-0" style="width:auto;">';
             foreach ($filters as $f) {
-                $html .= '<option>'.$this->e($f).'</option>';
+                $html .= '<option>'.$this->escape($f).'</option>';
             }
             $html .= '</select>';
         }
-        $html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-user-plus me-1"></i>'.$this->e($this->get('add_text')).'</button>';
+        $html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-user-plus me-1"></i>'.$this->escape($this->get('add_text')).'</button>';
         $html .= '</div></div>';
 
         // 表格
@@ -93,18 +93,18 @@ class Clients extends Component
             $html .= '<td><div class="d-flex justify-content-start align-items-center gap-2">';
             $html .= '<div class="avatar avatar-sm">';
             if (! empty($c['avatar'])) {
-                $html .= '<img src="'.$this->e(XfAdmin::img((string) $c['avatar'])).'" alt="" class="img-fluid rounded-circle">';
+                $html .= '<img src="'.$this->escape(XfAdmin::img((string) $c['avatar'])).'" alt="" class="img-fluid rounded-circle">';
             } else {
-                $html .= '<span class="avatar-title rounded-circle bg-primary-subtle text-primary">'.$this->e(mb_substr((string) ($c['name'] ?? '?'), 0, 1)).'</span>';
+                $html .= '<span class="avatar-title rounded-circle bg-primary-subtle text-primary">'.$this->escape(mb_substr((string) ($c['name'] ?? '?'), 0, 1)).'</span>';
             }
             $cUrl = $this->safeUrl($c['url'] ?? '#', '#');
-            $html .= '</div><div><h6 class="text-nowrap mb-0 lh-base fs-base"><a href="'.$this->e($cUrl).'" class="link-reset">'.$this->e($c['name'] ?? '').'</a></h6>'
-                .'<p class="text-muted fs-xs mb-0">'.$this->e($c['email'] ?? '').'</p></div></div></td>';
-            $html .= '<td class="text-nowrap">'.$this->e($c['phone'] ?? '').'</td>';
-            $html .= '<td>'.$this->e($c['country'] ?? '').'</td>';
-            $html .= '<td>'.$this->e($c['enrolled'] ?? '').'</td>';
-            $html .= '<td><span class="badge text-bg-light fs-sm">'.$this->e($c['type'] ?? '').'</span></td>';
-            $html .= '<td>'.$this->e($c['job_title'] ?? '').'</td>';
+            $html .= '</div><div><h6 class="text-nowrap mb-0 lh-base fs-base"><a href="'.$this->escape($cUrl).'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h6>'
+                .'<p class="text-muted fs-xs mb-0">'.$this->escape($c['email'] ?? '').'</p></div></div></td>';
+            $html .= '<td class="text-nowrap">'.$this->escape($c['phone'] ?? '').'</td>';
+            $html .= '<td>'.$this->escape($c['country'] ?? '').'</td>';
+            $html .= '<td>'.$this->escape($c['enrolled'] ?? '').'</td>';
+            $html .= '<td><span class="badge text-bg-light fs-sm">'.$this->escape($c['type'] ?? '').'</span></td>';
+            $html .= '<td>'.$this->escape($c['job_title'] ?? '').'</td>';
             $html .= '<td>'.$this->badge($c['status'] ?? null).'</td>';
             $html .= '<td class="text-center"><div class="d-flex justify-content-center align-items-center gap-1">'
                 .'<a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye"></i></a>'
@@ -137,6 +137,6 @@ class Clients extends Component
         // variant 走白名单校验，防止任意值拼入 class 属性
         $variant = $this->enum($status['variant'] ?? 'secondary', self::ENUM_VARIANT, 'secondary');
 
-        return '<span class="badge bg-'.$variant.'-subtle text-'.$variant.' badge-label">'.$this->e($text).'</span>';
+        return '<span class="badge bg-'.$variant.'-subtle text-'.$variant.' badge-label">'.$this->escape($text).'</span>';
     }
 }

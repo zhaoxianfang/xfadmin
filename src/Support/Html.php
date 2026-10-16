@@ -5,12 +5,26 @@ declare(strict_types=1);
 namespace zxf\XfAdmin\Support;
 
 /**
- * HTML 构建工具：转义 / 属性拼装 / class 合并 / JSON 属性
+ * HTML 构建工具：转义 / 属性拼装 / class 合并 / JSON 属性 / 单标签 / 内联样式
  */
 final class Html
 {
-    /** HTML 转义 */
-    public static function e(mixed $value): string
+    /** 自闭合标签白名单（用于 tag() 判定是否输出闭合标签） */
+    private const VOID_TAGS = [
+        'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+        'link', 'meta', 'param', 'source', 'track', 'wbr',
+    ];
+
+    /**
+     * HTML 转义（可读命名主方法）
+     *
+     * null 返回空串；数组/对象尝试序列化为 JSON（对象若实现 __toString 则按字符串处理），
+     * 避免 "Array to string conversion" 与对象直接拼接警告。
+     *
+     * @param  mixed  $value  待转义值
+     * @return string 转义后字符串
+     */
+    public static function escape(mixed $value): string
     {
         if ($value === null) {
             return '';
@@ -28,6 +42,17 @@ final class Html
         }
 
         return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', false);
+    }
+
+    /**
+     * @deprecated 自 13.x 起废弃，请改用 escape()。保留仅为向后兼容。
+     *
+     * @param  mixed  $value  待转义值
+     * @return string 转义后字符串
+     */
+    public static function e(mixed $value): string
+    {
+        return self::escape($value);
     }
 
     /**
@@ -59,7 +84,7 @@ final class Html
                     ? self::cls($value)
                     : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
             }
-            $html .= ' '.$name.'="'.self::e($value).'"';
+            $html .= ' '.$name.'="'.self::escape($value).'"';
         }
 
         return $html;
@@ -89,13 +114,13 @@ final class Html
             }
         }
 
-        return implode(' ', array_values(array_unique(array_filter($classes, fn ($c) => $c !== ''))));
+        return implode(' ', array_values(array_unique(array_filter($classes, fn ($class) => $class !== ''))));
     }
 
     /** 供 data-* 属性安全携带 JSON 配置 */
     public static function json(mixed $data): string
     {
-        return self::e(json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT));
+        return self::escape(json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT));
     }
 
     /** 内联 <script> 场景下的安全 JSON（防止 </script> 注入） */
@@ -105,6 +130,63 @@ final class Html
             $data,
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
         );
+    }
+
+    /**
+     * 生成单个 HTML 标签
+     *
+     * 自动对属性做白名单与转义（复用 attrs()），内容默认按纯文本转义；
+     * 传 $escape=false 时内容按原始 HTML 输出（调用方需自行保证安全）。
+     * 自闭合标签（img/input/br/...）不输出闭合标签。
+     *
+     * @param  string  $name  标签名（字母开头，非法名回退为 span）
+     * @param  array  $attrs  属性数组
+     * @param  string  $content  标签内容
+     * @param  bool  $escape  内容是否转义（默认 true）
+     * @return string 完整标签 HTML
+     */
+    public static function tag(string $name, array $attrs = [], string $content = '', bool $escape = true): string
+    {
+        if (! preg_match('/^[a-zA-Z][a-zA-Z0-9-]*$/', $name)) {
+            $name = 'span';
+        }
+        $attrString = self::attrs($attrs);
+        $open = '<'.$name.$attrString.'>';
+        if (in_array($name, self::VOID_TAGS, true)) {
+            // 自闭合标签：以 /> 结尾，无内容、无闭合标签
+            return rtrim($open, '>').' />';
+        }
+        $body = $escape ? self::escape($content) : $content;
+
+        return $open.$body.'</'.$name.'>';
+    }
+
+    /**
+     * 安全内联样式数组 → 声明串
+     *
+     * 输入 ['color' => 'red', 'font-size' => '12px']，输出 'color:red;font-size:12px'。
+     * 逐项校验属性名（字母/连字符）与值（拒绝含 ;{} url( expression( < 的注入载体），
+     * 非法项跳过，避免 style 属性注入。空数组返回 ''。
+     *
+     * @param  array  $styles  键值样式
+     * @return string 净化后的 style 声明串
+     */
+    public static function style(array $styles): string
+    {
+        $parts = [];
+        foreach ($styles as $property => $value) {
+            $property = trim((string) $property);
+            if (! preg_match('/^[a-zA-Z][a-zA-Z0-9-]*$/', $property)) {
+                continue;
+            }
+            $val = trim((string) $value);
+            if ($val === '' || preg_match('/[;{}]|url\s*\(|expression\s*\(|<\s*\/?script|javascript:/i', $val)) {
+                continue;
+            }
+            $parts[] = $property.':'.$val;
+        }
+
+        return implode(';', $parts);
     }
 
     /** 数组点式读取 */
@@ -129,8 +211,8 @@ final class Html
     {
         $keys = explode('.', $key);
         $ref = &$array;
-        foreach ($keys as $i => $segment) {
-            if ($i === count($keys) - 1) {
+        foreach ($keys as $index => $segment) {
+            if ($index === count($keys) - 1) {
                 $ref[$segment] = $value;
 
                 return;

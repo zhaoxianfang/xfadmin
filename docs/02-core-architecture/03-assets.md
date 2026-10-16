@@ -32,7 +32,7 @@ $assets->jsFiles();                 // 已收集的 JS 相对路径列表
 $assets->baseUrl();                 // /zxf/xfadmin
 
 // 配置
-$assets->setBaseUrl('/static/xfadmin')->setVersion('2.1.0');
+$assets->setBaseUrl('/static/xfadmin')->setVersion('1.0.2');
 
 // 重置（同请求渲染多个完整页面 / 测试）
 $assets->resetCollected();          // 清空收集状态，保留 baseUrl/version
@@ -61,10 +61,10 @@ public function url(string $path): string
 }
 ```
 
-| 输入 | 输出（baseUrl=/zxf/xfadmin，version=2.1.0） |
+| 输入 | 输出（baseUrl=/zxf/xfadmin，version=1.0.2） |
 |---|---|
-| `css/app.min.css` | `/zxf/xfadmin/css/app.min.css?v=2.1.0` |
-| `/zxf/xfadmin/js/xfadmin.js?v=1.0.0` | `/zxf/xfadmin/js/xfadmin.js?v=2.1.0`（幂等） |
+| `css/app.min.css` | `/zxf/xfadmin/css/app.min.css?v=1.0.2` |
+| `/zxf/xfadmin/js/xfadmin.js?v=1.0.0` | `/zxf/xfadmin/js/xfadmin.js?v=1.0.2`（幂等） |
 | `https://cdn.x.com/a.css` | `https://cdn.x.com/a.css`（原样） |
 
 ## 3. 插件注册表 `Assets::PLUGINS`

@@ -55,32 +55,32 @@ class BlogArticle extends Component
         $cover = ! empty($a['cover']) ? XfAdmin::img((string) $a['cover']) : '';
 
         $html = '<article>';
-        $html .= '<div class="mb-3"><a href="#" class="badge bg-primary-subtle text-primary">'.$this->e($a['category'] ?? '').'</a></div>';
-        $html .= '<h1 class="mb-3">'.$this->e($a['title'] ?? '').'</h1>';
+        $html .= '<div class="mb-3"><a href="#" class="badge bg-primary-subtle text-primary">'.$this->escape($a['category'] ?? '').'</a></div>';
+        $html .= '<h1 class="mb-3">'.$this->escape($a['title'] ?? '').'</h1>';
         $html .= '<div class="d-flex align-items-center gap-2 mb-4">';
-        $html .= '<div class="avatar avatar-sm"><img src="'.$this->e($av).'" class="rounded-circle" alt=""></div>';
-        $html .= '<span class="fw-semibold">'.$this->e($author['name'] ?? '').'</span>';
-        $html .= '<span class="text-muted">· '.$this->e($a['date'] ?? '').' · '.$this->e($a['read_time'] ?? '').'</span>';
+        $html .= '<div class="avatar avatar-sm"><img src="'.$this->escape($av).'" class="rounded-circle" alt=""></div>';
+        $html .= '<span class="fw-semibold">'.$this->escape($author['name'] ?? '').'</span>';
+        $html .= '<span class="text-muted">· '.$this->escape($a['date'] ?? '').' · '.$this->escape($a['read_time'] ?? '').'</span>';
         $html .= '</div>';
 
         if ($cover) {
-            $html .= '<img src="'.$this->e($cover).'" class="img-fluid rounded mb-4 w-100 object-fit-cover" style="max-height:420px" alt="">';
+            $html .= '<img src="'.$this->escape($cover).'" class="img-fluid rounded mb-4 w-100 object-fit-cover" style="max-height:420px" alt="">';
         }
         foreach ((array) ($a['body'] ?? []) as $para) {
-            $html .= '<p class="text-muted" style="line-height:1.9">'.nl2br($this->e($para)).'</p>';
+            $html .= '<p class="text-muted" style="line-height:1.9">'.nl2br($this->escape($para)).'</p>';
         }
         if (! empty($a['tags'])) {
             $html .= '<div class="mt-4">';
             foreach ((array) $a['tags'] as $t) {
-                $html .= '<a href="#" class="badge bg-light text-dark me-1">#'.$this->e($t).'</a>';
+                $html .= '<a href="#" class="badge bg-light text-dark me-1">#'.$this->escape($t).'</a>';
             }
             $html .= '</div>';
         }
         // 作者卡
         if (! empty($a['author'])) {
             $html .= '<div class="card mt-4 bg-light"><div class="card-body d-flex align-items-center gap-3">';
-            $html .= '<div class="avatar avatar-lg"><img src="'.$this->e($av).'" class="rounded-circle" alt=""></div>';
-            $html .= '<div><h6 class="mb-1">'.$this->e($author['name'] ?? '').'</h6><p class="text-muted small mb-0">'.$this->e($author['bio'] ?? '').'</p></div>';
+            $html .= '<div class="avatar avatar-lg"><img src="'.$this->escape($av).'" class="rounded-circle" alt=""></div>';
+            $html .= '<div><h6 class="mb-1">'.$this->escape($author['name'] ?? '').'</h6><p class="text-muted small mb-0">'.$this->escape($author['bio'] ?? '').'</p></div>';
             $html .= '</div></div>';
         }
         $html .= '</article>';
@@ -91,7 +91,7 @@ class BlogArticle extends Component
                 $r = (array) $r;
                 // 空图片走占位图，避免 src="" 破图
                 $rImg = $this->img((string) ($r['image'] ?? ''));
-                $html .= '<div class="col-md-4"><div class="card h-100"><img src="'.$this->e($rImg).'" class="card-img-top object-fit-cover" height="160" alt="" style="height:160px;"><div class="card-body"><h6 class="mb-1">'.$this->e($r['title'] ?? '').'</h6><p class="text-muted small">'.$this->e($r['excerpt'] ?? '').'</p><small class="text-muted">'.$this->e($r['date'] ?? '').'</small></div></div></div>';
+                $html .= '<div class="col-md-4"><div class="card h-100"><img src="'.$this->escape($rImg).'" class="card-img-top object-fit-cover" height="160" alt="" style="height:160px;"><div class="card-body"><h6 class="mb-1">'.$this->escape($r['title'] ?? '').'</h6><p class="text-muted small">'.$this->escape($r['excerpt'] ?? '').'</p><small class="text-muted">'.$this->escape($r['date'] ?? '').'</small></div></div></div>';
             }
             $html .= '</div>';
         }

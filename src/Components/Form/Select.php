@@ -81,7 +81,7 @@ class Select extends Component
                 'value' => $value,
                 'selected' => in_array((string) $value, $selected, true),
                 'disabled' => (bool) ($opt['disabled'] ?? false),
-            ]).'>'.$this->e($label).'</option>';
+            ]).'>'.$this->escape($label).'</option>';
         }
 
         return $html;
@@ -128,12 +128,12 @@ class Select extends Component
         }
         $inner = '';
         if ($this->get('placeholder') && ! $this->get('multiple')) {
-            $inner .= '<option value="">'.$this->e($this->get('placeholder')).'</option>';
+            $inner .= '<option value="">'.$this->escape($this->get('placeholder')).'</option>';
         }
         $groups = (array) $this->get('groups', []);
         if ($groups !== []) {
             foreach ($groups as $groupLabel => $groupOptions) {
-                $inner .= '<optgroup label="'.$this->e($groupLabel).'">'.$this->renderOptions((array) $groupOptions).'</optgroup>';
+                $inner .= '<optgroup label="'.$this->escape($groupLabel).'">'.$this->renderOptions((array) $groupOptions).'</optgroup>';
             }
         } else {
             $inner .= $this->renderOptions((array) $this->get('options', []));

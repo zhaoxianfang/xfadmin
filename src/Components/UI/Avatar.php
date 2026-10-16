@@ -66,8 +66,8 @@ class Avatar extends Component
         // —— 图片头像 ——
         if (! empty($opts['src'])) {
             return '<span class="'.Html::cls('avatar', $size).'">'
-                .'<img src="'.$this->e($this->img($opts['src'])).'"'
-                .' alt="'.$this->e($opts['alt'] ?? '').'"'
+                .'<img src="'.$this->escape($this->img($opts['src'])).'"'
+                .' alt="'.$this->escape($opts['alt'] ?? '').'"'
                 .' class="'.Html::cls('img-fluid', $rounded).'">'
                 .'</span>';
         }
@@ -78,8 +78,8 @@ class Avatar extends Component
             ? "bg-{$variant}-subtle text-{$variant}"
             : "bg-{$variant} text-white";
         $inner = ! empty($opts['icon'])
-            ? '<i class="'.$this->e($opts['icon']).'"></i>'
-            : $this->e($opts['text'] ?? '');
+            ? '<i class="'.$this->escape($opts['icon']).'"></i>'
+            : $this->escape($opts['text'] ?? '');
 
         return '<span class="'.Html::cls('avatar', $size).'">'
             .'<span class="'.Html::cls('avatar-title', $bg, $rounded, 'fw-bold').'">'.$inner.'</span>'

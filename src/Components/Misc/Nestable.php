@@ -65,7 +65,7 @@ class Nestable extends Component
         $html .= '</div>';
 
         if ($this->get('input')) {
-            $html .= '<input type="hidden" name="'.$this->e($this->get('input')).'" data-nestable-input>';
+            $html .= '<input type="hidden" name="'.$this->escape($this->get('input')).'" data-nestable-input>';
         }
 
         return $html;
@@ -95,7 +95,7 @@ class Nestable extends Component
             $children .= '</div>';
         }
 
-        return '<div class="list-group-item"'.($id !== null ? ' data-id="'.$this->e((string) $id).'"' : '').'>'
+        return '<div class="list-group-item"'.($id !== null ? ' data-id="'.$this->escape((string) $id).'"' : '').'>'
             .$content.$children.'</div>';
     }
 }

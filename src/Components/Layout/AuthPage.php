@@ -227,12 +227,12 @@ class AuthPage extends Component
         // 对齐 auth-sign-in.html：品牌下方追加 Welcome 标题 + 副标题 + 分隔线
         $welcome = '<div class="text-center mt-3 mb-4">';
         if (($h = (string) $this->get('heading')) !== '') {
-            $welcome .= '<h4 class="mb-1 fw-semibold">'.$this->e($h).'</h4>';
+            $welcome .= '<h4 class="mb-1 fw-semibold">'.$this->escape($h).'</h4>';
         } else {
             $welcome .= '<h4 class="mb-1 fw-semibold">Welcome !</h4>';
         }
         if (($s = (string) $this->get('subheading')) !== '') {
-            $welcome .= '<p class="mb-0 text-muted">'.$this->e($s).'</p>';
+            $welcome .= '<p class="mb-0 text-muted">'.$this->escape($s).'</p>';
         }
         $welcome .= '<div class="auth-line"></div></div>';
 
@@ -301,12 +301,12 @@ class AuthPage extends Component
 
         $img = $this->sideImageUrl();
         $imgAlt = (string) $this->get('sideImageAlt');
-        $imgSize = $this->e((string) $this->get('sideImageSize', 'cover'));
-        $imgPos = $this->e((string) $this->get('sideImagePosition', 'center'));
+        $imgSize = $this->escape((string) $this->get('sideImageSize', 'cover'));
+        $imgPos = $this->escape((string) $this->get('sideImagePosition', 'center'));
         $closeSide = (bool) $this->get('closeSideContent');
         // closeSideContent 为 true 时不叠加遮罩（仅保留背景图与右侧表单）
         $overlay = (! $closeSide && $this->get('sideOverlay')) ? 'auth-overlay' : 'auth-overlay-plain';
-        $variant = $this->e($this->get('sideVariant', 'primary'));
+        $variant = $this->escape($this->get('sideVariant', 'primary'));
 
         // 侧栏（左）：对齐 auth-split-*.html —— 外层 col + 内层整幅背景图
         // （card-side-img + background-image），叠加 card-img-overlay 文案（标题/正文/要点列表），
@@ -315,11 +315,11 @@ class AuthPage extends Component
         $side = '<div class="col">'."\n"
             .'  <div class="'.$sideCls.'"'
             .($img
-                ? ' style="background-image: url(\''.$this->e($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"'
+                ? ' style="background-image: url(\''.$this->escape($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"'
                 : ' data-solid="1"')
             .'>'."\n";
         if ($imgAlt !== '') {
-            $side .= '    <span class="visually-hidden">'.$this->e($imgAlt).'</span>'."\n";
+            $side .= '    <span class="visually-hidden">'.$this->escape($imgAlt).'</span>'."\n";
         }
         // closeSideContent 为 true 时仅展示背景图（与右侧表单组合），隐藏侧栏文案与遮罩
         if (! $closeSide) {
@@ -369,10 +369,10 @@ class AuthPage extends Component
     protected function document(string $body): string
     {
         $title = $this->get('title') ?: ($this->get('heading') ?: 'XfAdmin');
-        $rootCls = 'auth-page auth-'.$this->e($this->get('type')).' auth-layout-'.$this->e($this->get('layout'));
+        $rootCls = 'auth-page auth-'.$this->escape($this->get('type')).' auth-layout-'.$this->escape($this->get('layout'));
         $extraCls = (string) $this->get('class');
         if ($extraCls !== '') {
-            $rootCls .= ' '.$this->e($extraCls);
+            $rootCls .= ' '.$this->escape($extraCls);
         }
 
         // 复用 XfAdmin 共享资产（与 INSPINIA 后台模板共用 app.min.css / xfadmin.css）
@@ -384,8 +384,8 @@ class AuthPage extends Component
             .'<head>'."\n"
             .'<meta charset="utf-8">'."\n"
             .'<meta name="viewport" content="width=device-width, initial-scale=1">'."\n"
-            .'<meta name="csrf-token" content="'.$this->e($this->csrfToken()).'">'."\n"
-            .'<title>'.$this->e($title).'</title>'."\n"
+            .'<meta name="csrf-token" content="'.$this->escape($this->csrfToken()).'">'."\n"
+            .'<title>'.$this->escape($title).'</title>'."\n"
             .$head."\n"
             .'</head>'."\n"
             .'<body class="'.$rootCls.'">'."\n"
@@ -417,13 +417,13 @@ class AuthPage extends Component
 
         if ($logo) {
             // img() 对外链/data: 原样返回，必须再转义一次，否则 logo 可闭合 src 属性
-            $mark = '<img src="'.$this->e($this->img($logo)).'" alt="'.$this->e($name).'" class="auth-brand-logo">';
+            $mark = '<img src="'.$this->escape($this->img($logo)).'" alt="'.$this->escape($name).'" class="auth-brand-logo">';
         } else {
-            $mark = '<span class="auth-brand-text">'.$this->e($name).'</span>';
+            $mark = '<span class="auth-brand-text">'.$this->escape($name).'</span>';
         }
 
-        return '<div class="auth-brand '.$this->e($cls).'">'
-            .'<a href="'.$this->e($url).'" class="auth-brand-link">'.$mark.'</a>'
+        return '<div class="auth-brand '.$this->escape($cls).'">'
+            .'<a href="'.$this->escape($url).'" class="auth-brand-link">'.$mark.'</a>'
             .'</div>';
     }
 
@@ -440,7 +440,7 @@ class AuthPage extends Component
             return '';
         }
 
-        return '<div class="mt-4 text-center auth-copyright">'.$this->e($copyright).'</div>';
+        return '<div class="mt-4 text-center auth-copyright">'.$this->escape($copyright).'</div>';
     }
 
     /**
@@ -463,7 +463,7 @@ class AuthPage extends Component
             if ($text === '') {
                 continue;
             }
-            $html .= '<a href="'.$this->e($this->safeUrl($url)).'" class="auth-footer-link">'.$this->e($text).'</a>';
+            $html .= '<a href="'.$this->escape($this->safeUrl($url)).'" class="auth-footer-link">'.$this->escape($text).'</a>';
         }
         $html .= '</div></footer>';
 
@@ -489,7 +489,7 @@ class AuthPage extends Component
                 if ($text === '' || $href === '') {
                     continue;
                 }
-                $html .= '<a href="'.$this->e($href).'" class="auth-link">'.$this->e($text).'</a>'
+                $html .= '<a href="'.$this->escape($href).'" class="auth-link">'.$this->escape($text).'</a>'
                     .(isset($item['divider']) && $item['divider'] ? ' <span class="text-muted">/</span> ' : ' ');
             }
 
@@ -505,7 +505,7 @@ class AuthPage extends Component
             return '';
         }
 
-        return '<a href="'.$this->e($url).'" class="auth-link">返回登录</a>';
+        return '<a href="'.$this->escape($url).'" class="auth-link">返回登录</a>';
     }
 
     /**
@@ -522,7 +522,7 @@ class AuthPage extends Component
         }
 
         // 数据本身已含 © 符号（如 “© 2026 XfAdmin 控制台”），不再额外加 &copy;
-        return $this->e($copyright);
+        return $this->escape($copyright);
     }
 
     /**
@@ -560,19 +560,19 @@ class AuthPage extends Component
     protected function sidePanel(bool $split): string
     {
         $img = $this->sideImageUrl();
-        $imgSize = $this->e((string) $this->get('sideImageSize', 'cover'));
-        $imgPos = $this->e((string) $this->get('sideImagePosition', 'center'));
+        $imgSize = $this->escape((string) $this->get('sideImageSize', 'cover'));
+        $imgPos = $this->escape((string) $this->get('sideImagePosition', 'center'));
         $closeSide = (bool) $this->get('closeSideContent');
         // closeSideContent 为 true 时不叠加遮罩（仅保留背景图与右侧表单）
         $overlay = (! $closeSide && $this->get('sideOverlay')) ? 'auth-overlay' : 'auth-overlay-plain';
-        $variant = $this->e($this->get('sideVariant', 'primary'));
+        $variant = $this->escape($this->get('sideVariant', 'primary'));
 
         $html = '<div class="col-lg-6 d-none d-lg-block card-side-img auth-card-media auth-card-media--'.$variant.'">';
         if ($img) {
             // 与模板 auth-card-*.html 一致：card-side-img 用 background-image 承载背景图，
             // 便于 sideImageSize/sideImagePosition 生效（而非 <img> 标签）。
             $html .= '<div class="h-100 position-relative auth-card-media-bg"'
-                .' style="background-image: url(\''.$this->e($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"></div>';
+                .' style="background-image: url(\''.$this->escape($img).'\'); background-size: '.$imgSize.'; background-position: '.$imgPos.';"></div>';
         }
         // closeSideContent 为 true 时仅展示背景图（与右侧表单组合），隐藏侧栏文案与遮罩
         if (! $closeSide) {
@@ -604,10 +604,10 @@ class AuthPage extends Component
 
         $html = '';
         if ($title !== '') {
-            $html .= '<h2 class="auth-side-title">'.$this->e($title).'</h2>';
+            $html .= '<h2 class="auth-side-title">'.$this->escape($title).'</h2>';
         }
         if ($text !== '') {
-            $html .= '<p class="auth-side-text">'.$this->e($text).'</p>';
+            $html .= '<p class="auth-side-text">'.$this->escape($text).'</p>';
         }
         if (is_array($list) && $list !== []) {
             $html .= '<ul class="auth-side-list">';
@@ -619,8 +619,8 @@ class AuthPage extends Component
                     continue;
                 }
                 $html .= '<li>'
-                    .'<span class="auth-side-list-icon"><i class="'.$this->e($icon).'"></i></span>'
-                    .'<span class="auth-side-list-text">'.$this->e($txt).'</span>'
+                    .'<span class="auth-side-list-icon"><i class="'.$this->escape($icon).'"></i></span>'
+                    .'<span class="auth-side-list-text">'.$this->escape($txt).'</span>'
                     .'</li>';
             }
             $html .= '</ul>';
@@ -681,10 +681,10 @@ class AuthPage extends Component
 
         $html = '';
         if ($heading !== '') {
-            $html .= '<h1 class="auth-heading h3 mb-1">'.$this->e($heading).'</h1>';
+            $html .= '<h1 class="auth-heading h3 mb-1">'.$this->escape($heading).'</h1>';
         }
         if ($subheading !== '') {
-            $html .= '<p class="auth-subheading text-muted mb-4">'.$this->e($subheading).'</p>';
+            $html .= '<p class="auth-subheading text-muted mb-4">'.$this->escape($subheading).'</p>';
         }
         // prepend 插槽（raw，标题之后、表单之前）
         $html .= $this->raw($this->get('prepend'));
@@ -845,13 +845,13 @@ class AuthPage extends Component
         $showAgree = $this->get('newPassShowAgree', true);
 
         $html = $this->formOpen()
-            .($msg !== '' ? '<div class="alert alert-info">'.$this->e($msg).'</div>' : '');
+            .($msg !== '' ? '<div class="alert alert-info">'.$this->escape($msg).'</div>' : '');
 
         // 邮箱展示（disabled，来自 get('email') 或 user.email）
         if ($showEmail) {
             $email = (string) ($this->get('email') ?: (($this->get('user')['email'] ?? '') ?: ''));
             $html .= '<div class="mb-3">'.$this->label('邮箱')
-                .'<input type="email" class="form-control py-2 px-3 bg-light bg-opacity-40 border-light" value="'.$this->e($email).'" disabled></div>';
+                .'<input type="email" class="form-control py-2 px-3 bg-light bg-opacity-40 border-light" value="'.$this->escape($email).'" disabled></div>';
         }
 
         // 6 位验证码分格输入
@@ -901,7 +901,7 @@ class AuthPage extends Component
      */
     protected function label(string $text, bool $required = true): string
     {
-        return '<label class="form-label">'.$this->e($text)
+        return '<label class="form-label">'.$this->escape($text)
             .($required ? ' <span class="text-danger">*</span>' : '').'</label>';
     }
 
@@ -919,7 +919,7 @@ class AuthPage extends Component
             $cls = 'form-control form-control-lg text-center fs-3';
             $cls .= ' bg-light bg-opacity-40 border-light';
             $html .= '<input type="password" class="'.$cls.'" inputmode="numeric" maxlength="1"'
-                .' name="'.$this->e($name).'" data-xf-pin-cell autocomplete="one-time-code"'.($i === 0 ? ' autofocus' : '').'>';
+                .' name="'.$this->escape($name).'" data-xf-pin-cell autocomplete="one-time-code"'.($i === 0 ? ' autofocus' : '').'>';
         }
         $html .= '</div>';
 
@@ -945,11 +945,11 @@ class AuthPage extends Component
         if ($withBg) {
             return '<div class="input-group">'
                 .'<span class="input-group-text bg-transparent border-light">'.$this->icon('ti ti-lock').'</span>'
-                .'<input type="password" class="'.$cls.'" name="'.$this->e($name).'" placeholder="'.$this->e($ph).'"'
+                .'<input type="password" class="'.$cls.'" name="'.$this->escape($name).'" placeholder="'.$this->escape($ph).'"'
                 .($req ? ' required' : '').($focus ? ' autofocus' : '').'></div>';
         }
 
-        return '<input type="password" class="'.$cls.'" name="'.$this->e($name).'" placeholder="'.$this->e($ph).'"'
+        return '<input type="password" class="'.$cls.'" name="'.$this->escape($name).'" placeholder="'.$this->escape($ph).'"'
             .($req ? ' required' : '').($focus ? ' autofocus' : '').'>';
     }
 
@@ -1017,14 +1017,14 @@ class AuthPage extends Component
         $avatar = $user['avatar'] ?? null;
         $img = $avatar ? $this->img($avatar) : null;
         $mark = $img
-            ? '<img src="'.$this->e($img).'" alt="'.$this->e($user['name'] ?? '').'" class="auth-lock-avatar rounded-circle">'
-            : '<div class="auth-lock-avatar auth-lock-avatar--text rounded-circle">'.$this->e(mb_substr((string) ($user['name'] ?? '?'), 0, 1)).'</div>';
+            ? '<img src="'.$this->escape($img).'" alt="'.$this->escape($user['name'] ?? '').'" class="auth-lock-avatar rounded-circle">'
+            : '<div class="auth-lock-avatar auth-lock-avatar--text rounded-circle">'.$this->escape(mb_substr((string) ($user['name'] ?? '?'), 0, 1)).'</div>';
 
         return '<div class="auth-lock-user d-flex align-items-center gap-3 mb-4">'
             .$mark
             .'<div class="auth-lock-meta">'
-            .(($user['name'] ?? '') !== '' ? '<div class="auth-lock-name fw-semibold">'.$this->e($user['name']).'</div>' : '')
-            .(($user['email'] ?? '') !== '' ? '<div class="auth-lock-email small text-muted">'.$this->e($user['email']).'</div>' : '')
+            .(($user['name'] ?? '') !== '' ? '<div class="auth-lock-name fw-semibold">'.$this->escape($user['name']).'</div>' : '')
+            .(($user['email'] ?? '') !== '' ? '<div class="auth-lock-email small text-muted">'.$this->escape($user['email']).'</div>' : '')
             .'</div></div>';
     }
 
@@ -1131,8 +1131,8 @@ class AuthPage extends Component
         $action = (string) $this->get('action');
         // text-start：表单区标签/输入框强制左对齐（表单外层容器是 text-center，
         // label 会继承居中；Bootstrap .text-start 带 !important，比 CSS 覆盖更可靠）
-        $class = 'auth-form text-start '.$this->e($this->get('bodyClass'));
-        $id = $this->get('id') ? ' id="'.$this->e($this->get('id')).'"' : '';
+        $class = 'auth-form text-start '.$this->escape($this->get('bodyClass'));
+        $id = $this->get('id') ? ' id="'.$this->escape($this->get('id')).'"' : '';
 
         $remote = $this->get('ajax') ? ' data-xf-remote' : '';
 
@@ -1141,7 +1141,7 @@ class AuthPage extends Component
         $redirectDelay = $this->get('redirectDelay');
         $delayAttr = ($redirectDelay !== null && $redirectDelay !== '') ? ' data-xf-redirect-delay="'.(int) $redirectDelay.'"' : '';
 
-        return ' action="'.$this->e($this->safeUrl($action)).'"'
+        return ' action="'.$this->escape($this->safeUrl($action)).'"'
             .' method="POST"'
             .' class="'.trim($class).'"'
             .$id
@@ -1168,9 +1168,9 @@ class AuthPage extends Component
                 $btnType = $this->enum($b['type'] ?? 'submit', ['submit', 'button', 'reset'], 'submit');
                 $btnVariant = $this->enum($b['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
                 $html .= '<button type="'.$btnType.'"'
-                    .' class="btn btn-'.$btnVariant.' '.$this->e($b['class'] ?? '').'"'
-                    .(($b['name'] ?? '') !== '' ? ' name="'.$this->e($b['name']).'"' : '')
-                    .'>'.$this->e($b['label'] ?? '提交').'</button>';
+                    .' class="btn btn-'.$btnVariant.' '.$this->escape($b['class'] ?? '').'"'
+                    .(($b['name'] ?? '') !== '' ? ' name="'.$this->escape($b['name']).'"' : '')
+                    .'>'.$this->escape($b['label'] ?? '提交').'</button>';
             }
 
             return '<div class="auth-buttons d-grid gap-2 mt-3">'.$html.'</div>';
@@ -1196,8 +1196,8 @@ class AuthPage extends Component
         // <div class="d-grid"><button class="btn btn-primary fw-bold py-2"> 结构）
         return '<div class="auth-buttons d-grid gap-2 mt-3">'
             .'<button type="submit" class="btn btn-'.$this->enum($submitVariant, self::ENUM_VARIANT, 'primary').' fw-bold py-2 w-100 '
-            .$this->e($submitClass).'">'
-            .$iconHtml.$this->e($submitLabel)
+            .$this->escape($submitClass).'">'
+            .$iconHtml.$this->escape($submitLabel)
             .'</button></div>';
     }
 
@@ -1220,7 +1220,7 @@ class AuthPage extends Component
             $icon = $item['icon'] ?? 'ti ti-world';
             $url = $item['url'] ?? '#';
             $label = $item['label'] ?? '';
-            $html .= '<a href="'.$this->e($this->safeUrl($url)).'" class="btn btn-outline-secondary" title="'.$this->e($label).'">'
+            $html .= '<a href="'.$this->escape($this->safeUrl($url)).'" class="btn btn-outline-secondary" title="'.$this->escape($label).'">'
                 .$this->icon($icon).'</a>';
         }
         $html .= '</div>';
@@ -1263,8 +1263,8 @@ class AuthPage extends Component
 
         $html = '<div class="mb-3 auth-field">';
         if ($label !== '') {
-            $html .= '<label for="'.$this->e($id).'" class="form-label">'
-                .$this->e($label)
+            $html .= '<label for="'.$this->escape($id).'" class="form-label">'
+                .$this->escape($label)
                 .($required ? ' <span class="text-danger">*</span>' : '')
                 .'</label>';
         }
@@ -1278,23 +1278,23 @@ class AuthPage extends Component
         if ($withBg && $icon !== '') {
             $html .= '<div class="input-group">'
                 .'<span class="input-group-text bg-transparent border-light">'.$this->icon($icon).'</span>'
-                .'<input type="'.$this->e($type).'"'
+                .'<input type="'.$this->escape($type).'"'
                 .' class="'.$inpCls.'"'
-                .' id="'.$this->e($id).'"'
-                .' name="'.$this->e($name).'"'
-                .' placeholder="'.$this->e($ph).'"'
-                .' value="'.$this->e($value).'"'
+                .' id="'.$this->escape($id).'"'
+                .' name="'.$this->escape($name).'"'
+                .' placeholder="'.$this->escape($ph).'"'
+                .' value="'.$this->escape($value).'"'
                 .($required ? ' required' : '')
                 .($autofocus ? ' autofocus' : '')
                 .($disabled ? ' disabled' : '')
                 .'></div>';
         } else {
-            $html .= '<input type="'.$this->e($type).'"'
+            $html .= '<input type="'.$this->escape($type).'"'
                 .' class="'.$inpCls.'"'
-                .' id="'.$this->e($id).'"'
-                .' name="'.$this->e($name).'"'
-                .' placeholder="'.$this->e($ph).'"'
-                .' value="'.$this->e($value).'"'
+                .' id="'.$this->escape($id).'"'
+                .' name="'.$this->escape($name).'"'
+                .' placeholder="'.$this->escape($ph).'"'
+                .' value="'.$this->escape($value).'"'
                 .($required ? ' required' : '')
                 .($autofocus ? ' autofocus' : '')
                 .($disabled ? ' disabled' : '')
@@ -1302,9 +1302,9 @@ class AuthPage extends Component
         }
 
         if ($errMsg !== '') {
-            $html .= '<div class="invalid-feedback d-block">'.$this->e($errMsg).'</div>';
+            $html .= '<div class="invalid-feedback d-block">'.$this->escape($errMsg).'</div>';
         } elseif (! empty($f['help'])) {
-            $html .= '<div class="form-text">'.$this->e($f['help']).'</div>';
+            $html .= '<div class="form-text">'.$this->escape($f['help']).'</div>';
         }
 
         $html .= $after.'</div>';
@@ -1369,7 +1369,7 @@ class AuthPage extends Component
                 if ($text === '' || $href === '') {
                     continue;
                 }
-                $html .= '<a href="'.$this->e($href).'" class="auth-link">'.$this->e($text).'</a>';
+                $html .= '<a href="'.$this->escape($href).'" class="auth-link">'.$this->escape($text).'</a>';
             }
 
             return $html;
@@ -1386,7 +1386,7 @@ class AuthPage extends Component
             if ($url === '') {
                 continue;
             }
-            $html .= '<a href="'.$this->e($url).'" class="auth-link">'.$this->e($labels[$key] ?? '').'</a>';
+            $html .= '<a href="'.$this->escape($url).'" class="auth-link">'.$this->escape($labels[$key] ?? '').'</a>';
         }
 
         return $html;
@@ -1434,7 +1434,7 @@ class AuthPage extends Component
             return '';
         }
 
-        return '<div class="alert alert-danger">'.$this->e(implode(' ', $messages)).'</div>';
+        return '<div class="alert alert-danger">'.$this->escape(implode(' ', $messages)).'</div>';
     }
 
     /**
@@ -1456,7 +1456,7 @@ class AuthPage extends Component
             return '';
         }
 
-        return '<div class="alert alert-success">'.$this->e($status).'</div>';
+        return '<div class="alert alert-success">'.$this->escape($status).'</div>';
     }
 
     /**
@@ -1584,7 +1584,7 @@ class AuthPage extends Component
             return (string) csrf_field();
         }
         if (function_exists('csrf_token')) {
-            return '<input type="hidden" name="_token" value="'.$this->e(csrf_token()).'">';
+            return '<input type="hidden" name="_token" value="'.$this->escape(csrf_token()).'">';
         }
 
         return '';

@@ -64,7 +64,7 @@ class StatMiniSparkline extends Component
             // 用独立变量承载涨跌箭头，避免顶掉调用方配置的 icon
             $deltaIcon = $up ? 'ti ti-arrow-up-right' : 'ti ti-arrow-down-right';
             $deltaHtml = '<span class="small '.$cls.'"><i class="'.$deltaIcon.'"></i> '
-                .$this->e(abs((float) $delta)).'%</span>';
+                .$this->escape(abs((float) $delta)).'%</span>';
         }
         $iconHtml = $icon ? '<span class="avatar-sm rounded-circle bg-'.$variant.'-subtle text-'.$variant
             .' d-inline-flex align-items-center justify-content-center mb-2"><i class="'.$this->iconClass($icon).'"></i></span>' : '';
@@ -74,8 +74,8 @@ class StatMiniSparkline extends Component
             .$iconHtml
             .'<div class="d-flex align-items-end justify-content-between">'
             .'<div>'
-            .'<p class="text-muted mb-1 small">'.$this->e($label).'</p>'
-            .'<h3 class="mb-0 fw-bold">'.$this->e($value).' '.$deltaHtml.'</h3>'
+            .'<p class="text-muted mb-1 small">'.$this->escape($label).'</p>'
+            .'<h3 class="mb-0 fw-bold">'.$this->escape($value).' '.$deltaHtml.'</h3>'
             .'</div>'
             .$spark
             .'</div>'

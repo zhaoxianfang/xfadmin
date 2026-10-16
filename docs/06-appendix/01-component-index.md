@@ -1,7 +1,7 @@
 # 组件索引（按别名排序）
 
 > 本文件由 `php tools/gen_component_docs.php` 自动生成。
-> 共 **216** 个组件条目（注册表别名 **228** 个，12 个为指向同一组件类的重复别名）。
+> 共 **222** 个组件条目（注册表别名 **234** 个，12 个为指向同一组件类的重复别名）。
 > 按分类浏览见 [组件总览](../03-component-reference/00-overview.md)。
 
 | 别名 | 一句话说明 | 组件类 | 源文件 | 分类文档 |
@@ -9,6 +9,7 @@
 | `accordion` | 手风琴折叠面板 | `UI\Accordion` | `src/Components/UI/Accordion.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `accountSettings` | 账户设置整页 | `Data\AccountSettings` | `src/Components/Data/AccountSettings.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
 | `accountSettingsPanel` | 账户设置面板 | `Layout\AccountSettingsPanel` | `src/Components/Layout/AccountSettingsPanel.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
+| `actionBar` | 操作按钮工具条 | `UI\ActionBar` | `src/Components/UI/ActionBar.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `activityFeed` | 活动动态流 | `Data\ActivityFeed` | `src/Components/Data/ActivityFeed.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
 | `alert` | 警告提示条 | `UI\Alert` | `src/Components/UI/Alert.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `analyticsDashboard` | 数据分析仪表盘 | `Data\AnalyticsDashboard` | `src/Components/Data/AnalyticsDashboard.php` | [业务组件（五）仪表盘 · 模块 · 通用](../03-component-reference/10-data-dashboard.md) |
@@ -54,6 +55,7 @@
 | `commentThread` | 评论线程 | `Data\CommentThread` | `src/Components/Data/CommentThread.php` | [业务组件（二）内容 · 社区 · 文件](../03-component-reference/07-data-content.md) |
 | `companies` | 公司列表 | `Data\Companies` | `src/Components/Data/Companies.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
 | `companyCard` | 公司卡 | `Data\CompanyCard` | `src/Components/Data/CompanyCard.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
+| `confirmDialog` | 确认对话框 | `UI\ConfirmDialog` | `src/Components/UI/ConfirmDialog.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `contactCard` | 联系人卡 | `Data\ContactCard` | `src/Components/Data/ContactCard.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
 | `contactList` | 联系人列表 | `Data\ContactList` | `src/Components/Data/ContactList.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
 | `countdown` | 倒计时 | `UI\Countdown` | `src/Components/UI/Countdown.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
@@ -61,6 +63,7 @@
 | `customers` | 客户列表 | `Data\Customers` | `src/Components/Data/Customers.php` | [业务组件（一）电商 · 商品 · 订单 · 发票](../03-component-reference/06-data-ecommerce.md) |
 | `customizer` | 右侧主题定制面板 | `Layout\Customizer` | `src/Components/Layout/Customizer.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
 | `dashboardGrid` | 仪表盘网格 | `Data\DashboardGrid` | `src/Components/Data/DashboardGrid.php` | [业务组件（五）仪表盘 · 模块 · 通用](../03-component-reference/10-data-dashboard.md) |
+| `dataSourceSwitcher` | 数据源切换器 | `UI\DataSourceSwitcher` | `src/Components/UI/DataSourceSwitcher.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `dataTable` | 数据表格 | `Table\DataTable` | `src/Components/Table/DataTable.php` | [表格组件](../03-component-reference/04-table.md) |
 | `dataTableToolbar` | 列表工具条 搜索 + 列筛选 + 每页条数 + 批量操作按钮 + 视图切换， 复刻文件管理器 / 订单等页面的列表工具栏 | `Table\DataTableToolbar` | `src/Components/Table/DataTableToolbar.php` | [表格组件](../03-component-reference/04-table.md) |
 | `datePicker` | 单日期/日期时间选择器 | `Form\DatePicker` | `src/Components/Form/DatePicker.php` | [表单组件](../03-component-reference/03-form.md) |
@@ -84,6 +87,7 @@
 | `faqAccordion` | FAQ 手风琴 | `Data\FaqAccordion` | `src/Components/Data/FaqAccordion.php` | [业务组件（二）内容 · 社区 · 文件](../03-component-reference/07-data-content.md) |
 | `featureComparisonTable` | 功能对比表 | `Data\FeatureComparisonTable` | `src/Components/Data/FeatureComparisonTable.php` | [业务组件（一）电商 · 商品 · 订单 · 发票](../03-component-reference/06-data-ecommerce.md) |
 | `fileManager` | 文件管理器 | `Data\FileManager` | `src/Components/Data/FileManager.php` | [业务组件（二）内容 · 社区 · 文件](../03-component-reference/07-data-content.md) |
+| `filterBar` | 列表筛选条 | `UI\FilterBar` | `src/Components/UI/FilterBar.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `filterSidebar` | 筛选侧栏 | `Data\FilterSidebar` | `src/Components/Data/FilterSidebar.php` | [业务组件（一）电商 · 商品 · 订单 · 发票](../03-component-reference/06-data-ecommerce.md) |
 | `footer` | 页面底部版权/链接区 | `Layout\Footer` | `src/Components/Layout/Footer.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
 | `form` | 表单容器 | `Form\Form` | `src/Components/Form/Form.php` | [表单组件](../03-component-reference/03-form.md) |
@@ -186,6 +190,8 @@
 | `spinner` | 加载旋转指示器 | `UI\Spinner` | `src/Components/UI/Spinner.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `statCard` | 指标卡 | `UI\StatCard` | `src/Components/UI/StatCard.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `statMiniSparkline` | 迷你指标+火花线 | `Data\StatMiniSparkline` | `src/Components/Data/StatMiniSparkline.php` | [业务组件（五）仪表盘 · 模块 · 通用](../03-component-reference/10-data-dashboard.md) |
+| `statRow` | 指标卡横排 | `UI\StatRow` | `src/Components/UI/StatRow.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
+| `statusTag` | 状态标签 | `UI\StatusTag` | `src/Components/UI/StatusTag.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `stepper` | 步骤条 | `UI\Stepper` | `src/Components/UI/Stepper.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `sweetAlert` | SweetAlert2 弹窗 | `Misc\SweetAlert` | `src/Components/Misc/SweetAlert.php` | [杂项与交互增强](../03-component-reference/11-misc.md) |
 | `switch` | 开关切换 | `UI\Toggle` | `src/Components/UI/Toggle.php` | [UI 基础组件](../03-component-reference/02-ui.md) |

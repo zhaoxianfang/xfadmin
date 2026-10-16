@@ -71,7 +71,7 @@ echo XfAdmin::invoiceDetail(['invoice' => \$invoice, 'items' => \$items]);
 商品卡（图/标题/价格/角标）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductCard`
-> **文件**：`src/Components/Data/ProductCard.php`（100 行）
+> **文件**：`src/Components/Data/ProductCard.php`（76 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -117,15 +117,15 @@ echo XfAdmin::productCard([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；源码用法：`$img = $this->get('image');` |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `category` | mixed | `null` | 分类；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `price` | mixed | `null` | 价格数值；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `old_price` | mixed | `null` | **文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `rating` | mixed | `null` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<a href="'.$this->escape($this->safeUrl($this->get('href'))).'"><img src="'…` |
+| `category` | mixed | `null` | 分类；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `price` | mixed | `null` | 价格数值；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `old_price` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `rating` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `rating_count` | mixed | `null` | 源码用法：`'count' => $this->get('rating_count'),` |
-| `badge` | mixed | `null` | 徽标文本或 `['text'=>..,'class'=>..]`；开关：非空 / 真值时启用对应区块 |
+| `badge` | mixed | `null` | 徽标文本或 `['text'=>..,'class'=>..]`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `href` | string | `'#'` | 链接地址（同 url）；URL：经协议白名单校验（拦截 `javascript:` 等） |
-| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
+| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -136,7 +136,7 @@ echo XfAdmin::productCard([
 商品网格（卡片墙）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductsGrid`
-> **文件**：`src/Components/Data/ProductsGrid.php`（136 行）
+> **文件**：`src/Components/Data/ProductsGrid.php`（114 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -193,7 +193,7 @@ echo XfAdmin::productsGrid([
 商品分类管理（树形分类）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductCategories`
-> **文件**：`src/Components/Data/ProductCategories.php`（116 行）
+> **文件**：`src/Components/Data/ProductCategories.php`（85 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -240,9 +240,9 @@ echo XfAdmin::productCategories([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'商品分类'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `searchable` | bool | `true` | 是否参与搜索；开关：非空 / 真值时启用对应区块 |
-| `add_text` | string | `'新增分类'` | 「添加」按钮文案；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `'商品分类'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<h5 class="card-title mb-0">'.$this->escape($this->get('title')).'</h5>';` |
+| `searchable` | bool | `true` | 是否参与搜索；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `add_text` | string | `'新增分类'` | 「添加」按钮文案；源码用法：`$html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>'.$th…` |
 | `categories` | array | `[]` | 分类列表 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -254,7 +254,7 @@ echo XfAdmin::productCategories([
 商品添加表单。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductAdd`
-> **文件**：`src/Components/Data/ProductAdd.php`（139 行）
+> **文件**：`src/Components/Data/ProductAdd.php`（117 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -302,7 +302,7 @@ echo XfAdmin::productAdd([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `action` | string | `'#'` | 表单提交地址 / 动作类型 |
+| `action` | string | `'#'` | 表单提交地址 / 动作类型；URL：经协议白名单校验（拦截 `javascript:` 等） |
 | `method` | string | `'POST'` | HTTP 方法（GET/POST/PUT/DELETE） |
 | `brands` | array | `[]` | 品牌列表 |
 | `categories` | array | `[]` | 分类列表 |
@@ -310,7 +310,7 @@ echo XfAdmin::productAdd([
 | `statuses` | array | `['草稿', '上架', '下架']` | 数组结构（见「全参数示例」） |
 | `tags` | array | `[]` | 标签数组 / 是否启用标签输入 |
 | `values` | array | `[]` | 数值集合（图表/表单默认值/矩阵勾选值） |
-| `submit_text` | string | `'保存商品'` | **文本槽位**：输出前自动 HTML 转义 |
+| `submit_text` | string | `'保存商品'` | 源码用法：`.'<button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"><…` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -321,7 +321,7 @@ echo XfAdmin::productAdd([
 商品详情（图集/规格/评价）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductDetails`
-> **文件**：`src/Components/Data/ProductDetails.php`（190 行）
+> **文件**：`src/Components/Data/ProductDetails.php`（167 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -372,7 +372,7 @@ echo XfAdmin::productDetails([
 商品浏览统计（热度图表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProductViews`
-> **文件**：`src/Components/Data/ProductViews.php`（91 行）
+> **文件**：`src/Components/Data/ProductViews.php`（71 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -425,7 +425,7 @@ echo XfAdmin::productViews([
 购物车（商品+数量+合计）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ShoppingCart`
-> **文件**：`src/Components/Data/ShoppingCart.php`（148 行）
+> **文件**：`src/Components/Data/ShoppingCart.php`（129 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -477,7 +477,7 @@ echo XfAdmin::shoppingCart([
 | `discount` | int | `0` | 折扣（金额或百分比） |
 | `total` | int | `0` | 合计数值 |
 | `currency` | string | `'¥'` | 货币符号 |
-| `emptyMessage` | string | `'购物车为空'` | **文本槽位**：输出前自动 HTML 转义 |
+| `emptyMessage` | string | `'购物车为空'` | 源码用法：`.'<h5 class="text-muted">'.$this->escape($this->get('emptyMessage')).'</h5>'` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -488,7 +488,7 @@ echo XfAdmin::shoppingCart([
 购物车摘要（结算侧栏小计）。
 
 > **类**：`zxf\XfAdmin\Components\Data\CartSummary`
-> **文件**：`src/Components/Data/CartSummary.php`（81 行）
+> **文件**：`src/Components/Data/CartSummary.php`（59 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -549,7 +549,7 @@ echo XfAdmin::cartSummary([
 结算页（地址/支付/提交）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Checkout`
-> **文件**：`src/Components/Data/Checkout.php`（171 行）
+> **文件**：`src/Components/Data/Checkout.php`（142 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -617,7 +617,7 @@ echo XfAdmin::checkout([
 订单列表（电商订单管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Orders`
-> **文件**：`src/Components/Data/Orders.php`（204 行）
+> **文件**：`src/Components/Data/Orders.php`（162 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -667,7 +667,7 @@ echo XfAdmin::orders([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `orders` | array | `[]` |  |
 | `searchable` | bool | `true` | 是否参与搜索；源码用法：`$searchable = (bool) $this->get('searchable');` |
 | `filterable` | bool | `true` | 源码用法：`$filterable = (bool) $this->get('filterable');` |
@@ -683,7 +683,7 @@ echo XfAdmin::orders([
 订单详情（商品/收货/金额）。
 
 > **类**：`zxf\XfAdmin\Components\Data\OrderDetails`
-> **文件**：`src/Components/Data/OrderDetails.php`（144 行）
+> **文件**：`src/Components/Data/OrderDetails.php`（123 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -732,7 +732,7 @@ echo XfAdmin::orderDetails([
 订单追踪时间线（物流状态流）。
 
 > **类**：`zxf\XfAdmin\Components\Data\OrderTrackingTimeline`
-> **文件**：`src/Components/Data/OrderTrackingTimeline.php`（71 行）
+> **文件**：`src/Components/Data/OrderTrackingTimeline.php`（48 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -779,7 +779,7 @@ echo XfAdmin::orderTrackingTimeline([
 已购订单（买家视图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PurchasedOrders`
-> **文件**：`src/Components/Data/PurchasedOrders.php`（89 行）
+> **文件**：`src/Components/Data/PurchasedOrders.php`（70 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -829,7 +829,7 @@ echo XfAdmin::purchasedOrders([
 退款管理（退款单列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Refunds`
-> **文件**：`src/Components/Data/Refunds.php`（94 行）
+> **文件**：`src/Components/Data/Refunds.php`（75 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -879,7 +879,7 @@ echo XfAdmin::refunds([
 销售数据（图表+列表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Sales`
-> **文件**：`src/Components/Data/Sales.php`（135 行）
+> **文件**：`src/Components/Data/Sales.php`（106 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -943,7 +943,7 @@ echo XfAdmin::sales([
 客户列表（电商客户管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Customers`
-> **文件**：`src/Components/Data/Customers.php`（170 行）
+> **文件**：`src/Components/Data/Customers.php`（146 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -986,9 +986,9 @@ echo XfAdmin::customers([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$title = $this->get('title') ? '<h5 class="mb-3">'.$this->escape($this->get('title'))…` |
 | `view` | string | `'grid'` | 详情视图配置（viewRow 引擎，见数据表格文档）；源码用法：`$body = $this->get('view') === 'list' ? $this->renderList($items) : $this->renderGrid…` |
-| `searchable` | bool | `true` | 是否参与搜索；开关：非空 / 真值时启用对应区块 |
+| `searchable` | bool | `true` | 是否参与搜索；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1000,7 +1000,7 @@ echo XfAdmin::customers([
 卖家列表（电商卖家管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Sellers`
-> **文件**：`src/Components/Data/Sellers.php`（125 行）
+> **文件**：`src/Components/Data/Sellers.php`（96 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1048,9 +1048,9 @@ echo XfAdmin::sellers([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'卖家管理'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `searchable` | bool | `true` | 是否参与搜索；开关：非空 / 真值时启用对应区块 |
-| `add_text` | string | `'新增卖家'` | 「添加」按钮文案；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `'卖家管理'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<h5 class="card-title mb-0">'.$this->escape($this->get('title')).'</h5>';` |
+| `searchable` | bool | `true` | 是否参与搜索；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `add_text` | string | `'新增卖家'` | 「添加」按钮文案；源码用法：`$html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>'.$th…` |
 | `sellers` | array | `[]` | 卖家列表 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1062,7 +1062,7 @@ echo XfAdmin::sellers([
 卖家详情（店铺/商品/评价）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SellerDetails`
-> **文件**：`src/Components/Data/SellerDetails.php`（177 行）
+> **文件**：`src/Components/Data/SellerDetails.php`（151 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1118,7 +1118,7 @@ echo XfAdmin::sellerDetails([
 评价列表（星级+内容+晒图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ReviewList`
-> **文件**：`src/Components/Data/ReviewList.php`（185 行）
+> **文件**：`src/Components/Data/ReviewList.php`（144 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1178,7 +1178,7 @@ echo XfAdmin::reviewList([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'商品评价'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `'商品评价'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<div class="card-header border-light justify-content-between"><h5 class="ca…` |
 | `summary` | array | `[]` | 摘要文本 |
 | `reviews` | array | `[]` | 评价列表 |
 
@@ -1191,7 +1191,7 @@ echo XfAdmin::reviewList([
 商品属性管理（规格键值）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Attributes`
-> **文件**：`src/Components/Data/Attributes.php`（90 行）
+> **文件**：`src/Components/Data/Attributes.php`（71 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1239,7 +1239,7 @@ echo XfAdmin::attributes([
 电商设置（通用配置表单）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EcommerceSettings`
-> **文件**：`src/Components/Data/EcommerceSettings.php`（86 行）
+> **文件**：`src/Components/Data/EcommerceSettings.php`（61 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1294,7 +1294,7 @@ echo XfAdmin::ecommerceSettings([
 电商仪表盘（销售/订单/库存概览）。
 
 > **类**：`zxf\XfAdmin\Components\Data\EcommerceDashboard`
-> **文件**：`src/Components/Data/EcommerceDashboard.php`（279 行）
+> **文件**：`src/Components/Data/EcommerceDashboard.php`（244 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1361,7 +1361,7 @@ echo XfAdmin::ecommerceDashboard([
 应用市场（插件/模板网格）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Marketplace`
-> **文件**：`src/Components/Data/Marketplace.php`（238 行）
+> **文件**：`src/Components/Data/Marketplace.php`（208 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1431,7 +1431,7 @@ echo XfAdmin::marketplace([
 仓库管理（库存/出入库）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Warehouse`
-> **文件**：`src/Components/Data/Warehouse.php`（101 行）
+> **文件**：`src/Components/Data/Warehouse.php`（81 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1484,7 +1484,7 @@ echo XfAdmin::warehouse([
 发票创建表单。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceCreate`
-> **文件**：`src/Components/Data/InvoiceCreate.php`（106 行）
+> **文件**：`src/Components/Data/InvoiceCreate.php`（84 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1533,7 +1533,7 @@ echo XfAdmin::invoiceCreate([
 发票详情整页。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceDetail`
-> **文件**：`src/Components/Data/InvoiceDetail.php`（149 行）
+> **文件**：`src/Components/Data/InvoiceDetail.php`（125 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1582,7 +1582,7 @@ echo XfAdmin::invoiceDetail([
 - `meta[]` 元素键：`label`、`value`
 - `items[]` 元素键：`qty`、`price`、`amount`、`name`、`desc`
 - `summary[]` 元素键：`strong`、`label`、`value`
-- `actions[]` 元素键：`onclick`、`url`（默认 `javascript:;`）、`icon`、`text`
+- `actions[]` 元素键：`onclick`、`url`（默认 `#`）、`icon`、`text`
 
 > **渲染骨架**：主要 class `card-body` `p-4` `d-flex` `flex-wrap` `justify-content-between` `align-items-start` `mb-4` `text-muted`
 
@@ -1590,9 +1590,9 @@ echo XfAdmin::invoiceDetail([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `logo` | string | `''` | 图片路径：外链 / `data:` URI 原样，其余解析为包内 `images/`；开关：非空 / 真值时启用对应区块 |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `number` | string | `''` | **文本槽位**：输出前自动 HTML 转义 |
+| `logo` | string | `''` | 图片路径：外链 / `data:` URI 原样，其余解析为包内 `images/`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `number` | string | `''` | 源码用法：`$html .= '<div class="text-muted">发票号：<span class="fw-semibold text-body">'.$this->es…` |
 | `status` | array | `[]` | 状态值 / 状态映射 |
 | `meta` | array | `[]` | 附加信息（时间 / 作者等） |
 | `from` | array | `[]` | 起始值 / 来源地址 |
@@ -1600,7 +1600,7 @@ echo XfAdmin::invoiceDetail([
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
 | `currency` | string | `'¥'` | 货币符号 |
 | `summary` | array | `[]` | 摘要文本 |
-| `notes` | string | `''` | 备注；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `notes` | string | `''` | 备注；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `actions` | array | `[]` | 操作区内容（按钮组 / 行操作定义） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1612,7 +1612,7 @@ echo XfAdmin::invoiceDetail([
 发票列表（列表+状态+金额）。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceList`
-> **文件**：`src/Components/Data/InvoiceList.php`（103 行）
+> **文件**：`src/Components/Data/InvoiceList.php`（77 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1659,7 +1659,7 @@ echo XfAdmin::invoiceList([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `currency` | string | `'¥'` | 货币符号；**文本槽位**：输出前自动 HTML 转义 |
+| `currency` | string | `'¥'` | 货币符号；源码用法：`$cur = $this->escape($this->get('currency'));` |
 | `title` | string | `'发票'` | 标题文本（部分组件为弹窗/tooltip 标题） |
 | `summary` | array | `[]` | 顶部统计卡片：['label'=>,'value'=>,'variant'=>] |
 
@@ -1672,7 +1672,7 @@ echo XfAdmin::invoiceList([
 发票明细表格。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceTable`
-> **文件**：`src/Components/Data/InvoiceTable.php`（84 行）
+> **文件**：`src/Components/Data/InvoiceTable.php`（63 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1714,7 +1714,7 @@ echo XfAdmin::invoiceTable([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `currency` | string | `'¥'` | 货币符号；**文本槽位**：输出前自动 HTML 转义 |
+| `currency` | string | `'¥'` | 货币符号；源码用法：`$cur = $this->escape($this->get('currency'));` |
 | `summary` | array | `[]` | 摘要文本 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1726,7 +1726,7 @@ echo XfAdmin::invoiceTable([
 发票查看（打印友好视图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\InvoiceView`
-> **文件**：`src/Components/Data/InvoiceView.php`（120 行）
+> **文件**：`src/Components/Data/InvoiceView.php`（95 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1791,7 +1791,7 @@ echo XfAdmin::invoiceView([
 筛选侧栏（分类/价格/标签过滤）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FilterSidebar`
-> **文件**：`src/Components/Data/FilterSidebar.php`（110 行）
+> **文件**：`src/Components/Data/FilterSidebar.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1845,7 +1845,7 @@ echo XfAdmin::filterSidebar([
 功能对比表（方案×特性矩阵）。
 
 > **类**：`zxf\XfAdmin\Components\Data\FeatureComparisonTable`
-> **文件**：`src/Components/Data/FeatureComparisonTable.php`（77 行）
+> **文件**：`src/Components/Data/FeatureComparisonTable.php`（54 行）
 > **依赖插件**：无
 
 **用法示例**

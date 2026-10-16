@@ -54,9 +54,9 @@ class PageTitle extends Component
         if ($icon = $this->iconClass($this->get('icon'))) {
             $inner .= '<i class="'.$icon.' me-2 fs-20 align-middle"></i>';
         }
-        $inner .= '<h4 class="fs-sm text-uppercase fw-bold m-0">'.$this->e($this->get('title')).'</h4>';
+        $inner .= '<h4 class="fs-sm text-uppercase fw-bold m-0">'.$this->escape($this->get('title')).'</h4>';
         if (($sub = (string) $this->get('subtitle')) !== '') {
-            $inner .= '<p class="text-muted small mb-0 mt-1">'.$this->e($sub).'</p>';
+            $inner .= '<p class="text-muted small mb-0 mt-1">'.$this->escape($sub).'</p>';
         }
         $inner .= '</div>';
 
@@ -72,9 +72,9 @@ class PageTitle extends Component
                     $item = is_array($item) ? $item : ['text' => $item];
                     $active = ($item['active'] ?? false) || $i === $last;
                     if ($active || empty($item['url'])) {
-                        $inner .= '<li class="breadcrumb-item'.($active ? ' active' : '').'">'.$this->e($item['text'] ?? '').'</li>';
+                        $inner .= '<li class="breadcrumb-item'.($active ? ' active' : '').'">'.$this->escape($item['text'] ?? '').'</li>';
                     } else {
-                        $inner .= '<li class="breadcrumb-item"><a href="'.$this->e($this->safeUrl($item['url'])).'">'.$this->e($item['text'] ?? '').'</a></li>';
+                        $inner .= '<li class="breadcrumb-item"><a href="'.$this->escape($this->safeUrl($item['url'])).'">'.$this->escape($item['text'] ?? '').'</a></li>';
                     }
                 }
                 $inner .= '</ol>';

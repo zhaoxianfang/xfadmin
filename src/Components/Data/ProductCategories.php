@@ -53,12 +53,12 @@ class ProductCategories extends Component
 
         // 工具栏
         $html .= '<div class="card-header border-light justify-content-between">';
-        $html .= '<h5 class="card-title mb-0">'.$this->e($this->get('title')).'</h5>';
+        $html .= '<h5 class="card-title mb-0">'.$this->escape($this->get('title')).'</h5>';
         $html .= '<div class="d-flex gap-2">';
         if ($this->get('searchable')) {
             $html .= '<div class="search-box"><input type="text" class="form-control form-control-sm" placeholder="搜索分类…"></div>';
         }
-        $html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>'.$this->e($this->get('add_text')).'</button>';
+        $html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-plus me-1"></i>'.$this->escape($this->get('add_text')).'</button>';
         $html .= '</div></div>';
 
         // 表格
@@ -78,24 +78,24 @@ class ProductCategories extends Component
             // 缩略图 + 名称
             $html .= '<td><div class="d-flex align-items-center">';
             if (! empty($c['image'])) {
-                $html .= '<div class="avatar-md me-3"><img src="'.$this->e($this->img($c['image'])).'" alt="" class="img-fluid rounded"></div>';
+                $html .= '<div class="avatar-md me-3"><img src="'.$this->escape($this->img($c['image'])).'" alt="" class="img-fluid rounded"></div>';
             }
             $cUrl = $this->safeUrl($c['url'] ?? '#', '#');
-            $html .= '<div><h5 class="mb-0"><a href="'.$this->e($cUrl).'" class="link-reset">'.$this->e($c['name'] ?? '').'</a></h5></div>';
+            $html .= '<div><h5 class="mb-0"><a href="'.$this->escape($cUrl).'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h5></div>';
             $html .= '</div></td>';
 
-            $html .= '<td>'.$this->e($c['slug'] ?? '').'</td>';
-            $html .= '<td><h5 class="fs-base mb-0 fw-medium">'.$this->e((string) ($c['products'] ?? '')).'</h5></td>';
-            $html .= '<td>'.$this->e((string) ($c['orders'] ?? '')).'</td>';
-            $html .= '<td>'.$this->e((string) ($c['earnings'] ?? '')).'</td>';
-            $html .= '<td>'.$this->e((string) ($c['modified'] ?? '')).'</td>';
+            $html .= '<td>'.$this->escape($c['slug'] ?? '').'</td>';
+            $html .= '<td><h5 class="fs-base mb-0 fw-medium">'.$this->escape((string) ($c['products'] ?? '')).'</h5></td>';
+            $html .= '<td>'.$this->escape((string) ($c['orders'] ?? '')).'</td>';
+            $html .= '<td>'.$this->escape((string) ($c['earnings'] ?? '')).'</td>';
+            $html .= '<td>'.$this->escape((string) ($c['modified'] ?? '')).'</td>';
 
             // 状态徽标
             $status = $c['status'] ?? null;
             $text = is_array($status) ? ($status['text'] ?? '') : (string) $status;
             $variant = is_array($status) ? ($status['variant'] ?? 'secondary') : 'secondary';
             $html .= '<td>'.($text !== ''
-                ? '<span class="badge bg-'.$this->e($variant).'-subtle text-'.$this->e($variant).' fs-xxs">'.$this->e($text).'</span>'
+                ? '<span class="badge bg-'.$this->escape($variant).'-subtle text-'.$this->escape($variant).' fs-xxs">'.$this->escape($text).'</span>'
                 : '').'</td>';
 
             // 行内操作

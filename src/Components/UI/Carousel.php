@@ -62,7 +62,7 @@ class Carousel extends Component
         if ($this->get('indicators')) {
             $html .= '<div class="carousel-indicators">';
             foreach ($items as $i => $item) {
-                $html .= '<button type="button" data-bs-target="#'.$this->e($id).'" data-bs-slide-to="'.$i.'"'.($i === 0 ? ' class="active" aria-current="true"' : '').'></button>';
+                $html .= '<button type="button" data-bs-target="#'.$this->escape($id).'" data-bs-slide-to="'.$i.'"'.($i === 0 ? ' class="active" aria-current="true"' : '').'></button>';
             }
             $html .= '</div>';
         }
@@ -72,12 +72,12 @@ class Carousel extends Component
             if (! is_array($item)) {
                 $item = ['image' => (string) $item];
             }
-            $html .= '<div class="'.Html::cls('carousel-item', ['active' => $i === 0]).'" data-bs-interval="'.$this->e($item['interval'] ?? $this->get('interval')).'">';
+            $html .= '<div class="'.Html::cls('carousel-item', ['active' => $i === 0]).'" data-bs-interval="'.$this->escape($item['interval'] ?? $this->get('interval')).'">';
             if (isset($item['image'])) {
                 // 高度值走长度白名单：e() 不转义分号，可被注入额外声明
                 $style = $this->cssLen($this->get('height'));
                 $style = $style !== '' ? 'height:'.$style.';' : '';
-                $html .= '<img src="'.$this->e($this->img((string) $item['image'])).'" class="d-block w-100 xf-carousel-img object-fit-cover"'.($style !== '' ? ' style="'.$style.'"' : '').' alt="'.$this->e($item['alt'] ?? '').'">';
+                $html .= '<img src="'.$this->escape($this->img((string) $item['image'])).'" class="d-block w-100 xf-carousel-img object-fit-cover"'.($style !== '' ? ' style="'.$style.'"' : '').' alt="'.$this->escape($item['alt'] ?? '').'">';
             }
             if (isset($item['caption'])) {
                 $html .= '<div class="carousel-caption d-none d-md-block">'.$this->raw($item['caption']).'</div>';
@@ -90,8 +90,8 @@ class Carousel extends Component
         $html .= '</div>';
 
         if ($this->get('controls')) {
-            $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#'.$this->e($id).'" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">上一页</span></button>'
-                .'<button class="carousel-control-next" type="button" data-bs-target="#'.$this->e($id).'" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">下一页</span></button>';
+            $html .= '<button class="carousel-control-prev" type="button" data-bs-target="#'.$this->escape($id).'" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">上一页</span></button>'
+                .'<button class="carousel-control-next" type="button" data-bs-target="#'.$this->escape($id).'" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">下一页</span></button>';
         }
 
         return $html.'</div>';

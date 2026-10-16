@@ -60,10 +60,10 @@ class SellerDetails extends Component
         $html = '<div class="card"><div class="card-body"><div class="d-flex flex-wrap align-items-center gap-3">';
 
         if (! empty($s['logo'])) {
-            $html .= '<div class="avatar avatar-xxl flex-shrink-0"><img src="'.$this->e($this->img($s['logo'])).'" alt="" class="img-fluid rounded"></div>';
+            $html .= '<div class="avatar avatar-xxl flex-shrink-0"><img src="'.$this->escape($this->img($s['logo'])).'" alt="" class="img-fluid rounded"></div>';
         }
         $html .= '<div class="flex-grow-1">';
-        $html .= '<h4 class="mb-1 fw-bold">'.$this->e($s['name'] ?? '');
+        $html .= '<h4 class="mb-1 fw-bold">'.$this->escape($s['name'] ?? '');
         if (! empty($s['verified'])) {
             $html .= ' <i class="ti ti-rosette-discount-check-filled text-primary" title="已认证"></i>';
         }
@@ -77,17 +77,17 @@ class SellerDetails extends Component
             for ($i = 1; $i <= 5; $i++) {
                 $html .= '<i class="ti ti-star'.($i <= $full ? '-filled' : '').'"></i>';
             }
-            $html .= ' <span class="text-muted fs-sm">'.$this->e((string) $rate).'</span></div>';
+            $html .= ' <span class="text-muted fs-sm">'.$this->escape((string) $rate).'</span></div>';
         }
         if (! empty($s['desc'])) {
-            $html .= '<p class="text-muted mb-2">'.$this->e($s['desc']).'</p>';
+            $html .= '<p class="text-muted mb-2">'.$this->escape($s['desc']).'</p>';
         }
         // 元信息（地址 / 电话 / 邮箱等）
         $meta = (array) ($s['meta'] ?? []);
         if (! empty($meta)) {
             $html .= '<div class="d-flex flex-wrap gap-3 text-muted fs-sm">';
             foreach ($meta as $m) {
-                $html .= '<span>'.(! empty($m['icon']) ? '<i class="'.$this->e($m['icon']).' me-1"></i>' : '').$this->e($m['text'] ?? '').'</span>';
+                $html .= '<span>'.(! empty($m['icon']) ? '<i class="'.$this->escape($m['icon']).' me-1"></i>' : '').$this->escape($m['text'] ?? '').'</span>';
             }
             $html .= '</div>';
         }
@@ -103,10 +103,10 @@ class SellerDetails extends Component
         }
         $html .= '<div class="d-flex gap-2 align-self-start">';
         foreach ($actions as $a) {
-            $html .= '<button type="button" class="btn '.$this->e($a['class'] ?? 'btn-primary').'"'
-                .(! empty($a['onclick']) ? ' onclick="'.$this->e($a['onclick']).'"' : '').'>'
-                .(! empty($a['icon']) ? '<i class="'.$this->e($a['icon']).' me-1"></i>' : '')
-                .$this->e($a['text'] ?? '').'</button>';
+            $html .= '<button type="button" class="btn '.$this->escape($a['class'] ?? 'btn-primary').'"'
+                .(! empty($a['onclick']) ? ' onclick="'.$this->escape($a['onclick']).'"' : '').'>'
+                .(! empty($a['icon']) ? '<i class="'.$this->escape($a['icon']).' me-1"></i>' : '')
+                .$this->escape($a['text'] ?? '').'</button>';
         }
         $html .= '</div>';
 
@@ -123,12 +123,12 @@ class SellerDetails extends Component
         $html = '<div class="row g-3 mb-3">';
         foreach ($stats as $st) {
             $st = (array) $st;
-            $color = $this->e($st['color'] ?? 'primary');
+            $color = $this->escape($st['color'] ?? 'primary');
             $html .= '<div class="'.$col.'"><div class="card mb-0"><div class="card-body d-flex align-items-center gap-3">'
                 .'<div class="avatar avatar-lg flex-shrink-0"><span class="avatar-title rounded-circle bg-'.$color.'-subtle text-'.$color.' fs-4">'
-                .'<i class="'.$this->e($st['icon'] ?? 'ti ti-chart-bar').'"></i></span></div>'
-                .'<div><h4 class="mb-0 fw-bold">'.$this->e((string) ($st['value'] ?? '')).'</h4>'
-                .'<span class="text-muted fs-sm">'.$this->e($st['label'] ?? '').'</span></div>'
+                .'<i class="'.$this->escape($st['icon'] ?? 'ti ti-chart-bar').'"></i></span></div>'
+                .'<div><h4 class="mb-0 fw-bold">'.$this->escape((string) ($st['value'] ?? '')).'</h4>'
+                .'<span class="text-muted fs-sm">'.$this->escape($st['label'] ?? '').'</span></div>'
                 .'</div></div></div>';
         }
 
@@ -152,20 +152,20 @@ class SellerDetails extends Component
             $p = (array) $p;
             $html .= '<tr><td><div class="d-flex align-items-center">';
             if (! empty($p['image'])) {
-                $html .= '<div class="avatar-md me-3"><img src="'.$this->e($this->img($p['image'])).'" alt="" class="img-fluid rounded"></div>';
+                $html .= '<div class="avatar-md me-3"><img src="'.$this->escape($this->img($p['image'])).'" alt="" class="img-fluid rounded"></div>';
             }
             $pUrl = $this->safeUrl($p['url'] ?? '#', '#');
-            $html .= '<h5 class="mb-0 fs-base"><a href="'.$this->e($pUrl).'" class="link-reset">'.$this->e($p['name'] ?? '').'</a></h5>';
+            $html .= '<h5 class="mb-0 fs-base"><a href="'.$this->escape($pUrl).'" class="link-reset">'.$this->escape($p['name'] ?? '').'</a></h5>';
             $html .= '</div></td>';
-            $html .= '<td class="fw-medium">'.$this->e((string) ($p['price'] ?? '')).'</td>';
-            $html .= '<td>'.$this->e((string) ($p['stock'] ?? '')).'</td>';
-            $html .= '<td>'.$this->e((string) ($p['sales'] ?? '')).'</td>';
+            $html .= '<td class="fw-medium">'.$this->escape((string) ($p['price'] ?? '')).'</td>';
+            $html .= '<td>'.$this->escape((string) ($p['stock'] ?? '')).'</td>';
+            $html .= '<td>'.$this->escape((string) ($p['sales'] ?? '')).'</td>';
 
             $status = $p['status'] ?? null;
             $text = is_array($status) ? ($status['text'] ?? '') : (string) $status;
             $variant = is_array($status) ? ($status['variant'] ?? 'secondary') : 'secondary';
             $html .= '<td>'.($text !== ''
-                ? '<span class="badge bg-'.$this->e($variant).'-subtle text-'.$this->e($variant).' fs-xxs">'.$this->e($text).'</span>'
+                ? '<span class="badge bg-'.$this->escape($variant).'-subtle text-'.$this->escape($variant).' fs-xxs">'.$this->escape($text).'</span>'
                 : '').'</td>';
 
             $html .= '<td><div class="d-flex justify-content-center gap-1">'

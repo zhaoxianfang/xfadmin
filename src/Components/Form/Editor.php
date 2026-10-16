@@ -76,7 +76,7 @@ class Editor extends Component
             // 无障碍接线：说明文本 / 校验反馈 / 校验失败语义
             $sumAttrs = array_merge($sumAttrs, $this->describeAttrs($id), $this->stateAria());
 
-            $control = '<textarea'.$this->attrs($sumAttrs).'>'.$this->e($this->get('value')).'</textarea>';
+            $control = '<textarea'.$this->attrs($sumAttrs).'>'.$this->escape($this->get('value')).'</textarea>';
         } else {
             $control = '<div'.$this->attrs([
                 'id' => $id,

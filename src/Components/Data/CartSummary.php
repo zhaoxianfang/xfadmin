@@ -55,7 +55,7 @@ class CartSummary extends Component
         $total = $sub + $ship - $disc;
         $variant = $this->enum($btn['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
 
-        $money = fn ($v) => $this->e($cur).number_format($v, 2);
+        $money = fn ($v) => $this->escape($cur).number_format($v, 2);
 
         $html = '<div class="card border-0 shadow-sm">';
         $html .= '<div class="card-header bg-transparent border-bottom fw-semibold">订单摘要</div>';
@@ -73,7 +73,7 @@ class CartSummary extends Component
                 .'<input type="text" class="form-control" name="promo_code" placeholder="优惠码">'
                 .'<button class="btn btn-outline-secondary" type="button">应用</button></div>';
         }
-        $html .= '<button type="button" class="btn btn-'.$variant.' w-100">'.$this->e($btn['text'] ?? '去结算').'</button>';
+        $html .= '<button type="button" class="btn btn-'.$variant.' w-100">'.$this->escape($btn['text'] ?? '去结算').'</button>';
         $html .= '</div></div>';
 
         return $html;

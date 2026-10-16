@@ -103,11 +103,11 @@ class Table extends Component
         if ($format instanceof Closure) {
             $value = $format($row);
 
-            return ! empty($col['raw']) || ! is_scalar($value) ? $this->raw($value) : $this->e($value);
+            return ! empty($col['raw']) || ! is_scalar($value) ? $this->raw($value) : $this->escape($value);
         }
         $value = is_array($row) ? Html::get($row, (string) $col['key']) : ($row->{$col['key']} ?? null);
 
-        return ! empty($col['raw']) ? $this->raw($value) : $this->e($value);
+        return ! empty($col['raw']) ? $this->raw($value) : $this->escape($value);
     }
 
     /**
@@ -142,7 +142,7 @@ class Table extends Component
 
         $html = '<table'.$this->attrs(['class' => $this->tableClass()]).'>';
         if ($this->get('caption')) {
-            $html .= '<caption>'.$this->e($this->get('caption')).'</caption>';
+            $html .= '<caption>'.$this->escape($this->get('caption')).'</caption>';
         }
         $html .= '<thead'.($this->get('head_variant') ? ' class="table-'.$this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light').'"' : '').'><tr>';
         foreach ($columns as $col) {
@@ -154,13 +154,13 @@ class Table extends Component
                     $attrs['style'] = 'width:'.$width.';';
                 }
             }
-            $html .= '<th'.Html::attrs($attrs).'>'.$this->e($col['label']).'</th>';
+            $html .= '<th'.Html::attrs($attrs).'>'.$this->escape($col['label']).'</th>';
         }
         $html .= '</tr></thead><tbody>';
 
         if ($data === []) {
             // max(1,...) 兜底：无列时 colspan=0 是非法 HTML
-            $html .= '<tr><td colspan="'.max(1, count($columns)).'" class="text-center text-muted py-4">'.$this->e($this->get('empty')).'</td></tr>';
+            $html .= '<tr><td colspan="'.max(1, count($columns)).'" class="text-center text-muted py-4">'.$this->escape($this->get('empty')).'</td></tr>';
         }
         $rowAttrs = $this->get('row_attrs');
         foreach ($data as $row) {

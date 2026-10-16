@@ -158,7 +158,7 @@ class Page extends Component
             }
         }
         // 内容区
-        $body .= '<div class="content-page"><div class="'.$this->e($this->get('container')).'">';
+        $body .= '<div class="content-page"><div class="'.$this->escape($this->get('container')).'">';
         $pageTitle = $this->get('page_title');
         if ($pageTitle) {
             // 字符串形态的页面标题来自调用方数据 → 转义；仍允许直接传组件实例
@@ -184,16 +184,16 @@ class Page extends Component
 
         $doc = "<!DOCTYPE html>\n<html".Html::attrs($htmlAttrs).">\n<head>\n";
         $doc .= '<meta charset="utf-8">'."\n";
-        $doc .= '<title>'.$this->e($this->get('title')).'</title>'."\n";
+        $doc .= '<title>'.$this->escape($this->get('title')).'</title>'."\n";
         $doc .= '<meta name="viewport" content="width=device-width, initial-scale=1">'."\n";
         if ($this->get('description')) {
-            $doc .= '<meta name="description" content="'.$this->e($this->get('description')).'">'."\n";
+            $doc .= '<meta name="description" content="'.$this->escape($this->get('description')).'">'."\n";
         }
         if ($this->get('keywords')) {
-            $doc .= '<meta name="keywords" content="'.$this->e($this->get('keywords')).'">'."\n";
+            $doc .= '<meta name="keywords" content="'.$this->escape($this->get('keywords')).'">'."\n";
         }
         if ($this->get('author')) {
-            $doc .= '<meta name="author" content="'.$this->e($this->get('author')).'">'."\n";
+            $doc .= '<meta name="author" content="'.$this->escape($this->get('author')).'">'."\n";
         }
         // CSRF meta：显式传入 csrf 或 Laravel 环境自动注入（前端 AJAX 自动携带）
         $csrf = $this->get('csrf');
@@ -205,9 +205,9 @@ class Page extends Component
             }
         }
         if (is_string($csrf) && $csrf !== '') {
-            $doc .= '<meta name="csrf-token" content="'.$this->e($csrf).'">'."\n";
+            $doc .= '<meta name="csrf-token" content="'.$this->escape($csrf).'">'."\n";
         }
-        $doc .= '<link rel="shortcut icon" href="'.$this->e($this->safeUrl($favicon, '')).'">'."\n";
+        $doc .= '<link rel="shortcut icon" href="'.$this->escape($this->safeUrl($favicon, '')).'">'."\n";
         $doc .= $assets->head();
         $doc .= $this->raw($this->get('head'));
         // <body> 属性：body_class 与 body_attrs 合并（body_attrs 允许传入任意键值对，

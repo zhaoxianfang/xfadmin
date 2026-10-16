@@ -58,11 +58,11 @@ class Faq extends Component
                 $item = ['q' => (string) $item];
             }
             $open = $this->get('open') === $i;
-            $itemId = $this->e($id.'-item-'.$i);
+            $itemId = $this->escape($id.'-item-'.$i);
             $html .= '<div class="accordion-item">';
             $html .= '<h2 class="accordion-header">';
             $html .= '<button class="accordion-button'.($open ? '' : ' collapsed').'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$itemId.'" aria-expanded="'.($open ? 'true' : 'false').'">'
-                .$this->e($item['q'] ?? '').'</button>';
+                .$this->escape($item['q'] ?? '').'</button>';
             $html .= '</h2>';
             $html .= '<div id="'.$itemId.'" class="accordion-collapse collapse'.($open ? ' show' : '').'" data-bs-parent="#'.$id.'">';
             // 答案为纯文本语义：与 FaqAccordion 对齐，text() 转义且支持透传组件

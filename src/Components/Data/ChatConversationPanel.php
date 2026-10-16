@@ -55,9 +55,9 @@ class ChatConversationPanel extends Component
             $online = ! empty($c['online']) ? 'online' : '';
             $unread = ! empty($c['unread']) ? '<span class="badge bg-danger rounded-pill float-end">'.(int) $c['unread'].'</span>' : '';
             $list .= '<a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-2 '.$online.'">'
-                .(($c['avatar'] ?? '') ? '<img src="'.$this->e($this->img($c['avatar'])).'" class="rounded-circle" width="40" height="40" alt="">' : '')
-                .'<div class="flex-grow-1 overflow-hidden"><div class="d-flex justify-content-between"><span class="fw-semibold text-truncate">'.$this->e($c['name'] ?? '').'</span><small class="text-muted">'.$this->e($c['time'] ?? '').'</small></div>'
-                .'<small class="text-muted text-truncate d-block">'.$this->e($c['last'] ?? '').'</small></div>'.$unread
+                .(($c['avatar'] ?? '') ? '<img src="'.$this->escape($this->img($c['avatar'])).'" class="rounded-circle" width="40" height="40" alt="">' : '')
+                .'<div class="flex-grow-1 overflow-hidden"><div class="d-flex justify-content-between"><span class="fw-semibold text-truncate">'.$this->escape($c['name'] ?? '').'</span><small class="text-muted">'.$this->escape($c['time'] ?? '').'</small></div>'
+                .'<small class="text-muted text-truncate d-block">'.$this->escape($c['last'] ?? '').'</small></div>'.$unread
                 .'</a>';
         }
         $list .= '</div>';
@@ -72,7 +72,7 @@ class ChatConversationPanel extends Component
             }
         }
         $panel = '<div class="d-flex flex-column h-100">';
-        $panel .= '<div class="px-3 py-2 border-bottom fw-semibold d-flex align-items-center gap-2"><i class="ti ti-message-circle"></i>'.$this->e($title).'</div>';
+        $panel .= '<div class="px-3 py-2 border-bottom fw-semibold d-flex align-items-center gap-2"><i class="ti ti-message-circle"></i>'.$this->escape($title).'</div>';
         $panel .= '<div class="flex-grow-1 overflow-auto p-3 xf-chat-messages">'.$msgHtml.'</div>';
         $panel .= '<div class="p-2 border-top d-flex gap-2">'
             .'<input type="text" class="form-control" placeholder="输入消息...">'

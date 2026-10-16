@@ -40,7 +40,7 @@ class BackToTop extends Component
         $icon = (string) $this->get('icon');
 
         return '<button type="button"'.$this->attrs(['class' => 'xf-back-to-top btn btn-primary rounded-circle shadow'])
-            .' data-xf="backtotop" aria-label="返回顶部" data-xf-config="'.$this->e(json_encode(
+            .' data-xf="backtotop" aria-label="返回顶部" data-xf-config="'.$this->escape(json_encode(
                 $cfg,
                 JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
             )).'"><i class="'.$this->iconClass($icon).'"></i></button>';

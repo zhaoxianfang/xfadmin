@@ -57,7 +57,7 @@ echo XfAdmin::profilePage(['user' => \$user, 'tabs' => [...]]);
 客户/客户端列表（apps-clients）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Clients`
-> **文件**：`src/Components/Data/Clients.php`（141 行）
+> **文件**：`src/Components/Data/Clients.php`（110 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -108,10 +108,10 @@ echo XfAdmin::clients([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'客户列表'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `searchable` | bool | `true` | 是否参与搜索；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `'客户列表'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<h5 class="card-title mb-0">'.$this->escape($this->get('title')).'</h5>';` |
+| `searchable` | bool | `true` | 是否参与搜索；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `type_filter` | array | `[]` | 类型筛选条件 |
-| `add_text` | string | `'新增客户'` | 「添加」按钮文案；**文本槽位**：输出前自动 HTML 转义 |
+| `add_text` | string | `'新增客户'` | 「添加」按钮文案；源码用法：`$html .= '<button class="btn btn-sm btn-primary"><i class="ti ti-user-plus me-1"></i>…` |
 | `clients` | array | `[]` | 客户端 / 客户列表 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -123,7 +123,7 @@ echo XfAdmin::clients([
 公司列表（apps-companies）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Companies`
-> **文件**：`src/Components/Data/Companies.php`（126 行）
+> **文件**：`src/Components/Data/Companies.php`（92 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -182,7 +182,7 @@ echo XfAdmin::companies([
 公司卡（logo/简介/链接）。
 
 > **类**：`zxf\XfAdmin\Components\Data\CompanyCard`
-> **文件**：`src/Components/Data/CompanyCard.php`（122 行）
+> **文件**：`src/Components/Data/CompanyCard.php`（93 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -241,7 +241,7 @@ echo XfAdmin::companyCard([
 联系人卡（头像/电话/邮件）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ContactCard`
-> **文件**：`src/Components/Data/ContactCard.php`（106 行）
+> **文件**：`src/Components/Data/ContactCard.php`（79 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -298,7 +298,7 @@ echo XfAdmin::contactCard([
 联系人列表（通讯录）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ContactList`
-> **文件**：`src/Components/Data/ContactList.php`（74 行）
+> **文件**：`src/Components/Data/ContactList.php`（53 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -346,7 +346,7 @@ echo XfAdmin::contactList([
 角色管理（角色列表+成员）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Roles`
-> **文件**：`src/Components/Data/Roles.php`（71 行）
+> **文件**：`src/Components/Data/Roles.php`（51 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -384,7 +384,7 @@ echo XfAdmin::roles([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$title = $this->get('title') ? '<div class="d-flex justify-content-between align-item…` |
 | `roles` | array | `[]` | 角色列表（`id`+`name` 或键值形式） |
 | `permissions` | array | `[]` | 权限列表 |
 
@@ -397,7 +397,7 @@ echo XfAdmin::roles([
 权限矩阵（角色×权限勾选表）。
 
 > **类**：`zxf\XfAdmin\Components\Data\PermissionMatrix`
-> **文件**：`src/Components/Data/PermissionMatrix.php`（75 行）
+> **文件**：`src/Components/Data/PermissionMatrix.php`（53 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -454,7 +454,7 @@ echo XfAdmin::permissionMatrix([
 团队成员卡（头像/职位/操作）。
 
 > **类**：`zxf\XfAdmin\Components\Data\TeamMember`
-> **文件**：`src/Components/Data/TeamMember.php`（86 行）
+> **文件**：`src/Components/Data/TeamMember.php`（67 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -503,7 +503,7 @@ echo XfAdmin::teamMember([
 项目列表（卡片/列表视图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Projects`
-> **文件**：`src/Components/Data/Projects.php`（94 行）
+> **文件**：`src/Components/Data/Projects.php`（71 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -546,7 +546,7 @@ echo XfAdmin::projects([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$title = $this->get('title') ? '<div class="d-flex justify-content-between align-item…` |
 | `projects` | array | `[]` | 项目列表 |
 | `view` | string | `'grid'` | 详情视图配置（viewRow 引擎，见数据表格文档） |
 
@@ -559,7 +559,7 @@ echo XfAdmin::projects([
 项目详情（概览/进度/成员）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProjectDetails`
-> **文件**：`src/Components/Data/ProjectDetails.php`（136 行）
+> **文件**：`src/Components/Data/ProjectDetails.php`（114 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -608,7 +608,7 @@ echo XfAdmin::projectDetails([
 项目活动流（动态时间线）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProjectActivity`
-> **文件**：`src/Components/Data/ProjectActivity.php`（96 行）
+> **文件**：`src/Components/Data/ProjectActivity.php`（62 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -656,7 +656,7 @@ echo XfAdmin::projectActivity([
 项目团队看板（成员任务分配）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProjectTeamBoard`
-> **文件**：`src/Components/Data/ProjectTeamBoard.php`（126 行）
+> **文件**：`src/Components/Data/ProjectTeamBoard.php`（95 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -705,7 +705,7 @@ echo XfAdmin::projectTeamBoard([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `'项目团队'` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `'项目团队'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`.'<h5 class="mb-0 me-3">'.$this->escape($this->get('title')).'</h5>'` |
 | `cols` | int | `3` | 列数（栅格 / 分区列数） |
 | `teams` | array | `[]` | 团队列表 |
 
@@ -718,7 +718,7 @@ echo XfAdmin::projectTeamBoard([
 任务清单（勾选/优先级）。
 
 > **类**：`zxf\XfAdmin\Components\Data\TaskList`
-> **文件**：`src/Components/Data/TaskList.php`（129 行）
+> **文件**：`src/Components/Data/TaskList.php`（91 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -768,10 +768,10 @@ echo XfAdmin::taskList([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$title = $this->escape($this->get('title'));` |
 | `tasks` | array | `[]` | 源码用法：`$tasks = (array) $this->get('tasks');` |
-| `filterable` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
-| `addable` | bool | `true` | 开关：非空 / 真值时启用对应区块 |
+| `filterable` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `addable` | bool | `true` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `add_url` | string | `'javascript:void(0);'` | URL：经协议白名单校验（拦截 `javascript:` 等） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -783,7 +783,7 @@ echo XfAdmin::taskList([
 待办列表（添加/完成）。
 
 > **类**：`zxf\XfAdmin\Components\Data\TodoList`
-> **文件**：`src/Components/Data/TodoList.php`（76 行）
+> **文件**：`src/Components/Data/TodoList.php`（55 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -821,9 +821,9 @@ echo XfAdmin::todoList([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `items` | array | `[]` | 条目数组（结构见各组件说明） |
-| `addable` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
+| `addable` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -834,7 +834,7 @@ echo XfAdmin::todoList([
 问题追踪（看板式缺陷管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\IssueTracker`
-> **文件**：`src/Components/Data/IssueTracker.php`（146 行）
+> **文件**：`src/Components/Data/IssueTracker.php`（115 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -899,7 +899,7 @@ echo XfAdmin::issueTracker([
 看板（拖拽列/卡片，项目与工单管理）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Kanban`
-> **文件**：`src/Components/Data/Kanban.php`（197 行）
+> **文件**：`src/Components/Data/Kanban.php`（167 行）
 > **依赖插件**：`sortablejs`、`simplebar`
 
 **用法示例**
@@ -944,7 +944,7 @@ echo XfAdmin::kanban([
 | `columns` | array | `[]` | 列定义数组 |
 | `search` | bool | `true` | 是否启用搜索；源码用法：`$search = $this->get('search');` |
 | `addText` | string | `'新建卡片'` | 源码用法：`$addText = $this->get('addText');` |
-| `class` | string | `''` | 附加到根元素的自定义 class；**文本槽位**：输出前自动 HTML 转义 |
+| `class` | string | `''` | 附加到根元素的自定义 class；源码用法：`$extraCls = preg_replace('/[^A-Za-z0-9_\-\s]/', '', (string) $this->get('class')) ?? '';` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -955,7 +955,7 @@ echo XfAdmin::kanban([
 交易/商机列表（CRM 看板式）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Deals`
-> **文件**：`src/Components/Data/Deals.php`（126 行）
+> **文件**：`src/Components/Data/Deals.php`（93 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1013,7 +1013,7 @@ echo XfAdmin::deals([
 用户资料卡（详情展示）。
 
 > **类**：`zxf\XfAdmin\Components\Data\UserProfile`
-> **文件**：`src/Components/Data/UserProfile.php`（105 行）
+> **文件**：`src/Components/Data/UserProfile.php`（83 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1077,7 +1077,7 @@ echo XfAdmin::userProfile([
 个人资料头部（封面+头像+统计）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProfileHeader`
-> **文件**：`src/Components/Data/ProfileHeader.php`（113 行）
+> **文件**：`src/Components/Data/ProfileHeader.php`（89 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1127,15 +1127,15 @@ echo XfAdmin::profileHeader([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `cover` | mixed | `null` | 封面图地址；开关：非空 / 真值时启用对应区块 |
-| `avatar` | string | `'users/avatar-1.jpg'` | 头像地址（自动解析为包内图片 URL）；源码用法：`$html .= '<span class="avatar avatar-xxl flex-shrink-0"><img src="' . $this->e(\zxf\X…` |
-| `name` | string | `''` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义 |
+| `cover` | mixed | `null` | 封面图地址；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `avatar` | string | `'users/avatar-1.jpg'` | 头像地址（自动解析为包内图片 URL）；源码用法：`$html .= '<span class="avatar avatar-xxl flex-shrink-0"><img src="'.$this->escape(XfA…` |
+| `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$html .= '<h4 class="mb-1">'.$this->escape($this->get('name'));` |
 | `role` | mixed | `null` | 角色；源码用法：`$meta = array_filter([$this->get('role'), $this->get('location')]);` |
 | `location` | mixed | `null` | 源码用法：`$meta = array_filter([$this->get('role'), $this->get('location')]);` |
 | `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
-| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
+| `actions` | mixed | `null` | 操作区内容（按钮组 / 行操作定义）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `tabs` | array | `[]` | 选项卡数组 |
-| `verified` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
+| `verified` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -1146,7 +1146,7 @@ echo XfAdmin::profileHeader([
 个人资料页（头部+标签页+动态）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ProfilePage`
-> **文件**：`src/Components/Data/ProfilePage.php`（127 行）
+> **文件**：`src/Components/Data/ProfilePage.php`（105 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1198,14 +1198,14 @@ echo XfAdmin::profilePage([
 |---|---|---|---|
 | `cover` | string | `''` | 封面图地址 |
 | `avatar` | string | `''` | 头像地址（自动解析为包内图片 URL）；源码用法：`$avatar = (string) $this->get('avatar');` |
-| `name` | string | `''` | 表单字段名 / 语义名称；**文本槽位**：输出前自动 HTML 转义 |
-| `verified` | bool | `false` | 开关：非空 / 真值时启用对应区块 |
-| `role` | string | `''` | 角色；**文本槽位**：输出前自动 HTML 转义 |
+| `name` | string | `''` | 表单字段名 / 语义名称；源码用法：`$html .= '<div class="flex-grow-1 pt-4"><h4 class="mb-1">'.$this->escape($this->get('…` |
+| `verified` | bool | `false` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `role` | string | `''` | 角色；源码用法：`$html .= '</h4><div class="text-muted">'.$this->escape($this->get('role')).'</div>';` |
 | `meta` | array | `[]` | 附加信息（时间 / 作者等） |
 | `stats` | array | `[]` | 统计指标数组（如 `[['value'=>..,'label'=>..]]`） |
 | `actions` | array | `[]` | 操作区内容（按钮组 / 行操作定义） |
 | `tabs` | array | `[]` | 选项卡数组 |
-| `content` | mixed | `null` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `content` | mixed | `null` | 内容区（可为 HTML 字符串、组件实例或数组）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -1216,7 +1216,7 @@ echo XfAdmin::profilePage([
 账户设置整页（tabs+表单）。
 
 > **类**：`zxf\XfAdmin\Components\Data\AccountSettings`
-> **文件**：`src/Components/Data/AccountSettings.php`（259 行）
+> **文件**：`src/Components/Data/AccountSettings.php`（233 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1276,7 +1276,7 @@ echo XfAdmin::accountSettings([
 投票列表（选项+进度条）。
 
 > **类**：`zxf\XfAdmin\Components\Data\VoteList`
-> **文件**：`src/Components/Data/VoteList.php`（116 行）
+> **文件**：`src/Components/Data/VoteList.php`（86 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1336,7 +1336,7 @@ echo XfAdmin::voteList([
 活动动态流（时间线式操作记录）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ActivityFeed`
-> **文件**：`src/Components/Data/ActivityFeed.php`（74 行）
+> **文件**：`src/Components/Data/ActivityFeed.php`（55 行）
 > **依赖插件**：无
 
 **用法示例**

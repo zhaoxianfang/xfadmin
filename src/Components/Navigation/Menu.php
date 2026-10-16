@@ -123,7 +123,7 @@ class Menu extends Component
             $class .= ' rounded-pill';
         }
 
-        return '<span class="badge '.$this->e($class).'">'.$this->e($badge['text'] ?? '').'</span>';
+        return '<span class="badge '.$this->escape($class).'">'.$this->escape($badge['text'] ?? '').'</span>';
     }
 
     /**
@@ -171,23 +171,23 @@ class Menu extends Component
             }
             // 分组标题
             if (isset($item['title']) && ! isset($item['text'])) {
-                $html .= '<li class="side-nav-title">'.$this->e($item['title']).'</li>';
+                $html .= '<li class="side-nav-title">'.$this->escape($item['title']).'</li>';
 
                 continue;
             }
             $active = $this->isActive($item);
             $disabled = ! empty($item['disabled']);
             $children = $item['children'] ?? [];
-            $icon = isset($item['icon']) ? '<span class="menu-icon"><i class="'.$this->e($item['icon']).'"></i></span>' : '';
-            $text = '<span class="menu-text">'.$this->e($item['text'] ?? '').'</span>';
+            $icon = isset($item['icon']) ? '<span class="menu-icon"><i class="'.$this->escape($item['icon']).'"></i></span>' : '';
+            $text = '<span class="menu-text">'.$this->escape($item['text'] ?? '').'</span>';
 
             if ($children !== []) {
                 $cid = $item['id'] ?? $this->uid('xf-menu');
                 $html .= '<li class="'.Html::cls('side-nav-item', ['active' => $active]).'">';
-                $html .= '<a data-bs-toggle="collapse" href="#'.$this->e($cid).'" aria-expanded="'.($active ? 'true' : 'false')
-                    .'" aria-controls="'.$this->e($cid).'" class="'.Html::cls('side-nav-link', ['disabled' => $disabled]).'">'
+                $html .= '<a data-bs-toggle="collapse" href="#'.$this->escape($cid).'" aria-expanded="'.($active ? 'true' : 'false')
+                    .'" aria-controls="'.$this->escape($cid).'" class="'.Html::cls('side-nav-link', ['disabled' => $disabled]).'">'
                     .$icon.$text.$this->badge($item).'<span class="menu-arrow"></span></a>';
-                $html .= '<div class="'.Html::cls('collapse', ['show' => $active]).'" id="'.$this->e($cid).'">';
+                $html .= '<div class="'.Html::cls('collapse', ['show' => $active]).'" id="'.$this->escape($cid).'">';
                 // data-level 供 CSS 按层级递增缩进（支持 6 级及以上子菜单）
                 $html .= '<ul class="sub-menu" data-level="'.($level + 1).'">'.$this->renderSideItems($children, $level + 1).'</ul>';
                 $html .= '</div></li>';
@@ -196,9 +196,9 @@ class Menu extends Component
             }
             // url 过 safeUrl 白名单：拦截 javascript: 等伪协议，非法值回落 '#'
             $url = $this->safeUrl($item['url'] ?? '#!', '#');
-            $target = isset($item['target']) ? ' target="'.$this->e($item['target']).'"' : '';
+            $target = isset($item['target']) ? ' target="'.$this->escape($item['target']).'"' : '';
             $html .= '<li class="'.Html::cls('side-nav-item', ['active' => $active]).'">'
-                .'<a href="'.$this->e($url).'"'.$target
+                .'<a href="'.$this->escape($url).'"'.$target
                 .' class="'.Html::cls('side-nav-link', ['disabled' => $disabled, 'active' => $active]).'">'
                 .$icon.$text.$this->badge($item).'</a></li>';
         }

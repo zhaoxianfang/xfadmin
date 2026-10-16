@@ -70,7 +70,7 @@ class Ratio extends Component
             case 'video':
                 $ctrl = $this->get('controls') ? ' controls' : '';
                 // src 走 safeUrl 白名单，拦截 javascript: 等伪协议
-                $inner = '<video'.$ctrl.'><source src="'.$this->e($this->safeUrl($this->get('src'))).'"></video>';
+                $inner = '<video'.$ctrl.'><source src="'.$this->escape($this->safeUrl($this->get('src'))).'"></video>';
                 break;
             case 'content':
                 $inner = $this->raw($this->get('body'));
@@ -79,7 +79,7 @@ class Ratio extends Component
             default:
                 $fs = $this->get('allowfullscreen') ? ' allowfullscreen' : '';
                 // src 走 safeUrl 白名单，拦截 javascript: 等伪协议
-                $inner = '<iframe src="'.$this->e($this->safeUrl($this->get('src'))).'" title="embed"'.$fs.'></iframe>';
+                $inner = '<iframe src="'.$this->escape($this->safeUrl($this->get('src'))).'" title="embed"'.$fs.'></iframe>';
         }
 
         return '<div'.$this->attrs($attrs).'>'.$inner.'</div>';

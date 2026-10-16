@@ -53,18 +53,18 @@ class Testimonial extends Component
             }
             $html .= '</div>';
         }
-        $html .= '<p class="mb-3 fst-italic">“'.$this->e($t['text'] ?? '').'”</p>';
+        $html .= '<p class="mb-3 fst-italic">“'.$this->escape($t['text'] ?? '').'”</p>';
         $html .= '<div class="d-flex align-items-center gap-2">';
         $avatar = $t['avatar'] ?? '';
         if ($avatar) {
-            $html .= '<span class="avatar avatar-sm flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $avatar)).'" class="img-fluid rounded-circle" alt=""></span>';
+            $html .= '<span class="avatar avatar-sm flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $avatar)).'" class="img-fluid rounded-circle" alt=""></span>';
         } else {
             $ini = mb_substr((string) ($t['name'] ?? '?'), 0, 1);
-            $html .= '<span class="avatar-sm"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->e($ini).'</span></span>';
+            $html .= '<span class="avatar-sm"><span class="avatar-title bg-primary-subtle text-primary rounded-circle">'.$this->escape($ini).'</span></span>';
         }
-        $html .= '<div><h6 class="mb-0 fw-semibold">'.$this->e($t['name'] ?? '').'</h6>';
+        $html .= '<div><h6 class="mb-0 fw-semibold">'.$this->escape($t['name'] ?? '').'</h6>';
         if (! empty($t['role'])) {
-            $html .= '<small class="text-muted">'.$this->e($t['role']).'</small>';
+            $html .= '<small class="text-muted">'.$this->escape($t['role']).'</small>';
         }
         $html .= '</div></div></div></div>';
 

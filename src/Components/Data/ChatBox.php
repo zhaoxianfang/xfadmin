@@ -57,11 +57,11 @@ class ChatBox extends Component
             $html .= '<div class="card-header d-flex align-items-center gap-2">';
             if ($this->get('avatar')) {
                 // 会话对象头像：INSPINIA 规范 .avatar 包裹（avatar-md=36px）
-                $html .= '<span class="avatar avatar-md flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
+                $html .= '<span class="avatar avatar-md flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $this->get('avatar'))).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
             }
-            $html .= '<div><h5 class="mb-0">'.$this->e($this->get('title')).'</h5>';
+            $html .= '<div><h5 class="mb-0">'.$this->escape($this->get('title')).'</h5>';
             if ($this->get('status')) {
-                $html .= '<small class="text-success">'.$this->e($this->get('status')).'</small>';
+                $html .= '<small class="text-success">'.$this->escape($this->get('status')).'</small>';
             }
             $html .= '</div></div>';
         }
@@ -97,14 +97,14 @@ class ChatBox extends Component
         $html = '<div class="d-flex mb-3 '.$align.'">';
         if (! $me && ! empty($m['avatar'])) {
             // 消息气泡旁头像：INSPINIA 规范 .avatar 包裹（avatar-sm=32px），底部对齐气泡
-            $html .= '<span class="avatar avatar-sm me-2 align-self-end flex-shrink-0"><img src="'.$this->e(XfAdmin::img((string) $m['avatar'])).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
+            $html .= '<span class="avatar avatar-sm me-2 align-self-end flex-shrink-0"><img src="'.$this->escape(XfAdmin::img((string) $m['avatar'])).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>';
         }
         $html .= '<div class="'.($me ? 'text-end' : '').'" style="max-width:75%;">';
         // 聊天内容属于用户数据，默认转义；如需富文本请显式使用 'html' 字段
-        $body = isset($m['html']) ? $this->raw($m['html']) : nl2br($this->e($m['text'] ?? ''));
+        $body = isset($m['html']) ? $this->raw($m['html']) : nl2br($this->escape($m['text'] ?? ''));
         $html .= '<div class="p-2 px-3 rounded '.$bg.'">'.$body.'</div>';
         if (! empty($m['time'])) {
-            $html .= '<small class="text-muted">'.$this->e($m['time']).'</small>';
+            $html .= '<small class="text-muted">'.$this->escape($m['time']).'</small>';
         }
         $html .= '</div></div>';
 

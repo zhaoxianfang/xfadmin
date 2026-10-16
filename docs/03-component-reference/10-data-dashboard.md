@@ -53,7 +53,7 @@ echo XfAdmin::importExport(['export_url' => '/api/export', 'import_url' => '/api
 通用小部件卡（标题+内容+数值）。
 
 > **类**：`zxf\XfAdmin\Components\Data\Widget`
-> **文件**：`src/Components/Data/Widget.php`（86 行）
+> **文件**：`src/Components/Data/Widget.php`（65 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -94,14 +94,14 @@ echo XfAdmin::widget([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `style` | string | `'icon'` | 附加到根元素的内联样式；开关：非空 / 真值时启用对应区块 |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
-| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；**文本槽位**：输出前自动 HTML 转义 |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `variant` | string | `'primary'` | **文本槽位**：输出前自动 HTML 转义；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
-| `trend` | mixed | `null` | 趋势值（正/负）；开关：非空 / 真值时启用对应区块 |
+| `style` | string | `'icon'` | 附加到根元素的内联样式；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$html .= '<p class="text-muted mb-0">'.$this->escape($this->get('title')).'</p>';` |
+| `value` | string | `''` | 当前值（表单控件值 / 展示数值）；源码用法：`$html .= '<h4 class="mb-1">'.$this->escape($this->get('value')).'</h4>';` |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `variant` | string | `'primary'` | 可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
+| `trend` | mixed | `null` | 趋势值（正/负）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `progress` | mixed | `null` | 进度百分比（0-100）；为 `null` 时不渲染该区块 |
-| `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块 |
+| `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 
@@ -112,7 +112,7 @@ echo XfAdmin::widget([
 迷你指标卡（数字+图标+同比）。
 
 > **类**：`zxf\XfAdmin\Components\Data\MetricCard`
-> **文件**：`src/Components/Data/MetricCard.php`（129 行）
+> **文件**：`src/Components/Data/MetricCard.php`（98 行）
 > **依赖插件**：`echarts`
 
 **用法示例**
@@ -170,19 +170,19 @@ echo XfAdmin::metricCard([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`.$this->escape($this->get('title')).'</h5>'` |
 | `value` | int | `0` | 当前值（表单控件值 / 展示数值）；源码用法：`$value = $this->get('value');` |
 | `prefix` | string | `''` |  |
 | `suffix` | string | `''` | 后缀文本 |
-| `decimals` | int | `0` | 源码用法：`? '<span class="xf-count" data-xf-count="' . $this->e($value) . '" data-xf-decimals="…` |
+| `decimals` | int | `0` | 源码用法：`? '<span class="xf-count" data-xf-count="'.$this->escape($value).'" data-xf-decimals=…` |
 | `trend` | mixed | `null` | 趋势值（正/负）；源码用法：`$trend = $this->get('trend');` |
 | `trend_text` | string | `'较上周'` | 趋势说明文案（如「较上周」） |
-| `chart` | string | `'donut'` | 图表配置（类型 / 数据 / 颜色）；开关：非空 / 真值时启用对应区块 |
+| `chart` | string | `'donut'` | 图表配置（类型 / 数据 / 颜色）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `data` | array | `[]` | 数据数组（行数据 / 图表数据） |
 | `labels` | array | `[]` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签） |
 | `color` | string | `'#3e60d5'` | 颜色值（#hex / rgb() / 具名色）；源码用法：`'color' => (string) $this->get('color'),` |
-| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `icon` | mixed | `null` | Tabler 图标 class，如 `ti ti-user`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `footer` | mixed | `null` | 底部内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `url` | mixed | `null` | 链接地址（自动做安全协议校验）；URL：经协议白名单校验（拦截 `javascript:` 等） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -194,7 +194,7 @@ echo XfAdmin::metricCard([
 迷你指标+火花线（数字+趋势迷你图）。
 
 > **类**：`zxf\XfAdmin\Components\Data\StatMiniSparkline`
-> **文件**：`src/Components/Data/StatMiniSparkline.php`（121 行）
+> **文件**：`src/Components/Data/StatMiniSparkline.php`（97 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -247,7 +247,7 @@ echo XfAdmin::statMiniSparkline([
 小部件仪表盘（多 widget 汇总）。
 
 > **类**：`zxf\XfAdmin\Components\Data\WidgetsDashboard`
-> **文件**：`src/Components/Data/WidgetsDashboard.php`（267 行）
+> **文件**：`src/Components/Data/WidgetsDashboard.php`（249 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -299,7 +299,7 @@ echo XfAdmin::widgetsDashboard([
 数据分析仪表盘（多图表汇总）。
 
 > **类**：`zxf\XfAdmin\Components\Data\AnalyticsDashboard`
-> **文件**：`src/Components/Data/AnalyticsDashboard.php`（125 行）
+> **文件**：`src/Components/Data/AnalyticsDashboard.php`（99 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -353,7 +353,7 @@ echo XfAdmin::analyticsDashboard([
 仪表盘网格（可拖拽 widget 布局）。
 
 > **类**：`zxf\XfAdmin\Components\Data\DashboardGrid`
-> **文件**：`src/Components/Data/DashboardGrid.php`（113 行）
+> **文件**：`src/Components/Data/DashboardGrid.php`（87 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -408,7 +408,7 @@ echo XfAdmin::dashboardGrid([
 设置中心（分组设置入口）。
 
 > **类**：`zxf\XfAdmin\Components\Data\SettingsCenter`
-> **文件**：`src/Components/Data/SettingsCenter.php`（86 行）
+> **文件**：`src/Components/Data/SettingsCenter.php`（59 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -463,7 +463,7 @@ echo XfAdmin::settingsCenter([
 报表页（数据报表展示）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ReportPage`
-> **文件**：`src/Components/Data/ReportPage.php`（81 行）
+> **文件**：`src/Components/Data/ReportPage.php`（58 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -518,7 +518,7 @@ echo XfAdmin::reportPage([
 模块导航（企业级模块菜单）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ModuleNav`
-> **文件**：`src/Components/Data/ModuleNav.php`（93 行）
+> **文件**：`src/Components/Data/ModuleNav.php`（67 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -564,7 +564,7 @@ echo XfAdmin::moduleNav([
 | `sections` | array | `[]` | 分区数组；源码用法：`$sections = $this->get('sections');` |
 | `type` | string | `'pills'` | 枚举白名单 `'pills', 'tabs', 'underline'` |
 | `align` | string | `'start'` | 枚举白名单 `'start', 'center', 'end'`；可选值：`start` / `center` / `end` |
-| `class` | string | `'xf-module-subnav'` | 附加到根元素的自定义 class；**文本槽位**：输出前自动 HTML 转义 |
+| `class` | string | `'xf-module-subnav'` | 附加到根元素的自定义 class；源码用法：`$out .= '<ul class="'.$navClass.' mb-3 '.$this->escape($this->get('class')).'">'.$lin…` |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -576,7 +576,7 @@ echo XfAdmin::moduleNav([
 模块网格（功能模块卡片墙）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ModuleGrid`
-> **文件**：`src/Components/Data/ModuleGrid.php`（93 行）
+> **文件**：`src/Components/Data/ModuleGrid.php`（69 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -617,9 +617,9 @@ echo XfAdmin::moduleGrid([
 |---|---|---|---|
 | `sections` | array | `[]` | 分区数组；源码用法：`$sections = $this->get('sections');` |
 | `columns` | int | `4` | 桌面列数 |
-| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `subtitle` | string | `''` | 副标题文本；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `class` | string | `''` | 附加到根元素的自定义 class；**文本槽位**：输出前自动 HTML 转义 |
+| `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `subtitle` | string | `''` | 副标题文本；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `class` | string | `''` | 附加到根元素的自定义 class；源码用法：`return '<div class="'.$this->escape($this->get('class')).'">'.$header.'<div class="ro…` |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -631,7 +631,7 @@ echo XfAdmin::moduleGrid([
 API 密钥管理（密钥列表+创建/撤销）。
 
 > **类**：`zxf\XfAdmin\Components\Data\ApiKeys`
-> **文件**：`src/Components/Data/ApiKeys.php`（118 行）
+> **文件**：`src/Components/Data/ApiKeys.php`（100 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -679,7 +679,7 @@ echo XfAdmin::apiKeys([
 应用管理列表（apps-manage）。
 
 > **类**：`zxf\XfAdmin\Components\Data\AppManage`
-> **文件**：`src/Components/Data/AppManage.php`（225 行）
+> **文件**：`src/Components/Data/AppManage.php`（197 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -736,7 +736,7 @@ echo XfAdmin::appManage([
 批量导入/导出工具条（DataTable / 管理页通用） 对标后台高频「导出 CSV/Excel/JSON + 导入文件」操作区，自我包含（Bootstrap 下拉 + 模态框）， 不依赖额外前端插件。导出项为真链接（指向后端导出端点），导入为带文件域的模态表单 （action 指向后端导入端点，CSRF 由宿主通过 csrf 选项注入）。 'exports' => [ ['label' => 'CSV',  'format' => 'csv',  'url' => '/admin/users/export?fmt=csv'], ['label' => 'Excel','format' => 'xlsx', 'url' => '/admin/users/export?fmt=xlsx'], ['label' => 'JSON', 'format' => 'json', 'url' => '/admin/users/export?fmt=json'], ], // 简写：export_url + formats 自动生成上述 exports // 'export_url' => '/admin/users/export?fmt=', 'formats' => ['csv','xlsx','json'], 'import' => [ 'url'    => '/admin/users/import', 'accept' => '.csv,.xlsx', 'title'  => '导入用户', ], 'csrf' => csrf_field(),   // 宿主注入隐藏域（如 Laravel csrf_field()） ])。
 
 > **类**：`zxf\XfAdmin\Components\Data\ImportExport`
-> **文件**：`src/Components/Data/ImportExport.php`（156 行）
+> **文件**：`src/Components/Data/ImportExport.php`（127 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -791,8 +791,8 @@ echo XfAdmin::importExport([
 | `export_url` | string | `''` | 简写基址 |
 | `formats` | array | `[]` | 简写格式列表（默认空；使用 export_url 简写时必须显式传 formats） |
 | `import` | mixed | `null` | null \| ['url','accept','title'] |
-| `export_label` | string | `'导出'` | **文本槽位**：输出前自动 HTML 转义 |
-| `import_label` | string | `'导入'` | **文本槽位**：输出前自动 HTML 转义 |
+| `export_label` | string | `'导出'` | 源码用法：`.'<i class="ti ti-download"></i> '.$this->escape($this->get('export_label')).'</button>'` |
+| `import_label` | string | `'导入'` | 源码用法：`.'<i class="ti ti-upload"></i> '.$this->escape($this->get('import_label')).'</button>'` |
 | `csrf` | string | `''` | 宿主注入的隐藏域 HTML（如 csrf_field()） |
 | `class` | string | `''` | 附加到根元素的自定义 class；为 `null` 时不渲染该区块 |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |

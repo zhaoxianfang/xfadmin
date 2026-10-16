@@ -64,10 +64,10 @@ class ModuleGrid extends Component
             }
             $items = '';
             foreach ($mods as $mod) {
-                $icon = $this->e($mod['icon'] ?? 'ti ti-box');
-                $name = $this->e($mod['name'] ?? '');
-                $desc = $this->e($mod['desc'] ?? '');
-                $url = $this->e($this->safeUrl($mod['url'] ?? '#', '#'));
+                $icon = $this->escape($mod['icon'] ?? 'ti ti-box');
+                $name = $this->escape($mod['name'] ?? '');
+                $desc = $this->escape($mod['desc'] ?? '');
+                $url = $this->escape($this->safeUrl($mod['url'] ?? '#', '#'));
                 $items .= '<a href="'.$url.'" class="col-12 '.$colCls.' text-decoration-none mb-3">'
                     .'<div class="card border h-100 hover-shadow"><div class="card-body">'
                     .'<div class="d-flex align-items-center mb-2">'
@@ -76,19 +76,19 @@ class ModuleGrid extends Component
                     .'<div class="small text-muted">'.$desc.'</div>'
                     .'</div></div></a>';
             }
-            $head = is_int($section) ? '' : '<h5 class="mt-4 mb-0">'.$this->e($section).'</h5>'
+            $head = is_int($section) ? '' : '<h5 class="mt-4 mb-0">'.$this->escape($section).'</h5>'
                 .'<div class="text-muted small mb-2">'.count($mods).' 个应用</div>';
             $body .= $head.'<div class="row g-3">'.$items.'</div>';
         }
         $header = '';
         if ($this->get('title') !== '') {
-            $header .= '<div class="text-center py-4"><h2>'.$this->e($this->get('title')).'</h2>';
+            $header .= '<div class="text-center py-4"><h2>'.$this->escape($this->get('title')).'</h2>';
             if ($this->get('subtitle') !== '') {
-                $header .= '<p class="text-muted">'.$this->e($this->get('subtitle')).'</p>';
+                $header .= '<p class="text-muted">'.$this->escape($this->get('subtitle')).'</p>';
             }
             $header .= '</div>';
         }
 
-        return '<div class="'.$this->e($this->get('class')).'">'.$header.'<div class="row g-3">'.$body.'</div></div>';
+        return '<div class="'.$this->escape($this->get('class')).'">'.$header.'<div class="row g-3">'.$body.'</div></div>';
     }
 }

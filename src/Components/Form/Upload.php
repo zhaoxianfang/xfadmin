@@ -98,7 +98,7 @@ class Upload extends Component
                 'data-xf' => 'dropzone',
                 'data-xf-config' => json_encode($config, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
             ], $id);
-            $control = '<div'.Html::attrs($dzAttrs).'><div class="dz-message needsclick"><i class="ti ti-cloud-upload h1 text-muted"></i><h4>'.$this->e($this->get('text')).'</h4></div></div>';
+            $control = '<div'.Html::attrs($dzAttrs).'><div class="dz-message needsclick"><i class="ti ti-cloud-upload h1 text-muted"></i><h4>'.$this->escape($this->get('text')).'</h4></div></div>';
 
             return $this->wrapField($control, $id);
         }

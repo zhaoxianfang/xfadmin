@@ -75,14 +75,14 @@ class Sidenav extends Component
         $logoDk = $brand['logo_dark'] ?? $assets->url('images/logo-black.png');
         $logoSm = $brand['logo_sm'] ?? $assets->url('images/logo-sm.png');
 
-        return '<a href="'.$this->e($this->safeUrl($url)).'" class="logo">'
+        return '<a href="'.$this->escape($this->safeUrl($url)).'" class="logo">'
             .'<span class="logo logo-light">'
-            .'<span class="logo-lg"><img src="'.$this->e($logo).'" alt="'.$this->e($name).'"></span>'
-            .'<span class="logo-sm"><img src="'.$this->e($logoSm).'" alt="'.$this->e($name).'"></span>'
+            .'<span class="logo-lg"><img src="'.$this->escape($logo).'" alt="'.$this->escape($name).'"></span>'
+            .'<span class="logo-sm"><img src="'.$this->escape($logoSm).'" alt="'.$this->escape($name).'"></span>'
             .'</span>'
             .'<span class="logo logo-dark">'
-            .'<span class="logo-lg"><img src="'.$this->e($logoDk).'" alt="'.$this->e($name).'"></span>'
-            .'<span class="logo-sm"><img src="'.$this->e($logoSm).'" alt="'.$this->e($name).'"></span>'
+            .'<span class="logo-lg"><img src="'.$this->escape($logoDk).'" alt="'.$this->escape($name).'"></span>'
+            .'<span class="logo-sm"><img src="'.$this->escape($logoSm).'" alt="'.$this->escape($name).'"></span>'
             .'</span></a>';
     }
 
@@ -111,18 +111,18 @@ class Sidenav extends Component
 
                     continue;
                 }
-                $icon = isset($item['icon']) ? '<i class="'.$this->e($item['icon']).' me-2 fs-17 align-middle"></i>' : '';
-                $dropdown .= '<a href="'.$this->e($this->safeUrl($item['url'] ?? '#!')).'" class="dropdown-item '.$this->e($item['class'] ?? '').'">'
-                    .$icon.'<span class="align-middle">'.$this->e($item['text'] ?? '').'</span></a>';
+                $icon = isset($item['icon']) ? '<i class="'.$this->escape($item['icon']).' me-2 fs-17 align-middle"></i>' : '';
+                $dropdown .= '<a href="'.$this->escape($this->safeUrl($item['url'] ?? '#!')).'" class="dropdown-item '.$this->escape($item['class'] ?? '').'">'
+                    .$icon.'<span class="align-middle">'.$this->escape($item['text'] ?? '').'</span></a>';
             }
             $dropdown .= '</div></div>';
         }
 
         return '<div class="sidenav-user"><div class="d-flex justify-content-between align-items-center"><div>'
-            .'<a href="'.$this->e($this->safeUrl($user['url'] ?? '#!')).'" class="link-reset">'
-            .'<img src="'.$this->e($avatar).'" alt="user-image" class="rounded-circle mb-2 avatar-md">'
-            .'<span class="sidenav-user-name fw-bold">'.$this->e($user['name'] ?? '').'</span>'
-            .'<span class="fs-12 fw-semibold">'.$this->e($user['role'] ?? '').'</span>'
+            .'<a href="'.$this->escape($this->safeUrl($user['url'] ?? '#!')).'" class="link-reset">'
+            .'<img src="'.$this->escape($avatar).'" alt="user-image" class="rounded-circle mb-2 avatar-md">'
+            .'<span class="sidenav-user-name fw-bold">'.$this->escape($user['name'] ?? '').'</span>'
+            .'<span class="fs-12 fw-semibold">'.$this->escape($user['role'] ?? '').'</span>'
             .'</a></div>'.$dropdown.'</div></div>';
     }
 

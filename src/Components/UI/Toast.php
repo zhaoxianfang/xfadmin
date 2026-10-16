@@ -41,10 +41,10 @@ class Toast extends Component
      */
     protected function html(): string
     {
-        $variant = $this->get('variant') !== null ? $this->e($this->get('variant')) : null;
+        $variant = $this->get('variant') !== null ? $this->escape($this->get('variant')) : null;
 
         $attrs = [
-            'class' => Html::cls('toast', ['show' => $this->get('show')], $variant ? 'text-bg-'.$this->e($variant).' border-0' : ''),
+            'class' => Html::cls('toast', ['show' => $this->get('show')], $variant ? 'text-bg-'.$this->escape($variant).' border-0' : ''),
             'role' => 'alert',
             'aria-live' => 'assertive',
             'aria-atomic' => 'true',
@@ -58,8 +58,8 @@ class Toast extends Component
         $html = '<div'.$this->attrs($attrs).'>';
         if ($this->get('title') !== null) {
             $html .= '<div class="toast-header">'
-                .'<strong class="me-auto">'.$this->e($this->get('title')).'</strong>'
-                .($this->get('time') !== null ? '<small class="text-muted">'.$this->e($this->get('time')).'</small>' : '')
+                .'<strong class="me-auto">'.$this->escape($this->get('title')).'</strong>'
+                .($this->get('time') !== null ? '<small class="text-muted">'.$this->escape($this->get('time')).'</small>' : '')
                 .'<button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close"></button></div>';
             $html .= '<div class="toast-body">'.$this->raw($this->get('body')).'</div>';
         } else {
@@ -69,7 +69,7 @@ class Toast extends Component
         $html .= '</div>';
 
         if ($this->get('placement')) {
-            $html = '<div class="toast-container position-fixed '.$this->e($this->get('placement')).' p-3">'.$html.'</div>';
+            $html = '<div class="toast-container position-fixed '.$this->escape($this->get('placement')).' p-3">'.$html.'</div>';
         }
 
         return $html;

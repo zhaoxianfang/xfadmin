@@ -57,10 +57,10 @@ class SearchBox extends Component
 
         return '<div'.$this->attrs(['class' => $igClass]).'>'
             .'<span class="input-group-text"><i class="ti ti-search"></i></span>'
-            .'<input type="search" class="form-control" id="'.$this->e($id).'"'
-            .' name="'.$this->e($this->get('name')).'"'
-            .' value="'.$this->e((string) $this->get('value')).'"'
-            .' placeholder="'.$this->e($this->get('placeholder')).'">'
+            .'<input type="search" class="form-control" id="'.$this->escape($id).'"'
+            .' name="'.$this->escape($this->get('name')).'"'
+            .' value="'.$this->escape((string) $this->get('value')).'"'
+            .' placeholder="'.$this->escape($this->get('placeholder')).'">'
             .'</div>';
     }
 }

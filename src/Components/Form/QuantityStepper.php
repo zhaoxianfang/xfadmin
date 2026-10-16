@@ -61,7 +61,7 @@ class QuantityStepper extends Component
             .' data-min="'.$min.'" data-max="'.$max.'" data-step="'.$step.'">'
             .'<button type="button" class="btn btn-outline-secondary xf-qty-dec" tabindex="-1">−</button>'
             .'<input type="text" class="form-control '.$inputSize.' text-center xf-qty-input" style="width:64px"'
-            .' id="'.$this->e($id).'" name="'.$this->e($name).'" value="'.$value.'" inputmode="numeric" aria-label="'.$this->e($name).'">'
+            .' id="'.$this->escape($id).'" name="'.$this->escape($name).'" value="'.$value.'" inputmode="numeric" aria-label="'.$this->escape($name).'">'
             .'<button type="button" class="btn btn-outline-secondary xf-qty-inc" tabindex="-1">+</button>'
             .'</div>';
     }

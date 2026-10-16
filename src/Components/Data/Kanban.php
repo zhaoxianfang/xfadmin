@@ -64,7 +64,7 @@ class Kanban extends Component
                 .'<span class="app-search-icon"><i class="ti ti-search"></i></span></div>';
         }
         $header .= '<div class="ms-auto d-flex align-items-center gap-2">';
-        $header .= '<button type="button" class="btn btn-primary btn-sm" data-kanban-add><i class="ti ti-plus me-1"></i>'.$this->e($addText).'</button>';
+        $header .= '<button type="button" class="btn btn-primary btn-sm" data-kanban-add><i class="ti ti-plus me-1"></i>'.$this->escape($addText).'</button>';
         $header .= '</div></div>';
 
         $boards = '';
@@ -75,11 +75,11 @@ class Kanban extends Component
             $variant = $this->enum($col['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary');
 
             // 列根：.xf-kanban-col[data-column]，内含列头(.xf-kanban-head) + 卡片体(.xf-kanban-body[data-kanban-list])
-            $boards .= '<div class="xf-kanban-col" data-column="'.$this->e($colId).'">';
+            $boards .= '<div class="xf-kanban-col" data-column="'.$this->escape($colId).'">';
             $boards .= '<div class="xf-kanban-head d-flex align-items-center py-2 px-3">';
             $boards .= '<h5 class="m-0"><i class="ti ti-point-filled text-'.$variant.' me-2"></i>'
-                .$this->e($col['title'] ?? '').' <span class="xf-kanban-count text-muted fw-normal">('.count($cards).')</span></h5>';
-            $boards .= '<a href="#" class="ms-auto btn btn-sm btn-icon rounded-circle btn-soft-'.$variant.'" data-kanban-add title="'.$this->e($addText).'"><i class="ti ti-plus"></i></a>';
+                .$this->escape($col['title'] ?? '').' <span class="xf-kanban-count text-muted fw-normal">('.count($cards).')</span></h5>';
+            $boards .= '<a href="#" class="ms-auto btn btn-sm btn-icon rounded-circle btn-soft-'.$variant.'" data-kanban-add title="'.$this->escape($addText).'"><i class="ti ti-plus"></i></a>';
             $boards .= '</div>';
 
             $boards .= '<div class="xf-kanban-body px-3 pb-3" data-kanban-list data-plugins="sortable">';
@@ -92,7 +92,7 @@ class Kanban extends Component
         }
         // class 选项：仅放行合法 CSS 类名字符（字母/数字/-_ 与空白分隔），剥离其余字符
         $extraCls = preg_replace('/[^A-Za-z0-9_\-\s]/', '', (string) $this->get('class')) ?? '';
-        $html = '<div class="xf-kanban '.$this->e(trim($extraCls)).'" id="'.$id.'" data-xf="kanban">';
+        $html = '<div class="xf-kanban '.$this->escape(trim($extraCls)).'" id="'.$id.'" data-xf="kanban">';
         $html .= '<div class="card h-100 mb-0 flex-grow-1">';
         $html .= $header;
         $html .= '<div class="card-body p-0"><div class="kanban-content bg-light bg-opacity-40 d-flex gap-3 flex-wrap">'.$boards.'</div></div>';
@@ -119,12 +119,12 @@ class Kanban extends Component
             'text' => $c['text'] ?? '',
         ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?: '{}';
 
-        $html = '<a href="#" class="xf-kanban-card card shadow border-light mb-2 text-reset text-decoration-none" data-item="'.$this->e($item).'"><div class="card-body">';
+        $html = '<a href="#" class="xf-kanban-card card shadow border-light mb-2 text-reset text-decoration-none" data-item="'.$this->escape($item).'"><div class="card-body">';
 
         // 顶部：标签徽标（badge-soft + ti-point-filled）+ 操作下拉
         $html .= '<div class="d-flex align-items-center mb-2">';
         if (! empty($c['label'])) {
-            $html .= '<span class="badge p-1 badge-soft-'.$variant.'"><i class="ti ti-point-filled"></i> '.$this->e($c['label']).'</span>';
+            $html .= '<span class="badge p-1 badge-soft-'.$variant.'"><i class="ti ti-point-filled"></i> '.$this->escape($c['label']).'</span>';
         }
         $html .= '<div class="ms-auto"><div class="dropdown">'
             .'<a href="#" class="btn btn-icon btn-sm btn-ghost-light text-muted" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical fs-xl"></i></a>'
@@ -136,10 +136,10 @@ class Kanban extends Component
 
         // 标题（.xf-kanban-card-title 供 JS 读取文本）
         if (! empty($c['title'])) {
-            $html .= '<h5 class="xf-kanban-card-title mb-3">'.$this->e($c['title']).'</h5>';
+            $html .= '<h5 class="xf-kanban-card-title mb-3">'.$this->escape($c['title']).'</h5>';
         }
         if (! empty($c['text'])) {
-            $html .= '<p class="text-muted mb-2">'.$this->e($c['text']).'</p>';
+            $html .= '<p class="text-muted mb-2">'.$this->escape($c['text']).'</p>';
         }
         // 底部：成员头像组 + 截止日期 + 可选 评论/附件
         $meta = '';
@@ -160,14 +160,14 @@ class Kanban extends Component
             if ($members) {
                 $html .= '<div class="avatar-group avatar-group-xs">';
                 foreach ($members as $m) {
-                    $html .= '<div class="avatar"><img src="'.$this->e(XfAdmin::img((string) $m)).'" class="rounded-circle avatar-xs" alt=""></div>';
+                    $html .= '<div class="avatar"><img src="'.$this->escape(XfAdmin::img((string) $m)).'" class="rounded-circle avatar-xs" alt=""></div>';
                 }
                 $html .= '</div>';
             } else {
                 $html .= '<span></span>';
             }
             if ($due) {
-                $html .= '<div class="d-flex align-items-center gap-1 text-muted small"><i class="ti ti-calendar-time fs-lg"></i><span>'.$this->e($due).'</span></div>';
+                $html .= '<div class="d-flex align-items-center gap-1 text-muted small"><i class="ti ti-calendar-time fs-lg"></i><span>'.$this->escape($due).'</span></div>';
             }
             $html .= '</div>';
             $html .= $meta;

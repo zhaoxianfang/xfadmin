@@ -54,20 +54,20 @@ class Media extends Component
         if ($img !== '') {
             $src = $this->img($img);
             if ($this->get('avatar')) {
-                $inner .= '<span class="avatar avatar-sm flex-shrink-0"><img src="'.$this->e($src).'" class="rounded-circle img-fluid" alt=""></span>';
+                $inner .= '<span class="avatar avatar-sm flex-shrink-0"><img src="'.$this->escape($src).'" class="rounded-circle img-fluid" alt=""></span>';
             } else {
-                $inner .= '<img src="'.$this->e($src).'" class="xf-media-img rounded flex-shrink-0" alt="">';
+                $inner .= '<img src="'.$this->escape($src).'" class="xf-media-img rounded flex-shrink-0" alt="">';
             }
         }
         $inner .= '<div class="xf-media-body flex-grow-1">';
         if ($title !== '') {
-            $inner .= '<div class="xf-media-title fw-semibold">'.$this->e($title).'</div>';
+            $inner .= '<div class="xf-media-title fw-semibold">'.$this->escape($title).'</div>';
         }
         if ($text !== '') {
-            $inner .= '<div class="xf-media-text text-muted small">'.$this->e($text).'</div>';
+            $inner .= '<div class="xf-media-text text-muted small">'.$this->escape($text).'</div>';
         }
         if ($meta !== '') {
-            $inner .= '<div class="xf-media-meta small text-muted mt-1">'.$this->e($meta).'</div>';
+            $inner .= '<div class="xf-media-meta small text-muted mt-1">'.$this->escape($meta).'</div>';
         }
         $inner .= '</div></div>';
 

@@ -63,14 +63,14 @@ class DataTableToolbar extends Component
         $actions = (array) $this->get('actions', []);
         $views = (array) $this->get('views', []);
         // 关联表格：所有交互控件共用 data-xf-table，JS 侧据此定位 DataTables 实例
-        $tableAttr = $this->get('table') ? ' data-xf-table="'.$this->e((string) $this->get('table')).'"' : '';
-        $fieldAttr = ($field !== null && $field !== '') ? ' data-field="'.$this->e((string) $field).'"' : '';
+        $tableAttr = $this->get('table') ? ' data-xf-table="'.$this->escape((string) $this->get('table')).'"' : '';
+        $fieldAttr = ($field !== null && $field !== '') ? ' data-field="'.$this->escape((string) $field).'"' : '';
 
         $html = '<div class="xf-dt-toolbar d-flex flex-wrap gap-2 align-items-center mb-3">';
 
         if ($search) {
             $html .= '<div class="flex-grow-1" style="min-width:200px;"><div class="app-search position-relative">'
-                .'<input type="search" class="form-control" placeholder="'.$this->e($ph).'" data-xf="dt-search"'.$tableAttr.'>'
+                .'<input type="search" class="form-control" placeholder="'.$this->escape($ph).'" data-xf="dt-search"'.$tableAttr.'>'
                 .'<i class="ti ti-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i></div></div>';
         }
         if ($filters) {
@@ -78,10 +78,10 @@ class DataTableToolbar extends Component
             // 直接 ['label'] 下标访问会在 PHP 8 下触发 "array offset on string" 警告
             $firstFilter = (array) ($filters[array_key_first($filters)] ?? []);
             $html .= '<select class="form-select" style="width:auto" data-xf="dt-filter"'.$tableAttr.$fieldAttr.'>'
-                .'<option value="">'.$this->e($firstFilter['label'] ?? '筛选').'</option>';
+                .'<option value="">'.$this->escape($firstFilter['label'] ?? '筛选').'</option>';
             foreach ($filters as $f) {
                 $f = (array) $f;
-                $html .= '<option value="'.$this->e($f['value'] ?? '').'">'.$this->e($f['label'] ?? '').'</option>';
+                $html .= '<option value="'.$this->escape($f['value'] ?? '').'">'.$this->escape($f['label'] ?? '').'</option>';
             }
             $html .= '</select>';
         }
@@ -98,7 +98,7 @@ class DataTableToolbar extends Component
                 $a = (array) $a;
                 $variant = $this->enum($a['variant'] ?? 'outline-secondary', array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'outline-secondary');
                 $icon = $a['icon'] ?? '';
-                $html .= '<button type="button" class="btn btn-'.$variant.'"><i class="'.$this->e($icon).'"></i> '.$this->e($a['label'] ?? '').'</button>';
+                $html .= '<button type="button" class="btn btn-'.$variant.'"><i class="'.$this->escape($icon).'"></i> '.$this->escape($a['label'] ?? '').'</button>';
             }
             $html .= '</div>';
         }
@@ -109,8 +109,8 @@ class DataTableToolbar extends Component
                 $active = ! empty($v['active']) ? ' active' : '';
                 // data-view 供业务识别当前视图；未给 name 时退回索引
                 $viewKey = (string) ($v['name'] ?? $i);
-                $html .= '<button type="button" class="btn btn-outline-secondary'.$active.'" data-view="'.$this->e($viewKey).'"'
-                    .' title="'.$this->e($v['label'] ?? '').'"><i class="'.$this->e($v['icon'] ?? '').'"></i></button>';
+                $html .= '<button type="button" class="btn btn-outline-secondary'.$active.'" data-view="'.$this->escape($viewKey).'"'
+                    .' title="'.$this->escape($v['label'] ?? '').'"><i class="'.$this->escape($v['icon'] ?? '').'"></i></button>';
             }
             $html .= '</div>';
         }

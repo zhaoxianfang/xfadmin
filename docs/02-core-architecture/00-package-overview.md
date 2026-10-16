@@ -12,7 +12,7 @@ XfAdmin 是一套 **服务端渲染（PHP）的后台 UI 组件库**，对标 IN
 - 不依赖 jQuery（前端为原生 DOM API）；
 - 通过 `XfAdmin::component()` 统一入口渲染，所有组件返回字符串或组件实例，可无限嵌套。
 
-当前版本：`config/xfadmin.php` 中 `version = 2.1.0`。
+当前版本：`config/xfadmin.php` 中 `version = 1.0.2`。
 
 ---
 

@@ -48,7 +48,7 @@ class TextDiff extends Component
         $id = $this->resolveId('diff');
         $mode = $this->get('mode') === 'split' ? 'split' : 'inline';
         $html = '<div'.$this->attrs(['class' => 'xf-diff '.($mode === 'split' ? 'row' : ''), 'id' => $id])
-            .' data-xf="diff" data-xf-config="'.$this->e(json_encode([
+            .' data-xf="diff" data-xf-config="'.$this->escape(json_encode([
                 'old' => $this->get('old'),
                 'new' => $this->get('new'),
                 'mode' => $mode,

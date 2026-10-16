@@ -78,15 +78,15 @@ class ModuleNav extends Component
             $links = '';
             foreach ($secItems as $it) {
                 $active = ! empty($it['active']) ? ' active' : '';
-                $icon = ! empty($it['icon']) ? '<i class="'.$this->e($it['icon']).' me-1"></i>' : '';
+                $icon = ! empty($it['icon']) ? '<i class="'.$this->escape($it['icon']).' me-1"></i>' : '';
                 $itUrl = $this->safeUrl($it['url'] ?? '#', '#');
-                $links .= '<a class="nav-link'.$active.'" href="'.$this->e($itUrl).'">'
-                    .$icon.$this->e($it['label'] ?? '').'</a>';
+                $links .= '<a class="nav-link'.$active.'" href="'.$this->escape($itUrl).'">'
+                    .$icon.$this->escape($it['label'] ?? '').'</a>';
             }
             if (($sec['title'] ?? '') !== '') {
-                $out .= '<div class="text-muted small fw-semibold mb-1">'.$this->e($sec['title']).'</div>';
+                $out .= '<div class="text-muted small fw-semibold mb-1">'.$this->escape($sec['title']).'</div>';
             }
-            $out .= '<ul class="'.$navClass.' mb-3 '.$this->e($this->get('class')).'">'.$links.'</ul>';
+            $out .= '<ul class="'.$navClass.' mb-3 '.$this->escape($this->get('class')).'">'.$links.'</ul>';
         }
 
         return $out;

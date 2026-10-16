@@ -45,6 +45,11 @@
 ├─ 日历 / 树 / 拖拽排序            → calendar / treeView / nestable
 ├─ 灯箱 / 引导 / 剪贴板            → lightbox / tour / clipboard
 └─ 命令面板 / 通知中心             → commandPalette / notificationCenter
+
+我要用 PHP 链式拼 HTML（不写 <div>）
+├─ 栅格布局 / 卡片                 → grid() / admin()（[全指南](04-advanced-guide/14-builder-chain.md)）
+├─ 指标卡 / 键值对 / 告警 / 徽章   → admin()->statCards/kv/alert/badge
+└─ 数据源多面板切换                → dataSourceSwitcher
 ```
 
 ---
@@ -105,6 +110,9 @@
 | 命令面板 (⌘K) | `commandPalette` | [02-ui](03-component-reference/02-ui.md) |
 | 通知中心 | `notificationCenter` | [02-ui](03-component-reference/02-ui.md) |
 | 空状态 / 骨架屏 / 加载 | `empty` / `skeleton` / `spinner` | [02-ui](03-component-reference/02-ui.md) |
+| 链式构建器（栅格/卡片/指标） | `builder()` / `grid()` / `admin()` | [14-builder-chain](04-advanced-guide/14-builder-chain.md) |
+| 数据源多面板切换 | `dataSourceSwitcher` | [14-builder-chain](04-advanced-guide/14-builder-chain.md#8-datasourceswitcher-数据源切换器) |
+| 页脚备案号 / 链接组 | `footer` | [14-builder-chain](04-advanced-guide/14-builder-chain.md#9-footer-页脚增强) |
 
 ---
 

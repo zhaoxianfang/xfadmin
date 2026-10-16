@@ -97,13 +97,13 @@ class EcommerceDashboard extends Component
      */
     private function renderStatCard(array $stat, string $currency): string
     {
-        $label = $this->e($stat['label'] ?? '');
+        $label = $this->escape($stat['label'] ?? '');
         $value = $stat['value'] ?? 0;
         $trend = (string) ($stat['trend'] ?? '');
-        $icon = $this->e($stat['icon'] ?? 'ti-chart-bar');
-        $color = $this->e($stat['color'] ?? 'primary');
+        $icon = $this->escape($stat['icon'] ?? 'ti-chart-bar');
+        $color = $this->escape($stat['color'] ?? 'primary');
         $isCurrency = ! empty($stat['currency']);
-        $suffix = $this->e($stat['suffix'] ?? '');
+        $suffix = $this->escape($stat['suffix'] ?? '');
 
         if ($isCurrency) {
             $displayValue = $this->formatPrice((float) $value, $currency);
@@ -118,7 +118,7 @@ class EcommerceDashboard extends Component
             .'<i class="ti '.$icon.' fs-24 text-'.$color.'"></i></div></div>'
             .'<div class="flex-grow-1 ms-3"><h6 class="text-muted mb-1 small">'.$label.'</h6>'
             .'<h4 class="mb-0">'.$displayValue.$suffix.'</h4>'
-            .($trend ? '<small class="'.$trendClass.'"><i class="ti '.$trendIcon.' me-1"></i>'.$this->e($trend).'</small>' : '')
+            .($trend ? '<small class="'.$trendClass.'"><i class="ti '.$trendIcon.' me-1"></i>'.$this->escape($trend).'</small>' : '')
             .'</div></div></div></div>';
     }
 
@@ -139,7 +139,7 @@ class EcommerceDashboard extends Component
             $chartValues = [18420, 21350, 16980, 28730, 32410, 25160, 30280];
         }
         $chartId = 'ec_'.$this->uid();
-        $safeCurrency = $this->e($currency);
+        $safeCurrency = $this->escape($currency);
 
         // 声明式 ECharts：由 XFAdmin.scan() 统一初始化（支持自定义 chartData）
         $cfg = json_encode([
@@ -175,7 +175,7 @@ class EcommerceDashboard extends Component
 
         $html = '<div class="row g-3 mb-4"><div class="col-12"><div class="card"><div class="card-header"><h5 class="card-title mb-0">营收趋势</h5></div>'
             .'<div class="card-body"><div class="chart-container" style="height:300px">'
-            .'<canvas id="'.$chartId.'" data-xf="echart" data-xf-config="'.$this->e($cfg ?: '{}').'"></canvas></div></div></div></div></div>';
+            .'<canvas id="'.$chartId.'" data-xf="echart" data-xf-config="'.$this->escape($cfg ?: '{}').'"></canvas></div></div></div></div></div>';
 
         return $html;
     }
@@ -209,17 +209,17 @@ class EcommerceDashboard extends Component
         } else {
             foreach ($orders as $o) {
                 $o = (array) $o;
-                $id = $this->e($o['id'] ?? '');
-                $customer = $this->e($o['customer'] ?? '');
+                $id = $this->escape($o['id'] ?? '');
+                $customer = $this->escape($o['customer'] ?? '');
                 $amount = $this->formatPrice((float) ($o['amount'] ?? 0), $currency);
                 $status = (string) ($o['status'] ?? '');
-                $date = $this->e($o['date'] ?? '');
+                $date = $this->escape($o['date'] ?? '');
                 $statusInfo = $statusMap[$status] ?? ['class' => 'text-bg-light', 'label' => $status];
 
                 $html .= '<tr><td><a href="javascript:void(0)" class="fw-medium">'.$id.'</a></td>'
                     .'<td>'.$customer.'</td>'
                     .'<td class="fw-medium">'.$amount.'</td>'
-                    .'<td><span class="badge '.$statusInfo['class'].'">'.$this->e($statusInfo['label']).'</span></td>'
+                    .'<td><span class="badge '.$statusInfo['class'].'">'.$this->escape($statusInfo['label']).'</span></td>'
                     .'<td class="text-end text-muted small">'.$date.'</td></tr>';
             }
         }
@@ -250,7 +250,7 @@ class EcommerceDashboard extends Component
             }
             foreach ($products as $p) {
                 $p = (array) $p;
-                $name = $this->e($p['name'] ?? '');
+                $name = $this->escape($p['name'] ?? '');
                 $sales = (int) ($p['sales'] ?? 0);
                 $revenue = $this->formatPrice((float) ($p['revenue'] ?? 0), $currency);
                 $image = ! empty($p['image']) ? XfAdmin::img((string) $p['image']) : '';
@@ -258,7 +258,7 @@ class EcommerceDashboard extends Component
 
                 $html .= '<div class="list-group-item"><div class="d-flex align-items-center">';
                 if ($image) {
-                    $html .= '<img src="'.$this->e($image).'" class="rounded-2 me-3" width="40" height="40" style="object-fit:cover" alt="">';
+                    $html .= '<img src="'.$this->escape($image).'" class="rounded-2 me-3" width="40" height="40" style="object-fit:cover" alt="">';
                 } else {
                     $html .= '<div class="rounded-2 bg-light me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px">'
                         .'<i class="ti ti-package text-muted"></i></div>';

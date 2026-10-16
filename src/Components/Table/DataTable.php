@@ -469,7 +469,7 @@ use zxf\XfAdmin\Support\Html;
             (string) $this->get('head_class', ''),
             $this->get('head_variant') ? 'table-'.$this->enum($this->get('head_variant'), ['light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'], 'light') : ''
         );
-        $html .= '<thead'.($theadCls !== '' ? ' class="'.$this->e($theadCls).'"' : '').'><tr>';
+        $html .= '<thead'.($theadCls !== '' ? ' class="'.$this->escape($theadCls).'"' : '').'><tr>';
         foreach ($columns as $col) {
             // th 带上列 class（前端依赖 thead th.xf-dt-select-col 定位全选框等）
             $thCls = (string) ($col['class'] ?? '');
@@ -491,9 +491,9 @@ use zxf\XfAdmin\Support\Html;
             // 注意：不再支持列级自由 CSS 'style' 键——未文档化的任意声明串是
             // 「分号注入」向量（可追加 position:fixed 等声明），列级样式请用
             // 文档化的 width / minWidth / class 键表达
-            $thAttr = ($thCls !== '' ? ' class="'.$this->e($thCls).'"' : '')
+            $thAttr = ($thCls !== '' ? ' class="'.$this->escape($thCls).'"' : '')
                 .($thStyle !== '' ? ' style="'.trim($thStyle).'"' : '');
-            $html .= '<th'.$thAttr.'>'.$this->e($col['label']).'</th>';
+            $html .= '<th'.$thAttr.'>'.$this->escape($col['label']).'</th>';
         }
         $html .= '</tr></thead>';
         // 始终输出空 tbody：保证 HTML 结构合法（DataTables 会在客户端/服务端填充行），
@@ -559,25 +559,25 @@ use zxf\XfAdmin\Support\Html;
         $btns = '';
         // 弹窗快速新增
         if ($dialogPage !== '') {
-            $btns .= '<button type="button" class="'.$this->e($cls).'"'
-                .' data-xf-page-dialog="'.$this->e($dialogPage).'"'
-                .' data-xf-title="'.$this->e((string) ($cfg['title'] ?? $label)).'"'
-                .' data-xf-size="'.$this->e((string) ($cfg['size'] ?? 'lg')).'"'
+            $btns .= '<button type="button" class="'.$this->escape($cls).'"'
+                .' data-xf-page-dialog="'.$this->escape($dialogPage).'"'
+                .' data-xf-title="'.$this->escape((string) ($cfg['title'] ?? $label)).'"'
+                .' data-xf-size="'.$this->escape((string) ($cfg['size'] ?? 'lg')).'"'
                 .(! empty($cfg['frame']) ? ' data-xf-frame' : '')
-                .' data-xf-table="#'.$this->e($tableId).'">'
-                .($icon !== '' ? '<i class="'.$this->e($icon).' me-1"></i>' : '')
-                .$this->e($label).'</button>';
+                .' data-xf-table="#'.$this->escape($tableId).'">'
+                .($icon !== '' ? '<i class="'.$this->escape($icon).' me-1"></i>' : '')
+                .$this->escape($label).'</button>';
         }
         // 整页创建表单链接
         if ($pageUrl !== '') {
             $urlLabel = (string) ($cfg['urlLabel'] ?? $label);
             $urlIcon = (string) ($cfg['urlIcon'] ?? 'ti ti-file-plus');
             $urlCls = Html::cls('btn btn-sm', (string) ($cfg['urlClass'] ?? 'btn-outline-primary'));
-            $btns .= '<a href="'.$this->e($this->safeUrl($pageUrl, '#')).'" class="'.$this->e($urlCls).'"'
-                .(($cfg['target'] ?? '') !== '' ? ' target="'.$this->e((string) $cfg['target']).'"' : '')
+            $btns .= '<a href="'.$this->escape($this->safeUrl($pageUrl, '#')).'" class="'.$this->escape($urlCls).'"'
+                .(($cfg['target'] ?? '') !== '' ? ' target="'.$this->escape((string) $cfg['target']).'"' : '')
                 .'>'
-                .($urlIcon !== '' ? '<i class="'.$this->e($urlIcon).' me-1"></i>' : '')
-                .$this->e($urlLabel).'</a>';
+                .($urlIcon !== '' ? '<i class="'.$this->escape($urlIcon).' me-1"></i>' : '')
+                .$this->escape($urlLabel).'</a>';
         }
 
         return '<div class="xf-dt-create mb-2 d-flex gap-2 flex-wrap">'.$btns.'</div>';
@@ -603,7 +603,7 @@ use zxf\XfAdmin\Support\Html;
         // 无动作时仍输出容器（便于后续前端动态注入），但隐藏
         if ($actions === []) {
             return '<div class="xf-dt-bulk d-none card card-body py-2 px-3 mb-2 d-flex align-items-center gap-2"'
-                .' data-dt="'.$this->e($tableId).'">'
+                .' data-dt="'.$this->escape($tableId).'">'
                 .'<span class="xf-dt-bulk-count text-muted small">已选 <b class="text-primary">0</b> 项</span></div>';
         }
         $btns = '';
@@ -619,18 +619,18 @@ use zxf\XfAdmin\Support\Html;
             // 批量动作名（后端据此分发领域动作 / 状态流转 / 启用停用 / 删除等）
             $actName = (string) ($a['action'] ?? '');
 
-            $btns .= '<button type="button" class="'.$this->e($cls).'"'
-                .' data-xf-bulk-action data-url="'.$this->e($url).'"'
-                .' data-method="'.$this->e($method).'"'
-                .(! empty($confirm) ? ' data-confirm="'.$this->e($confirm).'"' : '')
-                .(! empty($actName) ? ' data-action="'.$this->e($actName).'"' : '')
+            $btns .= '<button type="button" class="'.$this->escape($cls).'"'
+                .' data-xf-bulk-action data-url="'.$this->escape($url).'"'
+                .' data-method="'.$this->escape($method).'"'
+                .(! empty($confirm) ? ' data-confirm="'.$this->escape($confirm).'"' : '')
+                .(! empty($actName) ? ' data-action="'.$this->escape($actName).'"' : '')
                 .' data-reload="'.($reload ? '1' : '0').'">'
-                .($icon !== '' ? '<i class="'.$this->e($icon).' me-1"></i>' : '')
-                .$this->e($label).'</button>';
+                .($icon !== '' ? '<i class="'.$this->escape($icon).' me-1"></i>' : '')
+                .$this->escape($label).'</button>';
         }
 
         return '<div class="xf-dt-bulk d-none card card-body py-2 px-3 mb-2 d-flex flex-wrap align-items-center gap-2"'
-            .' data-dt="'.$this->e($tableId).'">'
+            .' data-dt="'.$this->escape($tableId).'">'
             .'<span class="xf-dt-bulk-count text-muted small me-1">已选 <b class="text-primary">0</b> 项</span>'
             .'<div class="btn-group btn-group-sm">'.$btns.'</div></div>';
     }
@@ -662,12 +662,12 @@ use zxf\XfAdmin\Support\Html;
      */
     protected function renderFilterBar(string $tableId, array $controls): string
     {
-        $html = '<form class="row g-2 mb-3 xf-filter-bar" data-xf-filter-for="'.$this->e($tableId).'" onsubmit="return false;">';
+        $html = '<form class="row g-2 mb-3 xf-filter-bar" data-xf-filter-for="'.$this->escape($tableId).'" onsubmit="return false;">';
         foreach ($controls as $c) {
             // 开发者完全自定义控件：['html' => '<div>...任意表单控件...</div>', 'width' => 'col-3']
             // 控件内部凡带 class="xf-filter" data-filter="参数名" 的元素都会被自动采集进查询参数
             if (is_array($c) && isset($c['html'])) {
-                $html .= '<div class="'.$this->e($c['width'] ?? 'col-6 col-md-3 col-xl-2').'">'.(string) $c['html'].'</div>';
+                $html .= '<div class="'.$this->escape($c['width'] ?? 'col-6 col-md-3 col-xl-2').'">'.(string) $c['html'].'</div>';
 
                 continue;
             }
@@ -681,63 +681,63 @@ use zxf\XfAdmin\Support\Html;
             $numAttrs = '';
             foreach (['min', 'max', 'step'] as $na) {
                 if (isset($c[$na]) && is_numeric($c[$na])) {
-                    $numAttrs .= ' '.$na.'="'.$this->e($c[$na]).'"';
+                    $numAttrs .= ' '.$na.'="'.$this->escape($c[$na]).'"';
                 }
             }
-            $html .= '<div class="'.$this->e($width).'">';
+            $html .= '<div class="'.$this->escape($width).'">';
             if (! empty($c['label'])) {
-                $html .= '<label class="form-label mb-1">'.$this->e($c['label']).'</label>';
+                $html .= '<label class="form-label mb-1">'.$this->escape($c['label']).'</label>';
             }
             // 原生日期/时间族控件（浏览器随系统语言自动本地化，中文环境即中文界面）
             $nativeDate = ['date' => 'date', 'datetime' => 'datetime-local', 'time' => 'time', 'month' => 'month', 'week' => 'week'];
             if (isset($nativeDate[$type])) {
-                $html .= '<input type="'.$nativeDate[$type].'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'" title="'.$this->e($c['label'] ?? $name).'">';
+                $html .= '<input type="'.$nativeDate[$type].'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'" title="'.$this->escape($c['label'] ?? $name).'">';
             } elseif ($type === 'daterange' || $type === 'datetimerange' || $type === 'timerange') {
                 $it = ['daterange' => 'date', 'datetimerange' => 'datetime-local', 'timerange' => 'time'][$type];
                 $html .= '<div class="input-group input-group-sm flex-nowrap">'
-                    .'<input type="'.$it.'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_from" title="起始">'
+                    .'<input type="'.$it.'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'_from" title="起始">'
                     .'<span class="input-group-text px-1">~</span>'
-                    .'<input type="'.$it.'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_to" title="结束">'
+                    .'<input type="'.$it.'" lang="zh-CN" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'_to" title="结束">'
                     .'</div>';
             } elseif ($type === 'year') {
                 $y = (int) date('Y');
                 $from = (int) ($c['from'] ?? $y - 10);
-                $html .= '<select class="form-select form-select-sm xf-filter" data-filter="'.$this->e($name).'"><option value="">'.$this->e($placeholder !== '' ? $placeholder : '全部年份').'</option>';
+                $html .= '<select class="form-select form-select-sm xf-filter" data-filter="'.$this->escape($name).'"><option value="">'.$this->escape($placeholder !== '' ? $placeholder : '全部年份').'</option>';
                 for ($i = $y; $i >= $from; $i--) {
                     $html .= '<option value="'.$i.'">'.$i.' 年</option>';
                 }
                 $html .= '</select>';
             } elseif ($type === 'color') {
-                $html .= '<input type="color" class="form-control form-control-sm form-control-color w-100 xf-filter" data-filter="'.$this->e($name).'" value="'.$this->e($c['value'] ?? '#3e60d5').'">';
+                $html .= '<input type="color" class="form-control form-control-sm form-control-color w-100 xf-filter" data-filter="'.$this->escape($name).'" value="'.$this->escape($c['value'] ?? '#3e60d5').'">';
             } elseif ($type === 'checkboxes') {
-                $html .= '<div class="xf-filter-checks d-flex flex-wrap gap-2 pt-1" data-filter="'.$this->e($name).'">';
+                $html .= '<div class="xf-filter-checks d-flex flex-wrap gap-2 pt-1" data-filter="'.$this->escape($name).'">';
                 foreach ((array) ($c['options'] ?? []) as $v => $t) {
-                    $cid = 'xf-fbc-'.$this->e($tableId.'-'.$name.'-'.$v);
+                    $cid = 'xf-fbc-'.$this->escape($tableId.'-'.$name.'-'.$v);
                     $html .= '<div class="form-check form-check-inline m-0">'
-                        .'<input type="checkbox" class="form-check-input" value="'.$this->e($v).'" id="'.$cid.'">'
-                        .'<label class="form-check-label small" for="'.$cid.'">'.$this->e($t).'</label></div>';
+                        .'<input type="checkbox" class="form-check-input" value="'.$this->escape($v).'" id="'.$cid.'">'
+                        .'<label class="form-check-label small" for="'.$cid.'">'.$this->escape($t).'</label></div>';
                 }
                 $html .= '</div>';
             } elseif ($type === 'number') {
-                $html .= '<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'" placeholder="'.$this->e($placeholder).'"'.$numAttrs.'>';
+                $html .= '<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'" placeholder="'.$this->escape($placeholder).'"'.$numAttrs.'>';
             } elseif ($type === 'range') {
                 $html .= '<div class="input-group input-group-sm flex-nowrap">'
-                    .'<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_min" placeholder="'.$this->e($c['min_placeholder'] ?? '最小').'"'.$numAttrs.'>'
+                    .'<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'_min" placeholder="'.$this->escape($c['min_placeholder'] ?? '最小').'"'.$numAttrs.'>'
                     .'<span class="input-group-text px-1">~</span>'
-                    .'<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'_max" placeholder="'.$this->e($c['max_placeholder'] ?? '最大').'"'.$numAttrs.'>'
+                    .'<input type="number" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'_max" placeholder="'.$this->escape($c['max_placeholder'] ?? '最大').'"'.$numAttrs.'>'
                     .'</div>';
             } elseif ($type === 'text' || $type === 'search') {
-                $html .= '<input type="'.($type === 'search' ? 'search' : 'text').'" class="form-control form-control-sm xf-filter" data-filter="'.$this->e($name).'" placeholder="'.$this->e($placeholder).'">';
+                $html .= '<input type="'.($type === 'search' ? 'search' : 'text').'" class="form-control form-control-sm xf-filter" data-filter="'.$this->escape($name).'" placeholder="'.$this->escape($placeholder).'">';
             } elseif ($type === 'checkbox' || $type === 'switch') {
                 $html .= '<div class="form-check'.($type === 'switch' ? ' form-switch' : '').' mt-1">'
-                    .'<input type="checkbox" class="form-check-input xf-filter" data-filter="'.$this->e($name).'" value="'.$this->e($c['value'] ?? '1').'" id="xf-fb-'.$this->e($tableId.'-'.$name).'">'
-                    .'<label class="form-check-label small" for="xf-fb-'.$this->e($tableId.'-'.$name).'">'.$this->e($c['text'] ?? $placeholder ?: '启用').'</label>'
+                    .'<input type="checkbox" class="form-check-input xf-filter" data-filter="'.$this->escape($name).'" value="'.$this->escape($c['value'] ?? '1').'" id="xf-fb-'.$this->escape($tableId.'-'.$name).'">'
+                    .'<label class="form-check-label small" for="xf-fb-'.$this->escape($tableId.'-'.$name).'">'.$this->escape($c['text'] ?? $placeholder ?: '启用').'</label>'
                     .'</div>';
             } elseif ($type === 'radio') {
-                $html .= '<div class="btn-group btn-group-sm w-100 xf-filter-radio" data-filter="'.$this->e($name).'" role="group">';
+                $html .= '<div class="btn-group btn-group-sm w-100 xf-filter-radio" data-filter="'.$this->escape($name).'" role="group">';
                 $html .= '<button type="button" class="btn btn-outline-secondary active" data-value="">全部</button>';
                 foreach ((array) ($c['options'] ?? []) as $v => $t) {
-                    $html .= '<button type="button" class="btn btn-outline-secondary" data-value="'.$this->e($v).'">'.$this->e($t).'</button>';
+                    $html .= '<button type="button" class="btn btn-outline-secondary" data-value="'.$this->escape($v).'">'.$this->escape($t).'</button>';
                 }
                 $html .= '</div>';
             } elseif ($type === 'slider' || $type === 'range-slider') {
@@ -746,44 +746,44 @@ use zxf\XfAdmin\Support\Html;
                 $smax = $c['max'] ?? 100;
                 $sstep = $c['step'] ?? 1;
                 $suffix = $c['suffix'] ?? '';
-                $html .= '<div class="xf-filter xf-slider-filter" data-type="slider" data-filter="'.$this->e($name).'">'
+                $html .= '<div class="xf-filter xf-slider-filter" data-type="slider" data-filter="'.$this->escape($name).'">'
                     .'<div class="d-flex justify-content-between small text-muted mb-1"><span class="xf-slider-lo-label"></span><span class="xf-slider-hi-label"></span></div>'
-                    .'<input type="range" class="xf-slider-lo form-range" min="'.$this->e($smin).'" max="'.$this->e($smax).'" step="'.$this->e($sstep).'" value="'.$this->e($smin).'" data-suffix="'.$this->e($suffix).'">'
-                    .'<input type="range" class="xf-slider-hi form-range" min="'.$this->e($smin).'" max="'.$this->e($smax).'" step="'.$this->e($sstep).'" value="'.$this->e($smax).'" data-suffix="'.$this->e($suffix).'">'
-                    .'<input type="hidden" data-xf-min value="'.$this->e($smin).'">'
-                    .'<input type="hidden" data-xf-max value="'.$this->e($smax).'">'
+                    .'<input type="range" class="xf-slider-lo form-range" min="'.$this->escape($smin).'" max="'.$this->escape($smax).'" step="'.$this->escape($sstep).'" value="'.$this->escape($smin).'" data-suffix="'.$this->escape($suffix).'">'
+                    .'<input type="range" class="xf-slider-hi form-range" min="'.$this->escape($smin).'" max="'.$this->escape($smax).'" step="'.$this->escape($sstep).'" value="'.$this->escape($smax).'" data-suffix="'.$this->escape($suffix).'">'
+                    .'<input type="hidden" data-xf-min value="'.$this->escape($smin).'">'
+                    .'<input type="hidden" data-xf-max value="'.$this->escape($smax).'">'
                     .'</div>';
             } elseif ($type === 'tree') {
                 // 树形选择过滤：options 为 [['value'=>..,'label'=>..,'children'=>[...]]] 层级结构
-                $html .= '<div class="xf-filter xf-tree-filter" data-type="tree" data-filter="'.$this->e($name).'">';
+                $html .= '<div class="xf-filter xf-tree-filter" data-type="tree" data-filter="'.$this->escape($name).'">';
                 $html .= $this->renderTreeFilter($c['options'] ?? [], $tableId, $name);
                 $html .= '</div>';
             } elseif ($type === 'autocomplete') {
                 // 自动完成过滤：datalist 提供候选（或 data-url 走远程搜索）
                 $remote = $c['url'] ?? '';
-                $html .= '<input type="text" class="form-control form-control-sm xf-filter" data-type="autocomplete" data-filter="'.$this->e($name).'"'
-                    .' placeholder="'.$this->e($placeholder ?: '输入并选择').'"'.($remote ? ' data-url="'.$this->e($remote).'"' : '').' list="xf-ac-'.$this->e($tableId.'-'.$name).'">';
+                $html .= '<input type="text" class="form-control form-control-sm xf-filter" data-type="autocomplete" data-filter="'.$this->escape($name).'"'
+                    .' placeholder="'.$this->escape($placeholder ?: '输入并选择').'"'.($remote ? ' data-url="'.$this->escape($remote).'"' : '').' list="xf-ac-'.$this->escape($tableId.'-'.$name).'">';
                 if (! $remote && ! empty($c['options'])) {
-                    $html .= '<datalist id="xf-ac-'.$this->e($tableId.'-'.$name).'">';
+                    $html .= '<datalist id="xf-ac-'.$this->escape($tableId.'-'.$name).'">';
                     foreach ((array) $c['options'] as $v => $t) {
-                        $html .= '<option value="'.$this->e($v).'">'.$this->e($t).'</option>';
+                        $html .= '<option value="'.$this->escape($v).'">'.$this->escape($t).'</option>';
                     }
                     $html .= '</datalist>';
                 }
             } elseif ($type === 'custom') {
                 // 完全自定义过滤控件：开发者传入 'control' => '<任意带 class="xf-filter" data-filter="x" 的 HTML>'
                 // 前端通过 data-xf-custom-value 或 xf:filter-custom 事件获取值
-                $html .= '<div class="xf-filter xf-filter-custom" data-filter="'.$this->e($name).'">'.(string) ($c['control'] ?? '').'</div>';
+                $html .= '<div class="xf-filter xf-filter-custom" data-filter="'.$this->escape($name).'">'.(string) ($c['control'] ?? '').'</div>';
             } else {
                 // select / select2（multiple 时自动启用 select2 多选交互）
                 $multiple = ! empty($c['multiple']);
                 $useS2 = $multiple || $type === 'select2';
-                $html .= '<select class="form-select form-select-sm xf-filter'.($useS2 ? ' xf-filter-s2' : '').'" data-filter="'.$this->e($name).'"'
+                $html .= '<select class="form-select form-select-sm xf-filter'.($useS2 ? ' xf-filter-s2' : '').'" data-filter="'.$this->escape($name).'"'
                     .($multiple ? ' multiple' : '')
-                    .($useS2 ? ' data-placeholder="'.$this->e($placeholder !== '' ? $placeholder : '全部').'"' : '').'>'
-                    .($multiple ? '' : '<option value="">'.$this->e($placeholder !== '' ? $placeholder : '全部').'</option>');
+                    .($useS2 ? ' data-placeholder="'.$this->escape($placeholder !== '' ? $placeholder : '全部').'"' : '').'>'
+                    .($multiple ? '' : '<option value="">'.$this->escape($placeholder !== '' ? $placeholder : '全部').'</option>');
                 foreach ((array) ($c['options'] ?? []) as $v => $t) {
-                    $html .= '<option value="'.$this->e($v).'">'.$this->e($t).'</option>';
+                    $html .= '<option value="'.$this->escape($v).'">'.$this->escape($t).'</option>';
                 }
                 $html .= '</select>';
             }
@@ -881,12 +881,12 @@ use zxf\XfAdmin\Support\Html;
             }
             $v = (string) ($node['value'] ?? '');
             $t = (string) ($node['label'] ?? $v);
-            $cid = 'xf-tree-'.$this->e($tableId.'-'.$name.'-'.$v);
+            $cid = 'xf-tree-'.$this->escape($tableId.'-'.$name.'-'.$v);
             $children = $node['children'] ?? [];
             $html .= '<div class="xf-tree-node'.($depth ? ' ps-3' : '').'">'
                 .'<div class="form-check m-0">'
-                .'<input type="checkbox" class="form-check-input xf-tree-leaf" value="'.$this->e($v).'" id="'.$cid.'">'
-                .'<label class="form-check-label small" for="'.$cid.'">'.$this->e($t).'</label>'
+                .'<input type="checkbox" class="form-check-input xf-tree-leaf" value="'.$this->escape($v).'" id="'.$cid.'">'
+                .'<label class="form-check-label small" for="'.$cid.'">'.$this->escape($t).'</label>'
                 .($children ? ' <i class="ti ti-chevron-down xf-tree-toggle small"></i>' : '')
                 .'</div>';
             if ($children) {

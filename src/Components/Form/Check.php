@@ -76,7 +76,7 @@ class Check extends Component
         $isSwitch = $type === 'switch';
         $id ??= $this->uid('xf-check');
         $state = $this->stateClass();
-        $describe = $helpId !== null ? ' aria-describedby="'.$this->e($helpId).'"' : '';
+        $describe = $helpId !== null ? ' aria-describedby="'.$this->escape($helpId).'"' : '';
         $invalid = $this->get('state') === 'invalid' ? ' aria-invalid="true"' : '';
 
         return '<div class="'.Html::cls('form-check', [
@@ -84,7 +84,7 @@ class Check extends Component
             'form-check-inline' => $this->get('inline'),
             'form-check-reverse' => $this->get('reverse'),
         ]).'">'
-            .'<input class="form-check-input'.$state.'" type="'.($isSwitch ? 'checkbox' : $this->e($type)).'"'
+            .'<input class="form-check-input'.$state.'" type="'.($isSwitch ? 'checkbox' : $this->escape($type)).'"'
             .($isSwitch ? ' role="switch"' : '')
             .Html::attrs([
                 'name' => $name ?? $this->get('name'),
@@ -94,7 +94,7 @@ class Check extends Component
                 'disabled' => (bool) $this->get('disabled'),
                 'required' => (bool) $this->get('required'),
             ]).$describe.$invalid.'>'
-            .'<label class="form-check-label" for="'.$this->e($id).'">'.$this->e($label).'</label>'
+            .'<label class="form-check-label" for="'.$this->escape($id).'">'.$this->escape($label).'</label>'
             .'</div>';
     }
 
@@ -140,7 +140,7 @@ class Check extends Component
         $helpId = null;
         if ($this->get('help') !== null) {
             $helpId = $this->uid('xf-check').'-help';
-            $helpHtml = '<div class="form-text" id="'.$this->e($helpId).'">'.$this->e($this->get('help')).'</div>';
+            $helpHtml = '<div class="form-text" id="'.$this->escape($helpId).'">'.$this->escape($this->get('help')).'</div>';
         }
 
         if ($options === []) {
@@ -154,7 +154,7 @@ class Check extends Component
             $html .= $helpHtml;
         } else {
             $selected = array_map('strval', (array) ($this->get('value') ?? []));
-            $html = $this->get('label') !== null ? '<label class="form-label d-block">'.$this->e($this->get('label')).'</label>' : '';
+            $html = $this->get('label') !== null ? '<label class="form-label d-block">'.$this->escape($this->get('label')).'</label>' : '';
             // 组模式：复选框/开关自动补 [] 后缀，保证多选值可被后端按数组接收
             $groupName = $this->groupFieldName();
             foreach ($options as $value => $label) {
@@ -164,6 +164,6 @@ class Check extends Component
         }
         $wrapper = $this->get('wrapper');
 
-        return $wrapper ? '<div class="'.$this->e($wrapper).'">'.$html.'</div>' : $html;
+        return $wrapper ? '<div class="'.$this->escape($wrapper).'">'.$html.'</div>' : $html;
     }
 }

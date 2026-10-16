@@ -50,7 +50,7 @@ echo XfAdmin::card([
 ApexCharts 图表（折线/柱/饼/雷达等）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\ApexChart`
-> **文件**：`src/Components/Chart/ApexChart.php`（87 行）
+> **文件**：`src/Components/Chart/ApexChart.php`（67 行）
 > **依赖插件**：`apexcharts`
 
 **用法示例**
@@ -94,9 +94,9 @@ echo XfAdmin::apexChart([
 | `type` | string | `'line'` | 类型（各组件语义不同，详见该组件说明）；源码用法：`$type = (string) $this->get('type');` |
 | `height` | int | `350` | 高度（CSS 长度，受安全白名单约束）；输出到 `height` 属性 |
 | `width` | mixed | `null` | 宽度（数字=栅格列数或 CSS 长度）；输出到 `width` 属性 |
-| `series` | array | `[]` | 图表数据系列；源码用法：`'series' => $this->get('series'),` |
-| `labels` | mixed | `null` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `colors` | mixed | `null` | 开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
+| `series` | array | `[]` | 图表数据系列；源码用法：`'series' => $this->get('series') ?? [],` |
+| `labels` | mixed | `null` | 标签或文案数组（组件语义不同：按钮文案 / 单位文案 / 图表标签）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `colors` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `sparkline` | bool | `false` | 源码用法：`'sparkline' => $this->get('sparkline') ? ['enabled' => true] : null,` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
@@ -109,7 +109,7 @@ echo XfAdmin::apexChart([
 ApexCharts 树形图。
 
 > **类**：`zxf\XfAdmin\Components\Chart\ApexTree`
-> **文件**：`src/Components/Chart/ApexTree.php`（112 行）
+> **文件**：`src/Components/Chart/ApexTree.php`（82 行）
 > **依赖插件**：`apextree`
 
 **用法示例**
@@ -149,7 +149,7 @@ echo XfAdmin::apexTree([
 
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
-- `data[]`：`id`、`name`、`role`、`avatar`、`color`、`children`（子节点数组）
+- `data[]` 元素键：`avatar`、`children`；补充：`id`、`name`、`role`、`avatar`、`color`、`children`（子节点数组）
 
 **配置参数**
 
@@ -171,7 +171,7 @@ echo XfAdmin::apexTree([
 ApexCharts 桑基图（流量关系）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\ApexSankey`
-> **文件**：`src/Components/Chart/ApexSankey.php`（104 行）
+> **文件**：`src/Components/Chart/ApexSankey.php`（74 行）
 > **依赖插件**：`apexsankey`
 
 **用法示例**
@@ -213,7 +213,7 @@ echo XfAdmin::apexSankey([
 
 **数据结构**（数组元素可用键，由源码 `foreach` 解析）
 
-- `nodes[]` 元素键：`title`、`id`
+- `nodes[]` 元素键：`id`、`title`
 
 **配置参数**
 
@@ -236,7 +236,7 @@ echo XfAdmin::apexSankey([
 ECharts 图表（通用可视化）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\EChart`
-> **文件**：`src/Components/Chart/EChart.php`（72 行）
+> **文件**：`src/Components/Chart/EChart.php`（52 行）
 > **依赖插件**：`echarts`
 
 **用法示例**
@@ -272,7 +272,7 @@ echo XfAdmin::echart([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `height` | int | `350` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'style' => 'height:' . (int) $this->get('height') . 'px;',` |
+| `height` | int | `350` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'style' => 'height:'.(int) ($this->get('height') ?? 350).'px;',` |
 | `theme` | mixed | `null` | 源码用法：`'theme' => $this->get('theme'),`；可选值：`light` / `dark` / `auto` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
@@ -285,7 +285,7 @@ echo XfAdmin::echart([
 矢量地图（jsVectorMap）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\VectorMap`
-> **文件**：`src/Components/Chart/VectorMap.php`（67 行）
+> **文件**：`src/Components/Chart/VectorMap.php`（49 行）
 > **依赖插件**：`jsvectormap-world`
 
 **用法示例**
@@ -321,7 +321,7 @@ echo XfAdmin::vectorMap([
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `map` | string | `'world'` | 地图名称（如 world）；源码用法：`'map' => $this->get('map'),` |
-| `height` | int | `360` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'style' => 'height:' . (int) $this->get('height') . 'px;',` |
+| `height` | int | `360` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'style' => 'height:'.(int) ($this->get('height') ?? 400).'px;',` |
 | `markers` | array | `[]` | 地图标记点数组；源码用法：`'markers' => $this->get('markers'),` |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
 
@@ -334,7 +334,7 @@ echo XfAdmin::vectorMap([
 Leaflet 地图（支持离线瓦片）。
 
 > **类**：`zxf\XfAdmin\Components\Chart\LeafletMap`
-> **文件**：`src/Components/Chart/LeafletMap.php`（109 行）
+> **文件**：`src/Components/Chart/LeafletMap.php`（83 行）
 > **依赖插件**：`leaflet`
 
 **用法示例**
@@ -380,13 +380,13 @@ echo XfAdmin::leafletMap([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `height` | int | `400` | 高度（CSS 长度，受安全白名单约束）；源码用法：`. ' style="height:' . (int) $this->get('height') . 'px" data-xf="leaflet-map" data-xf…` |
+| `height` | int | `400` | 高度（CSS 长度，受安全白名单约束）；源码用法：`.' style="height:'.(int) ($this->get('height') ?? 400).'px" data-xf="leaflet-map" dat…` |
 | `center` | array | `[39.9042, 116.4074]` | 地图/图表中心坐标；源码用法：`'center' => $this->get('center'),` |
 | `zoom` | int | `11` | 地图缩放级别；源码用法：`'zoom' => (int) $this->get('zoom'),` |
 | `tiles` | string | `'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'` | {s}.tile.openstreetmap.org/{z}/{x}/{y}.png', |
 | `markers` | array | `[]` | 地图标记点数组；源码用法：`'markers' => array_values((array) $this->get('markers')),` |
 | `circles` | array | `[]` | 源码用法：`'circles' => array_values((array) $this->get('circles')),` |
-| `polygons` | array | `[]` | 源码用法：`'polygons'=> array_values((array) $this->get('polygons')),` |
+| `polygons` | array | `[]` | 源码用法：`'polygons' => array_values((array) $this->get('polygons')),` |
 | `lines` | array | `[]` | 源码用法：`'lines' => array_values((array) $this->get('lines')),` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -398,7 +398,7 @@ echo XfAdmin::leafletMap([
 Google 地图。
 
 > **类**：`zxf\XfAdmin\Components\Chart\GoogleMap`
-> **文件**：`src/Components/Chart/GoogleMap.php`（80 行）
+> **文件**：`src/Components/Chart/GoogleMap.php`（55 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -440,13 +440,13 @@ echo XfAdmin::googleMap([
 
 | 参数 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `height` | int | `400` | 高度（CSS 长度，受安全白名单约束） |
+| `height` | int | `400` | 高度（CSS 长度，受安全白名单约束）；源码用法：`'style' => 'height:'.(int) ($this->get('height') ?? 400).'px',` |
 | `place` | mixed | `null` | 源码用法：`$query = $this->get('place');` |
 | `center` | array | `[39.9042, 116.4074]` | 地图/图表中心坐标 |
 | `zoom` | int | `12` | 地图缩放级别 |
 | `maptype` | string | `'roadmap'` | 源码用法：`if (($this->get('maptype') ?? 'roadmap') === 'satellite') {` |
 | `language` | string | `'zh-CN'` | 语言包覆盖（DataTables） |
-| `rounded` | bool | `true` | 源码用法：`'class' => 'xf-gmap overflow-hidden' . ($this->get('rounded') ? ' rounded' : ''),` |
+| `rounded` | bool | `true` | 源码用法：`'class' => 'xf-gmap overflow-hidden'.($this->get('rounded') ? ' rounded' : ''),` |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

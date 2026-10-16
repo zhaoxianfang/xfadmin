@@ -8,6 +8,9 @@ use Closure;
 use InvalidArgumentException;
 use zxf\XfAdmin\Assets\Assets;
 use zxf\XfAdmin\Components\Component;
+use zxf\XfAdmin\Support\Builder\AdminBuilder;
+use zxf\XfAdmin\Support\Builder\Builder;
+use zxf\XfAdmin\Support\Builder\GridBuilder;
 
 /**
  * XfAdmin 组件工厂 / 全局配置统一入口（门面）
@@ -141,6 +144,11 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\UI\Countdown countdown(array $options = []) // 倒计时（数字翻牌到零）
  * @method static Components\UI\CountUp countUp(array $options = []) // 数字滚动递增动画
  * @method static Components\UI\BackToTop backToTop(array $options = []) // 回到顶部悬浮按钮
+ * @method static Components\UI\StatusTag statusTag(array $options = []) // 状态标签（彩色胶囊，对标列表状态/类型标记）
+ * @method static Components\UI\StatRow statRow(array $options = []) // 指标卡横排（响应式栅格包裹一组 StatCard）
+ * @method static Components\UI\ConfirmDialog confirmDialog(array $options = []) // 确认对话框（删除/危险操作二次确认，GET 跳转或 POST 带 CSRF）
+ * @method static Components\UI\ActionBar actionBar(array $options = []) // 操作按钮工具条（按钮配置数组 / HTML / 组件混排，支持对齐与换行）
+ * @method static Components\UI\FilterBar filterBar(array $options = []) // 列表筛选条（关键词输入 + 下拉筛选 + 重置/查询，支持自动提交）
  * @method static Components\Data\PricingCard pricingCard(array $options = []) // 价格方案卡（推荐标记/功能列表/按钮）
  * @method static Components\Data\Faq faq(array $options = []) // 常见问题（问答卡片列表）
  * @method static Components\Data\ProfileHeader profileHeader(array $options = []) // 个人资料头部（封面+头像+统计）
@@ -252,11 +260,12 @@ use zxf\XfAdmin\Components\Component;
  * @method static Components\UI\CommandPalette commandPalette(array $options = []) // 命令面板（⌘K 快捷命令）
  * @method static Components\UI\NotificationCenter notificationCenter(array $options = []) // 通知中心（消息抽屉）
  * @method static Components\UI\DropzoneUpload dropzoneUpload(array $options = []) // 拖拽上传区（Dropzone 自定义版）
+ * @method static Components\UI\DataSourceSwitcher dataSourceSwitcher(array $options = []) // 数据源切换器（同区块多面板切换）
  */
 final class XfAdmin
 {
     /** 扩展包版本号（与 config/xfadmin.php 的 version 及 docs 更新日志保持同步，用于运行时自检） */
-    public const VERSION = '1.0.1';
+    public const VERSION = '1.0.2';
 
     /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
     private const AUTH_TYPE_ALIASES = [
@@ -376,6 +385,12 @@ final class XfAdmin
         'loadingButton' => Components\UI\LoadingButton::class,
         'avatarGroup' => Components\UI\AvatarGroup::class,
         'backToTop' => Components\UI\BackToTop::class,
+        // 新增：对标后台高频可复用 UI 模式（状态标签 / 指标横排 / 确认对话框 / 操作条 / 筛选条）
+        'statusTag' => Components\UI\StatusTag::class,
+        'statRow' => Components\UI\StatRow::class,
+        'confirmDialog' => Components\UI\ConfirmDialog::class,
+        'actionBar' => Components\UI\ActionBar::class,
+        'filterBar' => Components\UI\FilterBar::class,
         'callout' => Components\UI\Callout::class,
         'countdown' => Components\UI\Countdown::class,
         'countUp' => Components\UI\CountUp::class,
@@ -513,6 +528,7 @@ final class XfAdmin
         'accountSettingsPanel' => Components\Layout\AccountSettingsPanel::class,
         'searchResultsRich' => Components\Data\SearchResultsRich::class,
         'invoicePrintButton' => Components\UI\InvoicePrintButton::class,
+        'dataSourceSwitcher' => Components\UI\DataSourceSwitcher::class,
         'socialFeed' => Components\Data\SocialFeed::class,
         'faqAccordion' => Components\Data\FaqAccordion::class,
         'contactList' => Components\Data\ContactList::class,
@@ -703,7 +719,7 @@ final class XfAdmin
     /**
      * 返回扩展包版本号（等同于 XfAdmin::VERSION 常量）
      *
-     * @return string 语义化版本号，如 '2.1.0'
+     * @return string 语义化版本号，如 '1.0.2'
      */
     public static function version(): string
     {
@@ -798,6 +814,194 @@ final class XfAdmin
         return self::asset('images/'.ltrim($path, '/'));
     }
 
+    // ------------------------------------------------------------------
+    // 链式构建器工厂
+    // ------------------------------------------------------------------
+
+    /**
+     * 创建 HTML 链式构建器（底层 Builder）
+     *
+     * 传闭包时：执行闭包并返回其渲染结果字符串；
+     * 不传参时：返回 Builder 实例，可继续链式调用后 echo / ->render()。
+     *
+     * 示例：
+     *   echo XfAdmin::builder(fn ($b) => $b->push('div', ['class' => 'box'])->add('内容')->end());
+     *   $b = XfAdmin::builder()->push('div')->add('x')->end();
+     *
+     * @param  Closure|null  $callback  可选回调（接收 Builder 实例，返回值会被渲染）
+     * @return Builder|string 构建器实例或渲染结果
+     */
+    public static function builder(?Closure $callback = null): Builder|string
+    {
+        $builder = new Builder;
+        if ($callback === null) {
+            return $builder;
+        }
+        $result = $callback($builder);
+        // 闭包返回构建器自身时，直接渲染该实例，避免重复构建
+        if ($result === $builder) {
+            return $builder->render();
+        }
+
+        return $builder->resolvePublic($result);
+    }
+
+    /**
+     * 创建栅格布局构建器（GridBuilder，支持 newRow/col/mdCol/card/cardBody 链式）
+     *
+     * 示例：
+     *   echo XfAdmin::grid()
+     *       ->newRow()
+     *           ->mdCol(6)->card('统计一')->cardBody('A')->endCard()->endCol()
+     *           ->mdCol(6)->card('统计二')->cardBody('B')->endCard()->endCol()
+     *       ->endRow();
+     *
+     * @param  Closure|null  $callback  可选回调
+     * @return GridBuilder|string 构建器实例或渲染结果
+     */
+    public static function grid(?Closure $callback = null): GridBuilder|string
+    {
+        $builder = new GridBuilder;
+        if ($callback === null) {
+            return $builder;
+        }
+        $result = $callback($builder);
+
+        return $result === $builder ? $builder->render() : $builder->resolvePublic($result);
+    }
+
+    /**
+     * 创建后台专用构建器（AdminBuilder，含 statCards/kv/alert/badge/field 等 26+ 方法）
+     *
+     * 示例：
+     *   echo XfAdmin::admin()
+     *       ->statCards([['title'=>'订单','value'=>128,'variant'=>'primary']])
+     *       ->kv('总计', '128 笔')
+     *       ->alert('操作成功', 'success');
+     *
+     * @param  Closure|null  $callback  可选回调
+     * @return AdminBuilder|string 构建器实例或渲染结果
+     */
+    public static function admin(?Closure $callback = null): AdminBuilder|string
+    {
+        $builder = new AdminBuilder;
+        if ($callback === null) {
+            return $builder;
+        }
+        $result = $callback($builder);
+
+        return $result === $builder ? $builder->render() : $builder->resolvePublic($result);
+    }
+
+    // ------------------------------------------------------------------
+    // 资源引用 API（按路由名 / 资源路径引入包内 js/css/图片/字体）
+    // ------------------------------------------------------------------
+
+    /** 自定义路由解析器（资源按「路由名」引入时使用） */
+    private static ?Closure $routeResolver = null;
+
+    /**
+     * 设置路由名解析器
+     *
+     * 使资源引入 API 支持按「路由名」解析 URL（而非硬编码路径）：
+     *   XfAdmin::setRouteResolver(fn (string $name) => route($name));
+     *
+     * @param  Closure  $resolver  解析器（接收路由名，返回 URL）
+     * @return void
+     */
+    public static function setRouteResolver(Closure $resolver): void
+    {
+        self::$routeResolver = $resolver;
+    }
+
+    /**
+     * 解析资源路径：支持「路由名」「包内相对路径」「绝对 URL」三种形态
+     *
+     * - 以 @ 开头：视为路由名，经 setRouteResolver 解析（如 @admin.dashboard）；
+     * - 以 http(s):// 或 // 开头：绝对 URL，原样返回；
+     * - 其余：视为包内相对路径，经 asset() 解析。
+     *
+     * @param  string  $path  资源路径 / 路由名 / URL
+     */
+    public static function assetRoute(string $path): string
+    {
+        $path = trim((string) $path);
+        if (str_starts_with($path, '@')) {
+            $name = substr($path, 1);
+            if (self::$routeResolver !== null) {
+                $url = (self::$routeResolver)($name);
+
+                return is_string($url) ? $url : '#';
+            }
+
+            return '#';
+        }
+        if (preg_match('#^(?:https?:)?//#i', $path)) {
+            return $path;
+        }
+
+        return self::asset(ltrim($path, '/'));
+    }
+
+    /**
+     * 输出 <script src="..."> 标签（支持路由名 / 资源路径 / 绝对 URL）
+     *
+     * @param  string  $src  资源路径（@路由名 / 相对路径 / URL）
+     * @param  bool  $defer  是否加 defer
+     * @return string <script> 标签
+     */
+    public static function jsTag(string $src, bool $defer = false): string
+    {
+        $url = self::assetRoute($src);
+
+        return '<script src="'.Support\Html::escape($url).'"'.($defer ? ' defer' : '').'></script>';
+    }
+
+    /**
+     * 输出 <link rel="stylesheet"> 标签（支持路由名 / 资源路径 / 绝对 URL）
+     *
+     * @param  string  $href  资源路径
+     * @return string <link> 标签
+     */
+    public static function cssTag(string $href): string
+    {
+        $url = self::assetRoute($href);
+
+        return '<link rel="stylesheet" href="'.Support\Html::escape($url).'">';
+    }
+
+    /**
+     * 输出 <img> 标签（支持路由名 / 资源路径 / 绝对 URL）
+     *
+     * @param  string  $src  图片路径
+     * @param  string  $alt  替代文本
+     * @param  array  $attrs  额外属性
+     * @return string <img> 标签
+     */
+    public static function imgTag(string $src, string $alt = '', array $attrs = []): string
+    {
+        $attrs['src'] = self::assetRoute($src);
+        $attrs['alt'] = $alt;
+
+        return '<img'.Support\Html::attrs($attrs).'>';
+    }
+
+    /**
+     * 输出 @font-face 声明（按字体文件路径引入）
+     *
+     * @param  string  $family  字体族名
+     * @param  string  $src  字体文件路径（.woff2 等）
+     * @param  string  $format  格式（woff2/woff/ttf/otf）
+     * @return string @font-face CSS
+     */
+    public static function fontFace(string $family, string $src, string $format = 'woff2'): string
+    {
+        $url = self::assetRoute($src);
+        $format = in_array($format, ['woff2', 'woff', 'ttf', 'otf', 'truetype', 'opentype'], true) ? $format : 'woff2';
+
+        return '@font-face{font-family:"'.Support\Html::escape($family).'";src:url("'.Support\Html::escape($url).'") format("'.Support\Html::escape($format).'");font-display:swap;}';
+    }
+
     /**
      * 生成 DataTables 服务端分页协议响应（搜索 / 过滤 / 排序 / 分页全由包内完成）
      *
@@ -835,6 +1039,71 @@ final class XfAdmin
     public static function diyRender(array $payload): mixed
     {
         return Support\DiyRenderer::render($payload);
+    }
+
+    /**
+     * 生成「行内错误提示块」HTML 片段（p-3 text-{variant} + 可选图标）
+     *
+     * 与 AdminBuilder::errorText（链式方法）不同，本方法【直接返回字符串】，
+     * 适合控制器内「资源不存在 / 无权限」等场景的即时返回，避免各处重复手写
+     * '<div class="p-3 text-danger">…</div>' 这类结构：
+     *   return XfAdmin::errorBlock('配置不存在');
+     *   return XfAdmin::errorBlock('超级管理员受保护', 'danger', 'ti ti-lock');
+     *
+     * 文案与图标类均经 Html::escape 转义，杜绝 XSS。
+     *
+     * @param  string  $message  错误文案（会经 Html::escape 转义）
+     * @param  string  $variant  语义变体（danger/warning/info/success/primary/secondary，默认 danger）
+     * @param  string|null  $icon  Tabler 图标类（如 'ti ti-lock'；默认 'ti ti-alert-circle'；传 null 不显示图标）
+     * @return string 完整 HTML 片段
+     */
+    public static function errorBlock(string $message, string $variant = 'danger', ?string $icon = 'ti ti-alert-circle'): string
+    {
+        $allowedVariants = ['danger', 'warning', 'info', 'success', 'primary', 'secondary'];
+        $variant = in_array($variant, $allowedVariants, true) ? $variant : 'danger';
+        $iconHtml = $icon !== null ? '<i class="'.Support\Html::escape($icon).' me-1"></i>' : '';
+
+        return '<div class="p-3 text-'.Support\Html::escape($variant).'">'.$iconHtml.Support\Html::escape($message).'</div>';
+    }
+
+    /**
+     * 空数据提示（inline 片段）：返回一行浅灰说明文字
+     *
+     * 用于控制器直接返回字符串场景（与 AdminBuilder 链式 emptyText() 互补）。
+     * $message 经 Support\Html::escape 转义防 XSS；$icon 仅允许图标类名片段。
+     *
+     * 示例：
+     *   return XfAdmin::emptyHint('暂无数据');
+     *   return XfAdmin::emptyHint('暂无菜单数据，请先创建', ['center' => true, 'icon' => 'ti ti-folder-off']);
+     *
+     * @param  string  $message  提示文案
+     * @param  array  $options  可选：center（居中卡片块）/ icon（Tabler 图标类名，如 'ti ti-folder-off'）
+     * @return string HTML 片段
+     */
+    public static function emptyHint(string $message = '暂无数据', array $options = []): string
+    {
+        $escapedMessage = Support\Html::escape($message);
+        $icon = $options['icon'] ?? null;
+        $iconHtml = $icon !== null ? '<i class="'.Support\Html::escape((string) $icon).' d-block mb-2 fs-2"></i>' : '';
+
+        if (! empty($options['center'])) {
+            return '<div class="p-4 text-center text-muted">'.$iconHtml.$escapedMessage.'</div>';
+        }
+
+        return '<p class="text-muted mb-0">'.$iconHtml.$escapedMessage.'</p>';
+    }
+
+    /**
+     * 空占位符（表格单元格惯用）：返回居中的浅灰短横「-」
+     *
+     * 用于控制器直接返回字符串场景，替代散落在各处的
+     * '<span class="text-muted">-</span>' 手写片段。
+     *
+     * @return string HTML 片段
+     */
+    public static function emptyDash(): string
+    {
+        return '<span class="text-muted">-</span>';
     }
 
     /**

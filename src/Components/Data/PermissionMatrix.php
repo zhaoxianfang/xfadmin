@@ -53,17 +53,17 @@ class PermissionMatrix extends Component
         $html = '<div'.$this->attrs(['class' => 'xf-perms table-responsive', 'id' => $id]).'>';
         $html .= '<table class="table table-bordered align-middle mb-0"><thead><tr><th>权限</th>';
         foreach ($roles as $rk => $rl) {
-            $html .= '<th class="text-center">'.$this->e($rl).'</th>';
+            $html .= '<th class="text-center">'.$this->escape($rl).'</th>';
         }
         $html .= '</tr></thead><tbody>';
 
         foreach ($groups as $gName => $perms) {
-            $html .= '<tr class="table-light"><th colspan="'.(count($roles) + 1).'">'.$this->e($gName).'</th></tr>';
+            $html .= '<tr class="table-light"><th colspan="'.(count($roles) + 1).'">'.$this->escape($gName).'</th></tr>';
             foreach ((array) $perms as $pk => $pl) {
-                $html .= '<tr><td>'.$this->e($pl).' <code class="text-muted small">'.$this->e($pk).'</code></td>';
+                $html .= '<tr><td>'.$this->escape($pl).' <code class="text-muted small">'.$this->escape($pk).'</code></td>';
                 foreach ($roles as $rk => $rl) {
                     $checked = in_array($pk, (array) ($values[$rk] ?? []), true) ? 'checked' : '';
-                    $html .= '<td class="text-center"><input type="checkbox" class="form-check-input" name="perm['.$this->e($rk).'][]" value="'.$this->e($pk).'" '.$checked.' '.$ro.'></td>';
+                    $html .= '<td class="text-center"><input type="checkbox" class="form-check-input" name="perm['.$this->escape($rk).'][]" value="'.$this->escape($pk).'" '.$checked.' '.$ro.'></td>';
                 }
                 $html .= '</tr>';
             }

@@ -55,7 +55,7 @@ class IdleTimer extends Component
     {
         $id = $this->resolveId('idle');
         $html = '<span'.$this->attrs(['id' => $id, 'style' => 'display:none', 'data-xf' => 'idle-timer'])
-            .' data-xf-config="'.$this->e(json_encode([
+            .' data-xf-config="'.$this->escape(json_encode([
                 'timeout' => (int) $this->get('timeout'),
                 'warn' => (int) $this->get('warn'),
                 'warnText' => $this->get('warnText'),

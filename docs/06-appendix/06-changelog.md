@@ -4,6 +4,70 @@
 
 ---
 
+## 2026-10-16 版本号固定为 1.0.2 + 空状态通用助手下沉
+
+### 版本号统一固定为 1.0.2
+
+- **权威版本戳对齐**：`XfAdmin::VERSION`、`config/xfadmin.php` 的 `version`、根 `composer.json` 的
+  `version`、根 `README.md` 的资源版本示例，全部固定为 `1.0.2`；vendor 安装副本同步一致。
+- **文档版本戳归一**：`docs` 中过时的 `2.1.0` 版本戳（当前版本声明、`XfAdmin::version()` 返回值、
+  `?v=` 资源示例等共 20 处）统一回落为 `1.0.2`，消除源码 `1.0.1` 与文档 `2.1.0` 长期不一致。
+- **保留项**：变更日志历史条目（如 `v2.0.0`）与第三方库/应用示例中的版本号（如 ThinkPHP 应用配置
+  `version => 2.1.0`、DataTables `2.x`）属客观事实，不在本次归一范围。
+
+### 新增空状态通用助手（门面静态方法）
+
+- `XfAdmin::emptyHint(string $message = '暂无数据', array $options = [])`：返回内联空数据提示
+  `<p class="text-muted mb-0">…</p>`，支持 `center` 居中与 `icon` 图标；`message` 经转义防 XSS。
+- `XfAdmin::emptyDash()`：返回占位符 `<span class="text-muted">-</span>`（表格空单元格惯用）。
+- **yoc Admin 控制器下沉**：`DashboardController` 4 处「暂无数据」、`DataController`/`LogController` 的
+  `-` 占位符、`RoleController` 的「暂无菜单数据」空块，统一改用 `emptyHint()` / `emptyDash()`。
+
+---
+
+## 2026-10-16 命名规范化与缺失通用方法封装（v1.0.1 后续增强）
+
+### 命名规范加强（单字母方法消除）
+
+- **唯一单字母方法重命名**：全包唯一单字母方法 `Html::e()` / `Component::e()` 重命名为语义化
+  `escape()`；保留两处 `@deprecated e()` 别名（转调 `escape()`）以兼容既有调用。
+- 机械替换 `src` 内 **1633 处** `->e(` / `::e(` / `self::e(` / `Html::e(` 调用站点为 `escape()`
+  （词边界正则，零误伤），全量 `php -l` 通过。
+- **核心支撑层单字母局部变量语义化**：`AdminBuilder`（`$c→$cardData`、`$f→$field`、`$b→$button`、
+  `$l→$link`、`$it→$item`、`$r→$row`、`$v→$value`、`$t→$type`、`static $c→$counter`）、
+  `Component`（`$v→$candidate`、`$k→$property`、`$p→$normalizedPath`、`$n→$columns`）、
+  `GridBuilder`（`$n→$columnCount`）、`Html`（`$i→$index`）全部改为可读命名。
+
+### 封装缺失的通用方法
+
+- **`Html` 新增**：`tag($tag, $attrs, $content)`（安全单标签构建，自闭合自动 `/>`、非法名回退 `span`）、
+  `style(array $decls)`（数组样式→安全声明串，拦截 `;{}url(expression(<script` 注入）。
+- **`AdminBuilder` 新增**：`statusBadge($status, $label)`（业务状态→语义徽章，内置
+  active/disabled/pending/banned/processing 等映射）、`section($title, $body, $attrs)`（带标题卡片区块）、
+  `scrollBlock($content, $maxHeight, $wrap, $fontSize)`（可滚动 `pre` 块）、
+  `jsonScrollBlock($data, $maxHeight, $fontSize)`（可滚动 JSON 块，空值短路、字符串透传）。
+- **`XfAdmin` 门面新增**：`errorBlock($message, $variant='danger', $icon='ti ti-alert-circle')`
+  （直接返回错误提示块字符串，适合控制器 `return` 场景；`variant` 限
+  danger/warning/info/success/primary/secondary，文本与图标均经 `Support\Html::escape` 转义）。
+
+### yoc 后台控制器通用化下沉
+
+- `Admin` 模块 Config/Menu/Log/AdminUser/Role 五个控制器共 **12 处**手写
+  `'<div class="p-3 text-danger">…</div>'` 错误块，统一改为 `XfAdmin::errorBlock(...)`。
+- `LogController` 的 `jsonBlock()` / `textBlock()` 私有方法下沉为委托 `AdminBuilder` 的
+  `jsonScrollBlock()` / `scrollBlock()`（保留原 `max-height:320px` / `12px` / 自动换行 / 空值→`''` 视觉行为）。
+
+### 验证
+
+- `xfadmin/src` 全量 `php -l` 通过；vendor 副本（`/yoc/vendor/zxf/xfadmin/src`）经 `rsync --delete`
+  后与源码逐字节一致（双写完成）。
+- 独立 PSR-4 冒烟测试：`escape`/`tag`/`style`/`statusBadge`/`section`/`scrollBlock`/`jsonScrollBlock`/
+  `errorBlock`（含 XSS 转义、非法 variant 回落、无图标/锁图标变体）全部 PASS。
+- 文档同步：更新 `02-core-architecture/06-helpers.md`、`04-advanced-guide/14-builder-chain.md`
+  收录上述新增方法；本变更日志补录。
+
+---
+
 ## v1.0.1 安装健壮性修复：docs 中文路径英文化（2026-10-14）
 
 ### 安装期缺陷根因与修复

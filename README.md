@@ -176,8 +176,8 @@ echo XfAdmin::assets()->scripts();  // 放在 </body> 前
 
 ```php
 XfAdmin::has('dataTable');          // 是否已注册
-XfAdmin::version();                 // '1.0.1'
-XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=1.0.1
+XfAdmin::version();                 // '1.0.2'
+XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=1.0.2
 ```
 
 ---

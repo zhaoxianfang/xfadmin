@@ -62,31 +62,31 @@ class UserProfile extends Component
         $html = '<div class="card overflow-hidden">';
 
         // 封面
-        $html .= '<div class="profile-cover" style="height:140px;background:'.($cover !== '' ? 'url(\''.$this->e($cover).'\') center/cover' : '#eef2f7').'"></div>';
+        $html .= '<div class="profile-cover" style="height:140px;background:'.($cover !== '' ? 'url(\''.$this->escape($cover).'\') center/cover' : '#eef2f7').'"></div>';
 
         // 头像 + 操作
         $html .= '<div class="card-body text-center">';
         // avatar 为空时用 text 首字母渲染文字头像（避免 src="" 破图）
         if ($avatar !== '') {
-            $html .= '<img src="'.$this->e($avatar).'" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="'.$this->e($name).'">';
+            $html .= '<img src="'.$this->escape($avatar).'" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="'.$this->escape($name).'">';
         } elseif ($text !== '') {
-            $html .= '<div class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width:72px;height:72px;font-size:28px;">'.$this->e($text).'</div>';
+            $html .= '<div class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width:72px;height:72px;font-size:28px;">'.$this->escape($text).'</div>';
         } else {
-            $html .= '<img src="" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="'.$this->e($name).'">';
+            $html .= '<img src="" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="'.$this->escape($name).'">';
         }
-        $html .= '<h5 class="mt-2 mb-0">'.$this->e($name).'</h5>';
+        $html .= '<h5 class="mt-2 mb-0">'.$this->escape($name).'</h5>';
         if ($title !== '') {
-            $html .= '<small class="text-muted">'.$this->e($title).'</small>';
+            $html .= '<small class="text-muted">'.$this->escape($title).'</small>';
         }
         if ($bio !== '') {
-            $html .= '<p class="mt-2 text-muted">'.$this->e($bio).'</p>';
+            $html .= '<p class="mt-2 text-muted">'.$this->escape($bio).'</p>';
         }
         // 统计
         if (! empty($stats)) {
             $html .= '<div class="d-flex justify-content-center gap-4 my-3">';
             foreach ($stats as $s) {
                 $s = (array) $s;
-                $html .= '<div><div class="h4 mb-0">'.$this->e((string) ($s['value'] ?? 0)).'</div><small class="text-muted">'.$this->e((string) ($s['label'] ?? '')).'</small></div>';
+                $html .= '<div><div class="h4 mb-0">'.$this->escape((string) ($s['value'] ?? 0)).'</div><small class="text-muted">'.$this->escape((string) ($s['label'] ?? '')).'</small></div>';
             }
             $html .= '</div>';
         }

@@ -62,7 +62,7 @@ class LockScreen extends Component
             $htmlAttrs['data-bs-theme'] = $theme['mode'];
         }
         $user = (array) $this->get('user');
-        $name = $this->e($user['name'] ?? 'User');
+        $name = $this->escape($user['name'] ?? 'User');
         $avatar = $user['avatar'] ?? '';
         $avatarUrl = $avatar ? XfAdmin::img($avatar) : '';
 
@@ -70,16 +70,16 @@ class LockScreen extends Component
             .'<div class="container"><div class="row justify-content-center">'
             .'<div class="col-xxl-4 col-md-6 col-sm-8">'
             .'<div class="auth-brand text-center mb-4">'
-            .'<a href="#" class="fs-3 fw-bold text-decoration-none">'.$this->e($this->get('brand')).'</a>'
+            .'<a href="#" class="fs-3 fw-bold text-decoration-none">'.$this->escape($this->get('brand')).'</a>'
             .'</div>'
             .'<div class="card p-4 rounded-4 text-center">'
             .($avatarUrl !== ''
-                ? '<div class="avatar-xl mx-auto mb-3"><img src="'.$this->e($avatarUrl).'" class="rounded-circle img-thumbnail w-100" alt="'.$name.'"></div>'
+                ? '<div class="avatar-xl mx-auto mb-3"><img src="'.$this->escape($avatarUrl).'" class="rounded-circle img-thumbnail w-100" alt="'.$name.'"></div>'
                 : '')
             .'<h5 class="mb-1">'.$name.'</h5>'
-            .'<p class="text-muted mb-1">'.$this->e($this->get('heading')).'</p>'
-            .'<p class="text-muted small">'.$this->e($this->get('text')).'</p>'
-            .'<form method="post" action="'.$this->e($this->safeUrl($this->get('action'))).'" class="mt-2 text-start">'
+            .'<p class="text-muted mb-1">'.$this->escape($this->get('heading')).'</p>'
+            .'<p class="text-muted small">'.$this->escape($this->get('text')).'</p>'
+            .'<form method="post" action="'.$this->escape($this->safeUrl($this->get('action'))).'" class="mt-2 text-start">'
             .'<input type="hidden" name="username" value="'.$name.'">'
             .'<div class="input-group auth-pass-inputgroup">'
             .'<input type="password" name="password" class="form-control" placeholder="密码" required autofocus>'
@@ -105,9 +105,9 @@ class LockScreen extends Component
         $title = $this->get('title') ?? $this->get('heading');
 
         $doc = "<!DOCTYPE html>\n<html".Html::attrs($htmlAttrs).">\n<head>\n"
-            .'<meta charset="utf-8"><title>'.$this->e($title).'</title>'
+            .'<meta charset="utf-8"><title>'.$this->escape($title).'</title>'
             .'<meta name="viewport" content="width=device-width, initial-scale=1">'
-            .'<link rel="shortcut icon" href="'.$this->e($favicon).'">'."\n"
+            .'<link rel="shortcut icon" href="'.$this->escape($favicon).'">'."\n"
             .$assets->head()
             .$this->raw($this->get('head'))
             ."</head>\n<body>\n".$body."\n"

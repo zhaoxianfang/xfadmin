@@ -21,7 +21,7 @@ use Traversable;
  *           'status',                                      // 请求参数 status=xx 精确匹配同名字段
  *           'level'   => 'level',                          // 参数名 => 字段名 精确匹配
  *           'keyword' => ['name', 'email'],                // 参数名 => 多字段模糊匹配
- *           'date_from' => fn ($row, $v) => $row['created_at'] >= $v,   // 闭包自定义
+ *           'date_from' => fn ($row, $cellValue) => $row['created_at'] >= $cellValue,   // 闭包自定义
  *           // 运算符规则（op）：=  !=  >  >=  <  <=  like  in  not_in  between  date_from  date_to
  *           'score_min'  => ['field' => 'score',      'op' => '>='],
  *           'score_max'  => ['field' => 'score',      'op' => '<='],
@@ -110,12 +110,12 @@ class DataSet
 
         // 列定义与列搜索
         $columns = [];
-        foreach ((array) ($params['columns'] ?? []) as $i => $col) {
+        foreach ((array) ($params['columns'] ?? []) as $index => $col) {
             if (! is_array($col)) {
                 continue;
             }
             $colSearch = $col['search'] ?? null;
-            $columns[(int) $i] = [
+            $columns[(int) $index] = [
                 'data' => self::str($col['data'] ?? null),
                 'searchable' => self::str($col['searchable'] ?? 'true') !== 'false',
                 'orderable' => self::str($col['orderable'] ?? 'true') !== 'false',
@@ -125,15 +125,15 @@ class DataSet
 
         // 排序
         $order = [];
-        foreach ((array) ($params['order'] ?? []) as $o) {
-            if (! is_array($o)) {
+        foreach ((array) ($params['order'] ?? []) as $orderItem) {
+            if (! is_array($orderItem)) {
                 continue;
             }
-            $idx = self::int($o['column'] ?? null, -1);
+            $idx = self::int($orderItem['column'] ?? null, -1);
             if ($idx >= 0 && isset($columns[$idx]) && $columns[$idx]['orderable'] && $columns[$idx]['data'] !== '') {
                 $order[] = [
                     'field' => $columns[$idx]['data'],
-                    'dir' => strtolower(self::str($o['dir'] ?? 'asc')) === 'desc' ? 'desc' : 'asc',
+                    'dir' => strtolower(self::str($orderItem['dir'] ?? 'asc')) === 'desc' ? 'desc' : 'asc',
                 ];
             }
         }
@@ -159,16 +159,16 @@ class DataSet
     {
         if (isset($params['xfc']) && empty($params['columns'])) {
             $columns = [];
-            foreach (explode('|', self::str($params['xfc'])) as $i => $spec) {
+            foreach (explode('|', self::str($params['xfc'])) as $index => $spec) {
                 if ($spec === '') {
                     continue;
                 }
-                $p = explode(':', $spec);
-                $columns[$i] = [
-                    'data' => rawurldecode($p[0] ?? ''),
-                    'searchable' => ($p[1] ?? '1') === '1' ? 'true' : 'false',
-                    'orderable' => ($p[2] ?? '1') === '1' ? 'true' : 'false',
-                    'search' => ['value' => rawurldecode($p[3] ?? '')],
+                $parts = explode(':', $spec);
+                $columns[$index] = [
+                    'data' => rawurldecode($parts[0] ?? ''),
+                    'searchable' => ($parts[1] ?? '1') === '1' ? 'true' : 'false',
+                    'orderable' => ($parts[2] ?? '1') === '1' ? 'true' : 'false',
+                    'search' => ['value' => rawurldecode($parts[3] ?? '')],
                 ];
             }
             $params['columns'] = $columns;
@@ -238,13 +238,13 @@ class DataSet
 
         // 4. 排序（支持多列）
         if ($req['order'] !== []) {
-            usort($data, function ($a, $b) use ($req) {
-                foreach ($req['order'] as $o) {
-                    $va = self::field($a, $o['field']);
-                    $vb = self::field($b, $o['field']);
+            usort($data, function ($rowA, $rowB) use ($req) {
+                foreach ($req['order'] as $orderItem) {
+                    $va = self::field($rowA, $orderItem['field']);
+                    $vb = self::field($rowB, $orderItem['field']);
                     $cmp = (is_numeric($va) && is_numeric($vb)) ? ($va <=> $vb) : strnatcasecmp((string) self::scalar($va), (string) self::scalar($vb));
                     if ($cmp !== 0) {
-                        return $o['dir'] === 'desc' ? -$cmp : $cmp;
+                        return $orderItem['dir'] === 'desc' ? -$cmp : $cmp;
                     }
                 }
 
@@ -329,9 +329,9 @@ class DataSet
         }
         $first = $data[0] ?? null;
         if (is_array($first)) {
-            foreach ($first as $k => $v) {
-                if (is_scalar($v) || $v === null) {
-                    $fields[] = (string) $k;
+            foreach ($first as $key => $cellValue) {
+                if (is_scalar($cellValue) || $cellValue === null) {
+                    $fields[] = (string) $key;
                 }
             }
         }
@@ -389,9 +389,9 @@ class DataSet
                 self::applyOpToBuilder($query, $opDef['fields'], $opDef['op'], $value);
             } elseif (is_array($def)) {
                 $fields = $def;
-                $query->where(function ($q) use ($fields, $value) {
+                $query->where(function ($subQuery) use ($fields, $value) {
                     foreach ($fields as $field) {
-                        $q->orWhere((string) $field, 'like', '%'.addcslashes($value, '%_\\').'%');
+                        $subQuery->orWhere((string) $field, 'like', '%'.addcslashes($value, '%_\\').'%');
                     }
                 });
             } else {
@@ -409,13 +409,13 @@ class DataSet
         }
         if ($req['search'] !== '' && $searchable !== []) {
             $kw = '%'.addcslashes($req['search'], '%_\\').'%';
-            $query->where(function ($q) use ($searchable, $kw) {
+            $query->where(function ($subQuery) use ($searchable, $kw) {
                 foreach ($searchable as $field) {
                     $safe = self::safeColumn((string) $field);
                     if ($safe === null) {
                         continue;
                     }
-                    $q->orWhere($safe, 'like', $kw);
+                    $subQuery->orWhere($safe, 'like', $kw);
                 }
             });
         }
@@ -431,10 +431,10 @@ class DataSet
         $filtered = (int) (clone $query)->count();
 
         // 排序
-        foreach ($req['order'] as $o) {
-            $field = self::safeColumn($o['field']);
+        foreach ($req['order'] as $orderItem) {
+            $field = self::safeColumn($orderItem['field']);
             if ($field !== null) {
-                $query->orderBy($field, $o['dir']);
+                $query->orderBy($field, $orderItem['dir']);
             }
         }
 
@@ -542,9 +542,9 @@ class DataSet
         switch ($op) {
             case 'like':
                 $kw = '%'.addcslashes($value, '%_\\').'%';
-                $query->where(function ($q) use ($fields, $kw) {
-                    foreach ($fields as $f) {
-                        $q->orWhere($f, 'like', $kw);
+                $query->where(function ($subQuery) use ($fields, $kw) {
+                    foreach ($fields as $fieldName) {
+                        $subQuery->orWhere($fieldName, 'like', $kw);
                     }
                 });
                 break;

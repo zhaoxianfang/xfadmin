@@ -55,10 +55,10 @@ class Accordion extends Component
 
             $html .= '<div class="accordion-item">';
             $html .= '<h2 class="accordion-header"><button class="'.Html::cls('accordion-button', ['collapsed' => ! $open])
-                .'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$this->e($itemId).'" aria-expanded="'.($open ? 'true' : 'false').'">'
-                .$this->e($item['title'] ?? '').'</button></h2>';
-            $html .= '<div id="'.$this->e($itemId).'" class="'.Html::cls('accordion-collapse collapse', ['show' => $open]).'"'
-                .($this->get('always_open') ? '' : ' data-bs-parent="#'.$this->e($id).'"').'>'
+                .'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$this->escape($itemId).'" aria-expanded="'.($open ? 'true' : 'false').'">'
+                .$this->escape($item['title'] ?? '').'</button></h2>';
+            $html .= '<div id="'.$this->escape($itemId).'" class="'.Html::cls('accordion-collapse collapse', ['show' => $open]).'"'
+                .($this->get('always_open') ? '' : ' data-bs-parent="#'.$this->escape($id).'"').'>'
                 .'<div class="accordion-body">'.$this->raw($item['content'] ?? '').'</div></div>';
             $html .= '</div>';
         }

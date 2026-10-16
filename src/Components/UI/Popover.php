@@ -58,10 +58,10 @@ class Popover extends Component
             // placement / trigger 白名单：非法值回退默认，防止任意属性值注入
             'data-bs-placement' => $this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'top'),
             'data-bs-trigger' => $this->get('dismiss') ? 'focus' : $this->enum($this->get('trigger'), ['click', 'hover', 'focus', 'manual'], 'click'),
-            'data-bs-content' => $this->e($this->get('content')),
+            'data-bs-content' => $this->escape($this->get('content')),
         ];
         if ($this->get('title') !== null) {
-            $attrs['title'] = $this->e($this->get('title'));
+            $attrs['title'] = $this->escape($this->get('title'));
         }
         if ($this->get('html')) {
             $attrs['data-bs-html'] = 'true';

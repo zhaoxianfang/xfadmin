@@ -51,14 +51,14 @@ class ProductViews extends Component
 
         // 概览卡
         $html .= '<div class="row mb-4"><div class="col-md-4"><div class="card text-bg-primary"><div class="card-body text-center">';
-        $html .= '<div class="text-white-50">总浏览量</div><h2 class="text-white">'.$this->e($totalViews).'</h2></div></div></div>';
+        $html .= '<div class="text-white-50">总浏览量</div><h2 class="text-white">'.$this->escape($totalViews).'</h2></div></div></div>';
         $html .= '<div class="col-md-4"><div class="card text-bg-success"><div class="card-body text-center">';
-        $html .= '<div class="text-white-50">独立访客</div><h2 class="text-white">'.$this->e($totalUnique).'</h2></div></div></div>';
+        $html .= '<div class="text-white-50">独立访客</div><h2 class="text-white">'.$this->escape($totalUnique).'</h2></div></div></div>';
         $html .= '<div class="col-md-4"><div class="card text-bg-warning"><div class="card-body text-center">';
         $html .= '<div class="text-white-50">平均转化率</div><h2 class="text-white">4.8%</h2></div></div></div></div>';
 
         // 商品视图表
-        $html .= '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->e($title).'</h5></div>';
+        $html .= '<div class="card"><div class="card-header"><h5 class="mb-0">'.$this->escape($title).'</h5></div>';
         $html .= '<div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0">';
         $html .= '<thead><tr><th class="ps-3">商品</th><th>浏览量</th><th>独立访客</th><th>平均停留</th><th>点击率</th><th>销量</th></tr></thead><tbody>';
 
@@ -74,10 +74,10 @@ class ProductViews extends Component
 
             $ctrColor = $ctr > 3 ? 'success' : ($ctr > 1.5 ? 'warning' : 'danger');
 
-            $html .= '<tr><td class="ps-3"><span class="text-muted me-2">#'.$rank.'</span>'.$this->e($name).'</td>';
+            $html .= '<tr><td class="ps-3"><span class="text-muted me-2">#'.$rank.'</span>'.$this->escape($name).'</td>';
             $html .= '<td>'.number_format($views).'</td>';
             $html .= '<td>'.number_format($uniqueViews).'</td>';
-            $html .= '<td>'.$this->e($avgTime).'</td>';
+            $html .= '<td>'.$this->escape($avgTime).'</td>';
             $html .= '<td><span class="text-'.$ctrColor.' fw-semibold">'.number_format($ctr, 1).'%</span></td>';
             $html .= '<td>'.number_format($sales).'</td></tr>';
         }

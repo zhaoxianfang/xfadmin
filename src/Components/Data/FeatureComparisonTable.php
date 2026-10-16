@@ -52,20 +52,20 @@ class FeatureComparisonTable extends Component
         $html .= '<thead><tr><th class="text-start">功能</th>';
         foreach ($plans as $i => $p) {
             $cls = ($i === $featured) ? ' table-primary' : '';
-            $html .= '<th class="'.$cls.'">'.$this->e($p).'</th>';
+            $html .= '<th class="'.$cls.'">'.$this->escape($p).'</th>';
         }
         $html .= '</tr></thead><tbody>';
 
         foreach ($rows as $r) {
             $r = (array) $r;
-            $html .= '<tr><td class="text-start fw-medium">'.$this->e($r['name'] ?? '').'</td>';
+            $html .= '<tr><td class="text-start fw-medium">'.$this->escape($r['name'] ?? '').'</td>';
             foreach ((array) ($r['values'] ?? []) as $v) {
                 if (is_bool($v)) {
                     $html .= $v
                         ? '<td><i class="ti ti-check text-success fs-5"></i></td>'
                         : '<td><i class="ti ti-x text-danger"></i></td>';
                 } else {
-                    $html .= '<td>'.$this->e($v).'</td>';
+                    $html .= '<td>'.$this->escape($v).'</td>';
                 }
             }
             $html .= '</tr>';

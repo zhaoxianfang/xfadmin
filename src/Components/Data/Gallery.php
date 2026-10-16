@@ -93,7 +93,7 @@ class Gallery extends Component
         // 根节点：保留 xf-gallery 标识类；灯箱通过 data-xf 委托给 xfadmin.js 统一初始化
         $rootCls = 'xf-gallery'.($useCard ? ' card' : '');
         $html = '<div'.$this->attrs(['class' => $rootCls, 'id' => $id])
-            .($lightbox ? ' data-xf="lightbox" data-xf-config="'.$this->e(json_encode(['selector' => '[data-gallery="'.$id.'"]'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"' : '').'>';
+            .($lightbox ? ' data-xf="lightbox" data-xf-config="'.$this->escape(json_encode(['selector' => '[data-gallery="'.$id.'"]'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)).'"' : '').'>';
 
         // 卡片头部：搜索框 + 分类筛选按钮（对齐 misc-gallery.html 的 card-header 布局）
         if ($search || ! empty($filter)) {
@@ -111,7 +111,7 @@ class Gallery extends Component
                 $first = true;
                 foreach ($filter as $key => $label) {
                     $val = ($key === 'all' || $key === '') ? '' : (string) $key;
-                    $html .= '<button type="button" class="btn btn-sm btn-ghost-primary'.($first ? ' active' : '').'" data-filter="'.$this->e($val).'">'.$this->e($label).'</button>';
+                    $html .= '<button type="button" class="btn btn-sm btn-ghost-primary'.($first ? ' active' : '').'" data-filter="'.$this->escape($val).'">'.$this->escape($label).'</button>';
                     $first = false;
                 }
                 $html .= '</div>';
@@ -125,7 +125,7 @@ class Gallery extends Component
         $wallCls = 'row g-2 '.$this->rowColsClass((int) $this->get('cols'))
             .($masonry ? ' xf-gallery-masonry' : ' xf-gallery-grid');
         // 非 masonry 时通过 CSS 变量控制缩略图裁切比例（如 4x3 → 4/3）
-        $ratioCss = $masonry ? '' : ' style="--xf-ratio:'.$this->e($this->cssRatio($this->get('ratio'), '4/3')).';"';
+        $ratioCss = $masonry ? '' : ' style="--xf-ratio:'.$this->escape($this->cssRatio($this->get('ratio'), '4/3')).';"';
         $html .= '<div class="'.$wallCls.'"'.$ratioCss.'>';
 
         foreach ($items as $it) {
@@ -136,26 +136,26 @@ class Gallery extends Component
             $caption = (string) ($it['caption'] ?? '');
             $group = (string) ($it['group'] ?? '');
 
-            $html .= '<div class="col xf-gallery-item" data-group="'.$this->e($group !== '' ? $group : 'all').'">';
+            $html .= '<div class="col xf-gallery-item" data-group="'.$this->escape($group !== '' ? $group : 'all').'">';
             // 单项卡片：border-0 + mb-0（间距交给 g-2），对齐模板
             $html .= '<div class="card border-0 mb-0 overflow-hidden position-relative">';
 
             // 左上角分类角标（badge-label 带小圆点，模板同款）：优先用 filter 映射的中文标签
             if ($group !== '' && $group !== 'all') {
                 $badgeText = (string) ($filter[$group] ?? $group);
-                $html .= '<div class="badge text-bg-dark badge-label position-absolute top-0 start-0 m-2 z-1">'.$this->e($badgeText).'</div>';
+                $html .= '<div class="badge text-bg-dark badge-label position-absolute top-0 start-0 m-2 z-1">'.$this->escape($badgeText).'</div>';
             }
             // 图片：card-img + rounded-2（模板同款）；标题/说明用悬停渐变浮层展示（增强，不破坏模板观感）
-            $inner = '<img src="'.$this->e(XfAdmin::img($thumb)).'" class="card-img rounded-2" loading="lazy" alt="'.$this->e($title).'">';
+            $inner = '<img src="'.$this->escape(XfAdmin::img($thumb)).'" class="card-img rounded-2" loading="lazy" alt="'.$this->escape($title).'">';
             if ($title !== '' || $caption !== '') {
                 $inner .= '<div class="xf-gallery-overlay rounded-2"><div class="text-white">'
-                    .($title !== '' ? '<div class="fw-semibold">'.$this->e($title).'</div>' : '')
-                    .($caption !== '' ? '<small>'.$this->e($caption).'</small>' : '')
+                    .($title !== '' ? '<div class="fw-semibold">'.$this->escape($title).'</div>' : '')
+                    .($caption !== '' ? '<small>'.$this->escape($caption).'</small>' : '')
                     .'</div></div>';
             }
             if ($lightbox && $src !== '') {
                 // 灯箱链接：image-popup 为模板类名（便于样式/行为对齐），glightbox 为 xfadmin 实际接线
-                $html .= '<a href="'.$this->e(XfAdmin::img($src)).'" class="image-popup glightbox d-block position-relative" data-gallery="'.$id.'" data-title="'.$this->e($title).'">'.$inner.'</a>';
+                $html .= '<a href="'.$this->escape(XfAdmin::img($src)).'" class="image-popup glightbox d-block position-relative" data-gallery="'.$id.'" data-title="'.$this->escape($title).'">'.$inner.'</a>';
             } else {
                 $html .= '<div class="position-relative">'.$inner.'</div>';
             }

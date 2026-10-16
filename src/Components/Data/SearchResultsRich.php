@@ -49,10 +49,10 @@ class SearchResultsRich extends Component
             $total += count((array) ($g['items'] ?? []));
         }
         $html = '<div class="xf-search-results">';
-        $html .= '<h5 class="mb-3">“'.$this->e($query).'” 的搜索结果 <span class="text-muted">('.$total.')</span></h5>';
+        $html .= '<h5 class="mb-3">“'.$this->escape($query).'” 的搜索结果 <span class="text-muted">('.$total.')</span></h5>';
 
         if ($total === 0) {
-            $html .= '<div class="text-center text-muted py-5"><i class="ti ti-search fs-1 d-block mb-2"></i>未找到与 “'.$this->e($query).'” 相关的结果</div>';
+            $html .= '<div class="text-center text-muted py-5"><i class="ti ti-search fs-1 d-block mb-2"></i>未找到与 “'.$this->escape($query).'” 相关的结果</div>';
 
             return $html.'</div>';
         }
@@ -62,15 +62,15 @@ class SearchResultsRich extends Component
             if (empty($items)) {
                 continue;
             }
-            $html .= '<h6 class="mt-4 mb-2 text-uppercase text-muted small">'.$this->e($g['title'] ?? '').'</h6>';
+            $html .= '<h6 class="mt-4 mb-2 text-uppercase text-muted small">'.$this->escape($g['title'] ?? '').'</h6>';
             $html .= '<div class="list-group">';
             foreach ($items as $it) {
                 $it = (array) $it;
-                $tag = ! empty($it['tag']) ? '<span class="badge bg-light text-dark ms-2">'.$this->e($it['tag']).'</span>' : '';
+                $tag = ! empty($it['tag']) ? '<span class="badge bg-light text-dark ms-2">'.$this->escape($it['tag']).'</span>' : '';
                 $itUrl = $this->safeUrl($it['url'] ?? '#', '#');
-                $html .= '<a href="'.$this->e($itUrl).'" class="list-group-item list-group-item-action">'
-                    .'<div class="fw-semibold">'.$this->e($it['title'] ?? '').$tag.'</div>'
-                    .(! empty($it['desc']) ? '<small class="text-muted">'.$this->e($it['desc']).'</small>' : '')
+                $html .= '<a href="'.$this->escape($itUrl).'" class="list-group-item list-group-item-action">'
+                    .'<div class="fw-semibold">'.$this->escape($it['title'] ?? '').$tag.'</div>'
+                    .(! empty($it['desc']) ? '<small class="text-muted">'.$this->escape($it['desc']).'</small>' : '')
                     .'</a>';
             }
             $html .= '</div>';

@@ -58,13 +58,13 @@ class ProductAdd extends Component
         $html .= '<div class="card"><div class="card-header"><h5 class="card-title mb-0">基本信息</h5></div><div class="card-body">';
         $html .= '<div class="row g-3">';
         $html .= '<div class="col-md-6"><label class="form-label" for="xfProductName">商品名称 <span class="text-danger">*</span></label>'
-            .'<input type="text" id="xfProductName" name="name" class="form-control" placeholder="请输入商品名称" value="'.$this->e($v['name'] ?? '').'"></div>';
+            .'<input type="text" id="xfProductName" name="name" class="form-control" placeholder="请输入商品名称" value="'.$this->escape($v['name'] ?? '').'"></div>';
         $html .= '<div class="col-md-3"><label class="form-label" for="xfProductSku">SKU</label>'
-            .'<input type="text" id="xfProductSku" name="sku" class="form-control" placeholder="如 SKU-0001" value="'.$this->e($v['sku'] ?? '').'"></div>';
+            .'<input type="text" id="xfProductSku" name="sku" class="form-control" placeholder="如 SKU-0001" value="'.$this->escape($v['sku'] ?? '').'"></div>';
         $html .= '<div class="col-md-3"><label class="form-label" for="xfProductStock">库存</label>'
-            .'<input type="number" id="xfProductStock" name="stock" class="form-control" placeholder="0" value="'.$this->e((string) ($v['stock'] ?? '')).'"></div>';
+            .'<input type="number" id="xfProductStock" name="stock" class="form-control" placeholder="0" value="'.$this->escape((string) ($v['stock'] ?? '')).'"></div>';
         $html .= '<div class="col-12"><label class="form-label" for="xfProductDesc">商品描述</label>'
-            .'<textarea id="xfProductDesc" name="description" class="form-control" rows="4" placeholder="请输入商品描述…">'.$this->e($v['description'] ?? '').'</textarea></div>';
+            .'<textarea id="xfProductDesc" name="description" class="form-control" rows="4" placeholder="请输入商品描述…">'.$this->escape($v['description'] ?? '').'</textarea></div>';
         $html .= '</div></div></div>';
 
         // 商品图片（上传占位区）
@@ -80,12 +80,12 @@ class ProductAdd extends Component
         $html .= '<div class="card"><div class="card-header"><h5 class="card-title mb-0">价格设置</h5></div><div class="card-body"><div class="row g-3">';
         $html .= '<div class="col-md-4"><label class="form-label" for="xfProductPrice">原价 <span class="text-danger">*</span></label>'
             .'<div class="input-group"><span class="input-group-text">¥</span>'
-            .'<input type="number" id="xfProductPrice" name="price" class="form-control" step="0.01" placeholder="0.00" value="'.$this->e((string) ($v['price'] ?? '')).'"></div></div>';
+            .'<input type="number" id="xfProductPrice" name="price" class="form-control" step="0.01" placeholder="0.00" value="'.$this->escape((string) ($v['price'] ?? '')).'"></div></div>';
         $html .= '<div class="col-md-4"><label class="form-label" for="xfProductDiscountType">折扣类型</label>'
             .'<select id="xfProductDiscountType" name="discount_type" class="form-select">'
             .'<option value="">无折扣</option><option value="percent">百分比</option><option value="fixed">固定金额</option></select></div>';
         $html .= '<div class="col-md-4"><label class="form-label" for="xfProductDiscount">折扣值</label>'
-            .'<input type="number" id="xfProductDiscount" name="discount_value" class="form-control" step="0.01" placeholder="0" value="'.$this->e((string) ($v['discount_value'] ?? '')).'"></div>';
+            .'<input type="number" id="xfProductDiscount" name="discount_value" class="form-control" step="0.01" placeholder="0" value="'.$this->escape((string) ($v['discount_value'] ?? '')).'"></div>';
         $html .= '</div></div></div>';
 
         // 分类归属
@@ -109,12 +109,12 @@ class ProductAdd extends Component
         if (! empty($tags)) {
             $html .= '<div class="mt-3"><label class="form-label">标签</label><div class="d-flex flex-wrap gap-1">';
             foreach ($tags as $t) {
-                $html .= '<span class="badge bg-light text-dark border">'.$this->e($t).'</span>';
+                $html .= '<span class="badge bg-light text-dark border">'.$this->escape($t).'</span>';
             }
             $html .= '</div></div>';
         }
         $html .= '<div class="d-grid gap-2 mt-4">'
-            .'<button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>'.$this->e($this->get('submit_text')).'</button>'
+            .'<button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i>'.$this->escape($this->get('submit_text')).'</button>'
             .'<button type="button" class="btn btn-soft-secondary">存为草稿</button>'
             .'</div>';
         $html .= '</div></div>';
@@ -127,12 +127,12 @@ class ProductAdd extends Component
     protected function selectField(string $label, string $name, array $options, string $current = ''): string
     {
         $id = $this->uid('xfsel');
-        $html = '<div><label class="form-label" for="'.$id.'">'.$this->e($label).'</label>'
-            .'<select id="'.$id.'" name="'.$this->e($name).'" class="form-select">'
+        $html = '<div><label class="form-label" for="'.$id.'">'.$this->escape($label).'</label>'
+            .'<select id="'.$id.'" name="'.$this->escape($name).'" class="form-select">'
             .'<option value="">请选择</option>';
         foreach ($options as $opt) {
             $sel = ((string) $opt === $current) ? ' selected' : '';
-            $html .= '<option value="'.$this->e((string) $opt).'"'.$sel.'>'.$this->e((string) $opt).'</option>';
+            $html .= '<option value="'.$this->escape((string) $opt).'"'.$sel.'>'.$this->escape((string) $opt).'</option>';
         }
 
         return $html.'</select></div>';

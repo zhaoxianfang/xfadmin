@@ -47,7 +47,7 @@ class InvoiceCreate extends Component
 
         // 头部
         $html .= '<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">';
-        $html .= '<div><h4 class="mb-1">发票 '.$this->e($inv['number'] ?? '').'</h4><span class="badge bg-warning-subtle text-warning">草稿</span></div>';
+        $html .= '<div><h4 class="mb-1">发票 '.$this->escape($inv['number'] ?? '').'</h4><span class="badge bg-warning-subtle text-warning">草稿</span></div>';
         $html .= '<div class="text-end"><button class="btn btn-primary btn-sm me-1"><i class="ti ti-device-floppy me-1"></i>保存</button><button class="btn btn-light btn-sm"><i class="ti ti-printer me-1"></i>预览</button></div>';
         $html .= '</div>';
 
@@ -55,8 +55,8 @@ class InvoiceCreate extends Component
         $from = (array) ($inv['from'] ?? []);
         $to = (array) ($inv['to'] ?? []);
         $html .= '<div class="row g-3 mb-4">';
-        $html .= '<div class="col-md-6"><label class="form-label small text-muted">开票方</label><input class="form-control mb-2" value="'.$this->e($from['name'] ?? '').'"><input class="form-control mb-2" value="'.$this->e($from['address'] ?? '').'"><input class="form-control" value="'.$this->e($from['email'] ?? '').'"></div>';
-        $html .= '<div class="col-md-6"><label class="form-label small text-muted">收票方</label><input class="form-control mb-2" value="'.$this->e($to['name'] ?? '').'"><input class="form-control mb-2" value="'.$this->e($to['address'] ?? '').'"><input class="form-control" value="'.$this->e($to['email'] ?? '').'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label small text-muted">开票方</label><input class="form-control mb-2" value="'.$this->escape($from['name'] ?? '').'"><input class="form-control mb-2" value="'.$this->escape($from['address'] ?? '').'"><input class="form-control" value="'.$this->escape($from['email'] ?? '').'"></div>';
+        $html .= '<div class="col-md-6"><label class="form-label small text-muted">收票方</label><input class="form-control mb-2" value="'.$this->escape($to['name'] ?? '').'"><input class="form-control mb-2" value="'.$this->escape($to['address'] ?? '').'"><input class="form-control" value="'.$this->escape($to['email'] ?? '').'"></div>';
         $html .= '</div>';
 
         // 明细
@@ -67,10 +67,10 @@ class InvoiceCreate extends Component
             $amount = (float) preg_replace('/[^\d.]/', '', (string) ($it['amount'] ?? 0));
             $total += $amount;
             $html .= '<tr>';
-            $html .= '<td><input class="form-control" value="'.$this->e($it['description'] ?? '').'"></td>';
+            $html .= '<td><input class="form-control" value="'.$this->escape($it['description'] ?? '').'"></td>';
             $html .= '<td><input class="form-control" value="'.(int) ($it['qty'] ?? 1).'"></td>';
-            $html .= '<td><input class="form-control" value="'.$this->e($it['rate'] ?? '').'"></td>';
-            $html .= '<td><input class="form-control" value="'.$this->e($it['amount'] ?? '').'"></td>';
+            $html .= '<td><input class="form-control" value="'.$this->escape($it['rate'] ?? '').'"></td>';
+            $html .= '<td><input class="form-control" value="'.$this->escape($it['amount'] ?? '').'"></td>';
             $html .= '<td><button class="btn btn-sm btn-icon btn-light text-danger" type="button" aria-label="删除此明细行"><i class="ti ti-trash"></i></button></td>';
             $html .= '</tr>';
         }
@@ -86,8 +86,8 @@ class InvoiceCreate extends Component
         $html .= '<div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2"><span>应付总额</span><span class="text-primary">'.$this->money($grand).'</span></div></div></div>';
 
         if (! empty($inv['notes']) || ! empty($inv['terms'])) {
-            $html .= '<div class="row g-3 mt-1"><div class="col-md-6"><label class="form-label small text-muted">备注</label><textarea class="form-control" rows="2">'.$this->e($inv['notes'] ?? '').'</textarea></div>'
-                .'<div class="col-md-6"><label class="form-label small text-muted">条款</label><textarea class="form-control" rows="2">'.$this->e($inv['terms'] ?? '').'</textarea></div></div>';
+            $html .= '<div class="row g-3 mt-1"><div class="col-md-6"><label class="form-label small text-muted">备注</label><textarea class="form-control" rows="2">'.$this->escape($inv['notes'] ?? '').'</textarea></div>'
+                .'<div class="col-md-6"><label class="form-label small text-muted">条款</label><textarea class="form-control" rows="2">'.$this->escape($inv['terms'] ?? '').'</textarea></div></div>';
         }
 
         return $html.'</div></div>';

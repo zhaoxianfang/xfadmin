@@ -104,7 +104,7 @@ class Button extends Component
             $attrs['onclick'] = $this->get('onclick');
         }
         $icon = $this->get('icon') ? '<i class="'.$this->iconClass($this->get('icon')).($this->get('icon_only') || $this->get('text') === '' ? '"' : ' me-1"').'></i>' : '';
-        $label = $this->get('ladda') ? '<span class="ladda-label">'.$icon.$this->e($this->get('text')).'</span>' : $icon.$this->e($this->get('text'));
+        $label = $this->get('ladda') ? '<span class="ladda-label">'.$icon.$this->escape($this->get('text')).'</span>' : $icon.$this->escape($this->get('text'));
 
         if ($this->get('href') !== null) {
             $attrs['href'] = $this->safeUrl($this->get('href'));

@@ -92,18 +92,18 @@ class Marketplace extends Component
             $image = ! empty($cat['image']) ? XfAdmin::img((string) $cat['image']) : '';
             $children = (array) ($cat['children'] ?? []);
 
-            $html .= '<div class="'.$colClass.'"><div class="card bg-'.$this->e($bg).' bg-opacity-10 bg-gradient"><div class="card-body pb-0 d-flex align-items-center justify-content-between">';
-            $html .= '<div><h5 class="fw-semibold mb-3">'.$this->e($title).'</h5>';
+            $html .= '<div class="'.$colClass.'"><div class="card bg-'.$this->escape($bg).' bg-opacity-10 bg-gradient"><div class="card-body pb-0 d-flex align-items-center justify-content-between">';
+            $html .= '<div><h5 class="fw-semibold mb-3">'.$this->escape($title).'</h5>';
             if (! empty($children)) {
                 $html .= '<ul class="list-unstyled mb-0 text-body">';
                 foreach ($children as $child) {
-                    $html .= '<li><a href="javascript:void(0)" class="text-reset d-block py-1">'.$this->e((string) $child).'</a></li>';
+                    $html .= '<li><a href="javascript:void(0)" class="text-reset d-block py-1">'.$this->escape((string) $child).'</a></li>';
                 }
                 $html .= '</ul>';
             }
             $html .= '<a href="javascript:void(0)" class="fw-semibold link-reset d-inline-block my-3">View All <i class="ti ti-arrow-right align-middle fs-lg"></i></a></div>';
             if ($image) {
-                $html .= '<img src="'.$this->e($image).'" alt="'.$this->e($title).'" class="img-fluid mt-auto" style="max-height:220px" />';
+                $html .= '<img src="'.$this->escape($image).'" alt="'.$this->escape($title).'" class="img-fluid mt-auto" style="max-height:220px" />';
             }
             $html .= '</div></div></div>';
         }
@@ -125,7 +125,7 @@ class Marketplace extends Component
 
         $html = '<div class="row pt-4"><div class="col-12 text-center">';
         if ($subtitleDesc) {
-            $html .= '<span class="text-muted rounded-3 d-inline-block">'.$this->e($subtitleDesc).'</span>';
+            $html .= '<span class="text-muted rounded-3 d-inline-block">'.$this->escape($subtitleDesc).'</span>';
         }
         if ($subtitle) {
             $html .= '<h3 class="mt-2 fw-bold mb-4">'.$this->raw($subtitle).'</h3>';
@@ -134,7 +134,7 @@ class Marketplace extends Component
         $first = true;
         foreach ($filters as $i => $filter) {
             $active = $first ? ' text-primary' : ' text-muted';
-            $html .= '<a href="javascript:void(0)" class="badge badge-default rounded-pill px-3 py-2 fs-6'.$active.'">'.$this->e((string) $filter).'</a>';
+            $html .= '<a href="javascript:void(0)" class="badge badge-default rounded-pill px-3 py-2 fs-6'.$active.'">'.$this->escape((string) $filter).'</a>';
             $first = false;
         }
         $html .= '</div></div></div>';
@@ -192,14 +192,14 @@ class Marketplace extends Component
 
         // 折扣徽章
         if ($badge) {
-            $html .= '<div class="badge text-bg-'.$this->e($badgeColor).' badge-label fs-base rounded position-absolute top-0 start-0 m-3">'
-                .$this->e($badge).'</div>';
+            $html .= '<div class="badge text-bg-'.$this->escape($badgeColor).' badge-label fs-base rounded position-absolute top-0 start-0 m-3">'
+                .$this->escape($badge).'</div>';
         }
         $html .= '<div class="card-body">';
         if ($image) {
-            $html .= '<div class="p-3"><img src="'.$this->e($image).'" alt="'.$this->e($title).'" class="img-fluid" /></div>';
+            $html .= '<div class="p-3"><img src="'.$this->escape($image).'" alt="'.$this->escape($title).'" class="img-fluid" /></div>';
         }
-        $html .= '<h6 class="card-title fs-sm lh-base mb-2"><a href="javascript:void(0)" class="link-reset">'.$this->e($title).'</a></h6>';
+        $html .= '<h6 class="card-title fs-sm lh-base mb-2"><a href="javascript:void(0)" class="link-reset">'.$this->escape($title).'</a></h6>';
 
         // 评分
         if ($rating > 0 || $reviews > 0) {
@@ -219,7 +219,7 @@ class Marketplace extends Component
         $html .= '<div class="card-footer bg-transparent d-flex justify-content-between border-dashed border-top">';
         $html .= '<div class="d-flex justify-content-start align-items-center gap-2">';
         $priceClass = $oldPrice > 0 ? 'text-danger' : 'text-success';
-        $cur = $this->e($currency);
+        $cur = $this->escape($currency);
         $html .= '<h4 class="'.$priceClass.' d-flex align-items-center gap-2 mb-0">';
         if ($oldPrice > 0) {
             $html .= '<span class="text-muted text-decoration-line-through">'.$cur.number_format($oldPrice, 2).'</span>';

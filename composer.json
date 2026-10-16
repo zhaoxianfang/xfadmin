@@ -2,7 +2,7 @@
     "name": "zxf/xfadmin",
     "description": "XfAdmin - 基于 INSPINIA v4.1.0 的 PHP 管理后台组件化扩展包（216 个组件类）。将后台模板拆分为可独立调用的布局/表格/表单/图表/UI 组件，支持数据渲染与按需去重加载资源，纯原生 JS（不依赖 Node.js）、离线可用，支持 Laravel 11/12/13 与 ThinkPHP 8+。",
     "type": "library",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "keywords": [
         "admin",

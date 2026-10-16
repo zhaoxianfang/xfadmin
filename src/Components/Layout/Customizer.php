@@ -75,21 +75,21 @@ class Customizer extends Component
             foreach ($items as $value => [$label, $img]) {
                 $id = 'xf-'.$name.'-'.$value;
                 $html .= '<div class="'.$col.'"><div class="form-check card-radio">'
-                    .'<input class="form-check-input" type="radio" name="'.$this->e($name).'" id="'.$this->e($id).'" value="'.$this->e($value).'">'
-                    .'<label class="form-check-label p-0 w-100" for="'.$this->e($id).'">'
-                    .'<img src="'.$this->e($a($img)).'" alt="layout-img" class="img-fluid"></label></div>'
-                    .'<h5 class="fs-sm text-center text-muted mt-2 mb-0">'.$this->e($label).'</h5></div>';
+                    .'<input class="form-check-input" type="radio" name="'.$this->escape($name).'" id="'.$this->escape($id).'" value="'.$this->escape($value).'">'
+                    .'<label class="form-check-label p-0 w-100" for="'.$this->escape($id).'">'
+                    .'<img src="'.$this->escape($a($img)).'" alt="layout-img" class="img-fluid"></label></div>'
+                    .'<h5 class="fs-sm text-center text-muted mt-2 mb-0">'.$this->escape($label).'</h5></div>';
             }
 
             return $html.'</div>';
         };
 
-        $section = fn (string $title, string $body): string => '<div class="p-3 border-bottom"><h5 class="mb-3 fw-bold">'.$this->e($title).'</h5>'.$body.'</div>';
+        $section = fn (string $title, string $body): string => '<div class="p-3 border-bottom"><h5 class="mb-3 fw-bold">'.$this->escape($title).'</h5>'.$body.'</div>';
 
         $html = '<div class="offcanvas offcanvas-end overflow-hidden" tabindex="-1" id="theme-settings-offcanvas">';
-        $html .= '<div class="d-flex justify-content-between text-bg-primary gap-2 p-3" style="background-image: url('.$this->e($a('images/user-bg-pattern.png')).');">'
-            .'<div><h5 class="mb-1 fw-bold text-white text-uppercase">'.$this->e($this->get('title')).'</h5>'
-            .'<p class="text-white text-opacity-75 fst-italic fw-medium mb-0">'.$this->e($this->get('subtitle')).'</p></div>'
+        $html .= '<div class="d-flex justify-content-between text-bg-primary gap-2 p-3" style="background-image: url('.$this->escape($a('images/user-bg-pattern.png')).');">'
+            .'<div><h5 class="mb-1 fw-bold text-white text-uppercase">'.$this->escape($this->get('title')).'</h5>'
+            .'<p class="text-white text-opacity-75 fst-italic fw-medium mb-0">'.$this->escape($this->get('subtitle')).'</p></div>'
             .'<div class="flex-grow-0"><button type="button" class="d-block btn btn-sm bg-white bg-opacity-25 text-white rounded-circle btn-icon" data-bs-dismiss="offcanvas" aria-label="关闭设置面板"><i class="ti ti-x fs-lg"></i></button></div></div>';
 
         $html .= '<div class="offcanvas-body p-0 h-100" data-simplebar>';

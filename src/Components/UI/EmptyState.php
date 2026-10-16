@@ -61,8 +61,8 @@ class EmptyState extends Component
                 .($this->get('class') !== '' ? ' '.$this->get('class') : ''),
         ]).'>'
             .'<div class="xf-empty-icon'.$iconSize.'"><i class="'.$this->iconClass($this->get('icon')).'"></i></div>'
-            .'<'.$titleTag.' class="xf-empty-title mt-3 mb-1">'.$this->e($this->get('title')).'</'.$titleTag.'>'
-            .($this->get('text') !== '' ? '<p class="xf-empty-text text-muted small">'.$this->e($this->get('text')).'</p>' : '')
+            .'<'.$titleTag.' class="xf-empty-title mt-3 mb-1">'.$this->escape($this->get('title')).'</'.$titleTag.'>'
+            .($this->get('text') !== '' ? '<p class="xf-empty-text text-muted small">'.$this->escape($this->get('text')).'</p>' : '')
             .$action
             .'</div>';
     }

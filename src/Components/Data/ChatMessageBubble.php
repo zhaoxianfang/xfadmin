@@ -60,18 +60,18 @@ class ChatMessageBubble extends Component
         $attachHtml = '';
         if ($attach) {
             $a = (array) $attach;
-            $attachHtml = '<a href="'.$this->e($this->img($a['url'] ?? '')).'" class="d-block mt-1">'
-                .'<i class="ti ti-paperclip"></i> '.$this->e($a['name'] ?? '附件').'</a>';
+            $attachHtml = '<a href="'.$this->escape($this->img($a['url'] ?? '')).'" class="d-block mt-1">'
+                .'<i class="ti ti-paperclip"></i> '.$this->escape($a['name'] ?? '附件').'</a>';
         }
-        $avatarHtml = $avatar ? '<img src="'.$this->e($this->img($avatar)).'" class="rounded-circle me-2" width="36" height="36" alt="">' : '';
+        $avatarHtml = $avatar ? '<img src="'.$this->escape($this->img($avatar)).'" class="rounded-circle me-2" width="36" height="36" alt="">' : '';
 
         $html = '<div class="d-flex '.$align.' mb-3">';
         if (! $out && $avatarHtml) {
             $html .= '<div class="flex-shrink-0">'.$avatarHtml.'</div>';
         }
         $html .= '<div class="col-8">';
-        $html .= '<div class="rounded-3 p-2 '.$bubbleCls.'">'.$this->e($text).$attachHtml.'</div>';
-        $html .= '<div class="small text-muted mt-1 '.($out ? 'text-end' : '').'">'.$this->e($time)
+        $html .= '<div class="rounded-3 p-2 '.$bubbleCls.'">'.$this->escape($text).$attachHtml.'</div>';
+        $html .= '<div class="small text-muted mt-1 '.($out ? 'text-end' : '').'">'.$this->escape($time)
             .($out ? ($read ? ' · 已读' : ' · 已发送') : '').'</div>';
         $html .= '</div>';
         $html .= '</div>';

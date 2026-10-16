@@ -47,12 +47,12 @@ class PinBoard extends Component
             $html .= '<div class="pin-note pin-'.$color.'">';
             $html .= '<div class="pin-note-head"><i class="ti ti-pin"></i>';
             if (! empty($n['title'])) {
-                $html .= '<span class="fw-semibold">'.$this->e($n['title']).'</span>';
+                $html .= '<span class="fw-semibold">'.$this->escape($n['title']).'</span>';
             }
             $html .= '<button class="btn btn-sm btn-icon ms-auto text-dark" type="button" aria-label="移除便利贴"><i class="ti ti-x"></i></button></div>';
-            $html .= '<div class="pin-note-body">'.nl2br($this->e($n['text'] ?? '')).'</div>';
+            $html .= '<div class="pin-note-body">'.nl2br($this->escape($n['text'] ?? '')).'</div>';
             if (! empty($n['author']) || ! empty($n['time'])) {
-                $html .= '<div class="pin-note-foot"><small class="text-muted">'.$this->e($n['author'] ?? '').' · '.$this->e($n['time'] ?? '').'</small></div>';
+                $html .= '<div class="pin-note-foot"><small class="text-muted">'.$this->escape($n['author'] ?? '').' · '.$this->escape($n['time'] ?? '').'</small></div>';
             }
             $html .= '</div>';
         }

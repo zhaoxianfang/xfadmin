@@ -89,14 +89,14 @@ class AppManage extends Component
             $changeColor = $this->getChangeColor($change);
 
             $html .= '<div class="'.$colClass.'"><div class="card"><div class="card-body"><div class="d-flex align-items-center justify-content-between">';
-            $html .= '<div><span class="text-muted">'.$this->e($title).'</span>';
-            $html .= '<h3 class="mt-2 mb-0 fw-semibold">'.$this->e($value).'</h3></div>';
-            $html .= '<div class="bg-'.$this->e($color).' bg-opacity-10 rounded p-2">'
-                .'<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($color).'"></i></div>';
+            $html .= '<div><span class="text-muted">'.$this->escape($title).'</span>';
+            $html .= '<h3 class="mt-2 mb-0 fw-semibold">'.$this->escape($value).'</h3></div>';
+            $html .= '<div class="bg-'.$this->escape($color).' bg-opacity-10 rounded p-2">'
+                .'<i class="ti '.$this->escape($icon).' fs-24 text-'.$this->escape($color).'"></i></div>';
             $html .= '</div>';
             if ($change) {
                 $html .= '<div class="mt-2"><span class="text-'.$changeColor.' small fw-semibold">'
-                    .$this->e($change).'</span></div>';
+                    .$this->escape($change).'</span></div>';
             }
             $html .= '</div></div></div>';
         }
@@ -166,24 +166,24 @@ class AppManage extends Component
             'active' => '<span class="badge text-bg-success">运行中</span>',
             'inactive' => '<span class="badge text-bg-warning">已暂停</span>',
             'error' => '<span class="badge text-bg-danger">异常</span>',
-            default => '<span class="badge text-bg-secondary">'.$this->e($status).'</span>',
+            default => '<span class="badge text-bg-secondary">'.$this->escape($status).'</span>',
         };
 
         $html = '<div class="col"><div class="card"><div class="card-body"><div class="d-flex align-items-center mb-3">';
         if ($image) {
-            $html .= '<img src="'.$this->e($image).'" width="48" height="48" class="rounded me-3" alt="" style="width:48px;height:48px">';
+            $html .= '<img src="'.$this->escape($image).'" width="48" height="48" class="rounded me-3" alt="" style="width:48px;height:48px">';
         } else {
-            $html .= '<div class="bg-'.$this->e($color).' bg-opacity-10 rounded p-2 me-3" style="width:48px;height:48px">'
-                .'<i class="ti '.$this->e($icon).' fs-24 text-'.$this->e($color).' d-flex align-items-center justify-content-center" style="height:32px"></i></div>';
+            $html .= '<div class="bg-'.$this->escape($color).' bg-opacity-10 rounded p-2 me-3" style="width:48px;height:48px">'
+                .'<i class="ti '.$this->escape($icon).' fs-24 text-'.$this->escape($color).' d-flex align-items-center justify-content-center" style="height:32px"></i></div>';
         }
-        $html .= '<div><h6 class="mb-0">'.$this->e($name).'</h6>'.$statusBadge.'</div>';
+        $html .= '<div><h6 class="mb-0">'.$this->escape($name).'</h6>'.$statusBadge.'</div>';
         $html .= '<div class="ms-auto"><div class="dropdown"><a href="javascript:void(0)" class="text-muted" data-bs-toggle="dropdown">'
             .'<i class="ti ti-dots-vertical"></i></a><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="javascript:void(0)">编辑</a></li>'
             .'<li><a class="dropdown-item" href="javascript:void(0)">设置</a></li><li><hr class="dropdown-divider"></li>'
             .'<li><a class="dropdown-item text-danger" href="javascript:void(0)">删除</a></li></ul></div></div></div>';
 
         if ($desc) {
-            $html .= '<p class="text-muted small mb-3">'.$this->e($desc).'</p>';
+            $html .= '<p class="text-muted small mb-3">'.$this->escape($desc).'</p>';
         }
         $html .= '<div class="d-flex align-items-center justify-content-between">';
         if ($users > 0) {

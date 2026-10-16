@@ -59,17 +59,17 @@ class TwoFactorInput extends Component
             $ch = $chars[$i] ?? '';
             $html .= '<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1"'
                 .' class="xf-2fa-cell form-control text-center fs-3 fw-bold"'
-                .' aria-label="'.$this->e($name).' 第 '.($i + 1).' 位"'
+                .' aria-label="'.$this->escape($name).' 第 '.($i + 1).' 位"'
                 .' data-xf-index="'.$i.'"'
                 .($i === 0 && $autofocus ? ' autofocus' : '')
                 .$disabled
-                .' value="'.$this->e($ch).'">';
+                .' value="'.$this->escape($ch).'">';
         }
-        $html .= '<input type="hidden" name="'.$this->e($name).'" class="xf-2fa-value" value="'.$this->e($value).'">';
+        $html .= '<input type="hidden" name="'.$this->escape($name).'" class="xf-2fa-value" value="'.$this->escape($value).'">';
         $html .= '</div>';
 
         if ($mask !== null) {
-            $html .= '<p class="text-center text-muted small mt-2 mb-0">验证码已发送至 <span class="fw-semibold">'.$this->e($mask).'</span></p>';
+            $html .= '<p class="text-center text-muted small mt-2 mb-0">验证码已发送至 <span class="fw-semibold">'.$this->escape($mask).'</span></p>';
         }
 
         return $html;

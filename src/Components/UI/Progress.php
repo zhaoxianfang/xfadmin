@@ -48,7 +48,7 @@ class Progress extends Component
         ]);
 
         return '<div class="'.$class.'" role="progressbar" style="width: '.$value.'%" aria-valuenow="'.$value.'" aria-valuemin="0" aria-valuemax="100">'
-            .$this->e($bar['label'] ?? '').'</div>';
+            .$this->escape($bar['label'] ?? '').'</div>';
     }
 
     /**

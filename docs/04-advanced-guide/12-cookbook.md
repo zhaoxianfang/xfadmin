@@ -487,3 +487,33 @@ XFAdmin.load(['/css/x.css'], ['/js/x.js']).then(() => XFAdmin.scan());
 | 参数没生效 | 键名拼错 / 被 `+` 合并覆盖 | 打印 `->options()` 核对 |
 
 完整清单见 [04-问题排查](../05-operations/04-troubleshooting.md)。
+
+---
+
+## 23. yoc 业务模块前端片段「下沉」映射
+
+yoc 的 Admin / User / Spider 模块存在大量重复手写的前端片段（原生 `confirm()`、
+手写 `<span class="tag tag-success">`、指标卡横排 `<div class="row">…</div>`、空态与错误块等）。
+这些片段应统一下沉到 xfadmin 通用方法，避免重复实现与样式漂移。
+
+| yoc 现状（手写 / 原生） | xfadmin 通用方法 | 说明 |
+|---|---|---|
+| `if (!confirm('确认删除？')) return;` + `fetch(POST)` | `XfAdmin::confirmDialog(['url'=>..., 'method'=>'POST', 'trigger'=>'删除'])` | Bootstrap 模态确认，POST 自动带 CSRF（见 §3 新组件） |
+| `<span class="tag tag-success">运行中</span>`（JS `statusTag()`） | `XfAdmin::statusTag(['text'=>'运行中','type'=>'success','dot'=>true])` | 服务端渲染，语义色与包内 Badge 一致 |
+| `<div class="row"><div class="col-md-3">指标卡</div>×N</div>` | `XfAdmin::statRow(['items'=>[...],'cols'=>4])` | 响应式栅格自动换算列宽 |
+| `<div class="sp-panel">` 标题块（标题 + 副标题 + 右侧操作） | `XfAdmin::pageTitle(['title'=>..., 'subtitle'=>..., 'actions'=> XfAdmin::actionBar([...])])` | 见 [UI §pageTitle](#) 与 [§3 actionBar](#) |
+| `<div class="sp-actions">` 按钮组 | `XfAdmin::actionBar(['items'=>[['text'=>'新建','variant'=>'primary','href'=>...]]])` | 按钮配置数组直出，纯 HTML 混排用 `toolbar(['right'=>...])` |
+| `<div class="sp-form-row">` 搜索框 + 多个 `<select>` + 重置 | `XfAdmin::filterBar(['fields'=>[['name'=>'q','type'=>'text','placeholder'=>'搜索'],['name'=>'type','type'=>'select','options'=>[...]]], 'action'=>..., 'submit'=>'查询'])` | 顶部横向筛选条，支持 `onchange` 自动提交 |
+| 控制器内 `'<div class="p-3 text-danger">…</div>'` | `XfAdmin::errorBlock('文案')` | 静态助手，直达字符串 |
+| 表格空 `<td class="sp-empty">暂无</td>` | `XfAdmin::emptyHint('暂无数据', ['center'=>true])` / `emptyDash()` | 单元格短横用 `emptyDash()` |
+| 网页异常兜底的散落提示 | `XfAdmin::emptyHint()` / `errorBlock()` | 与异常响应统一 |
+
+**迁移原则**
+
+1. **新增页面**一律走 xfadmin 组件，不再手写 `sp-*`/`tag-*` 类；
+2. **存量 Spider / User 视图**为独立定制后台 UI（自带 CSS），属大改范围，建议按页面灰度替换：
+   先以 `XfAdmin::statusTag()` / `confirmDialog()` 替换列表中的状态标签与删除确认，
+   再以 `XfAdmin::actionBar()` / `filterBar()` 替换列表页头部操作区与筛选条，
+   最后逐步将整页改造为 `XfAdmin::page()` + `pageTitle()` + `card()` + `dataTable()`；
+3. **所有文本槽位**经 `Html::escape` 转义、所有 URL 经 `safeUrl()` 校验，杜绝 XSS（见 [安全 §4](../02-core-architecture/04-security.md)）。
+

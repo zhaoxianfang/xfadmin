@@ -61,8 +61,8 @@ class OrderDetails extends Component
 
         // 商品表
         $html .= '<div class="card mb-3"><div class="card-header d-flex justify-content-between align-items-center">'
-            .'<h6 class="mb-0">订单 '.$this->e($o['id'] ?? '').'</h6>'
-            .'<span class="badge bg-'.$sCls.'-subtle text-'.$sCls.'">'.$this->e($o['status_text'] ?? $status).'</span>'
+            .'<h6 class="mb-0">订单 '.$this->escape($o['id'] ?? '').'</h6>'
+            .'<span class="badge bg-'.$sCls.'-subtle text-'.$sCls.'">'.$this->escape($o['status_text'] ?? $status).'</span>'
             .'</div><div class="card-body p-0"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>商品</th><th>单价</th><th>数量</th><th class="text-end">小计</th></tr></thead><tbody>';
 
         foreach ((array) ($o['items'] ?? []) as $it) {
@@ -70,10 +70,10 @@ class OrderDetails extends Component
             // 无图时走占位图，避免 src="" 破图
             $image = $this->img((string) ($it['image'] ?? ''));
             $html .= '<tr>';
-            $html .= '<td><div class="d-flex align-items-center"><img src="'.$this->e($image).'" width="44" height="44" class="rounded me-2 object-fit-cover" alt="" style="width:44px;height:44px;"><div><div class="fw-semibold">'.$this->e($it['name'] ?? '').'</div><small class="text-muted">'.$this->e($it['sku'] ?? '').'</small></div></div></td>';
-            $html .= '<td>'.$this->e($it['price'] ?? '').'</td>';
+            $html .= '<td><div class="d-flex align-items-center"><img src="'.$this->escape($image).'" width="44" height="44" class="rounded me-2 object-fit-cover" alt="" style="width:44px;height:44px;"><div><div class="fw-semibold">'.$this->escape($it['name'] ?? '').'</div><small class="text-muted">'.$this->escape($it['sku'] ?? '').'</small></div></div></td>';
+            $html .= '<td>'.$this->escape($it['price'] ?? '').'</td>';
             $html .= '<td>'.(int) ($it['qty'] ?? 1).'</td>';
-            $html .= '<td class="text-end fw-semibold">'.$this->e($it['amount'] ?? $it['price'] ?? '').'</td>';
+            $html .= '<td class="text-end fw-semibold">'.$this->escape($it['amount'] ?? $it['price'] ?? '').'</td>';
             $html .= '</tr>';
         }
         $html .= '</tbody></table></div></div></div>';
@@ -87,9 +87,9 @@ class OrderDetails extends Component
                 $done = ! empty($t['done']);
                 $html .= '<div class="timeline-item'.($done ? ' is-done' : '').'">';
                 $html .= '<div class="timeline-marker"></div>';
-                $html .= '<div class="timeline-content"><div class="fw-semibold">'.$this->e($t['title'] ?? '').'</div>';
+                $html .= '<div class="timeline-content"><div class="fw-semibold">'.$this->escape($t['title'] ?? '').'</div>';
                 if (! empty($t['time'])) {
-                    $html .= '<small class="text-muted">'.$this->e($t['time']).'</small>';
+                    $html .= '<small class="text-muted">'.$this->escape($t['time']).'</small>';
                 }
                 $html .= '</div></div>';
             }
@@ -102,13 +102,13 @@ class OrderDetails extends Component
         $c = (array) ($o['customer'] ?? []);
         if ($c) {
             $html .= '<div class="card mb-3"><div class="card-header"><h6 class="mb-0">客户信息</h6></div><div class="card-body small">';
-            $html .= '<div class="mb-2"><span class="text-muted">姓名：</span>'.$this->e($c['name'] ?? '').'</div>';
-            $html .= '<div class="mb-2"><span class="text-muted">邮箱：</span>'.$this->e($c['email'] ?? '').'</div>';
+            $html .= '<div class="mb-2"><span class="text-muted">姓名：</span>'.$this->escape($c['name'] ?? '').'</div>';
+            $html .= '<div class="mb-2"><span class="text-muted">邮箱：</span>'.$this->escape($c['email'] ?? '').'</div>';
             if (! empty($c['phone'])) {
-                $html .= '<div class="mb-2"><span class="text-muted">电话：</span>'.$this->e($c['phone']).'</div>';
+                $html .= '<div class="mb-2"><span class="text-muted">电话：</span>'.$this->escape($c['phone']).'</div>';
             }
             if (! empty($c['address'])) {
-                $html .= '<div><span class="text-muted">地址：</span>'.$this->e($c['address']).'</div>';
+                $html .= '<div><span class="text-muted">地址：</span>'.$this->escape($c['address']).'</div>';
             }
             $html .= '</div></div>';
         }
@@ -117,9 +117,9 @@ class OrderDetails extends Component
         $html .= $this->amountRow('优惠', $o['discount'] ?? '', 'text-danger');
         $html .= $this->amountRow('运费', $o['shipping'] ?? '');
         $html .= $this->amountRow('税费', $o['tax'] ?? '');
-        $html .= '<hr><div class="d-flex justify-content-between fw-bold"><span>合计</span><span class="text-primary">'.$this->e($o['total'] ?? '').'</span></div>';
+        $html .= '<hr><div class="d-flex justify-content-between fw-bold"><span>合计</span><span class="text-primary">'.$this->escape($o['total'] ?? '').'</span></div>';
         if (! empty($o['notes'])) {
-            $html .= '<div class="alert alert-light mt-3 mb-0 small">'.$this->e($o['notes']).'</div>';
+            $html .= '<div class="alert alert-light mt-3 mb-0 small">'.$this->escape($o['notes']).'</div>';
         }
         $html .= '</div></div></div>';
 
@@ -140,6 +140,6 @@ class OrderDetails extends Component
             return '';
         }
 
-        return '<div class="d-flex justify-content-between mb-2"><span class="text-muted">'.$this->e($label).'</span><span class="'.$cls.'">'.$this->e($value).'</span></div>';
+        return '<div class="d-flex justify-content-between mb-2"><span class="text-muted">'.$this->escape($label).'</span><span class="'.$cls.'">'.$this->escape($value).'</span></div>';
     }
 }

@@ -47,8 +47,8 @@ class Breadcrumb extends Component
             $item = is_array($item) ? $item : ['text' => $item];
             $active = ($item['active'] ?? false) || $i === $last;
             $html .= $active || empty($item['url'])
-                ? '<li class="breadcrumb-item active" aria-current="page">'.$this->e($item['text'] ?? '').'</li>'
-                : '<li class="breadcrumb-item"><a href="'.$this->e($this->safeUrl($item['url'])).'">'.$this->e($item['text'] ?? '').'</a></li>';
+                ? '<li class="breadcrumb-item active" aria-current="page">'.$this->escape($item['text'] ?? '').'</li>'
+                : '<li class="breadcrumb-item"><a href="'.$this->escape($this->safeUrl($item['url'])).'">'.$this->escape($item['text'] ?? '').'</a></li>';
         }
 
         return $html.'</ol></nav>';

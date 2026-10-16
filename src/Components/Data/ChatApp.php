@@ -59,31 +59,31 @@ class ChatApp extends Component
                     .(! empty($c['online']) ? 'success' : 'secondary').'" style="width:10px;height:10px;"></span>'
                 : '';
             $badge = ! empty($c['unread'])
-                ? '<span class="badge bg-danger rounded-pill ms-1">'.$this->e($c['unread']).'</span>' : '';
+                ? '<span class="badge bg-danger rounded-pill ms-1">'.$this->escape($c['unread']).'</span>' : '';
             $cUrl = $this->safeUrl($c['url'] ?? '#', '#');
-            $list .= '<a href="'.$this->e($cUrl).'" class="list-group-item list-group-item-action d-flex align-items-center py-3'
+            $list .= '<a href="'.$this->escape($cUrl).'" class="list-group-item list-group-item-action d-flex align-items-center py-3'
                 .(! empty($c['active']) ? ' active' : '').'">'
                 .'<span class="avatar avatar-sm position-relative me-2 flex-shrink-0">'
-                .'<img class="rounded-circle img-fluid" src="'.$this->e($this->img($c['avatar'] ?? '')).'" alt="">'.$dot.'</span>'
-                .'<span class="flex-grow-1 overflow-hidden"><span class="d-block fw-semibold text-truncate">'.$this->e($c['name'] ?? '').'</span>'
-                .'<small class="d-block text-truncate'.(! empty($c['active']) ? '' : ' text-muted').'">'.$this->e($c['last'] ?? '').'</small></span>'
+                .'<img class="rounded-circle img-fluid" src="'.$this->escape($this->img($c['avatar'] ?? '')).'" alt="">'.$dot.'</span>'
+                .'<span class="flex-grow-1 overflow-hidden"><span class="d-block fw-semibold text-truncate">'.$this->escape($c['name'] ?? '').'</span>'
+                .'<small class="d-block text-truncate'.(! empty($c['active']) ? '' : ' text-muted').'">'.$this->escape($c['last'] ?? '').'</small></span>'
                 .'<span class="text-end ms-2 flex-shrink-0"><small class="d-block'.(! empty($c['active']) ? '' : ' text-muted').'">'
-                .$this->e($c['time'] ?? '').'</small>'.$badge.'</span></a>';
+                .$this->escape($c['time'] ?? '').'</small>'.$badge.'</span></a>';
         }
-        $left = '<div class="p-2 border-bottom"><input class="form-control" placeholder="'.$this->e($this->get('search')).'"></div>'
+        $left = '<div class="p-2 border-bottom"><input class="form-control" placeholder="'.$this->escape($this->get('search')).'"></div>'
             .'<div class="list-group list-group-flush xf-scroll-y" style="max-height:calc('.$h.' + 56px)">'.$list.'</div>';
 
         // ---- 右栏：聊天窗 ----
         $peer = (array) $this->get('peer', []);
         $head = '<div class="d-flex align-items-center p-3 border-bottom">'
             .'<span class="avatar avatar-sm position-relative me-2">'
-            .'<img class="rounded-circle img-fluid" src="'.$this->e($this->img($peer['avatar'] ?? '')).'" alt="">'
+            .'<img class="rounded-circle img-fluid" src="'.$this->escape($this->img($peer['avatar'] ?? '')).'" alt="">'
             .(isset($peer['online'])
                 ? '<span class="position-absolute bottom-0 end-0 rounded-circle border border-2 border-white bg-'
                     .(! empty($peer['online']) ? 'success' : 'secondary').'" style="width:10px;height:10px;"></span>'
                 : '')
-            .'</span><div><div class="fw-semibold">'.$this->e($peer['name'] ?? '').'</div>'
-            .'<small class="text-'.(! empty($peer['online']) ? 'success' : 'muted').'">'.$this->e($peer['status'] ?? '').'</small></div>'
+            .'</span><div><div class="fw-semibold">'.$this->escape($peer['name'] ?? '').'</div>'
+            .'<small class="text-'.(! empty($peer['online']) ? 'success' : 'muted').'">'.$this->escape($peer['status'] ?? '').'</small></div>'
             .'<div class="ms-auto">'
             .'<button type="button" class="btn btn-sm btn-soft-secondary" title="语音"><i class="ti ti-phone"></i></button> '
             .'<button type="button" class="btn btn-sm btn-soft-secondary" title="视频"><i class="ti ti-video"></i></button> '
@@ -94,11 +94,11 @@ class ChatApp extends Component
             $mine = ($m['from'] ?? '') === 'me';
             $av = $m['avatar'] ?? ($mine ? null : ($peer['avatar'] ?? null));
             $avatarHtml = $av
-                ? '<span class="avatar avatar-xs flex-shrink-0"><img class="rounded-circle img-fluid" src="'.$this->e($this->img($av)).'" alt=""></span>'
+                ? '<span class="avatar avatar-xs flex-shrink-0"><img class="rounded-circle img-fluid" src="'.$this->escape($this->img($av)).'" alt=""></span>'
                 : '';
             $bubble = '<div><div class="p-2 px-3 rounded-3 '.($mine ? 'bg-primary text-white' : 'bg-light').'">'
-                .$this->e($m['text'] ?? '').'</div>'
-                .(! empty($m['time']) ? '<small class="text-muted d-block mt-1'.($mine ? ' text-end' : '').'">'.$this->e($m['time']).'</small>' : '')
+                .$this->escape($m['text'] ?? '').'</div>'
+                .(! empty($m['time']) ? '<small class="text-muted d-block mt-1'.($mine ? ' text-end' : '').'">'.$this->escape($m['time']).'</small>' : '')
                 .'</div>';
             $body .= $mine
                 ? '<div class="d-flex justify-content-end gap-2">'.$bubble.$avatarHtml.'</div>'
@@ -109,7 +109,7 @@ class ChatApp extends Component
         $foot = '<div class="p-3 border-top"><div class="input-group">'
             .'<button type="button" class="btn btn-soft-secondary" title="表情"><i class="ti ti-mood-smile"></i></button>'
             .'<button type="button" class="btn btn-soft-secondary" title="附件"><i class="ti ti-paperclip"></i></button>'
-            .'<input class="form-control" placeholder="'.$this->e($this->get('placeholder')).'">'
+            .'<input class="form-control" placeholder="'.$this->escape($this->get('placeholder')).'">'
             .'<button type="button" class="btn btn-primary"><i class="ti ti-send"></i></button></div></div>';
 
         return '<div'.$this->attrs(['class' => 'card border-0 shadow-sm xf-chat-app']).'><div class="row g-0">'

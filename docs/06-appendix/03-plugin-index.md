@@ -25,7 +25,7 @@
 | `daterangepicker` | 1 个 | 1 个 | `jquery` `moment` | `datePicker` `dateRange` |
 | `nouislider` | 1 个 | 2 个 | — | `slider` |
 | `pickr` | 3 个 | 1 个 | — | `colorPicker` |
-| `inputmask` | — | 1 个 | — | `input` `maskedInput` |
+| `inputmask` | — | 1 个 | — | `formOtherPlugin` `input` `maskedInput` |
 | `typeahead` | — | 1 个 | `jquery` `handlebars` | — |
 | `handlebars` | — | 1 个 | — | — |
 | `tagify` | 1 个 | 1 个 | — | `input` `tags` |

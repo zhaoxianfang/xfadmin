@@ -48,6 +48,6 @@ class Badge extends Component
         $icon = $this->get('icon') ? '<i class="'.$this->iconClass($this->get('icon')).' me-1"></i>' : '';
 
         return '<span'.$this->attrs(['class' => Html::cls('badge', $style, ['rounded-pill' => $this->get('pill')])]).'>'
-            .$icon.$this->e($this->get('text')).'</span>';
+            .$icon.$this->escape($this->get('text')).'</span>';
     }
 }

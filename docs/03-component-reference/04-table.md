@@ -61,7 +61,7 @@ echo XfAdmin::dataTable([
 静态表格（基础 HTML 表格封装）。
 
 > **类**：`zxf\XfAdmin\Components\Table\Table`
-> **文件**：`src/Components/Table/Table.php`（181 行）
+> **文件**：`src/Components/Table/Table.php`（155 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -130,11 +130,11 @@ echo XfAdmin::table([
 | `align_middle` | bool | `false` | 单元格垂直居中；源码用法：`'align-middle' => $this->get('align_middle'),` |
 | `centered` | bool | `false` | 是否垂直居中；源码用法：`'table-centered' => $this->get('centered'),` |
 | `nowrap` | bool | `false` | 源码用法：`'table-nowrap' => $this->get('nowrap'),` |
-| `variant` | mixed | `null` | 源码用法：`], $this->get('variant') ? 'table-' . $this->enum($this->get('variant'), ['light', 'd…`；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
+| `variant` | mixed | `null` | 源码用法：`], $this->get('variant') ? 'table-'.$this->enum($this->get('variant'), ['light', 'dar…`；可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `head_variant` | mixed | `null` | 枚举白名单 `'light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'` |
-| `responsive` | bool | `true` | 是否响应式（横向滚动 / 响应式表格）；开关：非空 / 真值时启用对应区块 |
-| `caption` | mixed | `null` | 表格 caption 文本；**文本槽位**：输出前自动 HTML 转义；开关：非空 / 真值时启用对应区块 |
-| `empty` | string | `'暂无数据'` | 空数据提示文案；**文本槽位**：输出前自动 HTML 转义 |
+| `responsive` | bool | `true` | 是否响应式（横向滚动 / 响应式表格）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `caption` | mixed | `null` | 表格 caption 文本；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `empty` | string | `'暂无数据'` | 空数据提示文案；源码用法：`$html .= '<tr><td colspan="'.max(1, count($columns)).'" class="text-center text-muted…` |
 | `row_attrs` | mixed | `null` | fn($row): array |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -146,7 +146,7 @@ echo XfAdmin::table([
 数据表格（DataTables：服务端/客户端、导出、固定列等）。
 
 > **类**：`zxf\XfAdmin\Components\Table\DataTable`
-> **文件**：`src/Components/Table/DataTable.php`（929 行）
+> **文件**：`src/Components/Table/DataTable.php`（937 行）
 > **依赖插件**：`datatables`、`datatables-pdf`、`select2`、`qrcode`
 
 **用法示例**
@@ -246,6 +246,7 @@ echo XfAdmin::dataTable([
     'fixed_columns' => null,    // 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动）
     'filter_bar' => [],    // 过滤工具栏（服务端模式自动拼接查询参数并重载）
     'filter_auto' => false,    // 过滤工具栏是否即改即查（默认点击“搜索”按钮才发起请求）
+    'filter_all' => false,    // 是否依据 columns 自动生成「全部列」筛选控件（按字段类型推断：文本/下拉/日期区间）
     'create' => null,    // 「新增」弹窗按钮：'/xx/create' 或 ['page'=>..,'label'=>..,'title'=>..,'size'=>..,'frame'=>..,'icon'=>..,'class'=>..]
     'density' => null,    // 'compact' | 'comfortable'（行间距密度；默认舒适）
     'options' => [],
@@ -282,13 +283,13 @@ echo XfAdmin::dataTable([
 | `nowrap` | bool | `false` |  |
 | `variant` | mixed | `null` | 可选值：`primary` / `secondary` / `success` / `danger` / `warning` / `info` / `light` / `dark` / `link` |
 | `head_variant` | mixed | `null` | 枚举白名单 `'light', 'dark', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'striped', 'striped-dark'` |
-| `responsive` | bool | `false` | 默认关闭响应式折叠（避免列被收进 child 子行），依赖 scrollX 水平滚动处理溢出列；row_detail 启用时仍互斥；开关：非空 / 真值时启用对应区块 |
+| `responsive` | bool | `false` | 默认关闭响应式折叠（避免列被收进 child 子行），依赖 scrollX 水平滚动处理溢出列；row_detail 启用时仍互斥；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `caption` | mixed | `null` | 表格 caption 文本 |
 | `empty` | string | `'暂无数据'` | 空数据提示文案 |
 | `row_attrs` | mixed | `null` | 行属性回调 `fn($row): array`，返回 `<tr>` 属性 |
 | `head_class` | string | `'thead-sm text-uppercase fs-xxs'` | 追加到 thead 的 class |
-| `ajax` | mixed | `null` | AJAX 地址或 DataTables 原生 ajax 配置；开关：非空 / 真值时启用对应区块 |
-| `server_side` | bool | `false` | 服务端分页模式；开关：非空 / 真值时启用对应区块 |
+| `ajax` | mixed | `null` | AJAX 地址或 DataTables 原生 ajax 配置；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `server_side` | bool | `false` | 服务端分页模式；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `method` | string | `'GET'` | 服务端数据请求方式（POST 可规避 URL 长度限制/WAF） |
 | `searching` | bool | `false` | 默认关闭内置搜索，改用自定义搜索表单 |
 | `ordering` | bool | `true` | 是否允许排序；源码用法：`'ordering' => (bool) $this->get('ordering'),` |
@@ -298,23 +299,24 @@ echo XfAdmin::dataTable([
 | `page_length` | int | `10` | 每页条数；源码用法：`'pageLength' => (int) $this->get('page_length'),` |
 | `length_menu` | array | `[10, 15, 20, 25, 50]` | 标准每页条数菜单 |
 | `show_custom_search` | bool | `true` | 启用自定义搜索表单 |
-| `row_detail` | mixed | `null` | 行详情展开 callback / 列名（null=不启用）；开关：非空 / 真值时启用对应区块 |
+| `row_detail` | mixed | `null` | 行详情展开 callback / 列名（null=不启用）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `show_header_btn` | mixed | `null` | 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true] |
 | `created_row` | mixed | `null` | createdRow 回调（JS 函数名/全局函数引用） |
 | `draw_callback` | mixed | `null` | drawCallback 全局函数名 |
 | `buttons` | array | `[]` | 按钮定义数组 |
-| `select` | bool | `false` | 行选择：`true` 或 `['style'=>'multi']`；开关：非空 / 真值时启用对应区块 |
-| `fixed_header` | bool | `false` | 表头固定；开关：非空 / 真值时启用对应区块 |
+| `select` | bool | `false` | 行选择：`true` 或 `['style'=>'multi']`；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `fixed_header` | bool | `false` | 表头固定；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `column_filters` | bool | `false` | 表头追加列筛选输入行；源码用法：`'columnFilters' => (bool) $this->get('column_filters'),` |
-| `order` | array | `[]` | [[0, 'asc']]；开关：非空 / 真值时启用对应区块 |
-| `language` | mixed | `null` | DataTables 语言包配置数组（缺省内置中文）；开关：非空 / 真值时启用对应区块 |
-| `row_id` | mixed | `null` | 行 id 字段；开关：非空 / 真值时启用对应区块 |
-| `row_url` | mixed | `null` | 整行点击跳转 URL（支持 {id} 占位符，如 '/admin/app/{module}/{page}/detail/{id}'）；开关：非空 / 真值时启用对应区块 |
-| `auto_width` | mixed | `null` | 自动列宽（false 会影响 scrollX 判定）；开关：非空 / 真值时启用对应区块；为 `null` 时不渲染该区块 |
-| `scroll_x` | bool | `true` | 默认启用横向滚动，溢出列通过滚动条展示（scroll_x=false 可关闭）；开关：非空 / 真值时启用对应区块 |
+| `order` | array | `[]` | [[0, 'asc']] |
+| `language` | mixed | `null` | DataTables 语言包配置数组（缺省内置中文）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `row_id` | mixed | `null` | 行 id 字段；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `row_url` | mixed | `null` | 整行点击跳转 URL（支持 {id} 占位符，如 '/admin/app/{module}/{page}/detail/{id}'）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `auto_width` | mixed | `null` | 自动列宽（false 会影响 scrollX 判定）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
+| `scroll_x` | bool | `true` | 默认启用横向滚动，溢出列通过滚动条展示（scroll_x=false 可关闭）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `fixed_columns` | mixed | `null` | 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动） |
 | `filter_bar` | array | `[]` | 过滤工具栏（服务端模式自动拼接查询参数并重载） |
 | `filter_auto` | bool | `false` | 过滤工具栏是否即改即查（默认点击“搜索”按钮才发起请求） |
+| `filter_all` | bool | `false` | 是否依据 columns 自动生成「全部列」筛选控件（按字段类型推断：文本/下拉/日期区间）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `create` | mixed | `null` | 「新增」弹窗按钮：'/xx/create' 或 ['page'=>..,'label'=>..,'title'=>..,'size'=>..,'frame'=>..,'icon'=>..,'class'=>..] |
 | `density` | mixed | `null` | 'compact' \| 'comfortable'（行间距密度；默认舒适） |
 | `options` | array | `[]` | 透传给底层插件的原生配置（递归合并，优先级最高） |
@@ -328,7 +330,7 @@ echo XfAdmin::dataTable([
 自定义表格（可编辑/带控件的复杂表）。
 
 > **类**：`zxf\XfAdmin\Components\Table\TablesCustom`
-> **文件**：`src/Components/Table/TablesCustom.php`（141 行）
+> **文件**：`src/Components/Table/TablesCustom.php`（124 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -380,7 +382,7 @@ echo XfAdmin::tablesCustom([
 |---|---|---|---|
 | `columns` | array | `[]` | 列定义数组 |
 | `rows` | array | `[]` | 行数据数组 |
-| `headerBg` | string | `''` | 表头背景语义色（如 `primary`） |
+| `headerBg` | string | `''` | 枚举白名单 `'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'` |
 | `striped` | bool | `true` | 是否斑马纹 |
 | `hover` | bool | `true` | 是否悬停高亮 |
 | `bordered` | bool | `true` | 是否显示边框 |
@@ -396,7 +398,7 @@ echo XfAdmin::tablesCustom([
 列表工具条 搜索 + 列筛选 + 每页条数 + 批量操作按钮 + 视图切换， 复刻文件管理器 / 订单等页面的列表工具栏。 'table'    => 'dt-orders',        // 关联的表格 id；留空则自动查找同容器中最近的表格 'search'   => true, 'searchPlaceholder' => '搜索...', 'filters'  => [ ['label'=>'全部', 'value'=>''], ['label'=>'待处理','value'=>'pending'] ], 'filterField' => 'status',        // 筛选绑定的列（列索引或 DataTables 列名） 'pageSize' => [10, 20, 50], 'actions'  => [ ['label'=>'导出','variant'=>'outline-secondary','icon'=>'ti ti-download'] ], 'views'    => [ ['label'=>'网格','icon'=>'ti ti-layout-grid','active'=>true], ['label'=>'列表','icon'=>'ti ti-list'] ], ]) 交互由 xfadmin.js 的 dt-search / dt-filter / dt-pagesize / dt-views 四个 widget 托管： 搜索与筛选为输入防抖后重绘、每页条数调用 page.len()、视图切换同步 active 并派发 xf.dtview.change 事件（detail: {view, button, api}）供业务切换渲染形态。。
 
 > **类**：`zxf\XfAdmin\Components\Table\DataTableToolbar`
-> **文件**：`src/Components/Table/DataTableToolbar.php`（121 行）
+> **文件**：`src/Components/Table/DataTableToolbar.php`（92 行）
 > **依赖插件**：无
 
 **用法示例**

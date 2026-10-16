@@ -42,7 +42,7 @@ class Roles extends Component
         if (empty($roles)) {
             return '';
         }
-        $title = $this->get('title') ? '<div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">'.$this->e($this->get('title')).'</h5><button class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>新建角色</button></div>' : '';
+        $title = $this->get('title') ? '<div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">'.$this->escape($this->get('title')).'</h5><button class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i>新建角色</button></div>' : '';
 
         $html = $title.'<div class="row g-3">';
         foreach ($roles as $r) {
@@ -52,9 +52,9 @@ class Roles extends Component
             $html .= '<div class="col-lg-4 col-md-6">';
             $html .= '<div class="card h-100">';
             $html .= '<div class="card-body">';
-            $html .= '<div class="d-flex align-items-center justify-content-between mb-2"><h6 class="mb-0"><i class="ti ti-shield-check text-'.$this->e($color).' me-1"></i>'.$this->e($r['name'] ?? '').'</h6>'
-                .'<span class="badge bg-'.$this->e($color).'-subtle text-'.$this->e($color).'">'.$this->e($r['guard'] ?? 'web').'</span></div>';
-            $html .= '<p class="text-muted small">'.$this->e($r['description'] ?? '').'</p>';
+            $html .= '<div class="d-flex align-items-center justify-content-between mb-2"><h6 class="mb-0"><i class="ti ti-shield-check text-'.$this->escape($color).' me-1"></i>'.$this->escape($r['name'] ?? '').'</h6>'
+                .'<span class="badge bg-'.$this->escape($color).'-subtle text-'.$this->escape($color).'">'.$this->escape($r['guard'] ?? 'web').'</span></div>';
+            $html .= '<p class="text-muted small">'.$this->escape($r['description'] ?? '').'</p>';
             $html .= '<div class="d-flex gap-4 mb-3"><div><div class="fw-bold">'.(int) ($r['users_count'] ?? 0).'</div><small class="text-muted">用户</small></div>'
                 .'<div><div class="fw-bold">'.(int) ($r['permissions_count'] ?? 0).'</div><small class="text-muted">权限</small></div></div>';
             $html .= '<div class="d-flex gap-2"><button class="btn btn-sm btn-light flex-fill"><i class="ti ti-key me-1"></i>权限</button><button class="btn btn-sm btn-light"><i class="ti ti-edit"></i></button><button class="btn btn-sm btn-light text-danger"><i class="ti ti-trash"></i></button></div>';

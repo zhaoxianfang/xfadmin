@@ -58,9 +58,9 @@ class OrderTrackingTimeline extends Component
             $html .= '<div class="xf-order-track-step text-center position-relative" style="flex:1;">';
             $html .= '<div class="rounded-circle '.$dotCls.' mx-auto d-flex align-items-center justify-content-center" style="width:36px;height:36px;z-index:1;">'
                 .'<i class="ti '.($done ? 'ti-check' : ($current ? 'ti-truck' : 'ti-circle')).' '.($done || $current ? 'text-white' : 'text-muted').'"></i></div>';
-            $html .= '<div class="mt-2 '.$titleCls.'">'.$this->e($s['title'] ?? '').'</div>';
+            $html .= '<div class="mt-2 '.$titleCls.'">'.$this->escape($s['title'] ?? '').'</div>';
             if (! empty($s['desc'])) {
-                $html .= '<small class="text-muted d-block">'.$this->e($s['desc']).'</small>';
+                $html .= '<small class="text-muted d-block">'.$this->escape($s['desc']).'</small>';
             }
             $html .= '</div>';
         }

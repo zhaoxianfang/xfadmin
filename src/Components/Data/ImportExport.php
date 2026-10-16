@@ -66,14 +66,14 @@ class ImportExport extends Component
         if ($exports !== []) {
             $items = '';
             foreach ($exports as $ex) {
-                $items .= '<li><a class="dropdown-item" href="'.$this->e($this->safeUrl($ex['url']))
-                    .'" data-format="'.$this->e($ex['format'] ?? '').'">'
-                    .$this->e($ex['label']).'</a></li>';
+                $items .= '<li><a class="dropdown-item" href="'.$this->escape($this->safeUrl($ex['url']))
+                    .'" data-format="'.$this->escape($ex['format'] ?? '').'">'
+                    .$this->escape($ex['label']).'</a></li>';
             }
             $exportHtml = '<div class="btn-group">'
                 .'<button type="button" class="btn btn-soft-primary dropdown-toggle" '
                 .'data-bs-toggle="dropdown" aria-expanded="false">'
-                .'<i class="ti ti-download"></i> '.$this->e($this->get('export_label')).'</button>'
+                .'<i class="ti ti-download"></i> '.$this->escape($this->get('export_label')).'</button>'
                 .'<ul class="dropdown-menu">'.$items.'</ul></div>';
         }
 
@@ -81,13 +81,13 @@ class ImportExport extends Component
         $import = $this->get('import');
         if (is_array($import) && ($import['url'] ?? '') !== '') {
             $modalId = $id.'-import';
-            $accept = $this->e($import['accept'] ?? '.csv,.xlsx');
-            $title = $this->e($import['title'] ?? '导入数据');
-            $url = $this->e($this->safeUrl($import['url']));
+            $accept = $this->escape($import['accept'] ?? '.csv,.xlsx');
+            $title = $this->escape($import['title'] ?? '导入数据');
+            $url = $this->escape($this->safeUrl($import['url']));
             $csrf = $this->get('csrf');
             $importHtml = '<button type="button" class="btn btn-soft-success" '
                 .'data-bs-toggle="modal" data-bs-target="#'.$modalId.'">'
-                .'<i class="ti ti-upload"></i> '.$this->e($this->get('import_label')).'</button>'
+                .'<i class="ti ti-upload"></i> '.$this->escape($this->get('import_label')).'</button>'
                 .'<div class="modal fade" id="'.$modalId.'" tabindex="-1" aria-hidden="true">'
                 .'<div class="modal-dialog"><form class="modal-content" action="'.$url
                 .'" method="post" enctype="multipart/form-data">'

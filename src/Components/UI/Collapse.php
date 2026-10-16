@@ -75,7 +75,7 @@ class Collapse extends Component
             ? '<div class="card card-body mt-2 mb-0">'.$this->raw($this->get('body')).'</div>'
             : $this->raw($this->get('body'));
 
-        $html .= '<div class="'.$collapseClass.'" id="'.$this->e($id).'">'.$inner.'</div>';
+        $html .= '<div class="'.$collapseClass.'" id="'.$this->escape($id).'">'.$inner.'</div>';
 
         return $html;
     }

@@ -98,17 +98,17 @@ class CommentThread extends Component
         $avatar = $c['avatar'] ?? '';
         // 评论者头像：统一 INSPINIA 规范 .avatar 包裹结构（avatar-md=36px）；占位缩写与图片同尺寸
         $avatarHtml = $avatar !== ''
-            ? '<span class="avatar avatar-md me-2 flex-shrink-0"><img src="'.$this->e($this->img($avatar)).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>'
-            : '<span class="avatar avatar-md me-2 flex-shrink-0"><span class="avatar-title bg-light text-secondary rounded-circle fw-semibold">'.$this->e(mb_substr((string) ($c['user'] ?? '?'), 0, 1)).'</span></span>';
+            ? '<span class="avatar avatar-md me-2 flex-shrink-0"><img src="'.$this->escape($this->img($avatar)).'" class="img-fluid rounded-circle" alt="" style="object-fit:cover;"></span>'
+            : '<span class="avatar avatar-md me-2 flex-shrink-0"><span class="avatar-title bg-light text-secondary rounded-circle fw-semibold">'.$this->escape(mb_substr((string) ($c['user'] ?? '?'), 0, 1)).'</span></span>';
         $html = '<div class="d-flex mb-3 '.($depth > 1 ? 'ms-4 ps-3 border-start' : '').'">';
         $html .= $avatarHtml;
         $html .= '<div class="flex-grow-1">';
-        $html .= '<div class="d-flex align-items-center"><h6 class="mb-0">'.$this->e($c['user'] ?? '').'</h6>'
-            .'<small class="text-muted ms-2">'.$this->e($c['time'] ?? '').'</small></div>';
-        $html .= '<p class="mb-1">'.$this->e($c['text'] ?? '').'</p>';
+        $html .= '<div class="d-flex align-items-center"><h6 class="mb-0">'.$this->escape($c['user'] ?? '').'</h6>'
+            .'<small class="text-muted ms-2">'.$this->escape($c['time'] ?? '').'</small></div>';
+        $html .= '<p class="mb-1">'.$this->escape($c['text'] ?? '').'</p>';
         $html .= '<div class="small text-muted d-flex gap-3">';
         if (isset($c['likes'])) {
-            $html .= '<span><i class="ti ti-heart"></i> '.$this->e($c['likes']).'</span>';
+            $html .= '<span><i class="ti ti-heart"></i> '.$this->escape($c['likes']).'</span>';
         }
         if ($depth < (int) $this->get('maxDepth')) {
             $html .= '<a href="#" class="text-decoration-none" data-xf="reply">回复</a>';

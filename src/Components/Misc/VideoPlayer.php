@@ -86,7 +86,7 @@ class VideoPlayer extends Component
         }
         // poster 为图片路径，走 img() 解析（外链原样 / 相对路径经 asset）；src 走 safeUrl 拦截伪协议
         if ($poster) {
-            $attrs .= ' poster="'.$this->e($this->img($poster)).'"';
+            $attrs .= ' poster="'.$this->escape($this->img($poster)).'"';
         }
 
         // width 支持任意合法 CSS 长度（此前仅 '100%' 生效）；cssLen 拦截分号注入等非法值并回退 100%
@@ -95,11 +95,11 @@ class VideoPlayer extends Component
 
         $html = '<div class="xf-video-player"'.$style.'>';
         if ($title) {
-            $html .= '<h5 class="mb-3">'.$this->e($title).'</h5>';
+            $html .= '<h5 class="mb-3">'.$this->escape($title).'</h5>';
         }
         if ($src) {
-            $html .= '<div class="ratio ratio-16x9"><video id="'.$this->e($id).'"'.$attrs.' class="w-100 rounded">';
-            $html .= '<source src="'.$this->e($this->safeUrl($src)).'" type="'.$this->e($type).'">';
+            $html .= '<div class="ratio ratio-16x9"><video id="'.$this->escape($id).'"'.$attrs.' class="w-100 rounded">';
+            $html .= '<source src="'.$this->escape($this->safeUrl($src)).'" type="'.$this->escape($type).'">';
             $html .= '您的浏览器不支持视频播放。</video></div>';
         } else {
             $html .= '<div class="ratio ratio-16x9 bg-dark rounded d-flex align-items-center justify-content-center">';

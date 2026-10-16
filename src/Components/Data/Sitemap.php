@@ -62,9 +62,9 @@ class Sitemap extends Component
             $title = (string) ($col['title'] ?? '');
             $links = (array) ($col['links'] ?? []);
 
-            $html .= '<div class="'.$this->e($colClass).'"><div class="card"><div class="card-body">';
+            $html .= '<div class="'.$this->escape($colClass).'"><div class="card"><div class="card-body">';
             if ($title) {
-                $html .= '<h5 class="fw-bold text-uppercase">'.$this->e($title).'</h5>';
+                $html .= '<h5 class="fw-bold text-uppercase">'.$this->escape($title).'</h5>';
             }
             if (! empty($links)) {
                 $html .= '<ul class="list-unstyled sitemap-list mt-3">';
@@ -98,11 +98,11 @@ class Sitemap extends Component
         $url = $this->safeUrl($link['url'] ?? 'javascript:void(0)', 'javascript:void(0)');
 
         $html = '<li>';
-        $html .= '<a href="'.$this->e($url).'" class="'.$this->e($color).' fw-semibold">';
+        $html .= '<a href="'.$this->escape($url).'" class="'.$this->escape($color).' fw-semibold">';
         if ($icon) {
-            $html .= '<i class="ti '.$this->e($icon).' me-1 text-muted"></i>';
+            $html .= '<i class="ti '.$this->escape($icon).' me-1 text-muted"></i>';
         }
-        $html .= $this->e($label).'</a>';
+        $html .= $this->escape($label).'</a>';
 
         if (! empty($children)) {
             $html .= '<ul>';
@@ -110,7 +110,7 @@ class Sitemap extends Component
                 if (is_array($child)) {
                     $html .= $this->renderLink($child);
                 } else {
-                    $html .= '<li><a href="'.$this->e($url).'" class="link-reset">'.$this->e((string) $child).'</a></li>';
+                    $html .= '<li><a href="'.$this->escape($url).'" class="link-reset">'.$this->escape((string) $child).'</a></li>';
                 }
             }
             $html .= '</ul>';
