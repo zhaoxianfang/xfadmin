@@ -54,10 +54,13 @@ class Accordion extends Component
             $open = ! empty($item['open']);
 
             $html .= '<div class="accordion-item">';
-            $html .= '<h2 class="accordion-header"><button class="'.Html::cls('accordion-button', ['collapsed' => ! $open])
-                .'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$this->escape($itemId).'" aria-expanded="'.($open ? 'true' : 'false').'">'
+            // 无障碍：header 按钮声明 aria-controls 关联折叠面板；折叠面板用 aria-labelledby 反向关联 header，
+            // 供屏幕阅读器正确朗读「哪个按钮控制哪块内容」。
+            $html .= '<h2 class="accordion-header" id="'.$this->escape($itemId).'-header"><button class="'.Html::cls('accordion-button', ['collapsed' => ! $open])
+                .'" type="button" data-bs-toggle="collapse" data-bs-target="#'.$this->escape($itemId).'" aria-expanded="'.($open ? 'true' : 'false').'" aria-controls="'.$this->escape($itemId).'">'
                 .$this->escape($item['title'] ?? '').'</button></h2>';
             $html .= '<div id="'.$this->escape($itemId).'" class="'.Html::cls('accordion-collapse collapse', ['show' => $open]).'"'
+                .' aria-labelledby="'.$this->escape($itemId).'-header"'
                 .($this->get('always_open') ? '' : ' data-bs-parent="#'.$this->escape($id).'"').'>'
                 .'<div class="accordion-body">'.$this->raw($item['content'] ?? '').'</div></div>';
             $html .= '</div>';

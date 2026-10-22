@@ -125,6 +125,6 @@ class TaskList extends Component
         }
         $list .= '</div>';
 
-        return '<div class="card xf-tasklist">'.$head.$list.'</div>';
+        return '<div'.$this->attrs(['class' => 'card xf-tasklist']).'>'.$head.$list.'</div>';
     }
 }

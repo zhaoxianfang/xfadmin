@@ -102,7 +102,7 @@ class DashboardGrid extends Component
         $trendArrow = $trend >= 0 ? 'ti-arrow-up-right' : 'ti-arrow-down-right';
         $trendText = ($trend >= 0 ? '+' : '').$trend.'%';
 
-        return '<div class="col-sm-6 col-xl-3">'
+        return '<div'.$this->attrs(['class' => 'col-sm-6 col-xl-3']).'>'
             .'<div class="card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start">'
             .'<div><span class="text-muted small">'.$this->escape($s['title'] ?? '').'</span>'
             .'<h3 class="mt-1 mb-1">'.$this->escape($s['value'] ?? '').'</h3>'

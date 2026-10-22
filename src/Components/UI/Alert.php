@@ -11,6 +11,10 @@ use zxf\XfAdmin\Support\Html;
  * 警告提示框
  *
  * XfAdmin::alert(['variant' => 'success', 'text' => '操作成功', 'dismissible' => true, 'icon' => 'ti ti-check'])
+ * XfAdmin::alert(['variant' => 'warning', 'text' => '请执行 <code>php artisan migrate</code>', 'escape' => false])
+ *
+ * 安全说明：text 默认经 escape() 转义，避免富文本场景的 XSS；
+ * 仅当 text 确为可信的静态 HTML 时，才显式传 'escape' => false。
  */
 class Alert extends Component
 {
@@ -28,6 +32,7 @@ class Alert extends Component
             'icon' => null,
             'dismissible' => false,
             'soft' => false,   // bg-*-subtle 柔和风格
+            'escape' => true,  // text 是否转义：true=转义（默认，安全）；false=原样输出 HTML
         ];
     }
 
@@ -66,7 +71,8 @@ class Alert extends Component
         if ($this->get('heading')) {
             $html .= '<h5 class="alert-heading">'.$this->escape($this->get('heading')).'</h5>';
         }
-        $html .= $this->escape($this->get('text')).'</div>';
+        // text 是否转义：默认转义（安全）；显式 'escape' => false 时原样输出 HTML（如 <code>/<br>）
+        $html .= ($this->get('escape') ? $this->escape($this->get('text')) : $this->raw($this->get('text'))).'</div>';
         if ($this->get('dismissible')) {
             $html .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
         }

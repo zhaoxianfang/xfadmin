@@ -135,6 +135,23 @@ json_encode($config,
 `Alert.text`、`Ribbon.text`、`ComingSoon.message`、`Maintenance.message`、
 `Widget.value`、`PricingCard.price`。
 
+### C. 受控 URL 槽位缺失 safeUrl（存储型 XSS）
+
+用户可控的链接字段（`url`/`href`）若仅经 `e()` 转义（不拦截伪协议）直接输出到
+`href="..."`，攻击者可注入 `javascript:alert(1)` 形成**存储型 XSS**——
+`e()` 只转义引号，不拦截 `javascript:` 协议。修复方式：先 `safeUrl($url, '#')` 再过 `e()` 输出。
+
+| # | 组件 | 字段 | 修复 |
+|---|---|---|---|
+| 1 | `ContactCard` | `url`（姓名链接 + 查看资料按钮） | `e($this->safeUrl($c['url'] ?? '#', '#'))` |
+| 2 | `Companies` | `url`（公司名链接） | 同上 |
+
+> 排查方法：全量 grep `href=` 与 `escape(`，逐一核实变量来源。结论：
+> 其余所有 `href`/`src` 输出已走 `safeUrl()` / `img()` 白名单（含 Orders/Clients/
+> SellerDetails/IssueTracker/Terms/BlogList/Menu/TopNav/Topbar/Sidenav/Footer/
+> AuthPage/DataTable 等），或输出 `#` / `javascript:void(0)` 安全字面量；
+> 全部用户可控图片地址均经 `img()` 净化。
+
 ## 6. 审计工具
 
 包内提供运行时模糊审计脚本：
@@ -178,7 +195,7 @@ use zxf\XfAdmin\Support\Html;
 3. ✅ 用户可控数据放进内联 `<script>` 时用 `Html::scriptJson()`；
 4. ⚠️ 不要把用户输入作为 `variant`/`size`/`type`/`class`/`style` 等结构性字段
    （虽经白名单/转义，但语义上不应由用户控制）；
-5. ✅ 链接类字段（`url`/`href`/`src`）由 `safeUrl()` 兜底，但仍建议校验业务合法性；
+5. ⚠️ 链接类字段（`url`/`href`）在组件内**必须**经 `safeUrl()` 输出（拦截 `javascript:` 伪协议，防存储型 XSS）；图片地址经 `img()` 净化；业务侧仍建议校验业务合法性；
 6. ✅ 富文本编辑器（Quill）的初始 HTML 是 `raw()` 输出的 —— **必须保证可信**；
    Summernote 模式则为 `e()` 转义。
 

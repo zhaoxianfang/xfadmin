@@ -128,9 +128,19 @@ use zxf\XfAdmin\Support\Html;
         if (isset($col['actions']) && is_array($col['actions'])) {
             return ['type' => 'actions', 'items' => array_values($col['actions'])];
         }
-        // 显式 render
+        // 显式 render：仅接受「前端渲染类型字符串」或「前端渲染配置数组」。
+        // ⚠️ 服务端渲染闭包应放在 format 键（由 DataTableService 在服务端应用），绝不可放在 render：
+        // 若误传 Closure / 对象，此处降级为普通文本列（返回 null）而非 (string) 强转，
+        // 避免 "Object of class Closure could not be converted to string" 致命错误扩散到所有调用方。
         if (isset($col['render'])) {
-            return is_array($col['render']) ? $col['render'] + ['type' => 'text'] : ['type' => (string) $col['render']];
+            if (is_array($col['render'])) {
+                return $col['render'] + ['type' => 'text'];
+            }
+            if (is_string($col['render'])) {
+                return ['type' => $col['render']];
+            }
+
+            return null;
         }
         // 快捷键：'switch' => '/url'、'copy' => true、'tags' => true ...
         foreach (self::RENDER_SHORTCUTS as $key) {

@@ -62,7 +62,7 @@ class Carousel extends Component
         if ($this->get('indicators')) {
             $html .= '<div class="carousel-indicators">';
             foreach ($items as $i => $item) {
-                $html .= '<button type="button" data-bs-target="#'.$this->escape($id).'" data-bs-slide-to="'.$i.'"'.($i === 0 ? ' class="active" aria-current="true"' : '').'></button>';
+                $html .= '<button type="button" data-bs-target="#'.$this->escape($id).'" data-bs-slide-to="'.$i.'"'.($i === 0 ? ' class="active" aria-current="true"' : '').' aria-label="'.$this->escape(sprintf('第 %d 张', $i + 1)).'"></button>';
             }
             $html .= '</div>';
         }

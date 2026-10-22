@@ -77,7 +77,7 @@ class AccountSettingsPanel extends Component
         }
         $panes .= '</div>';
 
-        return '<div class="card border-0 shadow-sm"><div class="card-body">'
+        return '<div'.$this->attrs(['class' => 'card border-0 shadow-sm']).'><div class="card-body">'
             .'<h5 class="mb-3">'.$this->escape($title).'</h5>'
             .'<div class="row g-0"><div class="col-md-3 border-end">'.$nav.'</div>'
             .'<div class="col-md-9 ps-4">'.$panes.'</div></div>'

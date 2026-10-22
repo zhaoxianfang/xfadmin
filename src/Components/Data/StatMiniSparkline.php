@@ -69,7 +69,7 @@ class StatMiniSparkline extends Component
         $iconHtml = $icon ? '<span class="avatar-sm rounded-circle bg-'.$variant.'-subtle text-'.$variant
             .' d-inline-flex align-items-center justify-content-center mb-2"><i class="'.$this->iconClass($icon).'"></i></span>' : '';
 
-        return '<div class="card border-0 shadow-sm h-100">'
+        return '<div'.$this->attrs(['class' => 'card border-0 shadow-sm h-100']).'>'
             .'<div class="card-body">'
             .$iconHtml
             .'<div class="d-flex align-items-end justify-content-between">'

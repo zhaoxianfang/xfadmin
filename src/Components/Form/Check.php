@@ -79,11 +79,11 @@ class Check extends Component
         $describe = $helpId !== null ? ' aria-describedby="'.$this->escape($helpId).'"' : '';
         $invalid = $this->get('state') === 'invalid' ? ' aria-invalid="true"' : '';
 
-        return '<div class="'.Html::cls('form-check', [
+        return '<div'.$this->attrs(['class' => Html::cls('form-check', [
             'form-switch' => $isSwitch,
             'form-check-inline' => $this->get('inline'),
             'form-check-reverse' => $this->get('reverse'),
-        ]).'">'
+        ])]).'>'
             .'<input class="form-check-input'.$state.'" type="'.($isSwitch ? 'checkbox' : $this->escape($type)).'"'
             .($isSwitch ? ' role="switch"' : '')
             .Html::attrs([

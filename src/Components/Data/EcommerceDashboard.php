@@ -113,7 +113,7 @@ class EcommerceDashboard extends Component
         $trendClass = str_starts_with($trend, '+') ? 'text-success' : 'text-danger';
         $trendIcon = str_starts_with($trend, '+') ? 'ti-arrow-up' : 'ti-arrow-down';
 
-        return '<div class="col-xxl-3 col-md-6"><div class="card"><div class="card-body"><div class="d-flex align-items-center">'
+        return '<div'.$this->attrs(['class' => 'col-xxl-3 col-md-6']).'><div class="card"><div class="card-body"><div class="d-flex align-items-center">'
             .'<div class="flex-shrink-0"><div class="rounded-3 bg-'.$color.'-subtle p-3">'
             .'<i class="ti '.$icon.' fs-24 text-'.$color.'"></i></div></div>'
             .'<div class="flex-grow-1 ms-3"><h6 class="text-muted mb-1 small">'.$label.'</h6>'

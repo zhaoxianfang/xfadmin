@@ -72,6 +72,10 @@ class CommandPalette extends Component
             'class' => 'modal fade xf-cmd-palette',
             'id' => $id,
             'tabindex' => '-1',
+            // 无障碍：命令面板本质为模态对话框，与 Modal 组件对齐声明 dialog 语义
+            'role' => 'dialog',
+            'aria-modal' => 'true',
+            'aria-label' => $this->escape($this->get('title')),
             'aria-hidden' => 'true',
         ]).'>'
             .'<div class="modal-dialog modal-dialog-centered modal-sm" style="max-width:520px">'
@@ -79,7 +83,7 @@ class CommandPalette extends Component
             .'<div class="modal-body p-2">'
             .'<div class="input-group input-group-sm">'
             .'<span class="input-group-text bg-transparent border-0"><i class="ti ti-search"></i></span>'
-            .'<input type="text" class="form-control border-0 shadow-none xf-cmd-input" placeholder="'.$this->escape($this->get('placeholder')).'" autocomplete="off">'
+            .'<input type="text" class="form-control border-0 shadow-none xf-cmd-input" placeholder="'.$this->escape($this->get('placeholder')).'" aria-label="'.$this->escape($this->get('placeholder') ?: '搜索命令').'" autocomplete="off">'
             .'</div>'
             .'<div class="list-group list-group-flush xf-cmd-list mt-1" style="max-height:340px;overflow:auto">'.$list.'</div>'
             .'<div class="text-muted small text-center py-3 xf-cmd-empty d-none">'.$this->escape($this->get('empty')).'</div>'

@@ -79,7 +79,7 @@ class ChatConversationPanel extends Component
             .'<button class="btn btn-primary" type="button"><i class="ti ti-send"></i></button></div>';
         $panel .= '</div>';
 
-        return '<div class="card border-0 shadow-sm" style="height:560px;">'
+        return '<div'.$this->attrs(['class' => 'card border-0 shadow-sm', 'style' => 'height:560px;']).'>'
             .'<div class="row g-0 h-100">'
             .'<div class="col-auto">'.$list.'</div>'
             .'<div class="col">'.$panel.'</div>'

@@ -39,6 +39,7 @@ class Pagination extends Component
             'align' => 'center',
             'rounded' => false,
             'arrows' => true,
+            'aria_label' => null,   // 分页导航无障碍标签（默认「分页导航」，可自定义如「用户列表分页」）
         ];
     }
 
@@ -75,14 +76,20 @@ class Pagination extends Component
 
         $item = function (string $label, ?int $page, bool $active = false, bool $disabled = false): string {
             $li = '<li class="'.Html::cls('page-item', ['active' => $active, 'disabled' => $disabled]).'">';
-            $li .= $disabled || $page === null
-                ? '<span class="page-link">'.$label.'</span>'
-                : '<a class="page-link" href="'.$this->escape($this->link($page)).'">'.$label.'</a>';
+            if ($disabled || $page === null) {
+                $li .= '<span class="page-link">'.$label.'</span>';
+            } else {
+                // 当前页链接声明 aria-current=page，供屏幕阅读器识别「你在此页」
+                $aria = $active ? ' aria-current="page"' : '';
+                $li .= '<a class="page-link" href="'.$this->escape($this->link($page)).'"'.$aria.'>'.$label.'</a>';
+            }
 
             return $li.'</li>';
         };
 
-        $html = '<nav'.$this->attrs().'><ul class="'.$ulClass.'">';
+        // 无障碍：为分页导航容器声明 aria-label，使屏幕阅读器能区分页面上多个 nav 区域
+        $ariaLabel = $this->get('aria_label') ?? '分页导航';
+        $html = '<nav'.$this->attrs(['aria-label' => $ariaLabel]).'><ul class="'.$ulClass.'">';
         if ($this->get('arrows')) {
             $html .= $item('<i class="ti ti-chevron-left"></i>', $current - 1, false, $current <= 1);
         }

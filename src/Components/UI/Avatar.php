@@ -78,7 +78,7 @@ class Avatar extends Component
             ? "bg-{$variant}-subtle text-{$variant}"
             : "bg-{$variant} text-white";
         $inner = ! empty($opts['icon'])
-            ? '<i class="'.$this->escape($opts['icon']).'"></i>'
+            ? '<i class="'.$this->escape($opts['icon']).'" aria-hidden="true"></i>'
             : $this->escape($opts['text'] ?? '');
 
         return '<span class="'.Html::cls('avatar', $size).'">'

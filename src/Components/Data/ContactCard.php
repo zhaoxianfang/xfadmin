@@ -76,7 +76,7 @@ class ContactCard extends Component
             }
             $html .= '</div>';
 
-            $html .= '<div><h5 class="mb-1"><a href="'.$this->escape($c['url'] ?? '#').'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h5>';
+            $html .= '<div><h5 class="mb-1"><a href="'.$this->escape($this->safeUrl($c['url'] ?? '#', '#')).'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h5>';
             if (! empty($c['role'])) {
                 $html .= '<p class="text-muted mb-1 small">'.$this->escape($c['role']).'</p>';
             }
@@ -97,7 +97,7 @@ class ContactCard extends Component
             // 操作
             $html .= '<div class="d-flex gap-2">'
                 .'<a href="#" class="btn btn-sm btn-soft-primary flex-fill"><i class="ti ti-message-circle me-1"></i>发消息</a>'
-                .'<a href="'.$this->escape($c['url'] ?? '#').'" class="btn btn-sm btn-soft-secondary flex-fill"><i class="ti ti-user me-1"></i>查看资料</a>'
+                .'<a href="'.$this->escape($this->safeUrl($c['url'] ?? '#', '#')).'" class="btn btn-sm btn-soft-secondary flex-fill"><i class="ti ti-user me-1"></i>查看资料</a>'
                 .'</div>';
 
             $html .= '</div></div></div>';

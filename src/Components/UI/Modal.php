@@ -70,6 +70,9 @@ class Modal extends Component
             'class' => Html::cls('modal', ['fade' => $this->get('fade')]),
             'id' => $id,
             'tabindex' => '-1',
+            // 无障碍：显式声明对话框角色与模态语义，供屏幕阅读器正确识别遮罩弹窗
+            'role' => 'dialog',
+            'aria-modal' => 'true',
             'aria-hidden' => 'true',
         ];
         // 无障碍：弹窗有关联标题时，声明 aria-labelledby 指向标题，供屏幕阅读器识别

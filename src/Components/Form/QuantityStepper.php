@@ -57,8 +57,13 @@ class QuantityStepper extends Component
         $btnSize = $size === 'sm' ? 'btn-sm' : ($size === 'lg' ? 'btn-lg' : '');
         $inputSize = $size === 'sm' ? 'form-control-sm' : ($size === 'lg' ? 'form-control-lg' : '');
 
-        return '<div class="xf-qty input-group '.$btnSize.' w-auto" data-xf="qtyStepper"'
-            .' data-min="'.$min.'" data-max="'.$max.'" data-step="'.$step.'">'
+        return '<div'.$this->attrs([
+            'class' => 'xf-qty input-group '.$btnSize.' w-auto',
+            'data-xf' => 'qtyStepper',
+            'data-min' => $min,
+            'data-max' => $max,
+            'data-step' => $step,
+        ]).'>'
             .'<button type="button" class="btn btn-outline-secondary xf-qty-dec" tabindex="-1">−</button>'
             .'<input type="text" class="form-control '.$inputSize.' text-center xf-qty-input" style="width:64px"'
             .' id="'.$this->escape($id).'" name="'.$this->escape($name).'" value="'.$value.'" inputmode="numeric" aria-label="'.$this->escape($name).'">'

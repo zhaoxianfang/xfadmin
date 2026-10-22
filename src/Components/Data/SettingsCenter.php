@@ -79,7 +79,7 @@ class SettingsCenter extends Component
             $first = false;
         }
 
-        return '<div class="card"><div class="card-header"><h4 class="mb-0">'.$title.'</h4></div>'
+        return '<div'.$this->attrs(['class' => 'card']).'><div class="card-header"><h4 class="mb-0">'.$title.'</h4></div>'
             .'<div class="card-body"><div class="row"><div class="col-md-3">'
             .'<div class="list-group list-group-flush '.$this->escape($this->get('nav_class', 'settings-nav')).'" role="tablist">'.$nav.'</div>'
             .'</div><div class="col-md-9"><div class="tab-content">'.$panels.'</div></div></div></div></div>';

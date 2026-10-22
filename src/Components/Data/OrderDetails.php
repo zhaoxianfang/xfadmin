@@ -140,6 +140,6 @@ class OrderDetails extends Component
             return '';
         }
 
-        return '<div class="d-flex justify-content-between mb-2"><span class="text-muted">'.$this->escape($label).'</span><span class="'.$cls.'">'.$this->escape($value).'</span></div>';
+        return '<div'.$this->attrs(['class' => 'd-flex justify-content-between mb-2']).'><span class="text-muted">'.$this->escape($label).'</span><span class="'.$cls.'">'.$this->escape($value).'</span></div>';
     }
 }

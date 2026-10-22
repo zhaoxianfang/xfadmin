@@ -132,6 +132,6 @@ class ProjectDetails extends Component
             return '';
         }
 
-        return '<div class="d-flex justify-content-between mb-2"><span class="text-muted">'.$this->escape($k).'</span><span class="fw-semibold">'.$this->escape($v).'</span></div>';
+        return '<div'.$this->attrs(['class' => 'd-flex justify-content-between mb-2']).'><span class="text-muted">'.$this->escape($k).'</span><span class="fw-semibold">'.$this->escape($v).'</span></div>';
     }
 }

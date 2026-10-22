@@ -190,7 +190,7 @@
 | 目录 | 内容 |
 |---|---|
 | [01-getting-started](01-getting-started/) | 安装、上手、核心概念、全局配置 |
-| [02-core-architecture](02-core-architecture/) | 架构、组件基类、资源、安全、数据协议、门面、扩展 |
+| [02-core-architecture](02-core-architecture/) | 架构、组件基类、资源、安全、数据协议、门面、扩展、**可访问性** |
 | [03-component-reference](03-component-reference/) | **226 个组件 + 页面模板**（每个含示例 + 全参数示例 + 参数表） |
 | [04-advanced-guide](04-advanced-guide/) | 页面布局、导航、数据表格、表单、图表、JS API、样式、认证页、模板映射、框架集成、**Cookbook** |
 | [05-operations](05-operations/) | 测试、部署、性能、问题排查 |
@@ -201,3 +201,14 @@
 
 > 找不到？在 [06-appendix/01-component-index.md](06-appendix/01-component-index.md)
 > （全部 215 个组件条目按字母序）用浏览器 Ctrl+F 搜索。
+
+---
+
+## 6. 安全与可访问性专题
+
+组件库的质量基线（所有组件必须遵循，维护时不得回退）：
+
+| 专题 | 文档 | 内容 |
+|---|---|---|
+| 安全与转义 | [02-core-architecture/04-security.md](02-core-architecture/04-security.md) | 转义工具、槽位语义分级、safeUrl、JSON 安全、**历史修复清单**（含 `ContactCard`/`Companies` 的 `javascript:` 伪协议 XSS）、审计工具、调用方安全清单 |
+| 可访问性 a11y | [02-core-architecture/08-accessibility.md](02-core-architecture/08-accessibility.md) | WCAG/WAI-ARIA 基线、各类组件无障碍要求、**历史修复清单**（12 个组件 ARIA 缺陷）、开发者自检清单、验证方式 |

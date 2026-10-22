@@ -109,6 +109,11 @@ class Button extends Component
         if ($this->get('href') !== null) {
             $attrs['href'] = $this->safeUrl($this->get('href'));
             $attrs['role'] = 'button';
+            // 链接按钮禁用态：补充 aria-disabled 与 tabindex=-1，避免禁用链接仍可被键盘聚焦/回车激活
+            if ($this->get('disabled')) {
+                $attrs['aria-disabled'] = 'true';
+                $attrs['tabindex'] = '-1';
+            }
 
             return '<a'.$this->attrs($attrs).'>'.$label.'</a>';
         }

@@ -89,6 +89,6 @@ class ModuleGrid extends Component
             $header .= '</div>';
         }
 
-        return '<div class="'.$this->escape($this->get('class')).'">'.$header.'<div class="row g-3">'.$body.'</div></div>';
+        return '<div'.$this->attrs(['class' => (string) $this->get('class', '')]).'>'.$header.'<div class="row g-3">'.$body.'</div></div>';
     }
 }

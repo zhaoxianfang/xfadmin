@@ -68,7 +68,7 @@ class DropzoneUpload extends Component
             .'<i class="ti ti-cloud-upload fs-2 text-primary"></i>'
             .'<p class="mb-1">'.$this->escape($this->get('hint')).'</p>'
             .'<small class="text-muted">支持 '.$this->escape($this->get('accept')).'，单文件 ≤ '.(int) $this->get('maxSize').'MB</small>'
-            .'<input type="file" class="xf-dropzone-input d-none" '.($this->get('multiple') ? 'multiple' : '').' accept="'.$this->escape($this->get('accept')).'">'
+            .'<input type="file" class="xf-dropzone-input d-none" aria-label="'.$this->escape($this->get('hint') ?: '选择文件上传').'" '.($this->get('multiple') ? 'multiple' : '').' accept="'.$this->escape($this->get('accept')).'">'
             .'<div class="xf-dropzone-list d-flex flex-wrap gap-2 justify-content-center mt-3"></div>'
             .'</div>';
 

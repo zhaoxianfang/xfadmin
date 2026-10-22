@@ -69,6 +69,10 @@ class Tooltip extends Component
         }
         if ($tag === 'button') {
             $attrs['type'] = 'button';
+        } elseif ($tag === 'a') {
+            // 与同包 Popover 对齐：a 标签触发元素补 role=button + tabindex=0，保证可聚焦与按钮语义
+            $attrs['tabindex'] = '0';
+            $attrs['role'] = 'button';
         }
 
         return '<'.$tag.$this->attrs($attrs).'>'.$this->raw($this->get('text')).'</'.$tag.'>';

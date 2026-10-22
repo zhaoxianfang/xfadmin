@@ -53,11 +53,16 @@ class Offcanvas extends Component
             $html .= '<button class="btn btn-'.$this->enum($this->get('trigger_variant'), array_merge(self::ENUM_VARIANT, self::ENUM_VARIANT_OUTLINE), 'primary').'" type="button" data-bs-toggle="offcanvas" data-bs-target="#'.$this->escape($id).'">'
                 .$this->escape($this->get('trigger')).'</button>';
         }
+        $titleId = $id.'-label';
         $attrs = [
             'class' => 'offcanvas offcanvas-'.$this->enum($this->get('placement'), self::ENUM_PLACEMENT, 'start'),
             'tabindex' => '-1',
             'id' => $id,
         ];
+        // 无障碍：有关联标题时声明 aria-labelledby，使屏幕阅读器朗读抽屉标题
+        if ($this->get('title') !== null) {
+            $attrs['aria-labelledby'] = $titleId;
+        }
         if (! $this->get('backdrop')) {
             $attrs['data-bs-backdrop'] = 'false';
         }
@@ -65,7 +70,7 @@ class Offcanvas extends Component
             $attrs['data-bs-scroll'] = 'true';
         }
         $html .= '<div'.$this->attrs($attrs).'>';
-        $html .= '<div class="offcanvas-header"><h5 class="offcanvas-title">'.$this->text($this->get('title')).'</h5>'
+        $html .= '<div class="offcanvas-header"><h5 class="offcanvas-title" id="'.$this->escape($titleId).'">'.$this->text($this->get('title')).'</h5>'
             .'<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>';
         $html .= '<div class="offcanvas-body">'.$this->raw($this->get('body')).'</div>';
         $html .= '</div>';

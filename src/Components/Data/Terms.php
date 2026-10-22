@@ -101,6 +101,6 @@ class Terms extends Component
             ? ' data-bs-spy="scroll" data-bs-target="#'.$id.'-toc" data-bs-smooth-scroll="true" tabindex="0"'
             : '';
 
-        return '<div class="row xf-terms" id="'.$id.'"'.$spy.'>'.$tocHtml.$body.'</div>';
+        return '<div'.$this->attrs(['class' => 'row xf-terms', 'id' => $id]).$spy.'>'.$tocHtml.$body.'</div>';
     }
 }

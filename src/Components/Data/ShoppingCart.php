@@ -60,7 +60,7 @@ class ShoppingCart extends Component
                 .'<h5 class="text-muted">'.$this->escape($this->get('emptyMessage')).'</h5>'
                 .'<a href="javascript:void(0)" class="btn btn-primary mt-2">继续购物</a></div>';
         }
-        $html = '<div class="row g-4"><div class="col-lg-8">';
+        $html = '<div'.$this->attrs(['class' => 'row g-4']).'><div class="col-lg-8">';
         $html .= '<div class="card"><div class="card-body p-0">';
         $html .= '<div class="table-responsive"><table class="table table-borderless mb-0">';
         $html .= '<thead class="border-bottom"><tr>'

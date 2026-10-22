@@ -163,7 +163,7 @@ class Customers extends Component
      */
     private function rowActions(): string
     {
-        return '<div class="dropdown"><button class="btn btn-sm btn-icon btn-light" type="button" aria-label="更多操作" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>'
+        return '<div'.$this->attrs(['class' => 'dropdown']).'><button class="btn btn-sm btn-icon btn-light" type="button" aria-label="更多操作" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>'
             .'<ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="#"><i class="ti ti-eye me-2"></i>查看</a></li>'
             .'<li><a class="dropdown-item" href="#"><i class="ti ti-edit me-2"></i>编辑</a></li>'
             .'<li><a class="dropdown-item text-danger" href="#"><i class="ti ti-trash me-2"></i>删除</a></li></ul></div>';

@@ -79,7 +79,7 @@ class Companies extends Component
         $followed = ! empty($c['followed']);
         $html .= '<div class="d-flex justify-content-between align-items-start">';
         $html .= '<div><h4 class="mb-1 fw-bold">'
-            .'<a href="'.$this->escape($c['url'] ?? '#').'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h4>';
+            .'<a href="'.$this->escape($this->safeUrl($c['url'] ?? '#', '#')).'" class="link-reset">'.$this->escape($c['name'] ?? '').'</a></h4>';
         if (! empty($c['website'])) {
             $html .= '<a href="#" class="text-muted text-decoration-none">'.$this->escape($c['website']).'</a>';
         }

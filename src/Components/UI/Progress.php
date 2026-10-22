@@ -41,7 +41,8 @@ class Progress extends Component
      */
     protected function bar(array $bar): string
     {
-        $value = (float) ($bar['value'] ?? 0);
+        // 数值钳制到 [0,100]：越界值既会撑破父容器宽度，又会与 aria-valuemax=100 矛盾导致读屏误读
+        $value = max(0.0, min(100.0, (float) ($bar['value'] ?? 0)));
         $class = Html::cls('progress-bar', 'bg-'.$this->enum($bar['variant'] ?? 'primary', self::ENUM_VARIANT, 'primary'), [
             'progress-bar-striped' => $bar['striped'] ?? $this->get('striped'),
             'progress-bar-animated' => $bar['animated'] ?? $this->get('animated'),
