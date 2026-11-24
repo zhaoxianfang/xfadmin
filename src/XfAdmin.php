@@ -99,6 +99,7 @@ use zxf\XfAdmin\Support\Builder\GridBuilder;
  * @method static Components\UI\Skeleton skeleton(array $options = []) // 骨架屏占位（加载占位动画）
  * @method static Components\UI\Icon icon(array $options = []) // 图标（Tabler 字体图标封装）
  * @method static Components\UI\Toast toast(array $options = []) // 轻提示（右上角自动消失吐司）
+ * @method static Components\UI\RowActions rowActions(array $options = []) // 行操作 AJAX 声明（确认+POST+toast+重载表格，逻辑在 xfadmin.js）
  * @method static Components\UI\Timeline timeline(array $options = []) // 时间线（纵向/横向事件流）
  * @method static Components\UI\Carousel carousel(array $options = []) // 轮播图（多图滑动，object-fit 封面）
  * @method static Components\UI\Breadcrumb breadcrumb(array $options = []) // 面包屑导航
@@ -121,6 +122,8 @@ use zxf\XfAdmin\Support\Builder\GridBuilder;
  * @method static Components\Layout\EmptyState emptyState(array $options = []) // 空状态页（无数据占位插画+文案）
  * @method static Components\Layout\LockScreen lockScreen(array $options = []) // 锁屏页（auth lock-screen，密码解锁）
  * @method static Components\Layout\AccountSettingsPanel accountSettingsPanel(array $options = []) // 账户设置面板（头像/密码/通知等卡片组）
+ * @method static Components\Layout\AdminBehaviors adminBehaviors(array $options = []) // 后台通用行为声明（退出登录/刷新缓存/图标选择器/主题持久化，逻辑在 xfadmin.js）
+ * @method static Components\Layout\AdminThemeHead adminThemeHead(array $options = []) // 后台主题提前应用脚本（置于 head 防首屏闪烁）
  * @method static Components\Form\Tags tags(array $options = []) // 标签输入（Tagify 多标签）
  * @method static Components\Form\MaskedInput maskedInput(array $options = []) // 输入掩码（电话/日期格式约束）
  * @method static Components\Form\Wizard wizard(array $options = []) // 向导（多步表单分步导航）
@@ -265,7 +268,7 @@ use zxf\XfAdmin\Support\Builder\GridBuilder;
 final class XfAdmin
 {
     /** 扩展包版本号（与 config/xfadmin.php 的 version 及 docs 更新日志保持同步，用于运行时自检） */
-    public const VERSION = '1.0.2';
+    public const VERSION = '1.0.3';
 
     /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
     private const AUTH_TYPE_ALIASES = [
@@ -310,6 +313,11 @@ final class XfAdmin
         // DIY 可视化布局器（拖拽组件 + 属性面板 + 服务端实时预览，对标 LayoutIt）
         'diyLayoutPage' => Components\Layout\DiyLayoutPage::class,
         'diy' => Components\Layout\DiyLayoutPage::class,
+        // 后台通用行为套件：退出登录 / 刷新缓存 / 图标选择器 / 主题持久化（声明式，逻辑在 xfadmin.js）
+        'adminBehaviors' => Components\Layout\AdminBehaviors::class,
+        'adminThemeHead' => Components\Layout\AdminThemeHead::class,
+        // 行操作 AJAX 通用行为（确认+POST+toast+重载表格，替代控制器内联脚本）
+        'rowActions' => Components\UI\RowActions::class,
         // 导航
         'menu' => Components\Navigation\Menu::class,
         // 栅格
@@ -719,7 +727,7 @@ final class XfAdmin
     /**
      * 返回扩展包版本号（等同于 XfAdmin::VERSION 常量）
      *
-     * @return string 语义化版本号，如 '1.0.2'
+     * @return string 语义化版本号，如 '1.0.3'
      */
     public static function version(): string
     {

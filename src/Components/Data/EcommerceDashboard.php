@@ -139,7 +139,6 @@ class EcommerceDashboard extends Component
             $chartValues = [18420, 21350, 16980, 28730, 32410, 25160, 30280];
         }
         $chartId = 'ec_'.$this->uid();
-        $safeCurrency = $this->escape($currency);
 
         // 声明式 ECharts：由 XFAdmin.scan() 统一初始化（支持自定义 chartData）
         $cfg = json_encode([
@@ -152,7 +151,9 @@ class EcommerceDashboard extends Component
                 'xAxis' => ['type' => 'category', 'boundaryGap' => false, 'data' => array_values($chartLabels)],
                 'yAxis' => ['type' => 'value', 'axisLabel' => ['formatter' => '{value}']],
                 'series' => [[
-                    'name' => '营收 ('.$safeCurrency.')',
+                    // 直接用原始货币符号：json_encode + 输出处 escape() 已保证安全，
+                    // 若先 escape()，'A&B' 会变成 'A&amp;B' 并在前端重复显示实体。
+                    'name' => '营收 ('.$currency.')',
                     'type' => 'line',
                     'smooth' => true,
                     'showSymbol' => true,

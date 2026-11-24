@@ -30,7 +30,6 @@ class Maintenance extends AuthPage
             'message' => '我们正在进行例行维护，请稍后再访问。',
             'image' => null,
             'contact' => null,
-            'card' => false,
         ]);
     }
 

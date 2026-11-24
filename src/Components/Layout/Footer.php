@@ -68,9 +68,10 @@ class Footer extends Component
         $right = $this->get('right') ?? XfAdmin::setting('footer.right');
         $icp = $this->get('icp') ?? XfAdmin::setting('footer.icp');
         $police = $this->get('police') ?? XfAdmin::setting('footer.police');
-        $links = $this->get('links') ?: XfAdmin::setting('footer.links', []);
+        // links/groups 语义上是数组：传标量时回落配置默认值，避免 foreach 触发 PHP Warning。
+        $links = is_array($v = $this->get('links')) && $v ? $v : (array) XfAdmin::setting('footer.links', []);
         $support = $this->get('support') ?? XfAdmin::setting('footer.support');
-        $groups = $this->get('groups') ?: XfAdmin::setting('footer.groups', []);
+        $groups = is_array($v = $this->get('groups')) && $v ? $v : (array) XfAdmin::setting('footer.groups', []);
         $brandUrl = $this->get('brand_url') ?? XfAdmin::setting('footer.brand_url');
 
         if ($text === null) {
@@ -90,11 +91,14 @@ class Footer extends Component
         if ($groups !== []) {
             $html .= '<div class="row footer-groups py-4">';
             foreach ($groups as $group) {
+                $group = (array) $group;
                 $html .= '<div class="col-6 col-md-3">';
                 $html .= '<div class="fw-semibold mb-2">'.$this->text($group['title'] ?? '').'</div>';
                 $html .= '<ul class="list-unstyled mb-0">';
                 foreach ((array) ($group['items'] ?? []) as $item) {
-                    $html .= '<li class="py-1"><a href="'.$this->safeUrl($item['url'] ?? '#').'">'.$this->text($item['label'] ?? '').'</a></li>';
+                    $item = (array) $item;
+                    // safeUrl 只做协议白名单，不做 HTML 属性转义；必须再经 escape()
+                    $html .= '<li class="py-1"><a href="'.$this->escape($this->safeUrl($item['url'] ?? '#')).'">'.$this->text($item['label'] ?? '').'</a></li>';
                 }
                 $html .= '</ul></div>';
             }
@@ -107,14 +111,16 @@ class Footer extends Component
         $html .= '<div class="col-md-6 '.$leftAlign.'">';
         $copyright = $this->text($text);
         if ($brandUrl !== null) {
-            $copyright = '<a href="'.$this->safeUrl($brandUrl).'">'.$copyright.'</a>';
+            // safeUrl 只做协议白名单，不做 HTML 属性转义；此处必须再经 escape()
+            // 防止 payload（如 "><xfxss…）闭合 href 属性造成存储型 XSS。
+            $copyright = '<a href="'.$this->escape($this->safeUrl($brandUrl)).'">'.$copyright.'</a>';
         }
         $html .= $copyright;
 
         // ICP 备案号
         if ($icp !== null && $icp !== '') {
             $icpUrl = $this->get('icp_url') ?? XfAdmin::setting('footer.icp_url', 'https://beian.miit.gov.cn/');
-            $html .= ' &nbsp;<a href="'.$this->safeUrl($icpUrl).'" rel="noopener" target="_blank">'.$this->text($icp).'</a>';
+            $html .= ' &nbsp;<a href="'.$this->escape($this->safeUrl($icpUrl)).'" rel="noopener" target="_blank">'.$this->text($icp).'</a>';
         }
 
         // 网安备案号
@@ -122,7 +128,7 @@ class Footer extends Component
             $policeUrl = $this->get('police_url') ?? XfAdmin::setting('footer.police_url', 'https://www.beian.gov.cn/');
             $policeIcon = $this->get('police_icon') ?? XfAdmin::setting('footer.police_icon', 'police.png');
             $iconHtml = '<img src="'.$this->img($policeIcon).'" alt="" class="police-icon me-1" style="height:16px;vertical-align:-2px;">';
-            $html .= ' &nbsp;<a href="'.$this->safeUrl($policeUrl).'" rel="noopener" target="_blank">'.$iconHtml.$this->text($police).'</a>';
+            $html .= ' &nbsp;<a href="'.$this->escape($this->safeUrl($policeUrl)).'" rel="noopener" target="_blank">'.$iconHtml.$this->text($police).'</a>';
         }
 
         // 技术支持文案
@@ -136,10 +142,11 @@ class Footer extends Component
         if ($links !== []) {
             $html .= '<nav class="footer-links d-none d-md-inline-block">';
             foreach ($links as $i => $link) {
+                $link = (array) $link;
                 if ($i > 0) {
                     $html .= '<span class="mx-2 text-muted">·</span>';
                 }
-                $html .= '<a href="'.$this->safeUrl($link['url'] ?? '#').'">'.$this->text($link['label'] ?? '').'</a>';
+                $html .= '<a href="'.$this->escape($this->safeUrl($link['url'] ?? '#')).'">'.$this->text($link['label'] ?? '').'</a>';
             }
             $html .= '</nav>';
         }

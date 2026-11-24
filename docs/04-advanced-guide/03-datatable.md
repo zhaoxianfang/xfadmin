@@ -80,7 +80,8 @@ echo XfAdmin::dataTable([
 | `scroll_x` | bool | `true` | 见 §6 |
 | `scroll_y` | bool\|string | `null` | `false` 不输出；否则默认 `'100%'` |
 | `fixed_header` | bool | `false` | 表头固定（FixedHeader 扩展） |
-| `fixed_columns` | bool\|array\|null | `null` | `true`→左 1 列；`['left'=>2,'right'=>1]`（CSS sticky） |
+| `fixed_columns` | bool\|array\|null | `null` | `true`→左 1 列；`['left'=>2,'right'=>1]` 前 2 后 1；`['indexes'=>[0,2,5]]` / `['indexes'=>[0=>'left',5=>'right']]` 固定任意列（含中间列）；`['fields'=>['id','status']]` 按字段名固定；`false` 关闭全部固定列。详见 §2.4 |
+| `auto_fix_actions` | bool | `true` | 自动把操作列精确固定到最右侧（始终可见）；显式 `fixed_columns` 声明优先。详见 §2.4.1 |
 | `defer_render` | bool\|null | `null` | `null` 且本地行数 ≥100 自动开启 |
 | `select` | bool\|string\|array | `false` | `true`→`{style:'multi'}` |
 | `state_save` | bool\|null | `null` | 保存分页/排序/搜索状态 |
@@ -101,12 +102,48 @@ echo XfAdmin::dataTable([
 | `row_detail` | bool\|array\|null | `null` | 行明细展开（见 §11） |
 | `row_group` | string\|array\|null | `null` | 行分组（见 §12） |
 | `dataset` | string | `''` | 数据集标识（批量/领域 op 提交给后端） |
-| `show_custom_search` | bool | `true` | 自定义搜索占位 `.custom-datatable-search` |
+| `show_custom_search` | bool\|array | `true` | 可折叠自定义搜索面板（见 §8.5）：`true` 按可搜索列自动生成；配合 `search_fields` 自定义字段 |
+| `search_fields` | array | `[]` | 自定义搜索字段 `[['data'=>'name','label'=>'名称','type'=>'text\|select\|daterange','options'=>[]]]`（见 §8.5） |
 | `created_row` | string\|null | `null` | 全局 JS 函数名 |
 | `draw_callback` | string\|null | `null` | 全局 JS 函数名 |
 
 ⚠️ **`show_header_btn` 是死选项**（声明但 `html()` 未使用）。
-⚠️ `row_url` **实际不生效**（实现缺陷：被后续整体赋值覆盖，且前端无消费逻辑）。
+✅ `row_url` **已生效**：整行点击跳转，URL 支持 `{字段}` 占位（如 `/admin/user/{id}`），行内链接/按钮点击不拦截（见 §2.2）。
+
+### 2.4 固定 / 冻结列 `fixed_columns`（支持首列、尾列及任意中间列）
+
+基于 CSS `sticky` 实现（无需 FixedColumns 扩展），开启后自动启用横向滚动。三种写法可组合，最终合并去重：
+
+```php
+// ① 连续规则（兼容历史）：前 2 列左固定、后 1 列右固定
+'fixed_columns' => ['left' => 2, 'right' => 1],
+
+// ② 精确列索引：可固定任意中间列；数组值为 left，键值对可指定方向
+'fixed_columns' => ['indexes' => [0, 2, 5]],                    // 索引 0/2/5 全部左固定
+'fixed_columns' => ['indexes' => [0 => 'left', 2 => 'left', 5 => 'right']], // 逐列指定方向
+
+// ③ 按数据字段名（按 columns 顺序自动解析为索引，最易维护）
+'fixed_columns' => ['fields' => ['id', 'name', 'status']],
+```
+
+- 索引从 0 开始，包含辅助列（行明细列 / 批量选择列会占用最左索引）；
+- 前端按「左固定列从左向右、右固定列从右向左」累计各自宽度作为 sticky 偏移，表头固定列层级更高；
+- 与 `fixed_header`（表头固定）可同时开启，实现「表头 + 关键列」双向冻结；
+
+#### 2.4.1 操作列自动右固定 `auto_fix_actions`（默认 true）
+
+**铁律**：所有含操作列的表格，操作列统一固定到最右侧、始终处于可视区域，业务侧无需逐表手写 `fixed_columns`。
+
+- 探测（`detectActionColumnIndexes()`）命中任一形态即识别为操作列：
+  1. `key` 为 `actions` / `action` / `operate` / `operation`；
+  2. `label` 为 `操作` / `actions` / `operation`（中英文标题）；
+  3. 存在 `actions` 数组配置（行操作按钮声明）；
+  4. `render` / `xfRender` 类型为 `actions` / `dropdown` / `buttons`。
+- **精确定位索引**：基于辅助列插入后的最终列定义定位，操作列不在末位也能正确冻结，不再假定「最后一列是操作列」。
+- **连续冻结组**：若操作列不在末位，从最左操作列起至末列整体纳入右侧冻结组——以免其右侧仍滚动的普通列被高 z-index 的冻结列遮挡。显式声明的方向仍优先。
+- **优先级**：显式 `fixed_columns` 声明的方向（`left`/`right`/`indexes`/`fields`）高于自动探测，绝不覆盖用户已声明的列；未声明的操作列仍自动右固定。
+- **关闭方式**：`fixed_columns=false` 关闭全部固定列；`auto_fix_actions=false` 仅关闭自动右固定；`scroll_x=false` 时不自动固定。
+- 前端 `fixedColumns.indexes` 经 JSON 序列化可能是对象或数组，`Object.keys()` 两种形态都支持。
 
 ## 3. 列定义 `columns`
 
@@ -215,13 +252,15 @@ echo XfAdmin::dataTable([
 | `rich` | 复合信息单元格 | `title` `sub` `meta` `icon` `avatar` `status` |
 | `page` | 弹窗页链接（复用 `data-xf-page-dialog`） | `url` `title` `size` `frame` |
 
-⚠️ 差异提示：
+✅ 自 v1.0.3 起，PHP 快捷渲染器白名单（`DataTable::RENDER_SHORTCUTS`）已与前端
+`XFAdmin.cellRenderers` **双向对齐**——上表所有渲染器均可直接用快捷写法
+（如 `'money' => true` 等价 `'render' => 'money'`），无需记忆两套清单：
+- `enum` 前端有实现（基于 `cfg.map`），`avatarStack` 已补齐（与 `avatarGroup` 等价）；
+- `ip` / `qr` / `money` / `filesize` 等已加入快捷白名单；
+- 仅 `actions`/`buttons`（由 `actions` 键处理）与 `text`（兜底渲染器）不作为快捷写法。
 
-- `enum`、`avatarStack` 在快捷键白名单中，但**前端无同名渲染器**，会静默回退 `text`；
-- `ip`、`qr`、`money`、`filesize` 在 `cellRenderers` 中存在，但**不在快捷键白名单**，
-  只能通过 `'render' => 'ip'`（字符串形式）使用；
-- 交互型渲染器（`actions`/`buttons`/`dropdown`/`input`/`select`/`switch`/`toggle`/
-  `sparkline`/`timeline`）在列未显式指定时自动关闭排序与搜索。
+交互型渲染器（`actions`/`buttons`/`dropdown`/`input`/`select`/`switch`/`toggle`/
+`sparkline`/`timeline`）在列未显式指定时自动关闭排序与搜索。
 
 ### 4.3 使用示例
 
@@ -341,15 +380,28 @@ if (! $disableScrollX) {
     scrollX = true; scrollCollapse = true; scrollY = 同上;
 }
 if ($auto_width !== null) autoWidth = (bool) $auto_width;      // 最后覆盖，优先级最高
-if ($fixed_columns 非空) scrollX = true;
-if (未设 fixed_columns 且存在 actions/dropdown/buttons 列) fixedColumns = {right:1}, scrollX = true;
+if ($fixed_columns !== false) {
+    if ($fixed_columns === true) $fixed_columns = ['left' => 1];
+    $fixedColumns = normalizeFixedColumns($fixed_columns ?: ['left'=>0,'right'=>0,'indexes'=>[]], $columns);
+    if ($auto_fix_actions !== false && $scroll_x !== false) {
+        $actionIndexes = detectActionColumnIndexes($columns);
+        if ($actionIndexes !== []) {
+            $groupStart = min($actionIndexes);                  // 最左操作列
+            for ($i = $groupStart; $i < count($columns); $i++) { // 连续冻结到末列，避免遮挡
+                $fixedColumns['indexes'][$i] ??= 'right';       // 显式声明优先，绝不覆盖
+            }
+        }
+    }
+    $hasFixed = left || right || indexes 非空;
+    if ($hasFixed) scrollX = true;   // 下发 fixedColumns / 强制 scrollX / 不套 table-responsive 三处共用此判定
+}
 ```
 
 | 规则 | 说明 |
 |---|---|
 | `scrollX + scrollY` 联合 | DataTables 2 生成协调的 `.dt-scroll-head/.dt-scroll-body` 双表，列宽一致；仅 scrollX 会严重错位 |
 | `.table-responsive` 包裹 | **仅在**（`scroll_x === false` 或 `auto_width === false`）且无 `fixed_columns` 时输出，避免双滚动条 |
-| 自动右固定操作列 | 未显式设置 `fixed_columns` 且存在 `actions`/`dropdown`/`buttons` 列时自动 `right:1` |
+| 自动右固定操作列 | 探测到操作列（key/label/actions 数组/render 四形态）时按**精确索引**固定到右侧；显式 `fixed_columns` 声明优先；`fixed_columns=false` 或 `auto_fix_actions=false` 或 `scroll_x=false` 时不自动固定 |
 | 列宽同步 | 前端双 RAF `columns.adjust()` + `draw.dt` +50ms + ResizeObserver(200ms 防抖) + `shown.bs.tab` + window resize(300ms) |
 
 ⚠️ `scroll_x => false` **不一定**关掉 scrollX（列数 > 10 时会强制开启）。
@@ -427,6 +479,39 @@ if (未设 fixed_columns 且存在 actions/dropdown/buttons 列) fixedColumns = 
 
 ⚠️ 前端控件名必须与后端 `filters` 键配对（对照表见
 [05-服务端数据协议 §11](../02-core-architecture/05-data-protocol.md#11-完整示例)）。
+
+### 8.5 自定义搜索面板 `show_custom_search` / `search_fields`
+
+与常显的 `filter_bar` 不同，`show_custom_search` 渲染一个**默认折叠**的搜索面板（点击「搜索」按钮展开），适合字段多、平时隐藏搜索区的列表页：
+
+```php
+XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'name', 'label' => '名称'],
+        ['key' => 'status', 'label' => '状态', 'options' => ['1' => '启用', '0' => '禁用']],
+    ],
+    'show_custom_search' => true,   // true=按 searchable 业务列自动生成；false=关闭
+    'search_fields' => [            // 可选：自定义字段，留空则自动生成
+        ['data' => 'name', 'label' => '名称', 'type' => 'text', 'placeholder' => '模糊匹配'],
+        ['data' => 'status', 'label' => '状态', 'type' => 'select', 'options' => ['1' => '启用', '0' => '禁用']],
+        ['data' => 'created_at', 'label' => '创建时间', 'type' => 'daterange'],
+    ],
+]);
+```
+
+| `search_fields[*]` 键 | 说明 |
+|---|---|
+| `data`（或 `name`） | 查询参数名 / 数据字段名（必填） |
+| `label` | 字段标签 |
+| `type` | `text`(默认) / `select` / `date` / `datetime-local` / `time` / `month` / `week` / `daterange` / `datetimerange` |
+| `options` | `select` 选项 `['值'=>'文案']` |
+| `placeholder` | 文本框占位 |
+| `width` | 栅格宽度（默认 `col-12 col-md-6 col-xl-4`） |
+| `html` | 完全自定义控件片段（原样注入） |
+
+- 服务端模式：采集所有 `[data-xf-search]` 值 → 追加到 ajax URL 同名参数重载；区间控件产出 `_from` / `_to`；
+- 本地模式：按字段名定位列索引做列搜索；
+- 与 `filter_bar` 相互独立、可同时使用（参数合并到请求）；自动生成的字段中，`select` 仅当列定义自带 `options` 时出现。
 
 ## 9. 「新增」按钮 `create`
 
@@ -550,7 +635,7 @@ if (未设 fixed_columns 且存在 actions/dropdown/buttons 列) fixedColumns = 
   "columnFilters": false, "processing": true, "showCustomSearch": true,
   "createdRow": null, "drawCallback": null,
   "filterBar": true, "filterAuto": false,
-  "fixedColumns": {"left":0,"right":1},
+  "fixedColumns": {"left":0,"right":0,"indexes":{"5":"right"}},
   "bulk": {"checkbox":true,"actions":[...]},
   "rowDetail": {"columns":null},
   "rowGroup": {"data":"dept","empty":"…"}
@@ -563,7 +648,7 @@ if (未设 fixed_columns 且存在 actions/dropdown/buttons 列) fixedColumns = 
 2. **`row_detail` 与 `responsive` 互斥**（二者都占首列）。
 3. **`auto_width => false` 连带影响 scrollX 判定**。
 4. **`scroll_x => false` 在列数 > 10 时仍会强制 scrollX**。
-5. **自动右固定操作列**：未显式设置 `fixed_columns` 且存在 actions/dropdown/buttons 列时自动加 `right:1`。
+5. **自动右固定操作列**：探测到操作列即按**精确索引**固定到右侧（非简单 `right:1` 取末列）；显式 `fixed_columns` 声明优先，`fixed_columns=false`/`auto_fix_actions=false`/`scroll_x=false` 可关闭。
 6. **`order` 用列索引会被辅助列顶偏**：启用 bulk/row_detail 后索引 0/1 是辅助列。
 7. **`data` 为空的列必须有 `defaultContent`**（组件已自动补 `''`）。
 8. **`print` 不能写成 `printHtml5`**。

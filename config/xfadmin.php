@@ -11,13 +11,15 @@ return [
     'assets_url' => '/zxf/xfadmin',
 
     // 资源版本号（附加 ?v= 用于浏览器缓存刷新，与 XfAdmin::VERSION 保持一致）
-    'version' => '1.0.2',
+    'version' => '1.0.3',
 
     // 主题默认外观（渲染到 <html> 的 data-* 属性，运行时可被浏览器端 config.js 持久化覆盖）
     //
-    // 注意：以下默认值与 INSPINIA v4.1.0 模板 assets/js/config.js 中的 defaultConfig
-    // 保持一致（skin=modern、menu.color=gradient），确保开箱即用的观感与模板完全相同。
-    // 修改前请同步核对模板 config.js，避免出现“与模板不一致”的外观偏差。
+    // 注意：INSPINIA v4.1.0 模板 assets/js/config.js 的 defaultConfig 在属性缺失时回落为
+    // skin=classic / menu.color=dark（theme 回落 light）；本包刻意采用 skin=modern /
+    // menu.color=gradient 作为项目默认，并由 Page 组件显式输出全部 data-* 主题属性，
+    // 避免被浏览器端 config.js 的默认值覆盖。修改前请同步核对模板 config.js 与
+    // Page::html() 的主题输出，避免出现首屏外观偏差。
     'theme' => [
         'skin' => 'modern',    // classic | material | modern | saas | flat
         'mode' => 'light',     // light | dark | system
@@ -54,4 +56,7 @@ return [
         'brand_url' => null,         // 版权品牌跳转链接
         'groups' => [],              // 多列链接组 [{title, items:[{label,url}]}]
     ],
+
+    // 验证码图片地址（null 时使用 Captcha 组件内置 SVG 占位图）
+    'captcha_url' => null,
 ];

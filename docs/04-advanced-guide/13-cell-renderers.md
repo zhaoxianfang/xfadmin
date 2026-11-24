@@ -375,9 +375,9 @@ XFAdmin.onCell('onNameClick', function (ctx) {
 
 ## 12. 陷阱清单
 
-1. `enum`、`avatarStack` 在**快捷键白名单**中，但前端无同名渲染器 → 静默回退 `text`；
-2. `ip`、`qr`、`money`、`filesize` 在 `cellRenderers` 中存在，但**不在快捷键白名单** →
-   只能通过 `'render' => 'ip'`（字符串形式）使用；
+1. 自 v1.0.3 起，快捷白名单与前端渲染器已双向对齐：`enum`（`cfg.map`）、`avatarStack`（等价 `avatarGroup`）、
+   `ip`/`qr`/`money`/`filesize` 均可直接用快捷写法 `'money' => true`；仅 `actions`/`buttons`/`text` 不提供快捷写法；
+2. 渲染器在前端执行，快捷写法的值若非 `false` 即视为启用（字符串会作为 `cfg.url`，数组会合并为 `cfg`）；
 3. `qr` 会自动注入 `qrcode` 资源（每个单元格生成二维码，大数据量慎用）；
 4. 交互型渲染器生成的控件会为每个单元格创建实例，列数多时影响渲染性能；
 5. `renders` 中 `{field}` 占位由 `XFAdmin.tpl` 插值，值会 HTML 转义（属性场景用 `tplRaw` 自行处理）；

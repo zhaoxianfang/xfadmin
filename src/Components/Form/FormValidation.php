@@ -11,7 +11,6 @@ use zxf\XfAdmin\Components\Component;
  * 表单验证展示（form-validation.html）
  *
  * XfAdmin::formValidation([
- *     'showBuiltin' => true, // 是否展示 HTML5 原生验证
  *     'formId' => 'myForm',
  *     'fields' => [
  *         ['label' => '用户名', 'name' => 'username', 'rules' => 'required|min:2', 'type' => 'text'],
@@ -29,7 +28,6 @@ class FormValidation extends Component
     protected function defaults(): array
     {
         return [
-            'showBuiltin' => true,
             'formId' => 'xf_form_val',
             'fields' => null,
         ];

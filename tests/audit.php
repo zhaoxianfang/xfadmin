@@ -195,6 +195,23 @@ function noCrash(string $name, callable $fn): void
     }
 }
 
+/** 把 PHP Warning/Notice 提升为可断言结果：数组型配置传标量时 foreach 不得告警 */
+function noPhpWarning(string $name, callable $fn): void
+{
+    $warnings = [];
+    set_error_handler(static function (int $no, string $str) use (&$warnings): bool {
+        $warnings[] = $str;
+
+        return true; // 抑制输出，统一在断言中报告
+    }, E_WARNING | E_NOTICE);
+    try {
+        $fn();
+    } finally {
+        restore_error_handler();
+    }
+    check($name, $warnings === [], implode('; ', array_slice($warnings, 0, 3)));
+}
+
 noCrash('FormElements cols=0 不触发除零', function () {
     XfAdmin::formElements(['sections' => [['title' => 't', 'cols' => 0, 'items' => [['name' => 'a']]]]]);
 });
@@ -282,6 +299,53 @@ noCrash('FieldWrapper help 文本被转义', function () {
     }
 });
 
+// 数组型默认键传标量：取值处已归一化，foreach 不得触发 Warning/Notice
+noPhpWarning('Footer links 传标量不触发 PHP Warning', function () {
+    $h = (string) XfAdmin::footer(['links' => 'not-an-array']);
+    if (! str_contains($h, '<footer')) {
+        throw new RuntimeException('Footer 未正常渲染');
+    }
+});
+noPhpWarning('Footer groups 传标量不触发 PHP Warning', function () {
+    $h = (string) XfAdmin::footer(['groups' => 'not-an-array']);
+    if (! str_contains($h, '<footer')) {
+        throw new RuntimeException('Footer 未正常渲染');
+    }
+});
+
+// 数组元素内的 url 属性：safeUrl 只做协议白名单，必须再经 escape() 转义 HTML 属性
+$urlPayload = '" onmouseover="alert(1)';
+$urlClean = static function (string $html): bool {
+    // 属性逃逸后必然出现裸 onmouseover="alert；正确转义后只应留下 &quot; 实体
+    return ! str_contains($html, 'onmouseover="alert') && str_contains($html, '&quot;');
+};
+check('Footer groups.items[].url 注入已转义', $urlClean((string) XfAdmin::footer([
+    'groups' => [['title' => 'G', 'items' => [['label' => 'L', 'url' => $urlPayload]]]],
+])));
+check('Footer links[].url 注入已转义', $urlClean((string) XfAdmin::footer([
+    'links' => [['label' => 'L', 'url' => $urlPayload]],
+])));
+check('Footer icp + icp_url 注入已转义', $urlClean((string) XfAdmin::footer([
+    'icp' => 'ICP', 'icp_url' => $urlPayload,
+])));
+check('Footer police + police_url 注入已转义', $urlClean((string) XfAdmin::footer([
+    'police' => 'POL', 'police_url' => $urlPayload,
+])));
+
+// 其它中危修复点的运行时断言
+check('ErrorPage 非法 code 回落 404（路径/文案无注入）', (static function (): bool {
+    $h = (string) XfAdmin::errorPage(['code' => '404" onmouseover="alert(1)']);
+
+    return str_contains($h, '404 - ') && ! str_contains($h, 'onmouseover=');
+})());
+check('EcommerceDashboard 货币符号不被双重转义', (static function (): bool {
+    $h = (string) XfAdmin::ecommerceDashboard(['currency' => 'A&B']);
+
+    return str_contains($h, 'A\\u0026B') && ! str_contains($h, 'A\\u0026amp\\u0026B');
+})());
+$cfg = require $root.'/config/xfadmin.php';
+check('config 提供 captcha_url 默认键', array_key_exists('captcha_url', $cfg) && $cfg['captcha_url'] === null);
+
 /* ------------------------------------------------------------------ */
 /* 4. 前端契约审计 */
 /* ------------------------------------------------------------------ */
@@ -340,6 +404,50 @@ check('打印作用域限定为 body.xf-printing', str_contains($css, 'body.xf-p
 check('preloader z-index 不高于 toast', ! preg_match('/#preloader\s*\{[^}]*z-index:\s*99999/', $css));
 check('select2 下拉层级低于模态框', ! preg_match('/\.select2-dropdown\s*\{[^}]*z-index:\s*1060/', $css));
 check('auth-split 无重复定义', substr_count($css, '.auth-split-wrapper { min-height: 100vh; }') === 1);
+
+// 弹窗 size 契约：data-xf-size 经浏览器解码后拼入 class，必须走白名单
+check('dialog size 使用白名单枚举且非法值回落 lg', str_contains($js, "var XF_DIALOG_SIZES = ['sm', 'lg', 'xl', 'fullscreen']")
+    && str_contains($js, "return XF_DIALOG_SIZES.indexOf(value) >= 0 ? value : 'lg';"));
+check('formDialog/pageDialog/dialog 三处尺寸拼接均调用 dialogSize', str_contains($js, "dialogSize(opts.size || 'lg')")
+    && substr_count($js, "dialogSize(opts.size)") >= 2);
+check('data-xf-size 触发点文档标注全量枚举与回落', str_contains($js, 'data-xf-size(sm|lg|xl|fullscreen，非法值回落 lg)'));
+
+// JSDoc / hover / CSS 契约
+$p1 = strpos($js, '确认弹窗（全包唯一实现');
+$p2 = $p1 !== false ? strpos($js, '气泡卡片（Popover）确认', $p1) : false;
+$confirmDoc = $p1 !== false && $p2 !== false ? substr($js, $p1, $p2 - $p1) : '';
+check('confirm JSDoc 注释块已闭合', $confirmDoc !== '' && substr_count($confirmDoc, '*/') === 1);
+check('单元格 hover 改用事件委托（无实例标记残留）', ! str_contains($js, '__xfHoverBound')
+    && str_contains($js, "document.addEventListener('mouseout'")
+    && str_contains($js, 'xfHoverEl.contains'));
+check('暗色模式非固定列 hover/条纹高亮不被基础背景覆盖', str_contains($css, 'td:not(.xf-dt-sticky):not(:hover)')
+    && str_contains($css, 'tr:hover > td:not(.xf-dt-sticky)')
+    && str_contains($css, 'tr:nth-of-type(odd) > td:not(.xf-dt-sticky)'));
+check('xfadmin.css 大括号配平', substr_count($css, '{') === substr_count($css, '}'));
+
+// 死配置 / 注释一致性契约
+check('ErrorPage/Maintenance/ComingSoon/FormValidation 死配置已移除', (static function () use ($root): bool {
+    foreach ([
+        'src/Components/Layout/ErrorPage.php',
+        'src/Components/Layout/Maintenance.php',
+        'src/Components/Layout/ComingSoon.php',
+        'src/Components/Form/FormValidation.php',
+    ] as $rel) {
+        $src = (string) file_get_contents($root.'/'.$rel);
+        if (str_contains($src, "'card' => false") || str_contains($src, "'showBuiltin' => true")) {
+            return false;
+        }
+    }
+
+    return true;
+})());
+check('config/Page 主题注释与 config.js 实际默认值(classic/dark)一致', (static function () use ($root): bool {
+    $cfgSrc = (string) file_get_contents($root.'/config/xfadmin.php');
+    $pageSrc = (string) file_get_contents($root.'/src/Components/Layout/Page.php');
+
+    return str_contains($cfgSrc, 'skin=classic') && str_contains($cfgSrc, 'menu.color=dark')
+        && str_contains($pageSrc, 'skin=classic') && str_contains($pageSrc, 'menu.color=dark');
+})());
 
 /* ------------------------------------------------------------------ */
 /* 5. HTML 结构完整性 */
@@ -424,6 +532,24 @@ foreach ($components as $alias => $class) {
 }
 $altIssues = array_values(array_unique($altIssues));
 check('所有 <img> 均带 alt 属性', $altIssues === [], implode(', ', array_slice($altIssues, 0, 12)));
+
+/* 声明式组件：data-xf-config 必须 HEX 转义，杜绝配置 JSON 破裂/属性注入 */
+$declarativeClasses = [
+    'src/Components/UI/RowActions.php',
+    'src/Components/Layout/AdminBehaviors.php',
+];
+$hexOk = true;
+foreach ($declarativeClasses as $rel) {
+    $src = @file_get_contents(__DIR__.'/../'.$rel);
+    if ($src === false
+        || ! str_contains($src, 'JSON_HEX_TAG')
+        || ! str_contains($src, 'JSON_HEX_AMP')
+        || ! str_contains($src, 'JSON_HEX_APOS')
+        || ! str_contains($src, 'JSON_HEX_QUOT')) {
+        $hexOk = false;
+    }
+}
+check('声明式组件 data-xf-config 统一 HEX 转义', $hexOk);
 
 /* ------------------------------------------------------------------ */
 echo PHP_EOL.($fail === 0

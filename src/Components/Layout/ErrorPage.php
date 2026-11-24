@@ -32,7 +32,6 @@ class ErrorPage extends AuthPage
             'message' => '',
             'home_url' => '/',
             'home_text' => '返回首页',
-            'card' => false,
         ]);
     }
 
@@ -43,7 +42,10 @@ class ErrorPage extends AuthPage
      */
     protected function html(): string
     {
-        $code = (string) $this->get('code');
+        // code 会被拼进包内 SVG 路径 images/svg/{$code}.svg，必须仅允许纯数字状态码；
+        // 非法值（含路径穿越/属性注入载荷）一律回落 404。
+        $rawCode = $this->get('code');
+        $code = (is_int($rawCode) || (is_string($rawCode) && ctype_digit($rawCode))) ? (string) $rawCode : '404';
         $image = $this->get('image');
         if ($image === null) {
             // 仅当包内确实提供对应插画时才引用，避免破图（支持任意错误码全量演示）

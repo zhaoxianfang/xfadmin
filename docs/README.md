@@ -93,6 +93,8 @@ echo XfAdmin::page([
 | [11-ThinkPHP 集成](04-advanced-guide/11-thinkphp.md) | 服务注册、助手函数、发布命令 |
 | [12-常见任务手册 Cookbook](04-advanced-guide/12-cookbook.md) | 22 个高频任务（分页/过滤/行内编辑/批量/导入导出/弹窗/上传…）的完整方案 |
 | [13-单元格渲染器手册](04-advanced-guide/13-cell-renderers.md) | 56 个渲染器逐个示例：列配置、cfg 参数、事件与自定义 |
+| [14-链式构建器](04-advanced-guide/14-builder-chain.md) | `grid()` / `admin()` PHP 链式拼 HTML，数据源多面板、页脚增强 |
+| [15-后台声明式开发](04-advanced-guide/15-declarative-admin.md) | 零内联 JS/HTML：rowActions / adminBehaviors / adminThemeHead / 基类助手 / 迁移清单 |
 
 ### 五、运维
 

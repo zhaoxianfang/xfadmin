@@ -32,7 +32,6 @@ class ComingSoon extends AuthPage
             'deadline' => null,
             'image' => null,
             'subscribe' => true,
-            'card' => false,
         ]);
     }
 

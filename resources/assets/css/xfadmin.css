@@ -1790,8 +1790,12 @@ table.table-striped > tbody > tr:nth-of-type(odd) > .xf-dt-sticky {
 table.table-striped > tbody > tr:nth-of-type(even) > .xf-dt-sticky {
     background-color: var(--bs-body-bg);
 }
-/* ⑥ 悬停行固定列背景 */
-tr:hover > .xf-dt-sticky {
+/* ⑥ 悬停行固定列背景
+   注意：必须显式覆盖 table-striped 的奇/偶行选择器，否则其特异性 (0,3,3) 高于
+   普通 tr:hover (0,2,2)，条纹行上悬停时固定列背景不随行高亮（左右固定列均受影响）。 */
+tr:hover > .xf-dt-sticky,
+table.table-striped > tbody > tr:nth-of-type(odd):hover > .xf-dt-sticky,
+table.table-striped > tbody > tr:nth-of-type(even):hover > .xf-dt-sticky {
     background-color: var(--bs-secondary-bg);
 }
 
@@ -1824,11 +1828,24 @@ form[data-xf-filter-for] .select2-container--default .select2-selection--single 
 [data-bs-theme="dark"] thead .xf-dt-sticky { background-color: var(--bs-tertiary-bg); }
 [data-bs-theme="dark"] table.table-striped > tbody > tr:nth-of-type(odd) > .xf-dt-sticky { background-color: var(--bs-tertiary-bg); }
 [data-bs-theme="dark"] table.table-striped > tbody > tr:nth-of-type(even) > .xf-dt-sticky { background-color: var(--bs-body-bg); }
-[data-bs-theme="dark"] tr:hover > .xf-dt-sticky { background-color: var(--bs-secondary-bg); }
-/* 暗色模式：非固定列也设背景色（避免透明穿透） */
-[data-bs-theme="dark"] div.dt-scroll-body td:not(.xf-dt-sticky),
-[data-bs-theme="dark"] div.dt-scroll-body th:not(.xf-dt-sticky) {
+/* 暗色模式悬停同样需覆盖 table-striped 奇/偶行高特异性选择器 */
+[data-bs-theme="dark"] tr:hover > .xf-dt-sticky,
+[data-bs-theme="dark"] table.table-striped > tbody > tr:nth-of-type(odd):hover > .xf-dt-sticky,
+[data-bs-theme="dark"] table.table-striped > tbody > tr:nth-of-type(even):hover > .xf-dt-sticky { background-color: var(--bs-secondary-bg); }
+/* 暗色模式：非固定列也设背景色（避免透明穿透）。
+   注意：不能无条件覆盖，否则会盖掉 Bootstrap 的 hover / table-striped 高亮：
+   :not(:hover) 让悬停行走下面的高亮规则；条纹/悬停再用同等或更高特异性显式声明。 */
+[data-bs-theme="dark"] div.dt-scroll-body td:not(.xf-dt-sticky):not(:hover),
+[data-bs-theme="dark"] div.dt-scroll-body th:not(.xf-dt-sticky):not(:hover) {
     background-color: var(--bs-body-bg);
+}
+/* 暗色模式非固定列：条纹行高亮（特异性高于上面的基础背景，覆盖 body-bg） */
+[data-bs-theme="dark"] div.dt-scroll-body tbody tr:nth-of-type(odd) > td:not(.xf-dt-sticky) {
+    background-color: var(--bs-tertiary-bg);
+}
+/* 暗色模式非固定列：悬停行高亮（定义在条纹之后，悬停时优先生效） */
+[data-bs-theme="dark"] div.dt-scroll-body tbody tr:hover > td:not(.xf-dt-sticky) {
+    background-color: var(--bs-secondary-bg);
 }
 [data-bs-theme="dark"] div.dt-scroll-body thead td,
 [data-bs-theme="dark"] div.dt-scroll-body thead th {

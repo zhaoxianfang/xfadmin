@@ -618,5 +618,320 @@ Assets::reset();
 $ieExportOnly = (string) XfAdmin::importExport(['exports' => [['label' => 'CSV', 'url' => '/x/csv']]]);
 check('importExport：仅导出时不渲染导入模态框', str_contains($ieExportOnly, 'dropdown-item') && ! str_contains($ieExportOnly, 'modal fade'));
 
+/* ===== DataTable 增强能力回归（固定任意列 / 自定义搜索 / 渲染器对齐）===== */
+
+// 1. fixed_columns 精确列索引：固定中间列（indexes 含中间索引，方向正确）
+Assets::reset();
+$dtFixedMid = (string) XfAdmin::dataTable([
+    'id' => 'dt-fixed-mid',
+    'columns' => [
+        ['key' => 'id', 'label' => 'ID'],
+        ['key' => 'name', 'label' => '名称'],
+        ['key' => 'status', 'label' => '状态'],
+        ['key' => 'created_at', 'label' => '创建时间'],
+    ],
+    'fixed_columns' => ['indexes' => [0, 2, 3 => 'right']],
+]);
+preg_match('/data-xf-config="([^"]+)"/', $dtFixedMid, $fixedMatch);
+$fixedCfg = isset($fixedMatch[1]) ? json_decode(html_entity_decode($fixedMatch[1]), true) : [];
+check('DataTable fixed_columns 精确索引产出 indexes 映射', isset($fixedCfg['fixedColumns']['indexes']));
+check('DataTable 固定中间列：索引 2 固定到左侧', ($fixedCfg['fixedColumns']['indexes']['2'] ?? null) === 'left');
+check('DataTable 固定索引 3 到右侧', ($fixedCfg['fixedColumns']['indexes']['3'] ?? null) === 'right');
+
+// 2. fixed_columns 按字段名固定
+Assets::reset();
+$dtFixedFields = (string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'id', 'label' => 'ID'],
+        ['key' => 'name', 'label' => '名称'],
+    ],
+    'fixed_columns' => ['fields' => ['name']],
+]);
+preg_match('/data-xf-config="([^"]+)"/', $dtFixedFields, $ffMatch);
+$ffCfg = isset($ffMatch[1]) ? json_decode(html_entity_decode($ffMatch[1]), true) : [];
+check('DataTable fixed_columns 按字段名解析为索引 1', ($ffCfg['fixedColumns']['indexes']['1'] ?? null) === 'left');
+
+// 3. 自定义搜索表单真实渲染（不再只是空占位）
+Assets::reset();
+$dtSearch = (string) XfAdmin::dataTable([
+    'id' => 'dt-search',
+    'columns' => [
+        ['key' => 'id', 'label' => 'ID'],
+        ['key' => 'name', 'label' => '名称'],
+    ],
+    'show_custom_search' => true,
+]);
+check('DataTable 自定义搜索：渲染 .custom-datatable-search 面板', str_contains($dtSearch, 'custom-datatable-search'));
+check('DataTable 自定义搜索：含搜索切换按钮', str_contains($dtSearch, 'date-table-tools-search-btn'));
+check('DataTable 自定义搜索：按列生成 data-xf-search 字段', str_contains($dtSearch, 'data-xf-search="name"'));
+
+// 4. show_custom_search=false 时无搜索面板
+Assets::reset();
+$dtNoSearch = (string) XfAdmin::dataTable([
+    'columns' => [['key' => 'id', 'label' => 'ID']],
+    'show_custom_search' => false,
+]);
+check('DataTable show_custom_search=false 不渲染搜索面板', ! str_contains($dtNoSearch, 'custom-datatable-search'));
+
+// 5. 渲染器白名单对齐：avatarStack / money / select 等快捷写法生效
+Assets::reset();
+$dtShortcuts = (string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'avatar', 'avatarStack' => true],
+        ['key' => 'amount', 'money' => true],
+        ['key' => 'status', 'select' => ['options' => ['1' => '启用']]],
+    ],
+]);
+preg_match('/data-xf-config="([^"]+)"/', $dtShortcuts, $scMatch);
+$scCfg = isset($scMatch[1]) ? json_decode(html_entity_decode($scMatch[1]), true) : [];
+$colTypes = array_column(array_column($scCfg['dt']['columns'] ?? [], 'xfRender'), 'type');
+check('渲染器白名单：avatarStack 快捷写法生效', in_array('avatarStack', $colTypes, true));
+check('渲染器白名单：money 快捷写法生效', in_array('money', $colTypes, true));
+check('渲染器白名单：select 快捷写法生效', in_array('select', $colTypes, true));
+
+/* 6. 后台声明式组件：rowActions / adminBehaviors / adminThemeHead 输出声明节点与 HEX 转义配置 */
+Assets::reset();
+$rowActionsHtml = (string) XfAdmin::rowActions([
+    'selector' => '.btn-op',
+    'table' => '#dt-users',
+    'confirm_delete' => '确认删除？',
+    'delete_class' => 'btn-del',
+]);
+check('rowActions 输出 data-xf 声明节点', str_contains($rowActionsHtml, 'data-xf="rowActions"'));
+check('rowActions 配置含 selector/table', str_contains($rowActionsHtml, 'selector')
+    && str_contains($rowActionsHtml, 'dt-users'));
+
+Assets::reset();
+$behaviorsHtml = (string) XfAdmin::adminBehaviors([
+    'logout' => ['selector' => '.logout', 'url' => '/logout', 'token' => 't'],
+    'theme' => true,
+]);
+check('adminBehaviors 输出 data-xf 声明节点', str_contains($behaviorsHtml, 'data-xf="adminBehaviors"'));
+check('adminBehaviors 配置 JSON 经 HEX 转义（无裸引号破裂）', str_contains($behaviorsHtml, 'data-xf-config'));
+check('adminBehaviors 配置含 logout 与 theme', str_contains($behaviorsHtml, 'logout')
+    && str_contains($behaviorsHtml, 'theme'));
+
+Assets::reset();
+$themeHeadHtml = (string) XfAdmin::adminThemeHead(['storageKey' => 'my_theme']);
+check('adminThemeHead 输出同步 <script> 引导', str_contains($themeHeadHtml, '<script>')
+    && str_contains($themeHeadHtml, 'my_theme'));
+check('adminThemeHead 净化非法键名', str_contains((string) XfAdmin::adminThemeHead(['storageKey' => 'bad-key!']), 'badkey'));
+
+/* ===== 7. 操作列自动右固定（auto_fix_actions）=====
+ * 目标：任何使用 dataTable 且含操作列的表格，操作列都精确固定到最右侧，始终可见。
+ * 识别形态：key=actions / label=操作 / actions 数组 / render=actions|dropdown|buttons。
+ */
+$afParse = static function (string $html): array {
+    if (! preg_match('/data-xf-config="([^"]+)"/', $html, $m)) {
+        return [];
+    }
+
+    return json_decode(html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5), true) ?: [];
+};
+
+// 7.1 纯 key=actions（无 actions 数组、无 render）——项目里 Article/Spider/Log 的写法
+Assets::reset();
+$afKey = $afParse((string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'title', 'label' => '标题'],
+        ['key' => 'actions', 'label' => '操作', 'sortable' => false],
+    ],
+]));
+check('操作列自动右固定：纯 key=actions 被识别并固定到右侧', ($afKey['fixedColumns']['indexes']['1'] ?? null) === 'right');
+check('操作列自动右固定：产出 right=0（按索引精确固定，非取末列）', ($afKey['fixedColumns']['right'] ?? null) === 0);
+check('操作列自动右固定：启用横向滚动保证固定生效', ! empty($afKey['dt']['scrollX']));
+
+// 7.2 label=操作（英文/中文标题，key 非 actions）
+Assets::reset();
+$afLabel = $afParse((string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'title', 'label' => '标题'],
+        ['key' => 'opts', 'label' => '操作'],
+    ],
+]));
+check('操作列自动右固定：label=操作 被识别', ($afLabel['fixedColumns']['indexes']['1'] ?? null) === 'right');
+
+Assets::reset();
+$afEn = $afParse((string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'title', 'label' => 'Title'],
+        ['key' => 'op', 'label' => 'Operation'],
+    ],
+]));
+check('操作列自动右固定：英文 label=Operation 被识别', ($afEn['fixedColumns']['indexes']['1'] ?? null) === 'right');
+
+// 7.3 actions 数组 + bulk 辅助列：辅助列插到最前后索引仍精确
+Assets::reset();
+$afBulk = $afParse((string) XfAdmin::dataTable([
+    'bulk' => true,
+    'columns' => [
+        ['key' => 'id', 'label' => 'ID'],
+        ['key' => 'name', 'label' => '名称'],
+        ['key' => 'actions', 'label' => '操作', 'actions' => [['label' => '编辑', 'url' => '/e']]],
+    ],
+]));
+check('操作列自动右固定：bulk 辅助列插入后索引精确为 3', ($afBulk['fixedColumns']['indexes']['3'] ?? null) === 'right');
+check('操作列自动右固定：bulk 辅助列自身不被误冻结', ! isset($afBulk['fixedColumns']['indexes']['0']));
+
+// 7.4 操作列不在末位：从操作列起至末列整体右固定（保证冻结区连续、无遮挡）
+Assets::reset();
+$afMid = $afParse((string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'title', 'label' => '标题'],
+        ['key' => 'actions', 'label' => '操作'],
+        ['key' => 'created_at', 'label' => '创建时间'],
+    ],
+]));
+check('操作列自动右固定：操作列在中间时精确定位索引 1', ($afMid['fixedColumns']['indexes']['1'] ?? null) === 'right');
+check('操作列自动右固定：中间操作列时其右侧列一并冻结（连续组，无遮挡）', ($afMid['fixedColumns']['indexes']['2'] ?? null) === 'right');
+check('操作列自动右固定：中间操作列之前的普通列不冻结', ! isset($afMid['fixedColumns']['indexes']['0']));
+
+// 7.5 render 类型为操作型
+Assets::reset();
+$afRender = $afParse((string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'title', 'label' => '标题'],
+        ['key' => 'op', 'render' => ['type' => 'dropdown', 'items' => []]],
+    ],
+]));
+check('操作列自动右固定：render=dropdown 被识别', ($afRender['fixedColumns']['indexes']['1'] ?? null) === 'right');
+
+// 7.6 显式 fixed_columns 优先级高于自动探测，不被覆盖
+Assets::reset();
+$afExplicit = $afParse((string) XfAdmin::dataTable([
+    'columns' => [
+        ['key' => 'id', 'label' => 'ID'],
+        ['key' => 'actions', 'label' => '操作'],
+    ],
+    'fixed_columns' => ['left' => 1],
+]));
+check('操作列自动右固定：显式 left=1 保留', ($afExplicit['fixedColumns']['left'] ?? null) === 1);
+check('操作列自动右固定：显式声明的列方向不被自动 right 覆盖', ($afExplicit['fixedColumns']['indexes']['0'] ?? null) === 'left');
+check('操作列自动右固定：未显式声明的操作列仍自动右固定', ($afExplicit['fixedColumns']['indexes']['1'] ?? null) === 'right');
+
+// 7.7 fixed_columns=false / auto_fix_actions=false 关闭自动固定
+Assets::reset();
+$afOff = $afParse((string) XfAdmin::dataTable([
+    'columns' => [['key' => 'title', 'label' => '标题'], ['key' => 'actions', 'label' => '操作']],
+    'fixed_columns' => false,
+]));
+check('操作列自动右固定：fixed_columns=false 完全关闭', ! isset($afOff['fixedColumns']));
+
+Assets::reset();
+$afOptOff = $afParse((string) XfAdmin::dataTable([
+    'columns' => [['key' => 'title', 'label' => '标题'], ['key' => 'actions', 'label' => '操作']],
+    'auto_fix_actions' => false,
+]));
+check('操作列自动右固定：auto_fix_actions=false 仅关闭自动固定', ! isset($afOptOff['fixedColumns']));
+
+// 7.8 scroll_x=false 时不强行开启横向滚动/固定
+Assets::reset();
+$afNoScroll = $afParse((string) XfAdmin::dataTable([
+    'columns' => [['key' => 'title', 'label' => '标题'], ['key' => 'actions', 'label' => '操作']],
+    'scroll_x' => false,
+]));
+check('操作列自动右固定：scroll_x=false 不自动固定', ! isset($afNoScroll['fixedColumns']));
+
+/* ------------------------------------------------------------------ */
+/* 审查缺陷回归：XSS / 健壮性 / 前端契约                                 */
+/* ------------------------------------------------------------------ */
+function noWarn(callable $fn): bool
+{
+    $warnings = [];
+    set_error_handler(static function (int $no, string $str) use (&$warnings): bool {
+        $warnings[] = $str;
+
+        return true;
+    }, E_WARNING | E_NOTICE);
+    try {
+        $fn();
+    } finally {
+        restore_error_handler();
+    }
+
+    return $warnings === [];
+}
+
+$regPayload = '" onmouseover="alert(1)';
+$regUrlClean = static function (string $html): bool {
+    return ! str_contains($html, 'onmouseover="alert') && str_contains($html, '&quot;');
+};
+check('Footer groups.items[].url 注入被转义', $regUrlClean((string) XfAdmin::footer([
+    'groups' => [['title' => 'G', 'items' => [['label' => 'L', 'url' => $regPayload]]]],
+])));
+check('Footer links[].url 注入被转义', $regUrlClean((string) XfAdmin::footer([
+    'links' => [['label' => 'L', 'url' => $regPayload]],
+])));
+check('Footer icp_url 注入被转义', $regUrlClean((string) XfAdmin::footer([
+    'icp' => 'ICP', 'icp_url' => $regPayload,
+])));
+check('Footer police_url 注入被转义', $regUrlClean((string) XfAdmin::footer([
+    'police' => 'POL', 'police_url' => $regPayload,
+])));
+check('Footer links 传标量无 PHP Warning', noWarn(static fn () => (string) XfAdmin::footer(['links' => 'bad'])));
+check('Footer groups 传标量无 PHP Warning', noWarn(static fn () => (string) XfAdmin::footer(['groups' => 'bad'])));
+
+Assets::reset();
+$regDash = (string) XfAdmin::ecommerceDashboard(['currency' => 'A&B']);
+check('EcommerceDashboard 货币 A&B 不显示为 A&amp;B', str_contains($regDash, 'A\\u0026B')
+    && ! str_contains($regDash, 'A\\u0026amp\\u0026B'));
+check('EcommerceDashboard 图表配置仍经 HEX/HTML 转义输出', str_contains($regDash, 'data-xf-config="')
+    && ! str_contains($regDash, '<script'));
+
+$regErrBad = (string) XfAdmin::errorPage(['code' => '404"><script>x</script>']);
+check('ErrorPage 非法 code 回落 404 且无脚本注入', str_contains($regErrBad, '404 - ') && ! str_contains($regErrBad, '<script>x'));
+$regErrOk = (string) XfAdmin::errorPage(['code' => 500]);
+check('ErrorPage 合法数字 code 保留', str_contains($regErrOk, '500 - '));
+
+$regDefaults = static function (string $class): array {
+    // PHP 8.1+ protected 方法可直接 invoke；无需（也已弃用）setAccessible()
+    $ref = new ReflectionMethod($class, 'defaults');
+
+    return (array) $ref->invoke((new ReflectionClass($class))->newInstanceWithoutConstructor());
+};
+$noCard = true;
+foreach ([
+    zxf\XfAdmin\Components\Layout\ErrorPage::class,
+    zxf\XfAdmin\Components\Layout\Maintenance::class,
+    zxf\XfAdmin\Components\Layout\ComingSoon::class,
+] as $cls) {
+    if (array_key_exists('card', $regDefaults($cls))) {
+        $noCard = false;
+    }
+}
+check('ErrorPage/Maintenance/ComingSoon 移除 card 死配置', $noCard);
+check('FormValidation 移除 showBuiltin 死配置', ! array_key_exists('showBuiltin', $regDefaults(zxf\XfAdmin\Components\Form\FormValidation::class)));
+
+$regCfg = require __DIR__.'/../config/xfadmin.php';
+check('config 含 captcha_url 默认键', array_key_exists('captcha_url', $regCfg) && $regCfg['captcha_url'] === null);
+check('config/Page 主题注释修正为 classic/dark', (static function (): bool {
+    $cfg = (string) file_get_contents(__DIR__.'/../config/xfadmin.php');
+    $page = (string) file_get_contents(__DIR__.'/../src/Components/Layout/Page.php');
+
+    return str_contains($cfg, 'skin=classic') && str_contains($cfg, 'menu.color=dark')
+        && str_contains($page, 'skin=classic') && str_contains($page, 'menu.color=dark');
+})());
+
+$regJs = (string) file_get_contents(__DIR__.'/../resources/assets/js/xfadmin.js');
+$regCss = (string) file_get_contents(__DIR__.'/../resources/assets/css/xfadmin.css');
+check('弹窗 size 白名单生效（非法回落 lg）', str_contains($regJs, "var XF_DIALOG_SIZES = ['sm', 'lg', 'xl', 'fullscreen']")
+    && str_contains($regJs, "return XF_DIALOG_SIZES.indexOf(value) >= 0 ? value : 'lg';"));
+check('formDialog/pageDialog/dialog 尺寸均经 dialogSize 白名单', str_contains($regJs, "dialogSize(opts.size || 'lg')")
+    && substr_count($regJs, "dialogSize(opts.size)") >= 2);
+check('confirm JSDoc 注释块已闭合', (static function () use ($regJs): bool {
+    $p1 = strpos($regJs, '确认弹窗（全包唯一实现');
+    $p2 = $p1 !== false ? strpos($regJs, '气泡卡片（Popover）确认', $p1) : false;
+    $between = $p1 !== false && $p2 !== false ? substr($regJs, $p1, $p2 - $p1) : '';
+
+    return $between !== '' && substr_count($between, '*/') === 1;
+})());
+check('hover 改用事件委托且无实例标记残留', ! str_contains($regJs, '__xfHoverBound')
+    && str_contains($regJs, "document.addEventListener('mouseout'")
+    && str_contains($regJs, 'xfHoverEl.contains'));
+check('暗色模式固定列表格 hover/条纹高亮规则存在', str_contains($regCss, 'td:not(.xf-dt-sticky):not(:hover)')
+    && str_contains($regCss, 'tr:hover > td:not(.xf-dt-sticky)')
+    && str_contains($regCss, 'tr:nth-of-type(odd) > td:not(.xf-dt-sticky)'));
+check('xfadmin.css 大括号配平', substr_count($regCss, '{') === substr_count($regCss, '}'));
+
 echo PHP_EOL.($fail === 0 ? 'ALL REGRESSION PASSED' : "{$fail} FAILED").PHP_EOL;
 exit($fail === 0 ? 0 : 1);

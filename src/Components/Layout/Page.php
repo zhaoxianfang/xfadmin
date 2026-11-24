@@ -77,10 +77,11 @@ class Page extends Component
         $assets = Assets::instance();
         $layout = $this->get('layout', 'vertical');
 
-        // 主题默认值与 INSPINIA v4.1.0 模板 assets/js/config.js 的 defaultConfig 对齐。
-        // 注意：模板 config.js 把「属性缺失」视为 skin=modern / menu.color=gradient，
-        // 因此这些属性不能按「等于某值就省略」处理 —— 省略会被模板脚本回落成 modern/gradient，
-        // 与服务端渲染的 CSS 变量不一致，导致首屏观感与配置不符。这里统一显式输出。
+        // 主题默认值：浏览器端 INSPINIA v4.1.0 config.js 在属性缺失时回落为
+        // skin=classic / menu.color=dark（theme 为 light），与本包服务端默认不同。
+        // 因此这些属性不能按「等于某值就省略」处理 —— 省略会被模板脚本回落成
+        // classic/dark，与服务端渲染的 CSS 变量不一致，导致首屏观感与配置不符。
+        // 这里统一显式输出，确保以服务端配置为准。
         $themeDefaults = [
             'skin' => 'modern',
             'mode' => 'light',

@@ -34,6 +34,9 @@ Thumbs.db
 .*/
 # 忽略所有 . 开头的文件
 .*
+# 例外：AI 规则目录需要纳入版本管理（供进入本包的 AI 快速了解全部能力）
+!.ai/
+!.ai/**
 !.gitkeep
 # 排除.env.example文件
 !.env.example

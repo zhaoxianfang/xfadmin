@@ -12,19 +12,34 @@ use zxf\XfAdmin\Support\Html;
  * 由 xfadmin 组件系统注册，封装对应 INSPINIA 后台模板的 UI / 业务 / 布局单元。
  */ class DataTable extends Table
 {
-    /** 快捷渲染器列键（列定义中出现即转为 render 配置） */
+    /**
+     * 快捷渲染器列键（列定义中出现即转为 render 配置）。
+     *
+     * 与前端 xfadmin.js 的 XFAdmin.cellRenderers 注册表保持「双向对齐」：
+     * 凡前端有实现的渲染器，此处均提供快捷写法（列定义写 `'money' => [...]` 等价 `'render' => 'money'`），
+     * 使开发者无需记忆两套清单。特殊项除外：
+     *   - actions / buttons：由列级 `actions` 键独立处理（见 columnRender）；
+     *   - text：为前端兜底渲染器，不作为快捷写法（避免误伤同名业务列键）。
+     * 新增前端渲染器时，务必同步追加到此处并在 docs/04-advanced-guide/13-cell-renderers.md 登记。
+     */
     protected const RENDER_SHORTCUTS = [
-        'switch', 'copy', 'tags', 'color', 'progress', 'link', 'image', 'enum', 'user',
-        'toggle', 'tooltip', 'popover', 'status', 'trend', 'sparkline', 'timeline', 'dropdown',
-        // page：单元格文本变为可点击链接，点击弹窗加载后端页面（URL 支持 {字段} 占位），
-        // 关闭弹窗后可选刷新表格（['url'=>..,'title'=>..,'size'=>..,'frame'=>..,'reload'=>true]）
-        'page',
-        // 丰富多彩的单元格渲染器（前端 XFAdmin.cellRenderers 对应实现）
-        'badge', 'statusPill', 'priority', 'rate', 'duration', 'currency', 'json', 'copyBtn',
-        'linkBtn', 'miniBar', 'progressBar', 'sparkbar', 'heatmap', 'ranking', 'progressSteps',
-        'gradient', 'tagInput', 'avatarStack', 'rich',
-        // qr：二维码单元格（assets() 依此按需加载 qrcode 库）
-        'qr',
+        // 交互 / 状态
+        'switch', 'toggle', 'copy', 'copyBtn', 'status', 'statusPill', 'priority', 'badge',
+        'dropdown', 'bool',
+        // 文本 / 富文本
+        'tags', 'tagInput', 'truncate', 'code', 'json', 'rich', 'tooltip', 'popover',
+        // 数值 / 进度 / 图表
+        'progress', 'progressBar', 'progressSteps', 'rate', 'percent', 'money', 'number',
+        'currency', 'miniBar', 'sparkbar', 'sparkline', 'heatmap', 'ranking', 'gradient',
+        'duration', 'trend', 'rating',
+        // 媒体 / 头像 / 用户
+        'color', 'image', 'images', 'avatar', 'avatarGroup', 'avatarStack', 'user', 'qr',
+        // 链接 / 跳转（page：单元格变可点击链接，弹窗加载后端页面，URL 支持 {字段} 占位）
+        'link', 'linkBtn', 'page', 'url', 'email', 'phone',
+        // 时间 / 枚举 / 时间线
+        'datetime', 'enum', 'timeline', 'ip',
+        // 可编辑 / 富媒体单元格
+        'input', 'select', 'icon', 'file', 'filesize',
     ];
 
     /**
@@ -54,7 +69,8 @@ use zxf\XfAdmin\Support\Html;
             'processing' => true,    // 默认显示加载处理提示
             'page_length' => 10,
             'length_menu' => [10, 15, 20, 25, 50],  // 标准每页条数菜单
-            'show_custom_search' => true,   // 启用自定义搜索表单
+            'show_custom_search' => true,   // 启用自定义搜索表单（true=按列自动生成；数组=自定义字段；false=关闭）
+            'search_fields' => [],     // 自定义搜索字段：[['data'=>'字段名','label'=>'标题','type'=>'text|select|date|daterange','options'=>[],'placeholder'=>'']]，留空则按 searchable 业务列自动生成
             'row_detail' => null,    // 行详情展开 callback / 列名（null=不启用）
             'show_header_btn' => null,    // 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true]
             'created_row' => null,    // createdRow 回调（JS 函数名/全局函数引用）
@@ -70,7 +86,8 @@ use zxf\XfAdmin\Support\Html;
             'row_url' => null,     // 整行点击跳转 URL（支持 {id} 占位符，如 '/admin/app/{module}/{page}/detail/{id}'）
             'auto_width' => null,
             'scroll_x' => true,     // 默认启用横向滚动，溢出列通过滚动条展示（scroll_x=false 可关闭）
-            'fixed_columns' => null,     // 固定列：true=左1列；['left'=>2,'right'=>1]（自动开启横向滚动）
+            'fixed_columns' => null,     // 固定列：true=左1列；['left'=>2,'right'=>1]；['indexes'=>[列索引=>'left'|'right']]（自动开启横向滚动）
+            'auto_fix_actions' => true,  // 自动把「操作列」固定到表格最右侧（精确定位索引，显式 fixed_columns 声明优先）
             'filter_bar' => [],       // 过滤工具栏（服务端模式自动拼接查询参数并重载）
             'filter_auto' => false,    // 过滤工具栏是否即改即查（默认点击“搜索”按钮才发起请求）
             'filter_all' => false,    // 是否依据 columns 自动生成「全部列」筛选控件（按字段类型推断：文本/下拉/日期区间）
@@ -157,6 +174,133 @@ use zxf\XfAdmin\Support\Html;
         }
 
         return null;
+    }
+
+    /**
+     * 归一化固定列配置，统一产出前端可消费的 {left:int,right:int,indexes:{列索引=>'left'|'right'}} 结构。
+     *
+     * 支持三种写法（可组合）：
+     *  1. 连续列（兼容历史）：['left'=>2,'right'=>1] 或 true（等价 left=1），数字表示「前 N 列 / 后 N 列」；
+     *  2. 精确列索引：['indexes'=>[0,3,5]] 固定指定索引列到左侧，或 ['indexes'=>{'0'=>'left','5'=>'right'}] 逐列指定方向；
+     *  3. 按数据字段名：['fields'=>['id','title']] 固定指定数据列到左侧（按 columns 顺序解析为索引）。
+     * 三种写法可同时出现，最终结果合并去重；方向以 indexes 显式声明优先，其次 fields，再回落到 left/right 连续规则。
+     *
+     * @param  mixed  $fixedCols  fixed_columns 原始配置
+     * @param  array<int,array<string,mixed>>  $columns  已含辅助列的最终列定义
+     * @return array{left:int,right:int,indexes:array<int,string>}|null
+     */
+    protected function normalizeFixedColumns(mixed $fixedCols, array $columns): ?array
+    {
+        $total = count($columns);
+        if ($fixedCols === true) {
+            $fixedCols = ['left' => 1];
+        }
+        if (! is_array($fixedCols) || $fixedCols === []) {
+            return null;
+        }
+
+        $left = max(0, min($total, (int) ($fixedCols['left'] ?? 0)));
+        $right = max(0, min($total, (int) ($fixedCols['right'] ?? 0)));
+        /** @var array<int,string> $indexes 列索引 => 方向 */
+        $indexes = [];
+
+        // 写法 2：精确列索引
+        if (! empty($fixedCols['indexes']) && is_array($fixedCols['indexes'])) {
+            foreach ($fixedCols['indexes'] as $key => $dir) {
+                if (is_int($key) && is_string($dir)) {
+                    // {'0'=>'left','5'=>'right'} 形式
+                    $idx = (int) $key;
+                    $side = in_array($dir, ['left', 'right'], true) ? $dir : 'left';
+                } else {
+                    // [0,3,5] 形式：默认左侧
+                    $idx = (int) $dir;
+                    $side = 'left';
+                }
+                if ($idx >= 0 && $idx < $total) {
+                    $indexes[$idx] = $side;
+                }
+            }
+        }
+
+        // 写法 3：按数据字段名映射为列索引
+        if (! empty($fixedCols['fields']) && is_array($fixedCols['fields'])) {
+            foreach ($fixedCols['fields'] as $field) {
+                if (! is_string($field)) {
+                    continue;
+                }
+                foreach ($columns as $idx => $col) {
+                    if (($col['key'] ?? null) === $field) {
+                        $indexes[$idx] = 'left';
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 连续列规则转为索引（不覆盖已显式声明的列）
+        for ($n = 0; $n < $left; $n++) {
+            $indexes[$n] ??= 'left';
+        }
+        for ($n = 0; $n < $right; $n++) {
+            $ci = $total - 1 - $n;
+            if ($ci >= 0) {
+                $indexes[$ci] ??= 'right';
+            }
+        }
+        ksort($indexes);
+
+        return ['left' => $left, 'right' => $right, 'indexes' => $indexes];
+    }
+
+    /**
+     * 探测「操作列」在最终列定义中的索引（含 bulk / row_detail 等前置辅助列）。
+     *
+     * 识别依据（任一命中即可），覆盖项目里全部已知操作列写法：
+     *  1. key 为 actions / action / operate / operation（中后台常见操作列键名）；
+     *  2. label 为「操作」/ actions / operation（中文标题与英文标题）；
+     *  3. 存在 actions 数组配置（行操作按钮声明）；
+     *  4. render / xfRender 类型为 actions / dropdown / buttons（交互型渲染器）。
+     *
+     * 精确定位索引而非简单取「最后一列」，避免辅助列插入或操作列不在末位时冻结错位。
+     *
+     * @param  array<int,array<string,mixed>>  $columns  已含辅助列的最终列定义
+     * @return array<int,int> 操作列索引列表（可能多列）
+     */
+    protected function detectActionColumnIndexes(array $columns): array
+    {
+        $actionKeys = ['actions', 'action', 'operate', 'operation'];
+        $actionLabels = ['操作', 'actions', 'operation'];
+        $actionRenders = ['actions', 'dropdown', 'buttons'];
+        $indexes = [];
+
+        foreach ($columns as $idx => $col) {
+            if (! is_array($col)) {
+                continue;
+            }
+            // 先判标量再转字符串：误传数组/对象列键时 (string) 会触发
+            // "Array to string conversion" 警告（PHP 8.x 下污染日志 / 严格错误处理器抛异常）。
+            $keyVal = $col['key'] ?? '';
+            $labelVal = $col['label'] ?? '';
+            $key = strtolower(trim(is_scalar($keyVal) ? (string) $keyVal : ''));
+            $label = strtolower(trim(is_scalar($labelVal) ? (string) $labelVal : ''));
+            $matched = in_array($key, $actionKeys, true)
+                || in_array($label, $actionLabels, true)
+                || (isset($col['actions']) && is_array($col['actions']));
+
+            if (! $matched) {
+                $render = $col['render'] ?? ($col['xfRender'] ?? null);
+                $typeVal = is_array($render) ? ($render['type'] ?? '') : (is_string($render) ? $render : '');
+                $type = is_scalar($typeVal) ? (string) $typeVal : '';
+                $matched = in_array(strtolower($type), $actionRenders, true);
+            }
+
+            if ($matched) {
+                $indexes[] = (int) $idx;
+            }
+        }
+
+        return $indexes;
     }
 
     /**
@@ -356,30 +500,47 @@ use zxf\XfAdmin\Support\Html;
             $config['deferRender'] = true;
         }
         // 固定列（CSS sticky 实现，无需 FixedColumns 扩展；自动开启横向滚动）
+        // 统一策略：无论业务侧是否显式声明 fixed_columns，只要表格存在操作列，
+        // 都把它精确固定到最右侧，保证横向滚动/冻结列场景下操作按钮始终可见。
+        //  - fixed_columns=false：显式关闭全部固定列（含自动固定）；
+        //  - auto_fix_actions=false：仅关闭自动固定，保留显式 fixed_columns；
+        //  - scroll_x=false：不自动固定（无横向滚动时固定无意义，也不强行开启）。
+        // 显式声明的方向（left/right/indexes/fields）优先级高于自动探测，绝不覆盖。
         $fixedCols = $this->get('fixed_columns');
-        if ($fixedCols) {
-            $config['scrollX'] = true;
+        $normalizedFixed = null;
+        // 是否最终存在固定列（含 auto_fix_actions 自动探测出的操作列）。
+        // 后续「是否强制 scrollX / 是否下发 fixedColumns / 是否套 table-responsive」
+        // 三处必须共用同一判定，否则自动固定列与 table-responsive 会同时生效造成双滚动条。
+        $hasFixedColumns = false;
+        if ($fixedCols !== false) {
             if ($fixedCols === true) {
                 $fixedCols = ['left' => 1];
             }
-        } elseif ($fixedCols === null && $this->get('scroll_x') !== false) {
-            // 自动固定操作列：当表格存在「操作列」（actions/dropdown/buttons 类型）时，
-            // 默认将最后一列（操作列）右固定，避免横向滚动/冻结列场景下「更多」下拉被裁剪飞出。
-            // 同时满足「列较多时操作列固定展示」的产品需求（用户列表 / 管理员列表等统一行为）。
-            // 注意：fixed_columns=false 显式关闭、或 scroll_x=false 显式关闭横向滚动时，
-            // 不进入本分支——不再强制开启 scrollX / 自动固定。
-            $opCols = array_filter($baseColumns, function ($c) {
-                // 行操作栏（actions 键）或显式 render 类型为操作型
-                if (isset($c['actions']) && is_array($c['actions'])) {
-                    return true;
-                }
-                $r = $c['render'] ?? null;
-                $t = is_array($r) ? ($r['type'] ?? '') : (is_string($r) ? $r : '');
+            if (! is_array($fixedCols) || $fixedCols === []) {
+                $fixedCols = ['left' => 0, 'right' => 0, 'indexes' => []];
+            }
+            $normalizedFixed = $this->normalizeFixedColumns($fixedCols, $columns)
+                ?? ['left' => 0, 'right' => 0, 'indexes' => []];
 
-                return $t === 'actions' || $t === 'dropdown' || $t === 'buttons';
-            });
-            if ($opCols !== []) {
-                $fixedCols = ['right' => 1];
+            if ($this->get('auto_fix_actions') !== false && $this->get('scroll_x') !== false) {
+                $actionIndexes = $this->detectActionColumnIndexes($columns);
+                if ($actionIndexes !== []) {
+                    // 右侧冻结区必须是「连续到最后一列」的一组：CSS sticky right 从右边缘向内累计偏移，
+                    // 若只冻结中间的操作列、其右侧普通列仍参与横向滚动，滚动时普通列会从冻结列下方穿过
+                    // （冻结列 z-index 更高），造成列内容被遮挡。故从最左操作列起至末列整体纳入右侧冻结组，
+                    // 操作列因其右侧列一并冻结而始终处于可视区内。
+                    $groupStart = min($actionIndexes);
+                    $totalColumns = count($columns);
+                    for ($idx = $groupStart; $idx < $totalColumns; $idx++) {
+                        // ??= 保证用户显式声明的 left/right 不被自动 right 覆盖
+                        $normalizedFixed['indexes'][$idx] ??= 'right';
+                    }
+                    ksort($normalizedFixed['indexes']);
+                }
+            }
+
+            $hasFixedColumns = $normalizedFixed['left'] || $normalizedFixed['right'] || $normalizedFixed['indexes'] !== [];
+            if ($hasFixedColumns) {
                 $config['scrollX'] = true;
             }
         }
@@ -435,11 +596,8 @@ use zxf\XfAdmin\Support\Html;
             $xfConfig['filterBar'] = true;
             $xfConfig['filterAuto'] = (bool) $this->get('filter_auto');
         }
-        if (! empty($fixedCols) && is_array($fixedCols)) {
-            $xfConfig['fixedColumns'] = [
-                'left' => max(0, (int) ($fixedCols['left'] ?? 0)),
-                'right' => max(0, (int) ($fixedCols['right'] ?? 0)),
-            ];
+        if ($hasFixedColumns) {
+            $xfConfig['fixedColumns'] = $normalizedFixed;
         }
         // 交互增强接线（供前端 initDataTable 消费）
         if ($this->get('bulk')) {
@@ -516,7 +674,10 @@ use zxf\XfAdmin\Support\Html;
         // - 此时再套 .table-responsive 会导致双滚动条，故仅在未开启 scrollX 时包裹
         // - scrollX 默认启用（最佳实践），仅 scroll_x=false 时关闭
         $scrollXDisabled = $this->get('scroll_x') === false || $this->get('auto_width') === false;
-        if ($scrollXDisabled && ! $this->get('fixed_columns')) {
+        // 有固定列时 DataTables 已启用 scrollX 双表结构并自行提供横向滚动，
+        // 再套 .table-responsive 会产生双滚动条；判定必须用归一化后的 $hasFixedColumns
+        // （含 auto_fix_actions 自动固定的操作列），而非原始 fixed_columns 配置。
+        if ($scrollXDisabled && ! $hasFixedColumns) {
             $html = '<div class="table-responsive">'.$html.'</div>';
         }
         // 过滤工具栏（前端自动接线：变更 => 拼接查询参数 => 重载表格）
@@ -528,6 +689,13 @@ use zxf\XfAdmin\Support\Html;
         }
         if ($filterBar !== []) {
             $html = $this->renderFilterBar($id, $filterBar).$html;
+        }
+        // 自定义搜索表单（可折叠面板）：show_custom_search=true 时按列自动生成，避免只插入空占位
+        if ($this->get('show_custom_search') && ! $this->get('searching')) {
+            $searchForm = $this->renderCustomSearchForm($id, $columns);
+            if ($searchForm !== '') {
+                $html = $searchForm.$html;
+            }
         }
         // 「新增」弹窗按钮（点击后以弹窗加载服务端新建页面，提交成功自动刷新表格）
         $create = $this->get('create');
@@ -541,6 +709,101 @@ use zxf\XfAdmin\Support\Html;
         }
 
         return $html;
+    }
+
+    /**
+     * 渲染「自定义搜索表单」（可折叠面板）。
+     *
+     * show_custom_search=true 时调用。字段来源：
+     *  - 若显式配置 search_fields，则以其为准（每项支持 data/label/type/options/placeholder/width）；
+     *  - 否则按 columns 中 searchable!==false 且有 label 的业务列自动生成文本框；
+     *  - 动态 options（enum/映射）自动降级为 select。
+     * 前端 xfadmin.js 监听 .date-table-tools-search-btn 切换 .custom-datatable-search 的 show 类，
+     * 并对表单内 [data-xf-search] 采集值 → 服务端追加同名查询参数 / 本地按列索引过滤 → 重载表格。
+     */
+    protected function renderCustomSearchForm(string $tableId, array $columns): string
+    {
+        $fields = (array) $this->get('search_fields', []);
+        if ($fields === []) {
+            foreach ($columns as $col) {
+                if (! is_array($col) || empty($col['label']) || ($col['searchable'] ?? true) === false) {
+                    continue;
+                }
+                // 列键/标题误传数组或对象时不做 (string) 强转，避免 PHP 8.x 警告；
+                // 非法列直接跳过，不生成搜索字段。
+                $keyVal = $col['key'] ?? '';
+                $labelVal = $col['label'] ?? '';
+                if (! is_scalar($keyVal) || ! is_scalar($labelVal)) {
+                    continue;
+                }
+                $key = (string) $keyVal;
+                if ($key === '' || isset($col['actions'])) {
+                    continue;
+                }
+                $field = ['data' => $key, 'label' => (string) $labelVal];
+                if (! empty($col['options']) && is_array($col['options'])) {
+                    $field['type'] = 'select';
+                    $field['options'] = $col['options'];
+                }
+                $fields[] = $field;
+            }
+        }
+        if ($fields === []) {
+            return '';
+        }
+
+        $controls = '';
+        foreach ($fields as $f) {
+            if (! is_array($f)) {
+                continue;
+            }
+            // 完全自定义控件
+            if (isset($f['html'])) {
+                $controls .= '<div class="col-12 col-md-6 col-xl-4">'.(string) $f['html'].'</div>';
+
+                continue;
+            }
+            $name = (string) ($f['data'] ?? $f['name'] ?? '');
+            if ($name === '') {
+                continue;
+            }
+            $label = (string) ($f['label'] ?? $name);
+            $type = (string) ($f['type'] ?? 'text');
+            $width = (string) ($f['width'] ?? 'col-12 col-md-6 col-xl-4');
+            $ph = (string) ($f['placeholder'] ?? '');
+            $controls .= '<div class="'.$this->escape($width).'"><label class="form-label">'.$this->escape($label).'</label>';
+            if ($type === 'select') {
+                $controls .= '<select class="form-select form-select-sm" data-xf-search="'.$this->escape($name).'"><option value="">全部</option>';
+                foreach ((array) ($f['options'] ?? []) as $v => $t) {
+                    $controls .= '<option value="'.$this->escape($v).'">'.$this->escape($t).'</option>';
+                }
+                $controls .= '</select>';
+            } elseif (in_array($type, ['date', 'datetime-local', 'time', 'month', 'week'], true)) {
+                $controls .= '<input type="'.$type.'" lang="zh-CN" class="form-control form-control-sm" data-xf-search="'.$this->escape($name).'">';
+            } elseif ($type === 'daterange' || $type === 'datetimerange') {
+                $it = $type === 'daterange' ? 'date' : 'datetime-local';
+                $controls .= '<div class="input-group input-group-sm"><input type="'.$it.'" lang="zh-CN" class="form-control" data-xf-search="'.$this->escape($name).'_from" title="起始">'
+                    .'<span class="input-group-text">~</span>'
+                    .'<input type="'.$it.'" lang="zh-CN" class="form-control" data-xf-search="'.$this->escape($name).'_to" title="结束"></div>';
+            } else {
+                $controls .= '<input type="text" class="form-control form-control-sm" data-xf-search="'.$this->escape($name).'" placeholder="'.$this->escape($ph).'">';
+            }
+            $controls .= '</div>';
+        }
+        if ($controls === '') {
+            return '';
+        }
+
+        // 搜索切换按钮 + 可折叠表单面板
+        return '<div class="xf-dt-search-tools d-flex justify-content-end mb-2">'
+            .'<button type="button" class="btn btn-soft-secondary date-table-tools-search-btn" aria-label="展开搜索" aria-expanded="false">'
+            .'<i class="ti ti-search"></i> 搜索</button></div>'
+            .'<div class="custom-datatable-search" data-xf-search-for="#'.$this->escape($tableId).'">'
+            .'<form class="row g-3" onsubmit="return false;">'.$controls
+            .'<div class="col-12 d-flex gap-2 justify-content-end">'
+            .'<button type="button" class="btn btn-primary btn-search-submit" data-xf-search-submit><i class="ti ti-search"></i> 搜索</button>'
+            .'<button type="button" class="btn btn-soft-secondary" data-xf-search-reset><i class="ti ti-rotate"></i> 重置</button>'
+            .'</div></form></div>';
     }
 
     /**

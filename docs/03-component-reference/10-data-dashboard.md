@@ -225,7 +225,7 @@ echo XfAdmin::statMiniSparkline([
 
 </details>
 
-> **渲染骨架**：主要 class `card` `border-0` `shadow-sm` `h-100` `card-body` `d-flex` `align-items-end` `justify-content-between`
+> **渲染骨架**：主要 class `card-body` `d-flex` `align-items-end` `justify-content-between`
 
 **配置参数**
 
@@ -445,7 +445,7 @@ echo XfAdmin::settingsCenter([
 
 - `groups[]` 元素键：`id`、`label`、`icon`（默认 `ti-circle`）、`title`、`desc`、`body`
 
-> **渲染骨架**：主要 class `d-flex` `justify-content-between` `align-items-center` `mb-3` `card` `card-header` `card-body` `row`
+> **渲染骨架**：主要 class `d-flex` `justify-content-between` `align-items-center` `mb-3` `card-header` `card-body` `row` `col-md-3`
 
 **配置参数**
 
@@ -619,7 +619,7 @@ echo XfAdmin::moduleGrid([
 | `columns` | int | `4` | 桌面列数 |
 | `title` | string | `''` | 标题文本（部分组件为弹窗/tooltip 标题）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `subtitle` | string | `''` | 副标题文本；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
-| `class` | string | `''` | 附加到根元素的自定义 class；源码用法：`return '<div class="'.$this->escape($this->get('class')).'">'.$header.'<div class="ro…` |
+| `class` | string | `''` | 附加到根元素的自定义 class |
 | `id` | mixed | `null` | 根元素 id（留空自动生成唯一 id） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。

@@ -183,6 +183,16 @@
     }
     XFAdmin.escapeHtml = escapeHtml;
 
+    /* 弹窗尺寸白名单：data-xf-size 等属性由浏览器解码后传入，直接拼进 innerHTML 的
+     * class 属性会逃逸出属性造成 XSS（如 `" onmouseover="alert(1)`）。
+     * 因此统一走枚举白名单，非法值一律回落 'lg'；'md' 为历史合法值（Bootstrap 默认宽度）。 */
+    var XF_DIALOG_SIZES = ['sm', 'lg', 'xl', 'fullscreen'];
+    function dialogSize(value) {
+        if (value === 'md') return 'md';
+        return XF_DIALOG_SIZES.indexOf(value) >= 0 ? value : 'lg';
+    }
+    XFAdmin.dialogSize = dialogSize;
+
     /* {field} / {a.b.c} 占位符插值（值经 HTML 转义） */
     XFAdmin.tpl = function (tpl, row) {
         return String(tpl == null ? '' : tpl).replace(/\{(\w+(?:\.\w+)*)\}/g, function (_, path) {
@@ -1184,6 +1194,9 @@
     /* 按钮组别名（与 actions 等价，语义化命名） */
     XFAdmin.cellRenderers.buttons = XFAdmin.cellRenderers.actions;
 
+    /* 头像堆叠别名：avatarStack 与 avatarGroup 等价（PHP 快捷白名单用 avatarStack 命名，二者指向同一实现） */
+    XFAdmin.cellRenderers.avatarStack = XFAdmin.cellRenderers.avatarGroup;
+
     /* 复合信息单元格：常用于「负责人 / 申请人 / 客户」等多字段信息列。
      * d 可为对象 {icon, title, sub, meta, url, color, status, badge} 或字符串（降级为 title）。
      * cfg = {showMeta, showStatus, statusMap} */
@@ -1802,35 +1815,30 @@
             }
         } catch (e) { /* noop */ }
 
-        // show_custom_search 搜索表单展开/收起切换（参照）
-        var _showCustomSearch = !!(config.showCustomSearch || (dt.show_custom_search));
+        // show_custom_search 自定义搜索表单：展开/收起 + 采集 [data-xf-search] 值 → 服务端参数 / 本地列过滤
+        // PHP 端 show_custom_search=true 时已在表格前渲染真实的 .custom-datatable-search 面板（见 DataTable::renderCustomSearchForm）。
+        var _showCustomSearch = !!(config.showCustomSearch || dt.show_custom_search);
+        var _customSearchForm = null;
         if (_showCustomSearch) {
-            var _searchForm = dtContainer ? dtContainer.querySelector('.xf-dt-search-form,.custom-datatable-search') : null;
-            if (!_searchForm && dtContainer) {
-                // 为没有服务端预渲染搜索表单的情况，在容器前插入一个空占位容器
-                var _sf = document.createElement('div');
-                _sf.className = 'custom-datatable-search';
-                _sf.style.display = 'none';
-                dtContainer.insertAdjacentElement('beforebegin', _sf);
+            // 精确定位本表对应的表单（data-xf-search-for="#tableId"），避免多表互相串扰
+            _customSearchForm = document.querySelector('.custom-datatable-search[data-xf-search-for="#' + el.id + '"]');
+            if (!_customSearchForm && dtContainer) {
+                _customSearchForm = dtContainer.querySelector('.custom-datatable-search, .xf-dt-search-form');
             }
-            // 监听搜索切换按钮（.date-table-tools-search-btn）
-            if (global.jQuery) {
-                global.jQuery(document).on('click', '.date-table-tools-search-btn', function () {
-                    var btn = global.jQuery(this);
-                    var pid = btn.closest('[data-dt-target]').data('dt-target') || btn.closest('.dt-container').prev('.custom-datatable-search');
-                    var searchEl;
-                    if (typeof pid === 'string' && pid) {
-                        searchEl = document.querySelector(pid);
-                    } else if (pid && pid.jquery) {
-                        searchEl = pid[0];
-                    }
-                    if (!searchEl) {
-                        searchEl = dtContainer ? dtContainer.parentElement.querySelector('.custom-datatable-search') : null;
-                    }
-                    if (searchEl) {
-                        searchEl.classList.toggle('show');
-                    }
-                    btn.find('.ti, i').toggleClass('ti-search ti-x');
+            // 表格容器外、表单上方的搜索切换按钮：用事件委托绑定，data-xf-search-for 关联目标表单
+            var _searchToggle = document.querySelector('.xf-dt-search-tools .date-table-tools-search-btn');
+            // 就近绑定：优先取本表容器/前序兄弟内的按钮
+            var _toolsWrap = _customSearchForm ? _customSearchForm.previousElementSibling : null;
+            if (_toolsWrap && _toolsWrap.classList.contains('xf-dt-search-tools')) {
+                _searchToggle = _toolsWrap.querySelector('.date-table-tools-search-btn');
+            }
+            if (_searchToggle && _customSearchForm) {
+                _searchToggle.addEventListener('click', function () {
+                    var showing = _customSearchForm.classList.toggle('show');
+                    _searchToggle.setAttribute('aria-expanded', showing ? 'true' : 'false');
+                    var icon = _searchToggle.querySelector('.ti, i');
+                    if (icon) { icon.classList.toggle('ti-search', !showing); icon.classList.toggle('ti-x', showing); }
+                    if (showing) _customSearchForm.dispatchEvent(new CustomEvent('xf:search-open'));
                 });
             }
         }
@@ -2252,6 +2260,53 @@
             }
         }
 
+        // ===== 交互增强：自定义搜索表单（show_custom_search）=====
+        // 采集 [data-xf-search] 值 → 服务端模式追加查询参数重载；本地模式按列索引搜索。
+        // 与 filter_bar 相互独立，可同时使用（两者参数会合并到 ajax url）。
+        if (_customSearchForm) {
+            var _searchAjaxBase = (table.ajax && table.ajax.url && typeof table.ajax.url() === 'string') ? table.ajax.url() : '';
+            var collectSearchQuery = function () {
+                var pairs = [];
+                _customSearchForm.querySelectorAll('[data-xf-search]').forEach(function (inp) {
+                    var v = (inp.value || '').trim();
+                    if (v !== '') pairs.push(encodeURIComponent(inp.getAttribute('data-xf-search')) + '=' + encodeURIComponent(v));
+                });
+                return pairs;
+            };
+            var applyCustomSearch = function () {
+                var pairs = collectSearchQuery();
+                if (_searchAjaxBase) {
+                    table.ajax.url(_searchAjaxBase + (pairs.length ? (_searchAjaxBase.indexOf('?') >= 0 ? '&' : '?') + pairs.join('&') : '')).load();
+                } else {
+                    // 本地模式：按字段名定位列索引做列搜索
+                    table.columns().search('');
+                    _customSearchForm.querySelectorAll('[data-xf-search]').forEach(function (inp) {
+                        var name = inp.getAttribute('data-xf-search');
+                        var v = (inp.value || '').trim();
+                        if (!v || !name) return;
+                        table.columns().every(function () {
+                            if (this.dataSrc() === name) this.search(v);
+                        });
+                    });
+                    table.draw();
+                }
+            };
+            var submitBtn = _customSearchForm.querySelector('[data-xf-search-submit]');
+            var resetBtn = _customSearchForm.querySelector('[data-xf-search-reset]');
+            if (submitBtn) submitBtn.addEventListener('click', applyCustomSearch);
+            if (resetBtn) resetBtn.addEventListener('click', function () {
+                _customSearchForm.querySelectorAll('[data-xf-search]').forEach(function (inp) { inp.value = ''; });
+                applyCustomSearch();
+            });
+            _customSearchForm.addEventListener('submit', function (e) { e.preventDefault(); applyCustomSearch(); });
+            // 回车即查
+            _customSearchForm.addEventListener('keyup', function (e) { if (e.key === 'Enter') applyCustomSearch(); });
+            // 展开时同步一次 ajax 基址（表单可能在表格初始化前渲染，此处取最终 URL）
+            _customSearchForm.addEventListener('xf:search-open', function () {
+                if (table.ajax && table.ajax.url) _searchAjaxBase = table.ajax.url() || _searchAjaxBase;
+            });
+        }
+
         // ===== 交互增强：行明细展开（点击首列按钮展开行内详情） =====
         if (config.rowDetail) {
             XFAdmin.bindRowDetail(table, el, config.rowDetail);
@@ -2261,30 +2316,52 @@
             XFAdmin.bindBulk(table, el, config.bulk);
         }
 
-        // 固定列（CSS sticky 实现）：config.fixedColumns = {left: N, right: M}
-        if (config.fixedColumns && (config.fixedColumns.left || config.fixedColumns.right)) {
+        // 固定列（CSS sticky 实现）
+        // config.fixedColumns = {left:N, right:M, indexes:{列索引:'left'|'right'}}
+        //  - left/right：兼容旧的「前 N 列 / 后 M 列」连续规则；
+        //  - indexes：精确指定任意列（含中间列）及其固定方向，由 PHP normalizeFixedColumns 归一化产出；
+        //    两者合并去重，indexes 优先。支持冻结首列、尾列及任意中间列场景。
+        if (config.fixedColumns && (config.fixedColumns.left || config.fixedColumns.right || Object.keys(config.fixedColumns.indexes || {}).length)) {
             var applySticky = function () {
                 var wrapper = el.closest('.dt-container') || el.closest('.dataTables_wrapper') || el.parentElement;
                 if (!wrapper) return;
-                var tables = wrapper.querySelectorAll('table');
-                var nLeft = config.fixedColumns.left || 0;
-                var nRight = config.fixedColumns.right || 0;
+                // 只处理 DT 容器下的顶层表格（表体 + 表头克隆表）。单元格渲染器 / 子行详情
+                // 可能内嵌 <table>（如 tableHtml / showDetail 回调输出），若一并按列索引加
+                // sticky，会把内嵌表格的 td 错误固定，造成详情区视觉错乱。
+                var tables = Array.prototype.filter.call(wrapper.querySelectorAll('table'), function (t) {
+                    return !t.parentElement || !t.parentElement.closest('table');
+                });
                 // 以主体表首行实测列宽，计算每个固定列的 sticky 偏移
                 var bodyRow = el.querySelector('tbody tr');
                 var cells = bodyRow ? Array.from(bodyRow.children) : [];
                 if (!cells.length) return;
                 var total = cells.length;
-                var leftOffsets = [], rightOffsets = [];
+                var nLeft = config.fixedColumns.left || 0;
+                var nRight = config.fixedColumns.right || 0;
+                var indexMap = config.fixedColumns.indexes || {};
+                // 统一解析为「列索引 => 方向」：先连续规则，再精确 indexes 覆盖
+                var sideByIdx = {};
+                for (var li = 0; li < nLeft && li < total; li++) { sideByIdx[li] = 'left'; }
+                for (var ri = 0; ri < nRight && ri < total; ri++) { sideByIdx[total - 1 - ri] = 'right'; }
+                Object.keys(indexMap).forEach(function (k) {
+                    var ci = parseInt(k, 10);
+                    if (ci >= 0 && ci < total) sideByIdx[ci] = indexMap[k] === 'right' ? 'right' : 'left';
+                });
+                // 左右两侧各自按「从边缘向内」顺序累计偏移：
+                // 左侧第 k 个固定列偏移 = 其左侧所有左固定列宽度之和；右侧同理反向累计。
+                var leftOffsets = {}, rightOffsets = {};
+                var leftIdxs = Object.keys(sideByIdx).filter(function (k) { return sideByIdx[k] === 'left'; }).map(Number).sort(function (a, b) { return a - b; });
+                var rightIdxs = Object.keys(sideByIdx).filter(function (k) { return sideByIdx[k] === 'right'; }).map(Number).sort(function (a, b) { return b - a; });
                 var acc = 0;
-                for (var i = 0; i < nLeft && i < total; i++) { leftOffsets[i] = acc; acc += cells[i].getBoundingClientRect().width; }
+                leftIdxs.forEach(function (ci) { leftOffsets[ci] = acc; if (cells[ci]) acc += cells[ci].getBoundingClientRect().width; });
                 acc = 0;
-                for (var j = 0; j < nRight && j < total; j++) { var ci = total - 1 - j; rightOffsets[ci] = acc; acc += cells[ci].getBoundingClientRect().width; }
+                rightIdxs.forEach(function (ci) { rightOffsets[ci] = acc; if (cells[ci]) acc += cells[ci].getBoundingClientRect().width; });
                 tables.forEach(function (t) {
                     t.querySelectorAll('tr').forEach(function (tr) {
                         Array.from(tr.children).forEach(function (cell, idx) {
                             cell.classList.remove('xf-dt-sticky', 'xf-dt-sticky-end');
                             cell.style.left = ''; cell.style.right = '';
-                            if (idx < nLeft && leftOffsets[idx] != null) {
+                            if (leftOffsets[idx] != null) {
                                 cell.classList.add('xf-dt-sticky');
                                 cell.style.left = leftOffsets[idx] + 'px';
                             } else if (rightOffsets[idx] != null) {
@@ -2295,19 +2372,37 @@
                     });
                 });
             };
+            // 同一 el 被重复初始化时先清理旧监听，避免 jQuery/resize/RO 重复绑定累积
+            if (typeof el.__xfStickyCleanup === 'function') {
+                el.__xfStickyCleanup();
+                delete el.__xfStickyCleanup;
+            }
             var stickyTimer = null;
             var scheduleSticky = function () { clearTimeout(stickyTimer); stickyTimer = setTimeout(applySticky, 50); };
+            var stickyEvents = 'init.dt draw.dt column-visibility.dt columns.adjusted.dt';
+            var $stickyEl = null;
             if (global.jQuery) {
                 // init.dt 首次数据加载完成即触发；draw.dt 每次重绘；columns.adjusted.dt 列宽重算
-                global.jQuery(el).on('init.dt draw.dt column-visibility.dt columns.adjusted.dt', scheduleSticky);
+                $stickyEl = global.jQuery(el);
+                $stickyEl.on(stickyEvents, scheduleSticky);
             } else {
                 el.addEventListener('draw.dt', scheduleSticky);
                 el.addEventListener('init.dt', scheduleSticky);
             }
             scheduleSticky();
             window.addEventListener('resize', scheduleSticky);
-            // 存储事件引用在元素上，供外部调用 XFAdmin.destroyTableSticky(el) 清理
-            el.__xfStickyCleanup = function () { window.removeEventListener('resize', scheduleSticky); };
+            // 存储事件引用在元素上，供外部调用 XFAdmin.destroyTableSticky(el) 清理。
+            // 必须解绑 DataTable 事件 + 清 timer：否则表格 destroy 后在同一 el 上重建时，
+            // 旧 handler 仍挂在 el 上累积（每次重建多一份 applySticky），造成重复计算与泄漏。
+            el.__xfStickyCleanup = function () {
+                clearTimeout(stickyTimer);
+                if ($stickyEl) $stickyEl.off(stickyEvents, scheduleSticky);
+                else {
+                    el.removeEventListener('draw.dt', scheduleSticky);
+                    el.removeEventListener('init.dt', scheduleSticky);
+                }
+                window.removeEventListener('resize', scheduleSticky);
+            };
             // ResizeObserver 监听容器尺寸变化（侧边栏折叠等）
             var wrapper = el.closest('.dt-container') || el.closest('.dataTables_wrapper') || el.parentElement;
             if (wrapper && typeof ResizeObserver !== 'undefined') {
@@ -2895,6 +2990,7 @@
      * 确认弹窗（全包唯一实现，返回 Promise<boolean>，两种调用方式兼容）：
      *   XFAdmin.confirm('确定删除？', onOk, onCancel)
      *   XFAdmin.confirm({ title, text, icon, confirmText, cancelText }).then(function (ok) {...})
+     */
     /**
      * 气泡卡片（Popover）确认：在被点击锚点元素旁显示卡片，内含确认文案、取消/确定按钮。
      * 优先用 Bootstrap Popover（依赖 Popper），缺失时降级为 XFAdmin.confirm。
@@ -3668,7 +3764,7 @@
         modalEl.id = 'xf-form-modal';
         modalEl.className = 'modal fade';
         modalEl.tabIndex = -1;
-        modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-' + escapeHtml(opts.size || 'lg') + '">' +
+        modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-' + dialogSize(opts.size || 'lg') + '">' +
             '<div class="modal-content"><div class="modal-header"><h5 class="modal-title">' + escapeHtml(opts.title || '编辑') + '</h5>' +
             '<button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>' +
             '<div class="modal-body"><form class="xf-dialog-form" novalidate>' +
@@ -3804,7 +3900,7 @@
         modalEl.id = 'xf-edit-modal';
         modalEl.className = 'modal fade';
         modalEl.tabIndex = -1;
-        var sizeCls = opts.size ? (' modal-' + opts.size) : ' modal-lg';
+        var sizeCls = opts.size ? (' modal-' + dialogSize(opts.size)) : ' modal-lg';
         var maxBtn = opts.maximizable !== false
             ? '<button type="button" class="btn-close-wrap xf-modal-maximize" title="最大化" aria-label="最大化"><i class="ti ti-arrows-maximize"></i></button>'
             : '';
@@ -3899,7 +3995,7 @@
 
     /**
      * 声明式页面弹窗触发器：任意元素加 data-xf-page-dialog="url" 即可点击弹窗加载该页面。
-     * 可选属性：data-xf-title / data-xf-size(sm|lg|xl) / data-xf-frame(iframe 模式) /
+     * 可选属性：data-xf-title / data-xf-size(sm|lg|xl|fullscreen，非法值回落 lg) / data-xf-frame(iframe 模式) /
      *          data-xf-table("#表格id"，提交成功后自动刷新) / data-xf-reload="false"
      */
     document.addEventListener('click', function (e) {
@@ -4037,7 +4133,7 @@
         modalEl.id = 'xf-dialog-modal';
         modalEl.className = 'modal fade';
         modalEl.tabIndex = -1;
-        modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable' + (opts.size ? ' modal-' + opts.size : '') + '">' +
+        modalEl.innerHTML = '<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable' + (opts.size ? ' modal-' + dialogSize(opts.size) : '') + '">' +
             '<div class="modal-content"><div class="modal-header"><h5 class="modal-title">' + escapeHtml(opts.title || '') + '</h5>' +
             '<button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>' +
             '<div class="modal-body">' + (opts.body || '') + '</div>' +
@@ -4137,16 +4233,38 @@
         try { map = JSON.parse(el.getAttribute('data-xf-cell-event') || '{}'); } catch (_) {}
         if (map.dblclick) { fireCellEvent(map.dblclick, e, el); }
     });
-    document.addEventListener('mouseover', function (e) {
-        var el = e.target.closest && e.target.closest('[data-xf-cell-event]');
-        if (!el || el.__xfHoverBound) return;
-        el.__xfHoverBound = true;
+    /* 单元格 hover：改用 document 级事件委托，而非节点上的布尔「已绑定」标记。
+     * 该标记会随节点移除重插（表格重绘）残留，但监听已丢失，导致 hover 再次失效；
+     * 委托按当前 DOM 实时判定，天然兼容动态重绘的节点。 */
+    var xfHoverEl = null;
+    function xfHoverMap(el) {
         var map = {};
         try { map = JSON.parse(el.getAttribute('data-xf-cell-event') || '{}'); } catch (_) {}
-        if (map.hover) {
-            el.addEventListener('mouseenter', function (ev) { fireCellEvent(map.hover, ev, el); });
-            el.addEventListener('mouseleave', function (ev) { if (map.hoverout) fireCellEvent(map.hoverout, ev, el); });
+        return map;
+    }
+    document.addEventListener('mouseover', function (e) {
+        var el = e.target && e.target.closest && e.target.closest('[data-xf-cell-event]');
+        if (!el || el === xfHoverEl) return;
+        if (xfHoverEl) {
+            var prevMap = xfHoverMap(xfHoverEl);
+            if (prevMap.hoverout) fireCellEvent(prevMap.hoverout, e, xfHoverEl);
+            xfHoverEl = null;
         }
+        var map = xfHoverMap(el);
+        if (map.hover) {
+            xfHoverEl = el;
+            fireCellEvent(map.hover, e, el);
+        }
+    });
+    document.addEventListener('mouseout', function (e) {
+        if (!xfHoverEl) return;
+        var to = e.relatedTarget;
+        // 在同一元素内部（含子元素）移动不算离开
+        if (to && xfHoverEl.contains && xfHoverEl.contains(to)) return;
+        var el = xfHoverEl;
+        xfHoverEl = null;
+        var map = xfHoverMap(el);
+        if (map.hoverout) fireCellEvent(map.hoverout, e, el);
     });
 
     /* 单元格复制/JSON 查看（copyBtn / json 渲染器的交互） */
@@ -6769,6 +6887,408 @@
         // 初始激活
         if (cfg.active != null) activate(String(cfg.active));
         return null;
+    });
+
+    /* ----------------------------------------------------------------
+     * rowActions（行操作 AJAX 通用行为）
+     * ----------------------------------------------------------------
+     * 把「确认 → POST(CSRF) → toast → 重载表格」这一在后台列表里高度重复的交互
+     * 收敛为声明式 widget。业务按钮只需声明：
+     *   <button data-xf-row-action data-url="..." data-confirm="..." data-label="...">
+     * 即可，无需在每个控制器内联大段 JS。
+     *
+     * 也可通过 [data-xf="rowActions"] 容器统一配置：
+     *   cfg = { selector:'.btn-op', table:'#tableId', confirmDelete:'...', deleteClass:'btn-del',
+     *           statusTpl:'确认改为%s？', okText:'操作成功', failText:'操作失败' }
+     *
+     * 事件契约：
+     *  - 点击按钮：若带 data-confirm 则 window.confirm；否则用容器 deleteClass/statusTpl 推断；
+     *  - 请求 POST 携带页面 _token（或 cfg.token），头 X-Requested-With；
+     *  - 响应 success 判定：HTTP 2xx 且 body.code 为 0/200/缺省；
+     *  - 成功后派发 xf:row-action-success 并重载表格（table 配置或 btn.data('table')）。
+     */
+    XFAdmin.register('rowActions', function (el, cfg) {
+        cfg = cfg || {};
+        var selector = cfg.selector || '[data-xf-row-action]';
+        var cleanups = [];
+
+        function responseOk(res) {
+            return res && (res.code === 0 || res.code === 200 || res.code === undefined);
+        }
+        function toast(message, ok) {
+            if (XFAdmin.toast) XFAdmin.toast({ body: message, variant: ok ? 'success' : 'danger' });
+            else if (XFAdmin.adminToast) XFAdmin.adminToast(message, ok ? 'success' : 'error');
+            else window.alert(message);
+        }
+        function reloadTable(tableSel) {
+            var sel = tableSel || cfg.table || '';
+            if (!sel) return;
+            if (window.jQuery && window.jQuery.fn.dataTable) {
+                var table = window.jQuery(sel);
+                if (table.length && window.jQuery.fn.dataTable.isDataTable(table[0])) {
+                    table.DataTable().ajax.reload(null, false);
+                }
+            } else if (window.XFAdmin && XFAdmin.reloadTable) {
+                XFAdmin.reloadTable(sel);
+            }
+        }
+        function csrfToken() {
+            if (cfg.token) return cfg.token;
+            var field = document.querySelector('input[name="_token"]');
+            return field ? field.value : '';
+        }
+        function bind() {
+            var scope = el && el !== document ? el : document;
+            scope.querySelectorAll(selector).forEach(function (btn) {
+                if (btn.__xfRowBound) return;
+                btn.__xfRowBound = true;
+                btn.addEventListener('click', function () {
+                    var url = btn.getAttribute('data-url') || btn.dataset.url;
+                    if (!url) return;
+                    var isDelete = btn.classList.contains(cfg.deleteClass || '') || btn.dataset.action === 'delete';
+                    var confirmText = btn.getAttribute('data-confirm') || btn.dataset.confirm;
+                    if (!confirmText) {
+                        if (isDelete) confirmText = cfg.confirmDelete || '确认删除该记录？删除后不可恢复。';
+                        else if (cfg.statusTpl) confirmText = cfg.statusTpl.replace('%s', btn.dataset.label || '变更状态');
+                    }
+                    if (confirmText && !window.confirm(confirmText)) return;
+
+                    var body = new URLSearchParams();
+                    body.append(cfg.tokenName || '_token', csrfToken());
+                    // 允许按钮携带额外 data-param-* 作为 POST 参数
+                    Object.keys(btn.dataset).forEach(function (key) {
+                        if (key.indexOf('param') === 0 && key.length > 5) {
+                            body.append(key.slice(5, 6).toLowerCase() + key.slice(6), btn.dataset[key]);
+                        }
+                    });
+                    btn.disabled = true;
+                    fetch(url, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: body.toString()
+                    }).then(function (resp) {
+                        return resp.json().catch(function () { return {}; }).then(function (data) {
+                            return { ok: resp.ok, data: data };
+                        });
+                    }).then(function (result) {
+                        btn.disabled = false;
+                        var ok = result.ok && responseOk(result.data);
+                        var message = (result.data && result.data.message)
+                            || (ok ? (cfg.okText || '操作成功') : (cfg.failText || '操作失败'));
+                        toast(message, ok);
+                        if (ok) {
+                            reloadTable(btn.dataset.table);
+                            document.dispatchEvent(new CustomEvent('xf:row-action-success', {
+                                detail: { button: btn, url: url, data: result.data }
+                            }));
+                        }
+                    }).catch(function () {
+                        btn.disabled = false;
+                        toast('请求失败，请重试', false);
+                    });
+                });
+            });
+        }
+        bind();
+        var onDraw = function () { bind(); };
+        document.addEventListener('xf-datatable-drawn', onDraw);
+        cleanups.push(function () { document.removeEventListener('xf-datatable-drawn', onDraw); });
+        return {
+            destroy: function () {
+                cleanups.forEach(function (fn) { try { fn(); } catch (e) {} });
+                scope.querySelectorAll(selector).forEach(function (btn) { btn.__xfRowBound = false; });
+            }
+        };
+    });
+
+    /* ----------------------------------------------------------------
+     * adminBehaviors（后台通用行为套件）
+     * ----------------------------------------------------------------
+     * 把「退出登录 / 刷新系统缓存 / 可视化图标选择器 / 主题与语言持久化」
+     * 四类后台通用交互收拢到包内，业务层只需渲染一个声明式节点：
+     *   <div data-xf="adminBehaviors" data-xf-config='{...json...}'></div>
+     * 由 PHP 组件 zxf\XfAdmin\Components\Layout\AdminBehaviors 生成，
+     * 控制器 / 布局服务不再内联任何 <script>。
+     *
+     * cfg 结构：
+     *   logout:    { selector, url, token, method? }              退出登录（POST + CSRF 动态表单）
+     *   refresh:   { selector, url, token, toastSelector? }       刷新缓存（AJAX POST + toast）
+     *   iconPicker:{ trigger, url, inputTarget, previewSelector?, batch? }  图标选择器浮层
+     *   theme:     { storageKey, langKey }                        主题 / 语言持久化（可选，默认键名）
+     */
+    XFAdmin.register('adminBehaviors', function (el, cfg) {
+        cfg = cfg || {};
+        var cleanups = [];
+
+        /* ---- 轻量 toast（无第三方依赖，供刷新缓存使用） ---- */
+        function toast(msg, type, opts) {
+            opts = opts || {};
+            type = type || 'info';
+            var colors = { success: '#16a34a', error: '#dc2626', info: '#2563eb', loading: '#2563eb', warning: '#d97706' };
+            var boxId = opts.id || 'xf-admin-toast';
+            var old = document.getElementById(boxId);
+            if (old) old.remove();
+            var box = document.createElement('div');
+            box.id = boxId;
+            box.setAttribute('role', 'status');
+            box.setAttribute('aria-live', 'polite');
+            box.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;max-width:340px;'
+                + 'padding:12px 16px;border-radius:8px;color:#fff;font-size:14px;line-height:1.5;'
+                + 'box-shadow:0 8px 24px rgba(0,0,0,.18);background:' + (colors[type] || colors.info)
+                + ';opacity:0;transition:opacity .25s ease;';
+            box.textContent = msg;
+            document.body.appendChild(box);
+            requestAnimationFrame(function () { box.style.opacity = '1'; });
+            if (type !== 'loading') {
+                setTimeout(function () {
+                    box.style.opacity = '0';
+                    setTimeout(function () { if (box.parentNode) box.remove(); }, 280);
+                }, opts.duration || 2600);
+            }
+            return box;
+        }
+        XFAdmin.adminToast = toast; // 暴露给业务：XFAdmin.adminToast('保存成功','success')
+
+        /* ---- 1. 退出登录：事件委托拦截点击 → 动态提交带 CSRF 的 POST 表单 ---- */
+        if (cfg.logout && cfg.logout.url) {
+            var logoutCfg = cfg.logout;
+            var onLogout = function (e) {
+                var target = e.target && e.target.closest ? e.target.closest(logoutCfg.selector || '.js-admin-logout') : null;
+                if (!target) return;
+                e.preventDefault();
+                var form = document.createElement('form');
+                form.method = String(logoutCfg.method || 'POST').toUpperCase();
+                form.action = logoutCfg.url;
+                form.style.display = 'none';
+                if (logoutCfg.token) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = logoutCfg.tokenName || '_token';
+                    input.value = logoutCfg.token;
+                    form.appendChild(input);
+                }
+                document.body.appendChild(form);
+                form.submit();
+            };
+            document.addEventListener('click', onLogout);
+            cleanups.push(function () { document.removeEventListener('click', onLogout); });
+        }
+
+        /* ---- 2. 刷新系统缓存：AJAX POST + toast，busy 防重复 ---- */
+        if (cfg.refresh && cfg.refresh.url) {
+            var refreshCfg = cfg.refresh;
+            var onRefresh = function (e) {
+                var target = e.target && e.target.closest ? e.target.closest(refreshCfg.selector || '.js-admin-refresh-cache') : null;
+                if (!target) return;
+                e.preventDefault();
+                if (target.dataset.busy === '1') return;
+                target.dataset.busy = '1';
+                var loadingToast = toast('正在刷新系统缓存…', 'loading', { id: 'xf-cache-toast' });
+                var done = function (ok, message) {
+                    target.dataset.busy = '0';
+                    if (loadingToast && loadingToast.parentNode) loadingToast.remove();
+                    toast(message, ok ? 'success' : 'error');
+                };
+                var payload = {};
+                payload[refreshCfg.tokenName || '_token'] = refreshCfg.token || '';
+                var opts = {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': refreshCfg.token || '' },
+                    body: new URLSearchParams(payload)
+                };
+                fetch(refreshCfg.url, opts).then(function (resp) {
+                    return resp.json().catch(function () { return {}; }).then(function (data) {
+                        done(resp.ok, (data && data.message) ? data.message : (resp.ok ? '系统缓存已刷新' : '刷新失败'));
+                    });
+                }).catch(function () { done(false, '刷新失败，请稍后重试'); });
+            };
+            document.addEventListener('click', onRefresh);
+            cleanups.push(function () { document.removeEventListener('click', onRefresh); });
+        }
+
+        /* ---- 3. 可视化图标选择器：拉取图标列表 → 自建浮层 → 搜索/分批/回填 ---- */
+        if (cfg.iconPicker && cfg.iconPicker.url) {
+            var ipCfg = cfg.iconPicker;
+            var BATCH = ipCfg.batch || 900;
+            var ICONS = null;
+            var TARGET = null;
+            var state = { list: [], offset: 0, keyword: '' };
+
+            // 关闭 Bootstrap 模态框焦点陷阱，允许浮层搜索框在嵌套弹窗内输入
+            try {
+                if (window.bootstrap && bootstrap.Modal && bootstrap.Modal.prototype._enforceFocus) {
+                    bootstrap.Modal.prototype._enforceFocus = function () {};
+                }
+            } catch (err) {}
+
+            function hostEl() {
+                return document.querySelector('.modal.show') || document.querySelector('.modal') || document.body;
+            }
+            function ensureIcons(cb) {
+                if (ICONS) { cb(ICONS); return; }
+                var xhr = window.jQuery ? window.jQuery.get(ipCfg.url) : null;
+                if (xhr && xhr.done) {
+                    xhr.done(function (res) { ICONS = (res && res.data) ? res.data : []; cb(ICONS); })
+                        .fail(function () { ICONS = []; cb(ICONS); });
+                } else {
+                    fetch(ipCfg.url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
+                        .then(function (r) { return r.json(); })
+                        .then(function (res) { ICONS = (res && res.data) ? res.data : []; cb(ICONS); })
+                        .catch(function () { ICONS = []; cb(ICONS); });
+                }
+            }
+            function modalEl() { return document.getElementById('xf-icon-modal'); }
+            function hideModal() { var m = modalEl(); if (m) m.style.display = 'none'; }
+            function buildModal() {
+                var exist = modalEl();
+                if (exist) return exist;
+                var overlay = document.createElement('div');
+                overlay.id = 'xf-icon-modal';
+                overlay.setAttribute('role', 'dialog');
+                overlay.setAttribute('aria-modal', 'true');
+                overlay.setAttribute('aria-label', '选择图标');
+                overlay.style.cssText = 'position:absolute;inset:0;z-index:1080;display:none;'
+                    + 'background:rgba(0,0,0,.5);font-family:var(--ins-font-sans,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif)';
+                overlay.innerHTML = ''
+                    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);'
+                    + 'width:92%;max-width:760px;max-height:84vh;background:var(--bs-body-bg,#fff);color:var(--bs-body-color,#333);'
+                    + 'border-radius:10px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.25)">'
+                    +   '<div style="padding:.75rem 1rem;border-bottom:1px solid var(--bs-border-color,#eee);display:flex;gap:.5rem;align-items:center">'
+                    +     '<input type="text" class="form-control" data-xf-icon-search placeholder="搜索图标，如 settings、user、chart…" style="flex:1" aria-label="搜索图标">'
+                    +     '<button type="button" class="btn btn-sm btn-light" data-xf-icon-close>关闭</button></div>'
+                    +   '<div data-xf-icon-grid style="padding:1rem;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:.5rem;align-content:start"></div>'
+                    +   '<div style="padding:.5rem 1rem;border-top:1px solid var(--bs-border-color,#eee);color:var(--bs-secondary-color,#888);font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
+                    +     '<span data-xf-icon-count></span>'
+                    +     '<button type="button" class="btn btn-sm btn-soft-primary d-none" data-xf-icon-more>加载更多</button></div>'
+                    + '</div>';
+                hostEl().appendChild(overlay);
+                overlay.addEventListener('click', function (e) { if (e.target === overlay) hideModal(); });
+                overlay.querySelector('[data-xf-icon-close]').addEventListener('click', hideModal);
+                overlay.querySelector('[data-xf-icon-more]').addEventListener('click', function () { renderGrid(state.keyword, false); });
+                overlay.querySelector('[data-xf-icon-search]').addEventListener('input', function () { renderGrid(this.value.trim().toLowerCase(), true); });
+                return overlay;
+            }
+            function makeIconBtn(cls) {
+                var name = cls.replace(/^ti\s+ti-/, '').replace(/^ti-/, '');
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.title = name;
+                btn.setAttribute('data-icon', cls);
+                btn.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.5rem .2rem;'
+                    + 'border:1px solid var(--bs-border-color,#eee);border-radius:8px;background:var(--bs-tertiary-bg,#fff);'
+                    + 'color:var(--bs-body-color,#333);cursor:pointer;transition:border-color .15s,background .15s';
+                btn.innerHTML = '<i class="' + escapeHtml(cls) + '" style="font-size:1.6rem;line-height:1;color:var(--bs-body-color,#333)"></i>'
+                    + '<span style="font-size:.6rem;color:var(--bs-secondary-color,#888);word-break:break-all;text-align:center;line-height:1.2">' + escapeHtml(name) + '</span>';
+                btn.addEventListener('mouseenter', function () { this.style.borderColor = '#6366f1'; this.style.background = 'rgba(99,102,241,.12)'; });
+                btn.addEventListener('mouseleave', function () { this.style.borderColor = 'var(--bs-border-color,#eee)'; this.style.background = 'var(--bs-tertiary-bg,#fff)'; });
+                btn.addEventListener('click', function () {
+                    var target = TARGET ? document.querySelector(TARGET) : null;
+                    if (target) {
+                        target.value = cls;
+                        target.dispatchEvent(new Event('input', { bubbles: true }));
+                        if (ipCfg.previewSelector) {
+                            var prev = document.querySelector(ipCfg.previewSelector);
+                            if (prev) prev.className = cls;
+                        }
+                    }
+                    hideModal();
+                });
+                return btn;
+            }
+            function renderGrid(keyword, reset) {
+                var m = modalEl();
+                if (!m) return;
+                var grid = m.querySelector('[data-xf-icon-grid]');
+                var count = m.querySelector('[data-xf-icon-count]');
+                var more = m.querySelector('[data-xf-icon-more]');
+                if (!ICONS) { grid.innerHTML = '<div class="text-muted">加载中…</div>'; return; }
+                var list = keyword ? ICONS.filter(function (c) { return c.toLowerCase().indexOf(keyword) > -1; }) : ICONS;
+                if (reset) { state = { list: list, offset: 0, keyword: keyword }; grid.innerHTML = ''; }
+                var shown = Math.min(state.offset + BATCH, state.list.length);
+                var frag = document.createDocumentFragment();
+                for (var i = state.offset; i < shown; i++) frag.appendChild(makeIconBtn(state.list[i]));
+                grid.appendChild(frag);
+                state.offset = shown;
+                count.textContent = '共 ' + list.length + ' 个图标' + (keyword ? '（筛选：“' + keyword + '”）' : '（输入关键字可检索全部图标）');
+                if (state.offset < state.list.length) {
+                    more.classList.remove('d-none');
+                    more.textContent = '加载更多（剩余 ' + (state.list.length - state.offset) + '）';
+                } else {
+                    more.classList.add('d-none');
+                }
+            }
+            function showModal(target) {
+                TARGET = target || ipCfg.inputTarget || '#menu-icon-input';
+                var m = buildModal();
+                m.style.display = 'block';
+                renderGrid('', true);
+                var s = m.querySelector('[data-xf-icon-search]');
+                s.value = '';
+                setTimeout(function () { s.focus(); }, 60);
+            }
+            var onPickerClick = function (e) {
+                var trigger = e.target && e.target.closest ? e.target.closest(ipCfg.trigger || '.js-icon-picker') : null;
+                if (!trigger) return;
+                e.preventDefault();
+                var target = (window.jQuery && window.jQuery(trigger).data('target')) || trigger.getAttribute('data-target') || ipCfg.inputTarget || '#menu-icon-input';
+                ensureIcons(function () { showModal(target); });
+            };
+            document.addEventListener('click', onPickerClick);
+            cleanups.push(function () { document.removeEventListener('click', onPickerClick); });
+            // 输入框手动输入时同步预览
+            if (ipCfg.previewSelector && ipCfg.inputTarget) {
+                var onPreview = function (e) {
+                    if (e.target && e.target.matches && e.target.matches(ipCfg.inputTarget)) {
+                        var prev = document.querySelector(ipCfg.previewSelector);
+                        if (prev) prev.className = e.target.value || 'ti ti-circle';
+                    }
+                };
+                document.addEventListener('input', onPreview);
+                cleanups.push(function () { document.removeEventListener('input', onPreview); });
+            }
+            var onEsc = function (e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    var m = modalEl();
+                    if (m && m.style.display === 'block') {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        hideModal();
+                    }
+                }
+            };
+            document.addEventListener('keydown', onEsc, true);
+            cleanups.push(function () { document.removeEventListener('keydown', onEsc, true); });
+        }
+
+        /* ---- 4. 主题 / 语言持久化：MutationObserver + i18n 事件 ---- */
+        if (cfg.theme !== false) {
+            var themeCfg = cfg.theme || {};
+            var storageKey = themeCfg.storageKey || 'xf_admin_theme';
+            var langKey = themeCfg.langKey || 'xf_admin_lang';
+            try {
+                var observer = new MutationObserver(function (muts) {
+                    muts.forEach(function (m) {
+                        if (m.attributeName === 'data-bs-theme') {
+                            var v = document.documentElement.getAttribute('data-bs-theme');
+                            try { localStorage.setItem(storageKey, v); } catch (e) {}
+                        }
+                    });
+                });
+                observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+                cleanups.push(function () { observer.disconnect(); });
+                var onLang = function (e) {
+                    var code = e && e.detail ? e.detail.lang : '';
+                    if (code) { try { localStorage.setItem(langKey, code); } catch (err) {} }
+                };
+                document.addEventListener('xf:lang-changed', onLang);
+                cleanups.push(function () { document.removeEventListener('xf:lang-changed', onLang); });
+            } catch (err) {}
+        }
+
+        // 返回带 destroy 的实例，供 XFAdmin.destroy / SPA 卸载时清理全局监听
+        return {
+            destroy: function () { cleanups.forEach(function (fn) { try { fn(); } catch (e) {} }); }
+        };
     });
 
     global.XFAdmin = XFAdmin;

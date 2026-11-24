@@ -4,6 +4,42 @@
 
 ---
 
+## 2026-11-24 v1.0.3 DataTable 冻列/搜索/渲染器全面增强 + 文档纠错
+
+### 版本号统一为 1.0.3（与 git tag v1.0.3 对齐）
+
+- `config/xfadmin.php` / `XfAdmin::VERSION` 两处同步为 `1.0.3`；`composer.json` 按规范**不写 version 字段**
+  （版本由两处常量管理，避免与 composer 注入冲突）。
+- 组件数描述按源码实测修正为 **225 个组件类 / 237 个注册别名**（12 个别名指向同一类的重复别名），
+  README / composer.json 描述 / package-overview / component-index / component-reference 全部同步；
+  `tools/gen_component_docs.php` 的 `$GROUPS` 补齐 `adminBehaviors` / `adminThemeHead` / `rowActions` 三项。
+- 新增 `.ai/rules/` AI 规则体系（11 个文件），供进入本包的 AI 快速掌握函数/组件/配置/接口/页面/模板/规范/结构；
+  `.gitignore` 增补 `!.ai/` / `!.ai/**` 例外，确保规则目录纳入版本管理。
+
+### DataTable 增强
+
+- **`fixed_columns` 支持冻结任意中间列**：新增 `indexes`（精确列索引 + 方向）与 `fields`（按数据字段名）两种写法，
+  与历史 `left`/`right` 连续规则可组合；前端 sticky 偏移按左右两侧分别累计列宽计算；`PHP normalizeFixedColumns()` 归一化。
+- **自定义搜索表单真实渲染**：`show_custom_search=true` 时按可搜索列自动生成可折叠 `.custom-datatable-search` 面板，
+  新增 `search_fields` 参数支持 text/select/date/daterange 等字段；前端采集 `[data-xf-search]` 追加查询参数重载或本地列搜索；
+  修复此前「只插入隐藏空占位、无渲染点」的缺陷。
+- **渲染器白名单双向对齐**：`RENDER_SHORTCUTS` 补齐 `avatarStack`/`money`/`ip`/`filesize`/`select` 等前端已有渲染器；
+  前端补 `avatarStack` 别名（等价 `avatarGroup`），消除「白名单有、前端无实现」的静默回退。
+- **操作列自动右固定（`auto_fix_actions`，默认 true）**：所有含操作列的表格统一把操作列精确固定到最右侧、始终可见。
+  新增 `detectActionColumnIndexes()` 探测 4 种操作列形态（key / label 中英文 / actions 数组 / render 类型），
+  基于含辅助列的最终列定义**精确定位索引**，不再假定「最后一列是操作列」；显式 `fixed_columns` 声明优先、绝不覆盖；
+  `fixed_columns=false` / `auto_fix_actions=false` / `scroll_x=false` 可关闭。修复此前「纯 `key=actions` 无 `actions` 数组的列
+  （Article/Spider/Log 等）无法被识别、操作列不在末位时冻结错位」的缺陷。
+- **文档纠错**：修正 `row_url`/`enum` 已被误标「无效/缺失」的 3 处说明；补充 `fixed_columns` §2.4、§2.4.1 与自定义搜索 §8.5。
+
+### 测试与审计补强
+- `tests/regression.php` 新增 7 项：三个声明式组件（rowActions/adminBehaviors/adminThemeHead）的声明节点输出、
+  配置 HEX 转义、键名净化断言；再新增 22 项覆盖「操作列自动右固定」全部形态与开关组合。
+- `tests/audit.php` 新增 1 项（审计总数 50→51）：声明式组件 `data-xf-config` 统一 HEX 转义静态校验。
+- 文档工具 `tools/gen_component_docs.php` 分组补齐 3 个新组件，生成后组件索引 225 条 / 别名 237 个全量覆盖。
+
+---
+
 ## 2026-10-16 版本号固定为 1.0.2 + 空状态通用助手下沉
 
 ### 版本号统一固定为 1.0.2

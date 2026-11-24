@@ -146,7 +146,7 @@ echo XfAdmin::table([
 数据表格（DataTables：服务端/客户端、导出、固定列等）。
 
 > **类**：`zxf\XfAdmin\Components\Table\DataTable`
-> **文件**：`src/Components/Table/DataTable.php`（937 行）
+> **文件**：`src/Components/Table/DataTable.php`（1133 行）
 > **依赖插件**：`datatables`、`datatables-pdf`、`select2`、`qrcode`
 
 **用法示例**
@@ -228,7 +228,8 @@ echo XfAdmin::dataTable([
         25,
         50,
     ],
-    'show_custom_search' => true,    // 启用自定义搜索表单
+    'show_custom_search' => true,    // 启用自定义搜索表单（true=按列自动生成；数组=自定义字段；false=关闭）
+    'search_fields' => [],    // 自定义搜索字段：[['data'=>'字段名','label'=>'标题','type'=>'text|select|date|daterange','options'=>[],'placeholder'=>'']]，留空则按 searchable 业务列自动生成
     'row_detail' => null,    // 行详情展开 callback / 列名（null=不启用）
     'show_header_btn' => null,    // 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true]
     'created_row' => null,    // createdRow 回调（JS 函数名/全局函数引用）
@@ -259,6 +260,7 @@ echo XfAdmin::dataTable([
 
 - `columns[]` 元素键：`actions`、`render`；补充：`key`/`data`（字段名）、`label`/`title`（表头）、`width`、`minWidth`、`class`、`sortable`、`searchable`、`visible`、`render`、`badges`、`template`、`actions`
 - `data[]`：本地行数据（每行字段与列 `key` 对应）
+- `search_fields[]` 元素键：`html`、`data`、`name`、`label`、`type`（默认 `text`）、`width`（默认 `col-12 col-md-6 col-xl-4`）、`placeholder`、`options`
 - `buttons[]`：`copy`/`csv`/`excel`/`pdf`/`print`/`colvis`/`refresh`/`fullscreen`/`density`，或原生按钮配置数组
 - `order[]`：`[[列索引, 'asc'|'desc']]`（启用 bulk/row_detail 后索引会被辅助列顶偏）
 - `filter_bar[]` 元素键：`multiple`、`type`；补充：`name`、`label`、`type`、`options`、`width`、`placeholder`、`min`/`max`/`step`、`html`
@@ -298,7 +300,8 @@ echo XfAdmin::dataTable([
 | `processing` | bool | `true` | 默认显示加载处理提示 |
 | `page_length` | int | `10` | 每页条数；源码用法：`'pageLength' => (int) $this->get('page_length'),` |
 | `length_menu` | array | `[10, 15, 20, 25, 50]` | 标准每页条数菜单 |
-| `show_custom_search` | bool | `true` | 启用自定义搜索表单 |
+| `show_custom_search` | bool | `true` | 启用自定义搜索表单（true=按列自动生成；数组=自定义字段；false=关闭）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `search_fields` | array | `[]` | 自定义搜索字段：[['data'=>'字段名','label'=>'标题','type'=>'text\|select\|date\|daterange','options'=>[],'placeholder'=>'']]，留空则按 searchable 业务列自动生成 |
 | `row_detail` | mixed | `null` | 行详情展开 callback / 列名（null=不启用）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `show_header_btn` | mixed | `null` | 表头按钮区域 ['create'=>'/url','refresh'=>true,'search'=>true] |
 | `created_row` | mixed | `null` | createdRow 回调（JS 函数名/全局函数引用） |

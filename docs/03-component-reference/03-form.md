@@ -1317,7 +1317,7 @@ echo XfAdmin::twoFactorInput([
 数量步进器 − 数字 + 按钮组，含 min / max / step，复刻电商购物车数量控件。 'name'  => 'qty', 'value' => 1, 'min'   => 1, 'max'   => 99, 'step'  => 1, 'size'  => 'md',   // sm | md | lg ])。
 
 > **类**：`zxf\XfAdmin\Components\Form\QuantityStepper`
-> **文件**：`src/Components/Form/QuantityStepper.php`（46 行）
+> **文件**：`src/Components/Form/QuantityStepper.php`（51 行）
 > **依赖插件**：无
 
 **用法示例**

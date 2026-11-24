@@ -66,6 +66,7 @@ $GROUPS = [
             'lockScreen', 'deleteAccount', 'successMail', 'loginPin',
             'errorPage', 'comingSoon', 'maintenance', 'emptyState', 'landing',
             'accountSettingsPanel',
+            'adminBehaviors', 'adminThemeHead',
             'menu',
             'row', 'col',
             'diyLayoutPage', 'diy',
@@ -115,6 +116,7 @@ $GROUPS = [
             'videoEmbed', 'commandPalette', 'notificationCenter', 'dropzoneUpload',
             'backToTop', 'callout', 'countdown', 'countUp', 'invoicePrintButton',
             'statusTag', 'statRow', 'confirmDialog', 'actionBar', 'filterBar', 'dataSourceSwitcher',
+            'rowActions',
         ],
     ],
     '03-form.md' => [

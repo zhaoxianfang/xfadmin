@@ -1,7 +1,7 @@
 # 组件索引（按别名排序）
 
 > 本文件由 `php tools/gen_component_docs.php` 自动生成。
-> 共 **222** 个组件条目（注册表别名 **234** 个，12 个为指向同一组件类的重复别名）。
+> 共 **225** 个组件条目（注册表别名 **237** 个，12 个为指向同一组件类的重复别名）。
 > 按分类浏览见 [组件总览](../03-component-reference/00-overview.md)。
 
 | 别名 | 一句话说明 | 组件类 | 源文件 | 分类文档 |
@@ -11,6 +11,8 @@
 | `accountSettingsPanel` | 账户设置面板 | `Layout\AccountSettingsPanel` | `src/Components/Layout/AccountSettingsPanel.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
 | `actionBar` | 操作按钮工具条 | `UI\ActionBar` | `src/Components/UI/ActionBar.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `activityFeed` | 活动动态流 | `Data\ActivityFeed` | `src/Components/Data/ActivityFeed.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
+| `adminBehaviors` | 后台通用行为声明 | `Layout\AdminBehaviors` | `src/Components/Layout/AdminBehaviors.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
+| `adminThemeHead` | 后台主题提前应用脚本 | `Layout\AdminThemeHead` | `src/Components/Layout/AdminThemeHead.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
 | `alert` | 警告提示条 | `UI\Alert` | `src/Components/UI/Alert.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `analyticsDashboard` | 数据分析仪表盘 | `Data\AnalyticsDashboard` | `src/Components/Data/AnalyticsDashboard.php` | [业务组件（五）仪表盘 · 模块 · 通用](../03-component-reference/10-data-dashboard.md) |
 | `animate` | 入场动画 | `Misc\Animate` | `src/Components/Misc/Animate.php` | [杂项与交互增强](../03-component-reference/11-misc.md) |
@@ -172,6 +174,7 @@
 | `ribbon` | 缎带角标 | `UI\Ribbon` | `src/Components/UI/Ribbon.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `roles` | 角色管理 | `Data\Roles` | `src/Components/Data/Roles.php` | [业务组件（三）用户 · 组织 · 项目协作](../03-component-reference/08-data-people.md) |
 | `row` | 栅格行容器 | `Grid\Row` | `src/Components/Grid/Row.php` | [布局 · 导航 · 栅格](../03-component-reference/01-layout.md) |
+| `rowActions` | 行操作 AJAX 声明 | `UI\RowActions` | `src/Components/UI/RowActions.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `sales` | 销售数据 | `Data\Sales` | `src/Components/Data/Sales.php` | [业务组件（一）电商 · 商品 · 订单 · 发票](../03-component-reference/06-data-ecommerce.md) |
 | `scrollspy` | 滚动监听 | `UI\Scrollspy` | `src/Components/UI/Scrollspy.php` | [UI 基础组件](../03-component-reference/02-ui.md) |
 | `searchBox` | 搜索框 | `UI\SearchBox` | `src/Components/UI/SearchBox.php` | [UI 基础组件](../03-component-reference/02-ui.md) |

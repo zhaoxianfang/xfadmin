@@ -464,7 +464,7 @@ echo XfAdmin::shoppingCart([
 
 - `items[]` 元素键：`image`、`name`、`sku`、`price`、`qty`、`subtotal`、`color`、`size`
 
-> **渲染骨架**：主要 class `text-center` `py-5` `mb-3` `btn` `btn-primary` `mt-2` `row` `g-4`
+> **渲染骨架**：主要 class `text-center` `py-5` `mb-3` `btn` `btn-primary` `mt-2` `col-lg-8` `card`
 
 **配置参数**
 

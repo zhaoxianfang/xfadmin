@@ -1,14 +1,14 @@
 # 组件总览
 
 > 本文件由 `php tools/gen_component_docs.php` 自动生成。
-> 组件别名共 **234** 个（对应 **222** 个组件类，部分类别名重复指向同一类）。
+> 组件别名共 **237** 个（对应 **225** 个组件类，部分类别名重复指向同一类）。
 
 ## 分类统计
 
 | 分类文档 | 组件数 |
 |---|---|
-| [布局 · 导航 · 栅格](01-layout.md) | 29 |
-| [UI 基础组件](02-ui.md) | 61 |
+| [布局 · 导航 · 栅格](01-layout.md) | 31 |
+| [UI 基础组件](02-ui.md) | 62 |
 | [表单组件](03-form.md) | 23 |
 | [表格组件](04-table.md) | 4 |
 | [图表与地图](05-chart.md) | 7 |
@@ -50,6 +50,8 @@
 | [`emptyState`](01-layout.md#emptystate) | 空状态页 | `Layout\EmptyState` | — |
 | [`landing`](01-layout.md#landing) | 落地页/营销首页 | `Layout\Landing` | — |
 | [`accountSettingsPanel`](01-layout.md#accountsettingspanel) | 账户设置面板 | `Layout\AccountSettingsPanel` | — |
+| [`adminBehaviors`](01-layout.md#adminbehaviors) | 后台通用行为声明 | `Layout\AdminBehaviors` | `jquery` |
+| [`adminThemeHead`](01-layout.md#adminthemehead) | 后台主题提前应用脚本 | `Layout\AdminThemeHead` | — |
 | [`menu`](01-layout.md#menu) | 菜单数据组件 | `Navigation\Menu` | — |
 | [`row`](01-layout.md#row) | 栅格行容器 | `Grid\Row` | — |
 | [`col`](01-layout.md#col) | 栅格列 | `Grid\Col` | — |
@@ -124,6 +126,7 @@
 | [`actionBar`](02-ui.md#actionbar) | 操作按钮工具条 | `UI\ActionBar` | — |
 | [`filterBar`](02-ui.md#filterbar) | 列表筛选条 | `UI\FilterBar` | — |
 | [`dataSourceSwitcher`](02-ui.md#datasourceswitcher) | 数据源切换器 | `UI\DataSourceSwitcher` | — |
+| [`rowActions`](02-ui.md#rowactions) | 行操作 AJAX 声明 | `UI\RowActions` | — |
 
 ---
 

@@ -31,6 +31,8 @@
 - [`emptyState`](#emptystate) — 空状态页（无数据占位插画+文案）
 - [`landing`](#landing) — 落地页/营销首页（英雄区+特性+CTA）
 - [`accountSettingsPanel`](#accountsettingspanel) — 账户设置面板（头像/密码/通知等卡片组）
+- [`adminBehaviors`](#adminbehaviors) — 后台通用行为声明（退出登录/刷新缓存/图标选择器/主题持久化，逻辑在 xfadmin.js）
+- [`adminThemeHead`](#adminthemehead) — 后台主题提前应用脚本（置于 head 防首屏闪烁）
 - [`menu`](#menu) — 菜单数据组件（导航菜单 DSL，供 sidenav/topnav 使用）
 - [`row`](#row) — 栅格行容器（Bootstrap row 封装）
 - [`col`](#col) — 栅格列（Bootstrap col 封装，支持响应式断点）
@@ -474,7 +476,7 @@ echo XfAdmin::pageTitle([
 页面底部版权/链接区。
 
 > **类**：`zxf\XfAdmin\Components\Layout\Footer`
-> **文件**：`src/Components/Layout/Footer.php`（122 行）
+> **文件**：`src/Components/Layout/Footer.php`（124 行）
 > **依赖插件**：无
 
 **用法示例**
@@ -1541,7 +1543,7 @@ echo XfAdmin::accountSettingsPanel([
 
 - `tabs[]` 元素键：`id`、`icon`（默认 `ti ti-point`）、`label`
 
-> **渲染骨架**：主要 class `list-group` `list-group-flush` `xf-asp-nav` `tab-content` `xf-asp-content` `card` `border-0` `shadow-sm`
+> **渲染骨架**：主要 class `list-group` `list-group-flush` `xf-asp-nav` `tab-content` `xf-asp-content` `card-body` `row` `g-0`
 
 **配置参数**
 
@@ -1550,6 +1552,86 @@ echo XfAdmin::accountSettingsPanel([
 | `title` | string | `'账户设置'` | 标题文本（部分组件为弹窗/tooltip 标题）；源码用法：`$title = $this->get('title');` |
 | `tabs` | array | `[]` | 选项卡数组 |
 | `active` | mixed | `null` | 是否激活 / 默认选中项；源码用法：`$active = $this->get('active') ?? ($tabs[0]['id'] ?? '');` |
+
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
+
+---
+
+### `adminBehaviors`
+
+后台通用行为声明（退出登录/刷新缓存/图标选择器/主题持久化，逻辑在 xfadmin.js）。
+
+> **类**：`zxf\XfAdmin\Components\Layout\AdminBehaviors`
+> **文件**：`src/Components/Layout/AdminBehaviors.php`（58 行）
+> **依赖插件**：`jquery`
+
+**用法示例**
+
+```php
+XfAdmin::adminBehaviors([
+      'logout' => ['url' => route('logout'), 'token' => csrf_token()],
+      'refresh' => ['url' => route('cache.clear'), 'token' => csrf_token()],
+      'iconPicker' => ['url' => route('icons'), 'inputTarget' => '#icon', 'previewSelector' => '#preview'],
+  ]);
+```
+
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::adminBehaviors([
+    'logout' => null,
+    'refresh' => null,
+    'iconPicker' => null,
+    'theme' => true,
+]);
+```
+
+</details>
+
+**配置参数**
+
+| 参数 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `logout` | mixed | `null` |  |
+| `refresh` | mixed | `null` |  |
+| `iconPicker` | mixed | `null` |  |
+| `theme` | bool | `true` | 可选值：`light` / `dark` / `auto` |
+
+> 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
+
+---
+
+### `adminThemeHead`
+
+后台主题提前应用脚本（置于 head 防首屏闪烁）。
+
+> **类**：`zxf\XfAdmin\Components\Layout\AdminThemeHead`
+> **文件**：`src/Components/Layout/AdminThemeHead.php`（52 行）
+> **依赖插件**：无
+
+**用法示例**
+
+```php
+XfAdmin::page(['head' => (string) XfAdmin::adminThemeHead()]);
+```
+
+<details><summary><b>全参数示例</b>（点击展开：列出该组件全部可配置参数，值均为默认值）</summary>
+
+```php
+echo XfAdmin::adminThemeHead([
+    'storageKey' => 'xf_admin_theme',    // 主题偏好 localStorage 键
+    'langKey' => 'xf_admin_lang',    // 语言偏好 localStorage 键
+]);
+```
+
+</details>
+
+**配置参数**
+
+| 参数 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `storageKey` | string | `'xf_admin_theme'` | 主题偏好 localStorage 键 |
+| `langKey` | string | `'xf_admin_lang'` | 语言偏好 localStorage 键 |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
 

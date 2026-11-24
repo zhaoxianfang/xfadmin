@@ -6,7 +6,7 @@
 
 | 插件名 | CSS | JS | 依赖 | 被以下组件引用 |
 |---|---|---|---|---|
-| `jquery` | — | 1 个 | — | — |
+| `jquery` | — | 1 个 | — | `adminBehaviors` |
 | `moment` | — | 1 个 | — | — |
 | `lucide` | — | 1 个 | — | `icon` |
 | `datatables` | 4 个 | 13 个 | — | `dataTable` |
