@@ -73,7 +73,7 @@ class Input extends Component
         $size = $this->enum($this->get('size'), self::ENUM_SIZE, '');
         $sizeCls = $size !== '' ? 'form-control-'.$size : '';
         $attrs = [
-            'type' => $this->get('type'),
+            'type' => $this->scalarOpt('type', 'text'),
             'class' => Html::cls('form-control', $sizeCls, $this->controlStateClass()),
             'id' => $id,
             'name' => $this->get('name'),

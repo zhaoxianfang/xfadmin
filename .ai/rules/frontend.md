@@ -27,7 +27,7 @@
 - `XFAdmin.onReady(fn)` / `_readyQueue`：DOM 就绪后回调队列。
 
 ### 2.2 请求 / 表单 / 弹窗
-- `XFAdmin.request(opts)`：统一 AJAX（自动带 CSRF、`X-Requested-With`、`Accept: application/json`）。
+- `XFAdmin.request(url, opts)`：统一 AJAX（自动 CSRF、同源白名单 `safeRedirect`、非法协议直接拒绝、`Accept: application/json`）；所有新增请求入口必须走它，禁止裸 `fetch(配置URL)`。
 - `bindRemoteForms(root)` / `handleRemoteForm(form)` / `handleFormResponse`：AJAX 表单协议。
   - 提交成功/失败后向 form 派发 `xf.form.success` / `xf.form.error`（bubbles）。
   - 失败 HTTP 非 2xx；成功按 `data.url` 跳转。
@@ -51,6 +51,7 @@
 
 ### 2.4 提示 / 工具
 - `toast(opts)` / `adminToast(msg,type)` / `escapeHtml(s)` / `tpl(tpl,data)` / `tplRaw`。
+- `safeLink(value,fallback)` / `safeRedirect(value)` / `safeToken(value,fallback,allowed)` / `safeQuery(selector,root)` / `iconClass(value)`：渲染器与事件层的统一净化入口；variant/color/icon 进入 class 前必须过白名单。
 - `loadScript(url)` / `loadStyle(url)`：动态加载资源。
 - `copyText(s)` / `get(key)` / `set(key,val)`：剪贴板/内部状态。
 - `bindLoadingButtons` / `bindBulk` / `bindRowDetail` / `bindTwoFactor` / `bindXfPageLinks` / `bindInvoicePrint` / `bindQtyStepper` / `bindAutosize` / `initBootstrapExtras` / `initAuthPage` / `initCommandPalette` / `initDropzone`。

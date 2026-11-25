@@ -47,17 +47,18 @@ class UserProfile extends Component
      */
     protected function html(): string
     {
-        // 先用原始值判空再解析图片：img('') 返回占位 GIF 非空串，直接判空会恒真
-        $avatarRaw = $this->get('avatar', '');
-        $coverRaw = $this->get('cover', '');
-        $avatar = ($avatarRaw !== '' && $avatarRaw !== null) ? $this->img((string) $avatarRaw) : '';
-        $cover = ($coverRaw !== '' && $coverRaw !== null) ? $this->img((string) $coverRaw) : '';
-        $name = (string) $this->get('name', '匿名用户');
-        $title = (string) $this->get('title', '');
-        $bio = (string) $this->get('bio', '');
-        $text = (string) $this->get('text', '');
-        $stats = (array) $this->get('stats', []);
-        $actions = (array) $this->get('actions', ['message' => true, 'follow' => true]);
+        // 先用原始值判空再解析图片：img('') 返回占位 GIF 非空串，直接判空会恒真。
+        // scalarOpt/arrayOpt 兜底误传的数组/标量，避免 (string) 强转触发 PHP Warning。
+        $avatarRaw = $this->scalarOpt('avatar');
+        $coverRaw = $this->scalarOpt('cover');
+        $avatar = $avatarRaw !== '' ? $this->img($avatarRaw) : '';
+        $cover = $coverRaw !== '' ? $this->img($coverRaw) : '';
+        $name = $this->scalarOpt('name', '匿名用户');
+        $title = $this->scalarOpt('title');
+        $bio = $this->scalarOpt('bio');
+        $text = $this->scalarOpt('text');
+        $stats = $this->arrayOpt('stats');
+        $actions = $this->arrayOpt('actions');
 
         $html = '<div class="card overflow-hidden">';
 
@@ -72,7 +73,8 @@ class UserProfile extends Component
         } elseif ($text !== '') {
             $html .= '<div class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width:72px;height:72px;font-size:28px;">'.$this->escape($text).'</div>';
         } else {
-            $html .= '<img src="" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="'.$this->escape($name).'">';
+            // 复用 img('') 的透明 GIF 占位，杜绝 src="" 触发破图请求
+            $html .= '<img src="'.$this->escape($this->img('')).'" class="rounded-circle avatar-lg shadow mt-n5 border border-3 border-white" alt="'.$this->escape($name).'">';
         }
         $html .= '<h5 class="mt-2 mb-0">'.$this->escape($name).'</h5>';
         if ($title !== '') {

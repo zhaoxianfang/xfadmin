@@ -75,8 +75,8 @@ class DropzoneUpload extends Component
         // 初始化脚本：注册为内联 JS（同 key 去重，重复 render 不重复输出）；
         // initial 由 JS 消费渲染，PHP 不再传递 $initial（renderInitial 恒返回 ''，整条传递链无消费方）
         $js = 'document.addEventListener("DOMContentLoaded",function(){XFAdmin.initDropzone&&XFAdmin.initDropzone('
-            .json_encode(['id' => $id, 'initial' => (array) $this->get('value')], JSON_HEX_TAG | JSON_HEX_AMP).');});';
-        Assets::instance()->inlineJs($js, 'xf-dropzone-init');
+            .json_encode(['id' => $id, 'initial' => (array) $this->get('value')], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).');});';
+        Assets::instance()->inlineJs($js, 'xf-dropzone-init-'.$id);
 
         return $html;
     }

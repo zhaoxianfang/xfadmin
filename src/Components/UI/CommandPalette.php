@@ -91,8 +91,8 @@ class CommandPalette extends Component
 
         // 快捷键 + 交互脚本：注册为内联 JS（同 key 去重，重复 render 不重复输出）
         $js = 'document.addEventListener("DOMContentLoaded",function(){XFAdmin.initCommandPalette&&XFAdmin.initCommandPalette('
-            .json_encode(['id' => $id, 'hotkey' => $this->get('hotkey')], JSON_HEX_TAG | JSON_HEX_AMP).');});';
-        Assets::instance()->inlineJs($js, 'command-palette');
+            .json_encode(['id' => $id, 'hotkey' => $this->get('hotkey')], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).');});';
+        Assets::instance()->inlineJs($js, 'command-palette-'.$id);
 
         return $html;
     }

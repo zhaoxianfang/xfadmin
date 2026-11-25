@@ -79,7 +79,7 @@ class Upload extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-upload');
+        $id = $this->resolveId('xf-upload');
         $driver = $this->get('driver');
 
         if ($driver === 'dropzone') {

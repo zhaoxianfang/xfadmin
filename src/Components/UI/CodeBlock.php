@@ -57,9 +57,12 @@ class CodeBlock extends Component
             ? '<button type="button" class="xf-code-copy btn btn-sm btn-light" data-xf="codeCopy">复制</button>'
             : '';
 
-        if ($this->get('title') !== '') {
+        $title = is_scalar($this->get('title')) ? (string) $this->get('title') : '';
+        if ($title !== '') {
+            // 标题与语言标签各自独立输出：此前二者同时传入时语言标签被标题吞掉。
             $header = '<div class="xf-code-header d-flex align-items-center justify-content-between">'
-                .'<span class="xf-code-lang">'.$this->escape($this->get('language') !== '' ? $this->get('language') : $this->get('title')).'</span>'
+                .'<span class="xf-code-title">'.$this->escape($title).'</span>'
+                .($lang !== '' ? '<span class="xf-code-lang">'.$this->escape($lang).'</span>' : '')
                 .$copyBtn
                 .'</div>';
         } elseif ($copyBtn !== '') {

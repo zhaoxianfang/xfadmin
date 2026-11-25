@@ -4,6 +4,68 @@
 
 ---
 
+## 2026-11-25 v1.0.4 组件健壮性加固 + 站点图标统一
+
+### 版本号与发布
+
+- `config/xfadmin.php` / `XfAdmin::VERSION` 同步为 `1.0.4`，`composer.json` 仍按规范**不写 version 字段**；
+  源码包打 `v1.0.4` tag，项目侧通过 `composer update zxf/xfadmin` 对齐 `composer.lock` 引用。
+- `laravel/passport` 已升级到 `v13.12.0`，`phpseclib/phpseclib` 随之解析到 `4.0.4`，此前记录的 `4.0.1` 漏洞风险已解除。
+
+### 站点图标（favicon）
+
+- `XfAdmin::page()` / `XfAdmin::authPage()` / `XfAdmin::lockScreen()` 三套完整 HTML 文档组件
+  统一使用 `Component::faviconUrl()` 解析站点图标，**默认使用项目 `public/favicon.ico`（输出 `/favicon.ico`）**，
+  不再指向扩展包内置 `images/favicon.ico`，避免后台页面与项目品牌图标不一致。
+- 优先级：组件参数 `favicon` → 全局配置 `brand.favicon` → 项目默认 `/favicon.ico`；
+  `false` / `''` 显式关闭 `<link rel="shortcut icon">`；以 `/` 开头按项目 public 路径输出；
+  相对路径仍按包内 images/ 资源解析（`images/favicon.ico` 自动去重前缀）；
+  `javascript:` 等非图片伪协议与数组/不可字符串化对象一律回退项目默认，杜绝 Warning 与 XSS。
+
+### 组件健壮性与交互修复
+
+**PHP 组件层（第二批加固）**
+- `Component` 新增 `scalarText()`，并让 `cssLen/cssRatio/cssColor/cssBackground/safeCssValue/img/iconClass/safeUrl/uid/resolveId`
+  统一拒绝数组与不可字符串化对象；`faviconUrl()` 支持全局配置 `false` 关闭图标，非法协议一律回退 `/favicon.ico`。
+- 表单字段组件（Input/Select/Textarea/Editor/Upload/Tags/Check 等）统一改走 `resolveId('xf-*')`，
+  消除 11 处直接读取 `attributes['id']` 的类型风险与 id 漂移。
+- CommandPalette / DropzoneUpload 的内联初始化脚本 key 绑定实例 id，并对 JSON 增加 `JSON_HEX_APOS|JSON_HEX_QUOT`；
+  多实例同页不再互相覆盖，含引号的配置不再破坏 JS 字符串。
+- `VideoEmbed` 的 `<iframe>` 补 `title`；`Button` 图标按钮 `aria-label` 经 `scalarOpt()`；
+  `Icon(lucide)`、`Breadcrumb` 分隔符、`Toggle`、`Toast(delay)`、`Media`、`Divider` 等标量配置统一白名单/净化。
+- `Marketplace` 副标题改为转义输出；`Raw` 的 `js_key/css_key` 误传数组不再触发 Warning。
+
+**前端运行时（第二批加固）**
+- 新增 `safeLink/safeRedirect/safeToken/safeQuery/iconClass` 五个净化入口；`XFAdmin.request()` 只接受同源地址，
+  `pageDialog` / 行操作 / 缓存刷新 / 图标数据源 / 所有 `data-xf-url` 提交统一收敛到该入口。
+- 表单响应 `data.url` 与 `data-xf-redirect` 仅允许同源跳转，阻断响应注入导致的外部钓鱼跳转；
+  错误回填的字段选择器非法时不抛异常。
+- 修复拖拽上传：请求参数由错误的 `opts.body` 改为 `opts.data`，成功时调用 `onUpload(id)` 已注册回调（此前调用注册函数本身，业务回调永远不触发）。
+- `XFAdmin::register('form')` 与 `data-xf-remote` 共用 `handleRemoteForm`，避免双 submit 监听导致重复提交；
+  `data-xf-reset=""` 也能触发表单重置。
+- Toast variant、单元格渲染器 variant/color/icon 全部走白名单；图标选择器使用安全选择器，非法配置返回 `null` 而非抛错中断。
+- `fetch` 调用收敛到 `XFAdmin.request()` 与语言包加载两处，其余配置 URL 均经过协议/同源校验。
+
+- `DataTable`：操作列自动右固定 `auto_fix_actions` 默认开启；操作列探测覆盖 key/label/中英文标题/renderer 四种形态，
+  显式 `fixed_columns` 声明优先；列宽测量优先取 DataTables API 列数，回退 thead 首行并跳过 colspan 分组/详情行；
+  自定义搜索按钮改为 `type=submit`，消除单字段回车双请求。
+- `xfadmin.js`：ECharts 主题重建/resize/destroy 统一以 `__xfEchartsMeta.inst` 为真相源；
+  `destroy.dt` 监听改用 `{once:true}` 并无条件清理 sticky；Toast variant 白名单修正浅色关闭按钮；
+  hover 全面改为事件委托，补齐暗色模式固定列 hover/条纹高亮规则。
+- `Component` 新增 `arrayOpt()` / `scalarOpt()` 安全读取助手，Select/Check/Icon/UserProfile/ComingSoon/Toast 等
+  对误传标量或数组不再触发 PHP Warning；`UserProfile` 空头像复用透明 GIF，杜绝 `src=""` 破图。
+- `ComingSoon` 新增 `subscribe_url`，配置后渲染真实 `POST` 订阅表单，未配置时显示禁用说明而非死控件；
+  `CodeBlock` 的 `title` 与 `language` 分别输出，不再互相吞掉。
+
+### 测试与文档
+
+- `tests/regression.php` 的 `check()` 断言由 v1.0.3 的 177 项增至 214 项，覆盖固定列、空头像、订阅、搜索、代码块、Toast、
+  ECharts、标量误传、favicon 全分支、请求白名单、上传回调与渲染器净化；`tests/audit.php` 静态审计输出由 75 项增至 76 项，
+  新增 favicon 解析入口与版本一致性校验。`bash tests/run-all.sh` 全绿。
+- `.ai/rules/` 的版本基线、配置默认值、组件参数表同步到 1.0.4；组件参考、配置指南、页面布局文档同步 favicon 语义。
+
+---
+
 ## 2026-11-24 v1.0.3 DataTable 冻列/搜索/渲染器全面增强 + 文档纠错
 
 ### 版本号统一为 1.0.3（与 git tag v1.0.3 对齐）

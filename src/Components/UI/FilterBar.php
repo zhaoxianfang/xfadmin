@@ -50,10 +50,10 @@ class FilterBar extends Component
      */
     protected function html(): string
     {
-        $root = Html::cls('xf-filter-bar', (string) ($this->get('class') ?? ''));
+        $root = Html::cls('xf-filter-bar', $this->scalarOpt('class'));
         $attrs = ['class' => $root];
         if ($this->get('id') !== null) {
-            $attrs['id'] = (string) $this->get('id');
+            $attrs['id'] = $this->resolveId('xf-filter-bar');
         }
 
         $body = $this->renderFields((array) $this->get('fields'));

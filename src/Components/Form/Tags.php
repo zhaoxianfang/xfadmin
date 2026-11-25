@@ -78,7 +78,7 @@ class Tags extends Component
             $attrs['placeholder'] = $this->get('placeholder');
         }
         // id 解析与其它字段组件一致：配置 > attr() > 自动生成
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-tags');
+        $id = $this->resolveId('xf-tags');
         $attrs['id'] = $id;
         // 合并自定义属性（id 已被上面消费并写入 attrs，此处剔除避免重复覆盖）
         $custom = $this->attributes;

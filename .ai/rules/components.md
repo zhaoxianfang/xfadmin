@@ -57,6 +57,8 @@
 - `img($path)`：图片地址解析（http(s)/`//`/`data:image/` 原样，其余走 `asset('images/')`，空回退 1×1 GIF，拦截伪协议）。
 - `iconClass($v)`：图标 class 净化（仅 `[a-zA-Z0-9_\- ]`）。
 - `safeUrl($v)`：链接白名单（放行 http(s)/`//`/`/`/`#`/`mailto:`/`tel:`/`data:image/`/`javascript:void(0)`，拦截危险伪协议）。
+- `faviconUrl($v)`：三套完整文档组件共用的站点图标解析；`null` → `brand.favicon` → 项目 `/favicon.ico`，
+  `false`/`''` 关闭，相对路径按包内 images/ 解析，非图片伪协议回退项目默认。
 
 ### 2.3 安全助手（防注入）
 

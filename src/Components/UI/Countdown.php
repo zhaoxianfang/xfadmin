@@ -42,7 +42,7 @@ class Countdown extends Component
     {
         $target = $this->get('target');
         $labels = (array) $this->get('labels', ['天', '时', '分', '秒']);
-        $title = (string) $this->get('title');
+        $title = $this->scalarOpt('title');
 
         // 统一为可 JSON 序列化的目标
         if ($target instanceof \DateTimeInterface) {
@@ -52,7 +52,7 @@ class Countdown extends Component
         } else {
             $target = (string) $target;
         }
-        $cfg = ['target' => $target, 'labels' => $labels, 'expired' => (string) $this->get('expired')];
+        $cfg = ['target' => $target, 'labels' => $labels, 'expired' => $this->scalarOpt('expired')];
 
         $html = '<div'.$this->attrs(['class' => 'xf-countdown']).'>';
         if ($title !== '') {

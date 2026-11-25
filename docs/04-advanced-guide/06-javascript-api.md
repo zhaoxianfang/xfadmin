@@ -1,6 +1,6 @@
 # 前端 JS API
 
-`resources/assets/js/xfadmin.js`（6341 行）是包的前端运行时，暴露全局对象 `window.XFAdmin`。
+`resources/assets/js/xfadmin.js`（约 7500 行）是包的前端运行时，暴露全局对象 `window.XFAdmin`。
 
 ## 1. 对象属性
 
@@ -15,6 +15,9 @@
 | `XFAdmin.cellEventHandlers` | Object | `onCell` 注册的处理器 |
 | `XFAdmin.commandHandlers` | Object | `onCommand` 注册的命令 |
 | `XFAdmin.uploadHandlers` | Object | `onUpload` 注册的上传回调 |
+| `XFAdmin.safeLink/safeRedirect` | Function | URL / 跳转地址白名单（拦截危险协议与跨域外带） |
+| `XFAdmin.safeToken/iconClass` | Function | class token / 图标类名净化（渲染器与 variant 共用） |
+| `XFAdmin.safeQuery` | Function | 安全 `querySelector`，非法选择器返回 `null` 而不抛异常 |
 | `XFAdmin.cellRenderers` | Object | 单元格渲染器（60+ 项） |
 | `XFAdmin.dtLanguage` | Object | DataTables 中文语言包 |
 
@@ -205,7 +208,7 @@ XFAdmin.viewRow(row, {
 | `initCommandPalette(cfg)` | 命令面板（`hotkey: 'meta+k'`） |
 | `onCommand(name, fn)` | 注册命令处理器 |
 | `initDropzone(cfg)` | 拖拽上传区 |
-| `onUpload(id, fn)` | 注册上传回调 |
+| `onUpload(id, fn)` | 注册上传回调；上传成功后由 `initDropzone` 调用对应 id 的已注册处理器（参数 `res, file`） |
 | `i18n` | `{lang, dict, base, t(key), apply(root), set(code)}` |
 
 ## 10. data-* 属性契约

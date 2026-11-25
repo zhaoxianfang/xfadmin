@@ -50,10 +50,10 @@ class Raw extends Component
     {
         $assets = Assets::instance();
         if ($this->get('js') !== null) {
-            $assets->inlineJs((string) $this->get('js'), $this->get('js_key'));
+            $assets->inlineJs($this->scalarOpt('js'), $this->scalarOpt('js_key'));
         }
         if ($this->get('css') !== null) {
-            $assets->inlineCss((string) $this->get('css'), $this->get('css_key'));
+            $assets->inlineCss($this->scalarOpt('css'), $this->scalarOpt('css_key'));
         }
 
         return $this->raw($this->get('html'));

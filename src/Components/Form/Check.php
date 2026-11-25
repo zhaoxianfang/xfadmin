@@ -104,7 +104,7 @@ class Check extends Component
      */
     protected function groupFieldName(): string
     {
-        $name = (string) $this->get('name');
+        $name = $this->scalarOpt('name');
         if ($name !== '' && in_array($this->get('type'), ['checkbox', 'switch'], true) && ! str_ends_with($name, '[]')) {
             return $name.'[]';
         }
@@ -119,7 +119,7 @@ class Check extends Component
      */
     protected function html(): string
     {
-        $raw = (array) $this->get('options', []);
+        $raw = $this->arrayOpt('options');
         // 兼容两种候选项格式：
         //   - 关联数组 value => label（如 ['m'=>'男','f'=>'女']）
         //   - 对象数组 [{text,value}]（属性面板 JSON 编辑器与 diy_defaults 采用此格式）
@@ -145,15 +145,15 @@ class Check extends Component
 
         if ($options === []) {
             $html = $this->renderOne(
-                (string) ($this->get('value') ?? '1'),
-                (string) $this->get('label'),
+                $this->scalarOpt('value', '1'),
+                $this->scalarOpt('label'),
                 (bool) $this->get('checked'),
                 $this->get('id'),
                 $helpId
             );
             $html .= $helpHtml;
         } else {
-            $selected = array_map('strval', (array) ($this->get('value') ?? []));
+            $selected = array_map('strval', $this->arrayOpt('value'));
             $html = $this->get('label') !== null ? '<label class="form-label d-block">'.$this->escape($this->get('label')).'</label>' : '';
             // 组模式：复选框/开关自动补 [] 后缀，保证多选值可被后端按数组接收
             $groupName = $this->groupFieldName();

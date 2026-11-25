@@ -37,7 +37,7 @@ class BackToTop extends Component
     protected function html(): string
     {
         $cfg = ['offset' => (int) $this->get('offset')];
-        $icon = (string) $this->get('icon');
+        $icon = $this->iconClass($this->scalarOpt('icon'));
 
         return '<button type="button"'.$this->attrs(['class' => 'xf-back-to-top btn btn-primary rounded-circle shadow'])
             .' data-xf="backtotop" aria-label="返回顶部" data-xf-config="'.$this->escape(json_encode(

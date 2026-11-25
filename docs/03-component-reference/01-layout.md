@@ -145,7 +145,7 @@ echo XfAdmin::page([
 | `description` | mixed | `null` | 描述文本；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `keywords` | mixed | `null` | 可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `author` | mixed | `null` | 作者信息；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
-| `favicon` | mixed | `null` | 源码用法：`$favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url…` |
+| `favicon` | mixed | `null` | 站点图标：`null` 回退 `brand.favicon` → 项目 `/favicon.ico`；`false`/`''` 关闭；相对路径按包内 images/ 解析；经协议白名单校验 |
 | `layout` | string | `'vertical'` | 布局模式（各组件不同，如 vertical/horizontal） |
 | `theme` | array | `[]` | 可选值：`light` / `dark` / `auto` |
 | `menu` | array | `[]` | 菜单数据数组 |
@@ -658,7 +658,7 @@ echo XfAdmin::authPage([
     'sideImagePosition' => 'center',    // 背景定位（CSS background-position：center/top left...）
     'sideOverlay' => true,    // 是否叠加底部渐变遮罩（保证侧栏白字可读；false 时无暗角）
     'sideTitle' => '企业级后台管理平台',    // 侧栏标题（默认官方文案，可按需覆盖）
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏文案
     // sideList
     'sideList' => [
         [/* … */],
@@ -901,7 +901,7 @@ echo XfAdmin::lockScreen([
 | `brand` | string | `'XfAdmin'` | 品牌信息（name/logo/url）；源码用法：`.'<a href="#" class="fs-3 fw-bold text-decoration-none">'.$this->escape($this->get('b…` |
 | `below` | mixed | `null` | 卡片下方补充内容（如「切换账号」链接）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染；为 `null` 时不渲染该区块 |
 | `copyright` | mixed | `null` | 版权文案；源码用法：`$copyright = $this->get('copyright') ?? ('© '.date('Y').' '.XfAdmin::setting('brand.n…` |
-| `favicon` | mixed | `null` | URL：经协议白名单校验（拦截 `javascript:` 等） |
+| `favicon` | mixed | `null` | 站点图标：默认项目 `/favicon.ico`；`false`/`''` 关闭；URL 经协议白名单校验（拦截 `javascript:` 等） |
 | `head` | mixed | `null` | </head> 前附加内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 | `scripts` | mixed | `null` | </body> 前附加内容（原样输出）；**内容槽位**：`raw()` 原样输出（可传 HTML / 组件 / 闭包 / 数组） |
 
@@ -1021,7 +1021,7 @@ echo XfAdmin::errorPage([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -1114,11 +1114,12 @@ echo XfAdmin::errorPage([
 
 ```php
 XfAdmin::comingSoon([
-    'heading'  => '即将上线',
-    'message'  => '我们正在努力，敬请期待！',
-    'deadline' => '2026-12-31 00:00:00',
-    'image'    => null,
-    'subscribe'=> true,          // 显示订阅表单
+    'heading'       => '即将上线',
+    'message'       => '我们正在努力，敬请期待！',
+    'deadline'      => '2026-12-31 00:00:00',
+    'image'         => null,
+    'subscribe'     => true,          // 显示订阅区
+    'subscribe_url' => '/subscribe',  // 订阅接收地址；配置后渲染可提交表单（POST email）
 ]);
 ```
 
@@ -1167,7 +1168,7 @@ echo XfAdmin::comingSoon([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],
@@ -1182,6 +1183,7 @@ echo XfAdmin::comingSoon([
     'deadline' => null,
     'image' => null,
     'subscribe' => true,
+    'subscribe_url' => null,    // 订阅接收地址；留空时仅展示禁用控件
     'card' => false,
 ]);
 ```
@@ -1239,7 +1241,8 @@ echo XfAdmin::comingSoon([
 | `captcha` | bool | `false` | 验证码：`false` 不显示 / 字符串原样输出 / `true` 输出占位 |
 | `deadline` | mixed | `null` | 截止时间（倒计时目标，任意可被 strtotime 解析的字符串）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
 | `image` | mixed | `null` | 图片地址（支持外链 / data URI / 包内 images 相对路径）；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
-| `subscribe` | bool | `true` | 是否显示订阅表单；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `subscribe` | bool | `true` | 是否显示订阅区；可选：非空 / 真值时渲染对应区块；为空 / false 时不渲染 |
+| `subscribe_url` | string\|null | `null` | 订阅接收地址（经 `safeUrl` 校验）。配置后渲染 `<form action="…" method="post">` + `name="email"`；留空 / 非法时仅展示纯 UI（输入框与按钮均 `disabled`，附「暂未开放」说明），不再输出无 action、无 name 的死表单 |
 | `card` | bool | `false` | 是否以卡片容器呈现（部分组件为遗留键） |
 
 > 说明：`defaults()` 中以数组 `+` 合并的公共字段（如表单类的 `name`/`label`/`value`）见各组件所属基类说明；「内容槽位」原样输出 HTML，「文本槽位」自动转义。
@@ -1310,7 +1313,7 @@ echo XfAdmin::maintenance([
     'sideImagePosition' => 'center',    // 侧栏背景 background-position
     'sideOverlay' => true,    // 侧栏是否显示渐变遮罩
     'sideTitle' => '企业级后台管理平台',    // 侧栏主标题
-    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
+    'sideText' => 'XfAdmin 提供组件化、标准化的一站式企业后�…',    // 侧栏说明文本
     // sideList：侧栏要点列表 `['icon'=>..,'text'=>..]`
     'sideList' => [
         [/* … */],

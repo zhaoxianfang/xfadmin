@@ -11,7 +11,7 @@ return [
     'assets_url' => '/zxf/xfadmin',
 
     // 资源版本号（附加 ?v= 用于浏览器缓存刷新，与 XfAdmin::VERSION 保持一致）
-    'version' => '1.0.3',
+    'version' => '1.0.4',
 
     // 主题默认外观（渲染到 <html> 的 data-* 属性，运行时可被浏览器端 config.js 持久化覆盖）
     //
@@ -38,7 +38,7 @@ return [
         'logo' => null,        // 大 logo（浅色背景）为 null 时使用包内默认
         'logo_dark' => null,        // 大 logo（深色背景）
         'logo_sm' => null,        // 小 logo
-        'favicon' => null,
+        'favicon' => '/favicon.ico', // 默认使用项目 public/favicon.ico；null 表示回退该默认，false/'' 关闭输出
         'home_url' => '/',
     ],
 

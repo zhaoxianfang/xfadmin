@@ -80,7 +80,7 @@ grep -c "XFAdmin.register(" resources/assets/js/xfadmin.js
 grep -n "VERSION\|'version'" src/XfAdmin.php config/xfadmin.php
 ```
 
-> 当前基线（2026-11 实测）：225 组件类 / 237 别名 / 58 widget / 版本 1.0.3。
+> 当前基线（2026-11 实测）：225 组件类 / 237 别名 / 58 widget / 版本 1.0.4。
 
 ---
 

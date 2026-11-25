@@ -37,7 +37,7 @@ return [
         'logo'        => null,        // 大 logo（浅色背景），null 时用包内默认
         'logo_dark'   => null,        // 大 logo（深色背景）
         'logo_sm'     => null,        // 小 logo
-        'favicon'     => null,
+        'favicon'     => '/favicon.ico',
         'home_url'    => '/',
     ],
 
@@ -108,7 +108,7 @@ return [
 | `logo` | `images/logo.png` | 侧边栏/顶栏浅色 logo |
 | `logo_dark` | `images/logo-black.png` | 深色模式 logo |
 | `logo_sm` | `images/logo-sm.png` | 折叠态小 logo |
-| `favicon` | `images/favicon.ico` | `<link rel="shortcut icon">` |
+| `favicon` | `/favicon.ico`（项目 public 目录） | `<link rel="shortcut icon">`；`null` 回退默认值，`false`/`''` 关闭输出，相对路径按包内 images/ 解析 |
 | `home_url` | `/` | logo 链接地址 |
 
 ### 2.5 `footer`（array）

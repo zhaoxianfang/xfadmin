@@ -181,7 +181,8 @@ class Page extends Component
             $body .= Customizer::make()->render();
         }
         // ---------- 组装文档 ----------
-        $favicon = $this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url('images/favicon.ico');
+        // 站点图标默认取项目 /favicon.ico；显式 false/'' 可关闭该 link
+        $favicon = $this->faviconUrl($this->get('favicon'));
 
         $doc = "<!DOCTYPE html>\n<html".Html::attrs($htmlAttrs).">\n<head>\n";
         $doc .= '<meta charset="utf-8">'."\n";
@@ -208,7 +209,9 @@ class Page extends Component
         if (is_string($csrf) && $csrf !== '') {
             $doc .= '<meta name="csrf-token" content="'.$this->escape($csrf).'">'."\n";
         }
-        $doc .= '<link rel="shortcut icon" href="'.$this->escape($this->safeUrl($favicon, '')).'">'."\n";
+        if ($favicon !== '') {
+            $doc .= '<link rel="shortcut icon" href="'.$this->escape($favicon).'">'."\n";
+        }
         $doc .= $assets->head();
         $doc .= $this->raw($this->get('head'));
         // <body> 属性：body_class 与 body_attrs 合并（body_attrs 允许传入任意键值对，

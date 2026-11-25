@@ -86,7 +86,7 @@ class ModuleNav extends Component
             if (($sec['title'] ?? '') !== '') {
                 $out .= '<div class="text-muted small fw-semibold mb-1">'.$this->escape($sec['title']).'</div>';
             }
-            $out .= '<ul class="'.$navClass.' mb-3 '.$this->escape($this->get('class')).'">'.$links.'</ul>';
+            $out .= '<ul class="'.$navClass.' mb-3 '.$this->escape($this->scalarOpt('class')).'">'.$links.'</ul>';
         }
 
         return $out;

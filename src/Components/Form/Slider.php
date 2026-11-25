@@ -51,7 +51,7 @@ class Slider extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-slider');
+        $id = $this->resolveId('xf-slider');
         $value = $this->get('value') ?? $this->get('min');
 
         $config = [

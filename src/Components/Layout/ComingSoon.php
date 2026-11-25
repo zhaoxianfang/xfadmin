@@ -32,6 +32,7 @@ class ComingSoon extends AuthPage
             'deadline' => null,
             'image' => null,
             'subscribe' => true,
+            'subscribe_url' => null,   // 订阅接收地址；留空时仅展示禁用控件，不做假提交
         ]);
     }
 
@@ -65,9 +66,20 @@ class ComingSoon extends AuthPage
             $content .= '</div>';
         }
         if ($this->get('subscribe')) {
-            $content .= '<form class="d-flex gap-2 justify-content-center mt-3" style="max-width:420px;margin:0 auto;">'
-                .'<input type="email" class="form-control" placeholder="输入邮箱订阅上线通知">'
-                .'<button class="btn btn-primary" type="submit">订阅</button></form>';
+            // 只有配置了合法接收地址才渲染可提交表单（name/action/method 齐全）；
+            // 否则纯展示 + 禁用控件，杜绝无 action、无 name、无 JS 绑定的死表单。
+            $subscribeUrl = $this->safeUrl($this->scalarOpt('subscribe_url'));
+            if ($subscribeUrl !== '' && $subscribeUrl !== '#') {
+                $content .= '<form class="d-flex gap-2 justify-content-center mt-3" style="max-width:420px;margin:0 auto;"'
+                    .' action="'.$this->escape($subscribeUrl).'" method="post">'
+                    .'<input type="email" name="email" class="form-control" placeholder="输入邮箱订阅上线通知" required>'
+                    .'<button class="btn btn-primary" type="submit">订阅</button></form>';
+            } else {
+                $content .= '<div class="d-flex gap-2 justify-content-center mt-3" style="max-width:420px;margin:0 auto;">'
+                    .'<input type="email" class="form-control" placeholder="订阅功能暂未开放" disabled>'
+                    .'<button class="btn btn-primary" type="button" disabled>订阅</button></div>'
+                    .'<p class="text-muted small mt-2 mb-0">订阅功能暂未开放，请稍后再试。</p>';
+            }
         }
         $content .= '</div>';
 

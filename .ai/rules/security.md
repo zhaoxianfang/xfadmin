@@ -73,7 +73,7 @@
 ## 6. 编码红线（安全视角）
 
 1. 内联 JSON 用 `scriptJson`/`json`，不用裸 `json_encode`。
-2. URL 输出 = `safeUrl` 白名单 + `escape` 转义。
+2. URL 输出 = `safeUrl` 白名单 + `escape` 转义；前端跳转/请求 = `safeRedirect` 同源白名单，禁止直接把响应 `data.url` 写入 `location.href`。
 3. raw 槽位不接用户数据。
 4. 所有 `class`/`style`/属性走白名单或安全助手。
 5. 交互 widget 提供 destroy 钩子，避免重复绑定/内存泄漏。

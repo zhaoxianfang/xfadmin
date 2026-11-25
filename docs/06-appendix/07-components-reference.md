@@ -247,7 +247,7 @@
 | `description` | `null` | — |
 | `keywords` | `null` | — |
 | `author` | `null` | — |
-| `favicon` | `null` | — |
+| `favicon` | `null` | 默认项目 `/favicon.ico`；false/'' 关闭 |
 | `layout` | `'vertical'` | — |
 | `theme` | `[]` | — |
 | `menu` | `[]` | — |
@@ -687,7 +687,7 @@ echo XfAdmin::authPage([
 | `brand` | `'XfAdmin'` | — |
 | `below` | `null` | 卡片下方补充内容（如「切换账号」链接） |
 | `copyright` | `null` | — |
-| `favicon` | `null` | — |
+| `favicon` | `null` | 默认项目 `/favicon.ico`；false/'' 关闭 |
 | `head` | `null` | — |
 | `scripts` | `null` | — |
 

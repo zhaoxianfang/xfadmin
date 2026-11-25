@@ -42,9 +42,9 @@ class Callout extends Component
     {
         // variant 白名单（拼 xf-callout-* 类），非法值回退默认 info
         $v = $this->enum($this->get('variant'), self::ENUM_VARIANT, 'info');
-        $icon = (string) $this->get('icon');
-        $title = (string) $this->get('title');
-        $body = (string) $this->get('body');
+        $icon = $this->iconClass($this->scalarOpt('icon'));
+        $title = $this->scalarOpt('title');
+        $body = $this->scalarOpt('body');
 
         $html = '<div'.$this->attrs(['class' => 'xf-callout xf-callout-'.$v]).'>';
         if ($icon !== '') {

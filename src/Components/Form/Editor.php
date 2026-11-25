@@ -52,7 +52,7 @@ class Editor extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-editor');
+        $id = $this->resolveId('xf-editor');
         // driver 白名单兜底 quill：非法值统一按 quill 渲染，不产生未定义分支
         $driver = $this->enum($this->get('driver'), ['quill', 'summernote'], 'quill');
 

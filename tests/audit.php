@@ -425,6 +425,21 @@ check('暗色模式非固定列 hover/条纹高亮不被基础背景覆盖', str
     && str_contains($css, 'tr:nth-of-type(odd) > td:not(.xf-dt-sticky)'));
 check('xfadmin.css 大括号配平', substr_count($css, '{') === substr_count($css, '}'));
 
+/* 本轮缺陷整改的前端契约（固定列 / ECharts / destroy / 搜索 / Toast） */
+check('固定列总列数取自 DataTables API 并回退 thead', str_contains($js, 'total = api.columns().count();')
+    && str_contains($js, 'total = headRow ? headRow.children.length : 0;')
+    && ! str_contains($js, "var bodyRow = el.querySelector('tbody tr');"));
+check('固定列跳过 colspan 分组/详情行的 sticky 赋值', str_contains($js, 'var isSpanRow = trCells.some(')
+    && str_contains($js, 'if (isSpanRow) return;'));
+check('ECharts 主题重建后新实例回写并同步镜像', str_contains($js, 'm.inst = inst;')
+    && str_contains($js, 'window.__xfEcharts = (window.__xfEchartsMeta || []).map('));
+check('destroy.dt 监听 once 化且 sticky 清理移出 RO 分支',
+    preg_match("/addEventListener\('destroy\.dt'[\s\S]{0,600}\{ once: true \}\)/", $js) === 1
+    && strpos($js, 'XFAdmin.destroyTableSticky(el);') < strpos($js, "if ('ResizeObserver' in window)"));
+check('自定义搜索仅 submit 接管，无 keyup Enter 双发', substr_count($js, 'applyCustomSearch();') === 2
+    && ! str_contains($js, "e.key === 'Enter') applyCustomSearch()"));
+check('Toast 关闭按钮按 variant 白名单选择深浅', str_contains($js, "var lightToastVariants = ['light', 'warning'];"));
+
 // 死配置 / 注释一致性契约
 check('ErrorPage/Maintenance/ComingSoon/FormValidation 死配置已移除', (static function () use ($root): bool {
     foreach ([
@@ -550,6 +565,25 @@ foreach ($declarativeClasses as $rel) {
     }
 }
 check('声明式组件 data-xf-config 统一 HEX 转义', $hexOk);
+
+/* 站点图标：三套完整文档组件均使用共享解析入口，默认项目 /favicon.ico */
+$faviconSources = [
+    'src/Components/Component.php' => 'faviconUrl',
+    'src/Components/Layout/Page.php' => 'faviconUrl',
+    'src/Components/Layout/AuthPage.php' => 'faviconUrl',
+    'src/Components/Layout/LockScreen.php' => 'faviconUrl',
+];
+$faviconOk = true;
+foreach ($faviconSources as $rel => $needle) {
+    $src = @file_get_contents(__DIR__.'/../'.$rel);
+    if ($src === false || ! str_contains($src, $needle)) {
+        $faviconOk = false;
+    }
+}
+$configSrc = (string) @file_get_contents(__DIR__.'/../config/xfadmin.php');
+check('站点图标统一走 faviconUrl() 且配置默认 /favicon.ico', $faviconOk
+    && str_contains($configSrc, "'favicon' => '/favicon.ico'")
+    && XfAdmin::VERSION === '1.0.4');
 
 /* ------------------------------------------------------------------ */
 echo PHP_EOL.($fail === 0

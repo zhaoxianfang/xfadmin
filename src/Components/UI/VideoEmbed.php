@@ -43,14 +43,15 @@ class VideoEmbed extends Component
      */
     protected function html(): string
     {
-        $src = (string) $this->get('src', '');
-        $provider = (string) $this->get('provider', 'youtube');
-        $title = (string) $this->get('title', '');
-        $description = (string) $this->get('description', '');
+        $src = $this->scalarOpt('src');
+        $provider = $this->scalarOpt('provider', 'youtube');
+        $title = $this->scalarOpt('title');
+        $description = $this->scalarOpt('description');
         // ratio 白名单（Bootstrap ratio-* 预设类），非法值回退默认 16x9
         $ratio = $this->enum($this->get('ratio', '16x9'), ['1x1', '4x3', '16x9', '21x9'], '16x9');
         $autoplay = (bool) $this->get('autoplay', false);
-        $allow = (string) $this->get('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        $allow = $this->scalarOpt('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        $frameTitle = $title !== '' ? $title : '嵌入视频';
 
         $html = '';
 
@@ -84,7 +85,7 @@ class VideoEmbed extends Component
                 }
 
                 // embedUrl 同样走 safeUrl 白名单后再转义
-                $html .= '<iframe src="'.$this->escape($this->safeUrl($embedUrl)).'" ';
+                $html .= '<iframe title="'.$this->escape($frameTitle).'" src="'.$this->escape($this->safeUrl($embedUrl)).'" ';
                 if ($allow) {
                     $html .= 'allow="'.$this->escape($allow).'" ';
                 }

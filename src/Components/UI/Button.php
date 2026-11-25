@@ -87,7 +87,7 @@ class Button extends Component
         if ($this->get('icon_only') || $this->get('text') === '') {
             $a11y = $this->get('label') ?? $this->get('text');
             if ($a11y !== null && $a11y !== '') {
-                $attrs['aria-label'] = (string) $a11y;
+                $attrs['aria-label'] = $this->scalarOpt('label', $this->scalarOpt('text'));
             }
         }
         if ($this->get('ladda')) {

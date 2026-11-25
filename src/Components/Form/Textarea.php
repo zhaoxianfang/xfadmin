@@ -37,7 +37,7 @@ class Textarea extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-textarea');
+        $id = $this->resolveId('xf-textarea');
 
         $attrs = [
             'class' => Html::cls('form-control', $this->controlStateClass()),

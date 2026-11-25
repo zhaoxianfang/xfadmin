@@ -6,8 +6,8 @@
 
 | 位置 | 值 | 说明 |
 | --- | --- | --- |
-| `src/XfAdmin.php` | `public const VERSION = '1.0.3'` | 门面常量，运行时自检 |
-| `config/xfadmin.php` | `'version' => '1.0.3'` | 资源 `?v=` 缓存版本号 |
+| `src/XfAdmin.php` | `public const VERSION = '1.0.4'` | 门面常量，运行时自检 |
+| `config/xfadmin.php` | `'version' => '1.0.4'` | 资源 `?v=` 缓存版本号 |
 | `composer.json` | **不写 version** | 本包约定：由上述两处管理，composer.json 不硬编码 |
 
 > 改版本必须同步前两处；composer.json 不要加回 version 字段。
@@ -20,9 +20,9 @@
 | 键 | 默认值 | 说明 |
 | --- | --- | --- |
 | `assets_url` | `/zxf/xfadmin` | 资源基址；可改 CDN；影响 `XfAdmin::asset()` 前缀 |
-| `version` | `1.0.3` | 缓存版本号（与 `XfAdmin::VERSION` 同步） |
+| `version` | `1.0.4` | 缓存版本号（与 `XfAdmin::VERSION` 同步） |
 | `theme` | `skin=modern` · `mode=light` · `layout=vertical` · `layout_position=fixed` · `layout_width=fluid` · `topbar_color=light` · `menu_color=gradient` · `sidenav_size=default` · `sidenav_user=true` | 渲染到 `<html data-*>`，运行时可被 config.js 持久化覆盖 |
-| `brand` | `name=XfAdmin` · `logo`/`logo_dark`/`logo_sm`/`favicon=null` · `home_url=/` | 品牌信息 |
+| `brand` | `name=XfAdmin` · `logo`/`logo_dark`/`logo_sm`/`favicon=/favicon.ico` · `home_url=/` | 品牌信息 |
 | `footer` | `text=null`(自动版权) · `right` · `icp` · `icp_url` · `police` · `police_url` · `police_icon` · `links[]` · `support` · `brand_url` · `groups[]` | 页脚 |
 
 **读取/合并**：`XfAdmin::config($array)` 递归合并；`XfAdmin::setting('a.b',$default)` 点号读取。

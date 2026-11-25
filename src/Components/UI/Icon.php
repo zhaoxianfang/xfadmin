@@ -53,18 +53,20 @@ class Icon extends Component
         $class = Html::cls($this->get('size'), $this->get('color'));
 
         if ($this->get('lib') === 'lucide') {
-            $iconAttrs = ['data-lucide' => $this->get('name'), 'class' => $class];
+            $lucideName = $this->scalarOpt('name');
+            $iconAttrs = ['data-lucide' => preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/', $lucideName) === 1 ? $lucideName : '', 'class' => $class];
         } else {
-            // name 限 ti/图标类名格式（字母数字连字符/下划线），非法值置空，防止拼接进 class 的注入
-            $name = preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/', (string) $this->get('name')) === 1
-                ? (string) $this->get('name')
-                : '';
+            // name 限 ti/图标类名格式（字母数字连字符/下划线），非法值置空，防止拼接进 class 的注入。
+            // scalarOpt 兜底误传数组，避免 (string) 强转触发 "Array to string conversion"
+            $nameRaw = $this->scalarOpt('name');
+            $name = preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/', $nameRaw) === 1 ? $nameRaw : '';
             $iconAttrs = ['class' => Html::cls('ti ti-'.$name, $class)];
         }
         // 无障碍：提供 title 时图标成为有含义图像（role=img + aria-label），否则视为装饰图标（aria-hidden）
-        if (($title = $this->get('title')) !== null && $title !== '') {
+        $title = is_scalar($this->get('title')) ? (string) $this->get('title') : '';
+        if ($title !== '') {
             $iconAttrs['role'] = 'img';
-            $iconAttrs['aria-label'] = (string) $title;
+            $iconAttrs['aria-label'] = $title;
         } else {
             $iconAttrs['aria-hidden'] = 'true';
         }

@@ -51,7 +51,7 @@ class DateRangePicker extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-daterange');
+        $id = $this->resolveId('xf-daterange');
 
         $config = array_replace_recursive([
             'singleDatePicker' => (bool) $this->get('single'),

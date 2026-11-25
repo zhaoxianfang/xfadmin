@@ -101,13 +101,14 @@ class LockScreen extends Component
             .'btn.querySelector("i").className=t==="text"?"ti ti-eye":"ti ti-eye-off";});});';
         $assets->inlineJs($js, 'xf-pw-toggle');
 
-        $favicon = $this->safeUrl($this->get('favicon') ?? XfAdmin::setting('brand.favicon') ?? $assets->url('images/favicon.ico'), '');
+        // 站点图标默认取项目 /favicon.ico；显式 false/'' 可关闭该 link
+        $favicon = $this->faviconUrl($this->get('favicon'));
         $title = $this->get('title') ?? $this->get('heading');
 
         $doc = "<!DOCTYPE html>\n<html".Html::attrs($htmlAttrs).">\n<head>\n"
             .'<meta charset="utf-8"><title>'.$this->escape($title).'</title>'
             .'<meta name="viewport" content="width=device-width, initial-scale=1">'
-            .'<link rel="shortcut icon" href="'.$this->escape($favicon).'">'."\n"
+            .($favicon !== '' ? '<link rel="shortcut icon" href="'.$this->escape($favicon).'">'."\n" : '')
             .$assets->head()
             .$this->raw($this->get('head'))
             ."</head>\n<body>\n".$body."\n"

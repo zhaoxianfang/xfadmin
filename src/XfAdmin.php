@@ -268,7 +268,7 @@ use zxf\XfAdmin\Support\Builder\GridBuilder;
 final class XfAdmin
 {
     /** 扩展包版本号（与 config/xfadmin.php 的 version 及 docs 更新日志保持同步，用于运行时自检） */
-    public const VERSION = '1.0.3';
+    public const VERSION = '1.0.4';
 
     /** auth 语义别名 → 默认 type 映射（便捷方法自动注入） */
     private const AUTH_TYPE_ALIASES = [
@@ -727,7 +727,7 @@ final class XfAdmin
     /**
      * 返回扩展包版本号（等同于 XfAdmin::VERSION 常量）
      *
-     * @return string 语义化版本号，如 '1.0.3'
+     * @return string 语义化版本号，如 '1.0.4'
      */
     public static function version(): string
     {

@@ -47,7 +47,7 @@ class ColorPicker extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-color');
+        $id = $this->resolveId('xf-color');
         $config = array_replace_recursive([
             'theme' => $this->get('theme'),
             'default' => $this->get('value') ?: '#3e60d5',

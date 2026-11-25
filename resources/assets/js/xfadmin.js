@@ -183,6 +183,65 @@
     }
     XFAdmin.escapeHtml = escapeHtml;
 
+    /* 链接白名单：服务端配置 / AJAX 响应里的 URL 进入 href 或 location.href 前统一校验，
+     * 拦截 javascript:/vbscript:/data:text/html 等可执行伪协议，放行 http(s)、协议相对、
+     * 根相对、锚点与 mailto/tel。非法输入一律回退占位值（不抛异常、不产生 goto 语句）。 */
+    function safeLink(value, fallback) {
+        var empty = fallback == null ? '#' : fallback;
+        var candidate = String(value == null ? '' : value).trim();
+        if (candidate === '') return empty;
+        if (/^(?:https?:)?\/\//i.test(candidate)
+            || candidate.charAt(0) === '/'
+            || candidate.charAt(0) === '#'
+            || /^(?:mailto:|tel:)/i.test(candidate)) {
+            return candidate;
+        }
+        return empty;
+    }
+    XFAdmin.safeLink = safeLink;
+
+    /* 用于 location.href 的同源跳转白名单：只放行本站根相对路径与同源绝对地址，
+     * 阻止响应包 data.url 把管理员跳转到外部钓鱼站。 */
+    function safeRedirect(value) {
+        var candidate = String(value == null ? '' : value).trim();
+        if (candidate === '' || /^(?:javascript|vbscript|data|blob|file):/i.test(candidate)) return '';
+        if (candidate.charAt(0) === '/') {
+            return candidate.slice(0, 2) === '//' ? '' : candidate;
+        }
+        try {
+            // 相对路径（如 'admin/save'）同样解析为同源地址
+            var target = new URL(candidate, global.location.href);
+            return target.origin === global.location.origin
+                ? (target.pathname + target.search + target.hash)
+                : '';
+        } catch (error) {
+            return '';
+        }
+    }
+    XFAdmin.safeRedirect = safeRedirect;
+
+    /* CSS 类 token 白名单：variant/size 等拼进 class 的值必须受限，防止逃逸属性。 */
+    function safeToken(value, fallback, allowed) {
+        var candidate = String(value == null ? '' : value);
+        if (allowed && allowed.indexOf(candidate) < 0) return fallback;
+        if (!allowed && !/^[A-Za-z0-9_-]+$/.test(candidate)) return fallback;
+        return candidate || fallback;
+    }
+    XFAdmin.safeToken = safeToken;
+
+    /* Bootstrap 语义色白名单：渲染器的 variant/color 直接进入 class，必须枚举校验。 */
+    var XF_VARIANTS = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+    XFAdmin.iconClass = function (value) {
+        return String(value == null ? '' : value).replace(/[^A-Za-z0-9_\- ]/g, '').replace(/\s+/g, ' ').trim();
+    };
+
+    /* 安全 querySelector：配置里的选择器可能不合法，直接调用会抛异常中断整个初始化循环。 */
+    function safeQuery(selector, root) {
+        if (typeof selector !== 'string' || selector === '') return null;
+        try { return (root || document).querySelector(selector); } catch (error) { return null; }
+    }
+    XFAdmin.safeQuery = safeQuery;
+
     /* 弹窗尺寸白名单：data-xf-size 等属性由浏览器解码后传入，直接拼进 innerHTML 的
      * class 属性会逃逸出属性造成 XSS（如 `" onmouseover="alert(1)`）。
      * 因此统一走枚举白名单，非法值一律回落 'lg'；'md' 为历史合法值（Bootstrap 默认宽度）。 */
@@ -223,7 +282,17 @@
      */
     XFAdmin.request = function (url, opts) {
         opts = opts || {};
+        // 所有请求地址统一收敛为同源路径，阻断响应/属性注入的 javascript: 与跨域外带
+        var requestUrl = safeRedirect(url);
+        if (requestUrl === '') {
+            return Promise.resolve({
+                ok: false, status: 0, data: { message: '非法请求地址' },
+                error: new Error('[XFAdmin] 拒绝非同源或危险协议的请求: ' + String(url))
+            });
+        }
+        url = requestUrl;
         var method = (opts.method || 'GET').toUpperCase();
+        if (['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].indexOf(method) < 0) method = 'POST';
         var headers = Object.assign({
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
@@ -298,7 +367,7 @@
             if (!form || !errors) return '';
             var firstErr = '';
             Object.keys(errors).forEach(function (k) {
-                var input = form.querySelector('[name="' + idSafe(k) + '"]');
+                var input = safeQuery('[name="' + idSafe(k) + '"]', form);
                 if (input) {
                     input.classList.add('is-invalid');
                     var m = Array.isArray(errors[k]) ? errors[k][0] : errors[k];
@@ -324,17 +393,21 @@
             var okMsg = msg || '保存成功';
             XFAdmin.toast({ body: okMsg, variant: 'success' });
             if (cfg.onSuccess) cfg.onSuccess(res);
-            if (data.url) {
+            // 跳转地址必须同源：响应 data.url 与前端兜底 data-xf-redirect 都不可信
+            var redirectUrl = safeRedirect(data.url);
+            var redirectFromForm = false;
+            if (redirectUrl === '' && form && form.getAttribute && form.getAttribute('data-xf-redirect')) {
+                redirectUrl = safeRedirect(form.getAttribute('data-xf-redirect'));
+                redirectFromForm = redirectUrl !== '';
+            }
+            if (redirectUrl !== '') {
                 // 响应携带跳转地址：提示后等待指定毫秒再跳转（默认 3 秒；
                 // 可通过表单 data-xf-redirect-delay 调整，例如登录页设为 600ms 更顺滑）
-                var rd = (form && form.getAttribute) ? parseInt(form.getAttribute('data-xf-redirect-delay'), 10) : NaN;
+                var rd = redirectFromForm ? 1200 : ((form && form.getAttribute) ? parseInt(form.getAttribute('data-xf-redirect-delay'), 10) : NaN);
                 if (isNaN(rd) || rd < 0) { rd = 3000; }
-                setTimeout(function () { window.location.href = data.url; }, rd);
-            } else if (form && form.getAttribute('data-xf-redirect')) {
-                // 前端兜底跳转地址（后端未返回 url 时生效）
-                var rd = form.getAttribute('data-xf-redirect');
-                setTimeout(function () { window.location.href = rd; }, 1200);
-            } else if (form && form.getAttribute('data-xf-reset') === '1') {
+                setTimeout(function () { window.location.href = redirectUrl; }, rd);
+            } else if (form && form.getAttribute('data-xf-reset') !== null && form.getAttribute('data-xf-reset') !== '0') {
+                // Form 组件在 reset=true 时输出空属性（""），旧实现只识别 "1" 导致 reset 从不生效
                 form.reset();
             } else if (!cfg.noReload) {
                 // 无跳转地址：默认刷新当前页（可通过 noReload 关闭）
@@ -431,10 +504,10 @@
         /* 自定义徽章：cfg = {variant, dot, pill, icon, text, soft}
          * d 可为字符串（直接显示）或 {text, variant, icon} 对象 */
         badge: function (d, row, cfg) {
-            var label = d, variant = (cfg && cfg.variant) || 'primary', icon = (cfg && cfg.icon) || '', dot = cfg && cfg.dot, pill = cfg && cfg.pill !== false, soft = cfg && cfg.soft !== false;
+            var label = d, variant = safeToken((cfg && cfg.variant) || 'primary', 'primary', XF_VARIANTS), icon = (cfg && cfg.icon) || '', dot = cfg && cfg.dot, pill = cfg && cfg.pill !== false, soft = cfg && cfg.soft !== false;
             if (d && typeof d === 'object') {
                 label = d.text != null ? d.text : '';
-                variant = d.variant || variant;
+                variant = safeToken(d.variant || variant, 'primary', XF_VARIANTS);
                 icon = d.icon || icon;
                 if (d.dot != null) dot = d.dot;
                 if (d.pill === false) pill = false;
@@ -442,18 +515,18 @@
             }
             var cls = 'badge' + (pill ? ' rounded-pill' : '') + ' ' + (soft ? 'badge-soft-' : 'bg-') + variant;
             var inner = (dot ? '<span class="xf-dot xf-dot-' + variant + '"></span>' : '') +
-                (icon ? '<i class="' + icon + '"></i> ' : '') + escapeHtml(label);
+                (icon ? '<i class="' + escapeHtml(XFAdmin.iconClass ? XFAdmin.iconClass(icon) : icon) + '"></i> ' : '') + escapeHtml(label);
             return '<span class="' + cls + '">' + inner + '</span>';
         },
 
         /* 状态胶囊：在 badge 基础上带左侧状态点（语义化状态展示）
          * cfg = {variant, text, icon, map} —— map: {值:variant} 按数据值取色 */
         statusPill: function (d, row, cfg) {
-            var variant = (cfg && cfg.variant) || 'secondary';
+            var variant = safeToken((cfg && cfg.variant) || 'secondary', 'secondary', XF_VARIANTS);
             if (cfg && cfg.map && d != null) {
                 var key = String(d);
-                if (cfg.map[key] != null) variant = cfg.map[key];
-                else if (cfg.map['*'] != null) variant = cfg.map['*'];
+                if (cfg.map[key] != null) variant = safeToken(cfg.map[key], 'secondary', XF_VARIANTS);
+                else if (cfg.map['*'] != null) variant = safeToken(cfg.map['*'], 'secondary', XF_VARIANTS);
             }
             var label = (cfg && cfg.text) || d;
             var icon = cfg && cfg.icon ? (cfg.icon[key || '*'] || '') : '';
@@ -784,10 +857,11 @@
         /* 图标：值即图标类名；或 cfg = {map: {value: 'ti ti-xxx text-success'}} 映射 */
         icon: function (d, row, cfg) {
             if (cfg.map) {
-                var cls = cfg.map[d];
+                var cls = XFAdmin.iconClass(cfg.map[d]);
                 return cls ? '<i class="' + escapeHtml(cls) + ' fs-5"></i>' : escapeHtml(d);
             }
-            return d ? '<i class="' + escapeHtml(d) + ' fs-4" title="' + escapeHtml(d) + '"></i>' : '<span class="text-muted">-</span>';
+            var iconCls = XFAdmin.iconClass(d);
+            return iconCls ? '<i class="' + escapeHtml(iconCls) + ' fs-4" title="' + escapeHtml(iconCls) + '"></i>' : '<span class="text-muted">-</span>';
         },
 
         /* 百分比：cfg = {decimals: 1, bar: true, variant: 'primary'}（bar=true 时进度条+数值） */
@@ -979,7 +1053,7 @@
             var tip = cfg.text ? tplRaw(cfg.text, row) : str(cfg.field ? row[cfg.field] : d);
             var show = cfg.length && v.length > cfg.length ? v.slice(0, cfg.length) + '…' : v;
             return '<span class="xf-tip-underline" data-bs-toggle="tooltip" data-bs-placement="' + escapeHtml(cfg.placement || 'top') + '" data-bs-title="' + escapeHtml(tip) + '">' +
-                (cfg.icon ? '<i class="' + escapeHtml(cfg.icon) + ' me-1 text-muted"></i>' : '') + escapeHtml(show) + '</span>';
+                (cfg.icon ? '<i class="' + escapeHtml(XFAdmin.iconClass(cfg.icon)) + ' me-1 text-muted"></i>' : '') + escapeHtml(show) + '</span>';
         },
 
         /* 气泡提示（Bootstrap Popover，点击/聚焦触发）：cfg = {title, content: '模板 {field}', field, label, icon, placement, trigger, html} */
@@ -992,7 +1066,7 @@
                 ' data-bs-trigger="' + escapeHtml(cfg.trigger || 'focus') + '" data-bs-placement="' + escapeHtml(cfg.placement || 'top') + '"' +
                 (title ? ' data-bs-title="' + escapeHtml(title) + '"' : '') +
                 ' data-bs-content="' + escapeHtml(content) + '"' + (cfg.html ? ' data-bs-html="true"' : '') + '>' +
-                '<i class="' + escapeHtml(cfg.icon || 'ti ti-info-circle') + ' me-1"></i>' + escapeHtml(label) + '</a>';
+                '<i class="' + escapeHtml(XFAdmin.iconClass(cfg.icon || 'ti ti-info-circle')) + ' me-1"></i>' + escapeHtml(label) + '</a>';
         },
 
         /* 按钮切换（点击在两种状态间切换，可选 AJAX 提交）：
@@ -1001,8 +1075,8 @@
             var on = cfg.on !== undefined ? cfg.on : 1;
             var off = cfg.off !== undefined ? cfg.off : 0;
             var isOn = String(d) === String(on) || d === true;
-            var onClass = cfg.on_class || 'btn-success';
-            var offClass = cfg.off_class || 'btn-outline-secondary';
+            var onClass = safeToken(cfg.on_class || 'btn-success', 'btn-success');
+            var offClass = safeToken(cfg.off_class || 'btn-outline-secondary', 'btn-outline-secondary');
             var onLabel = cfg.on_label || '启用';
             var offLabel = cfg.off_label || '停用';
             return '<button type="button" class="btn btn-sm xf-cell-toggle ' + escapeHtml(isOn ? onClass : offClass) + '"' +
@@ -1021,7 +1095,8 @@
             var color = 'secondary', label = str(d);
             if (typeof m === 'string') { color = m; }
             else if (m) { color = m.color || 'secondary'; label = m.label != null ? m.label : label; }
-            return '<span class="d-inline-flex align-items-center gap-1 text-nowrap"><span class="xf-status-dot bg-' + escapeHtml(color) + '"></span>' + escapeHtml(label) + '</span>';
+            color = safeToken(color, 'secondary', XF_VARIANTS);
+            return '<span class="d-inline-flex align-items-center gap-1 text-nowrap"><span class="xf-status-dot bg-' + color + '"></span>' + escapeHtml(label) + '</span>';
         },
 
         /* 涨跌趋势：正值绿升 / 负值红降。cfg = {suffix: '%', decimals: 1, invert} */
@@ -1170,7 +1245,8 @@
                     return '<button type="button"' + attrs + '>' + inner + '</button>';
                 }
                 if (item.url) {
-                    return '<a href="' + XFAdmin.tpl(item.url, row) + '"' + attrs + (item.target ? ' target="' + escapeHtml(item.target) + '"' : '') + '>' + inner + '</a>';
+                    var itemHref = safeLink(XFAdmin.tpl(item.url, row), '#');
+                    return '<a href="' + escapeHtml(itemHref) + '"' + attrs + (item.target ? ' target="' + escapeHtml(item.target) + '"' : '') + '>' + inner + '</a>';
                 }
                 attrs += ' data-xf-act="' + escapeHtml(act || 'ajax') + '"';
                 if (item.ajax) attrs += ' data-xf-url="' + escapeHtml(XFAdmin.tpl(item.ajax, row)) + '"';
@@ -1363,7 +1439,7 @@
 
     /** 获取元素上的插件实例 */
     XFAdmin.get = function (el) {
-        if (typeof el === 'string') el = document.querySelector(el);
+        if (typeof el === 'string') el = safeQuery(el);
         return el ? XFAdmin.instances.get(el) : undefined;
     };
 
@@ -1981,6 +2057,23 @@
             });
         }
 
+        // destroy.dt 清理无条件注册（含不支持 ResizeObserver 的浏览器）：
+        // 此前 sticky 清理被写在 RO 的 setTimeout 内，RO 缺失时整段不执行，jQuery
+        // draw/resize 监听永久泄漏。{once:true} + 实例标记避免同一 el 重复初始化时
+        // 累积多个监听。
+        if (!el.__xfDtDestroyBound) {
+            el.__xfDtDestroyBound = true;
+            el.addEventListener('destroy.dt', function () {
+                try {
+                    var container = el.closest('.dt-container');
+                    if (container && XFAdmin._dtResizeObserver) XFAdmin._dtResizeObserver.unobserve(container);
+                } catch (e) { /* noop */ }
+                // sticky 清理必须无条件执行，不能依赖 RO 分支
+                if (XFAdmin.destroyTableSticky) XFAdmin.destroyTableSticky(el);
+                el.__xfDtDestroyBound = false;
+            }, { once: true });
+        }
+
         // 3) ResizeObserver：每个 DT 容器独立监听，维度变化时同步（200ms 防抖）
         //    多个表格共享一个 Observer 实例（性能最优）；每个表格的 .dt-container 都注册
         if ('ResizeObserver' in window) {
@@ -2000,13 +2093,6 @@
                 var container = el.closest('.dt-container');
                 if (!container) return;
                 XFAdmin._dtResizeObserver.observe(container);
-                // 表格销毁时反注册，避免 Observer 长期持有已移除容器（内存泄漏 + 无谓回调）
-                el.addEventListener('destroy.dt', function () {
-                    try {
-                        XFAdmin._dtResizeObserver.unobserve(container);
-                        if (XFAdmin.destroyTableSticky) XFAdmin.destroyTableSticky(el);
-                    } catch (e) { /* noop */ }
-                });
             }, 50);
         }
 
@@ -2291,16 +2377,14 @@
                     table.draw();
                 }
             };
-            var submitBtn = _customSearchForm.querySelector('[data-xf-search-submit]');
             var resetBtn = _customSearchForm.querySelector('[data-xf-search-reset]');
-            if (submitBtn) submitBtn.addEventListener('click', applyCustomSearch);
             if (resetBtn) resetBtn.addEventListener('click', function () {
                 _customSearchForm.querySelectorAll('[data-xf-search]').forEach(function (inp) { inp.value = ''; });
                 applyCustomSearch();
             });
+            // 统一由 submit 接管：搜索按钮为 type=submit，回车（单/多字段）同样触发 submit。
+            // 不要再绑定 click 或 keyup Enter，否则单字段隐式提交会一次回车发两次请求。
             _customSearchForm.addEventListener('submit', function (e) { e.preventDefault(); applyCustomSearch(); });
-            // 回车即查
-            _customSearchForm.addEventListener('keyup', function (e) { if (e.key === 'Enter') applyCustomSearch(); });
             // 展开时同步一次 ajax 基址（表单可能在表格初始化前渲染，此处取最终 URL）
             _customSearchForm.addEventListener('xf:search-open', function () {
                 if (table.ajax && table.ajax.url) _searchAjaxBase = table.ajax.url() || _searchAjaxBase;
@@ -2331,11 +2415,39 @@
                 var tables = Array.prototype.filter.call(wrapper.querySelectorAll('table'), function (t) {
                     return !t.parentElement || !t.parentElement.closest('table');
                 });
-                // 以主体表首行实测列宽，计算每个固定列的 sticky 偏移
-                var bodyRow = el.querySelector('tbody tr');
-                var cells = bodyRow ? Array.from(bodyRow.children) : [];
+                // 总列数以 DataTables API 为准，回退 thead 首行单元格数。
+                // 不能用 tbody 首行推算：row_group / 空状态 / child 详情行的首行是
+                // <tr><td colspan=N>（仅 1 个单元格），据此 total=1 会让除首列外的
+                // 所有固定列被丢弃。
+                var api = el.__xfTable;
+                var total = 0;
+                if (api && typeof api.columns === 'function') {
+                    try { total = api.columns().count(); } catch (e) { total = 0; }
+                }
+                if (!total) {
+                    var headRow = el.querySelector('thead tr');
+                    total = headRow ? headRow.children.length : 0;
+                }
+                if (!total) return;
+                // 量列宽用「真实数据行」：跳过含 colspan>1 的分组行 / 空状态行 / child 详情行。
+                // 空数据时无真实行，回退 thead 首行单元格（列宽与表体一致）。
+                var isPlainRow = function (tr) {
+                    var cs = Array.from(tr.children);
+                    if (!cs.length || cs.length > total) return false;
+                    return cs.every(function (c) {
+                        var span = parseInt(c.getAttribute('colspan') || '1', 10);
+                        return (isNaN(span) ? 1 : span) <= 1;
+                    });
+                };
+                var bodyRows = el.querySelectorAll('tbody tr');
+                var measureRow = null;
+                for (var bi = 0; bi < bodyRows.length; bi++) {
+                    if (isPlainRow(bodyRows[bi])) { measureRow = bodyRows[bi]; break; }
+                }
+                var headCells = el.querySelector('thead tr');
+                var cells = measureRow ? Array.from(measureRow.children)
+                    : (headCells ? Array.from(headCells.children) : []);
                 if (!cells.length) return;
-                var total = cells.length;
                 var nLeft = config.fixedColumns.left || 0;
                 var nRight = config.fixedColumns.right || 0;
                 var indexMap = config.fixedColumns.indexes || {};
@@ -2358,9 +2470,17 @@
                 rightIdxs.forEach(function (ci) { rightOffsets[ci] = acc; if (cells[ci]) acc += cells[ci].getBoundingClientRect().width; });
                 tables.forEach(function (t) {
                     t.querySelectorAll('tr').forEach(function (tr) {
-                        Array.from(tr.children).forEach(function (cell, idx) {
+                        var trCells = Array.from(tr.children);
+                        // 分组行 / 空状态行 / child 详情行是整行一个 colspan=N 的 td：
+                        // 不能按列索引给它们加 sticky（否则详情区被错误冻结并遮挡内容）。
+                        var isSpanRow = trCells.some(function (c) {
+                            var span = parseInt(c.getAttribute('colspan') || '1', 10);
+                            return !isNaN(span) && span > 1;
+                        });
+                        trCells.forEach(function (cell, idx) {
                             cell.classList.remove('xf-dt-sticky', 'xf-dt-sticky-end');
                             cell.style.left = ''; cell.style.right = '';
+                            if (isSpanRow) return;
                             if (leftOffsets[idx] != null) {
                                 cell.classList.add('xf-dt-sticky');
                                 cell.style.left = leftOffsets[idx] + 'px';
@@ -3894,7 +4014,16 @@
      */
     XFAdmin.pageDialog = function (url, opts) {
         opts = opts || {};
-        if (!global.bootstrap || !global.bootstrap.Modal) return;
+        if (!global.bootstrap || !global.bootstrap.Modal) return null;
+        // 字符串 HTML 片段直接渲染；URL 必须同源，杜绝 iframe src / fetch 被注入外部地址
+        if (typeof url === 'string' && url.trim() !== '' && url.trim().charAt(0) !== '<') {
+            var dialogUrl = safeRedirect(url);
+            if (dialogUrl === '') {
+                console.warn('[XFAdmin] pageDialog 拒绝非法地址:', url);
+                return null;
+            }
+            url = dialogUrl;
+        }
         XFAdmin.disposeModal('xf-edit-modal');
         var modalEl = document.createElement('div');
         modalEl.id = 'xf-edit-modal';
@@ -4010,7 +4139,7 @@
             title: trigger.getAttribute('data-xf-title') || trigger.textContent.replace(/\s+/g, ' ').trim(),
             size: trigger.getAttribute('data-xf-size') || 'lg',
             frame: trigger.hasAttribute('data-xf-frame'),
-            tableEl: tableSel ? document.querySelector(tableSel) : null,
+            tableEl: tableSel ? safeQuery(tableSel) : null,
             reload: trigger.getAttribute('data-xf-reload') !== 'false'
         });
     });
@@ -4082,7 +4211,7 @@
                 } else if (res.errors) {
                     var firstErr = '';
                     Object.keys(res.errors).forEach(function (k) {
-                        var input = form.querySelector('[name="' + idSafe(k) + '"]');
+                        var input = safeQuery('[name="' + idSafe(k) + '"]', form);
                         if (input) {
                             input.classList.add('is-invalid');
                             var msg = Array.isArray(res.errors[k]) ? res.errors[k][0] : res.errors[k];
@@ -4428,6 +4557,13 @@
     function xfCurrentThemeMode() {
         return document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
     }
+    // __xfEcharts 是 __xfEchartsMeta 的实例镜像：任何增删 / 主题重建后都从 meta 重建，
+    // 保证 resize 不遍历已 dispose 的旧实例，destroy 与主题切换共用同一真相源。
+    function xfSyncEchartsInstances() {
+        window.__xfEcharts = (window.__xfEchartsMeta || []).map(function (m) {
+            return m ? m.inst : null;
+        });
+    }
     window.__xfApplyChartTheme = function (mode) {
         mode = mode || xfCurrentThemeMode();
         // 顺带剔除所在节点已被移除的实例：数组此前只 push 不清理，
@@ -4442,6 +4578,7 @@
                 return !(m && m.el && m.el.isConnected === false);
             });
         }
+        xfSyncEchartsInstances();
         // ApexCharts：updateOptions 热切换主题无需重建
         (window.__xfApex || []).forEach(function (c) {
             try { c.updateOptions({ theme: { mode: mode } }, false, false); } catch (e) {}
@@ -4450,13 +4587,18 @@
         (window.__xfEchartsMeta || []).forEach(function (m) {
             try {
                 if (global.echarts && m.el) {
-                    global.echarts.dispose(m.el);
+                    // 优先 dispose 当前活跃实例；旧登记数据无 inst 时回退按容器 dispose
+                    if (m.inst && typeof m.inst.dispose === 'function') m.inst.dispose();
+                    else global.echarts.dispose(m.el);
                     var t = mode === 'dark' ? 'dark' : (m.forceTheme || null);
                     var inst = global.echarts.init(m.el, t);
                     inst.setOption(m.option || {});
+                    // 新实例写回 meta（真相源）后再统一同步镜像，resize 才会跟随新实例
+                    m.inst = inst;
                 }
             } catch (e) {}
         });
+        xfSyncEchartsInstances();
         // ApexTree / ApexSankey 等专用插件：init 时读主题，热切换需重建
         (window.__xfApexSpecial || []).forEach(function (m) {
             try { if (m.rebuild) m.rebuild(mode); } catch (e) {}
@@ -4536,10 +4678,10 @@
         var option = config.options || {};
         var chart = global.echarts.init(el, initTheme);
         chart.setOption(option);
-        // 登记实例用于主题热切换重建
-        window.__xfEchartsMeta.push({ el: el, option: option, forceTheme: forceTheme });
-        window.__xfEcharts = window.__xfEcharts || [];
-        window.__xfEcharts.push(chart);
+        // 登记实例用于主题热切换重建：inst 存于 meta 作为真相源，
+        // __xfEcharts 镜像由 xfSyncEchartsInstances() 统一重建，避免两处实例不一致。
+        window.__xfEchartsMeta.push({ el: el, option: option, forceTheme: forceTheme, inst: chart });
+        xfSyncEchartsInstances();
         if (!window.__xfEchartResizeBound) {
             window.__xfEchartResizeBound = 1;
             window.addEventListener('resize', function () {
@@ -4547,6 +4689,13 @@
             });
         }
         return chart;
+    }, function (el, inst) {
+        // 销毁同样基于 meta 真相源：摘除登记并重建镜像，resize 不再持有已销毁实例
+        if (Array.isArray(window.__xfEchartsMeta)) {
+            window.__xfEchartsMeta = window.__xfEchartsMeta.filter(function (m) { return !m || m.el !== el; });
+        }
+        xfSyncEchartsInstances();
+        try { if (inst && typeof inst.dispose === 'function') inst.dispose(); } catch (e) { /* noop */ }
     });
 
     XFAdmin.register('vectormap', function (el, config) {
@@ -5239,6 +5388,8 @@
 
     // ---------- AJAX 表单 ----------
     XFAdmin.register('form', function (form) {
+        // 远程表单由 handleRemoteForm 统一接管，避免同一 form 上叠加两套 submit 监听
+        if (form.hasAttribute('data-xf-remote') || form.classList.contains('xf-remote-form-bound')) return;
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             if (form.classList.contains('needs-validation') && !form.checkValidity()) {
@@ -5248,26 +5399,16 @@
             var submitBtn = form.querySelector('[type="submit"]');
             if (submitBtn) submitBtn.disabled = true;
 
-            var formHeaders = { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' };
-            var csrfToken = XFAdmin.csrf();
-            if (csrfToken) formHeaders['X-CSRF-TOKEN'] = csrfToken;
-            fetch(form.action || window.location.href, {
+            // 与 data-xf-remote 共用 XFAdmin.request：自动 CSRF、同源校验、JSON 解析与错误 toast
+            XFAdmin.request(form.action || window.location.href, {
                 method: form.getAttribute('method') || 'POST',
-                body: new FormData(form),
-                credentials: 'same-origin',
-                headers: formHeaders
-            }).then(function (res) {
-                return res.json().catch(function () { return {}; }).then(function (data) {
-                    return { ok: res.ok, status: res.status, data: data };
-                });
+                data: new FormData(form),
+                silent: true
             }).then(function (result) {
                 var type = result.ok ? 'xf.form.success' : 'xf.form.error';
                 form.dispatchEvent(new CustomEvent(type, { detail: result, bubbles: true }));
                 // 统一走规范化响应处理（message 提示 / url 跳转 3 秒 / 500 异常）
                 XFAdmin.handleFormResponse(result, { form: form });
-            }).catch(function (err) {
-                form.dispatchEvent(new CustomEvent('xf.form.error', { detail: err, bubbles: true }));
-                XFAdmin.toast({ body: '网络错误，请稍后重试', variant: 'danger' });
             }).finally(function () {
                 if (submitBtn) submitBtn.disabled = false;
             });
@@ -5632,12 +5773,17 @@
             container.style.zIndex = 1090;
             document.body.appendChild(container);
         }
-        var variant = opts.variant || 'primary';
+        // variant 直接拼接进 class，必须白名单，杜绝 `" onmouseover=...` 属性逃逸
+        var variant = safeToken(opts.variant || 'primary', 'primary', XF_VARIANTS);
         var toastEl = document.createElement('div');
         toastEl.className = 'toast align-items-center text-bg-' + variant + ' border-0';
         toastEl.setAttribute('role', 'alert');
+        // 关闭按钮按底色深浅选择：light/warning 是浅底，白色 × 几乎看不见，用深色；
+        // dark/danger/primary 等深底沿用 btn-close-white。
+        var lightToastVariants = ['light', 'warning'];
+        var closeCls = lightToastVariants.indexOf(variant) >= 0 ? 'btn-close' : 'btn-close btn-close-white';
         toastEl.innerHTML = '<div class="d-flex"><div class="toast-body"></div>' +
-            '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>';
+            '<button type="button" class="'+closeCls+' me-2 m-auto" data-bs-dismiss="toast"></button></div>';
         toastEl.querySelector('.toast-body').textContent = opts.body || '';
         container.appendChild(toastEl);
         if (global.bootstrap && global.bootstrap.Toast) {
@@ -5817,10 +5963,16 @@
                 if (file.size > maxSize) { XFAdmin.toast && XFAdmin.toast({ body: file.name + ' 超出大小限制', variant: 'warning' }); return; }
                 var item = listEl ? listEl.appendChild(renderItem({ name: file.name, size: file.size })) : null;
                 if (!url) return;
-                var fd = new FormData();
-                fd.append(field, file);
-                XFAdmin.request(url, { method: 'POST', body: fd, raw: true }).then(function (res) {
-                    if (res && res.ok && XFAdmin.onUpload) XFAdmin.onUpload(cfg.id, res.data);
+                var formData = new FormData();
+                formData.append(field, file);
+                // XFAdmin.request 只识别 opts.data（不是 body）；成功时应调用已注册的回调，
+                // 而非再次调用 onUpload 注册函数本身（原实现上传后永远不触发业务回调）。
+                XFAdmin.request(url, { method: 'POST', data: formData }).then(function (res) {
+                    if (!res || !res.ok) return;
+                    var handler = XFAdmin.uploadHandlers[cfg.id];
+                    if (typeof handler === 'function') {
+                        try { handler(res.data, file); } catch (error) { console.error('[XFAdmin] onUpload 回调失败', error); }
+                    }
                 });
             });
         }
@@ -6271,7 +6423,7 @@
             (cfg.frame ? ' data-xf-frame' : '') +
             (tableId ? ' data-xf-table="#' + tableId + '"' : '') +
             (cfg.reload === false ? ' data-xf-reload="false"' : '') + '>' +
-            (cfg.icon ? '<i class="' + escapeHtml(cfg.icon) + ' me-1"></i>' : '') + escapeHtml(text) + '</a>';
+            (cfg.icon ? '<i class="' + escapeHtml(XFAdmin.iconClass(cfg.icon)) + ' me-1"></i>' : '') + escapeHtml(text) + '</a>';
     };
 
     /* ==================== 弹窗子页 ↔ 父页面通信桥 ====================
@@ -6352,7 +6504,9 @@
             try { global.localStorage.setItem('xfadmin.lang', code); } catch (e) { /* 隐私模式 */ }
             if (!code) { self.lang = ''; self.dict = {}; self.apply(); return Promise.resolve(); }
             var base = self._resolveBase();
-            return fetch(base + encodeURIComponent(code) + '.json').then(function (r) {
+            var langUrl = safeLink(base + encodeURIComponent(code) + '.json', '');
+            if (langUrl === '') return Promise.resolve();
+            return fetch(langUrl).then(function (r) {
                 return r.ok ? r.json() : {};
             }).then(function (dict) {
                 self.lang = code;
@@ -6953,24 +7107,17 @@
                     }
                     if (confirmText && !window.confirm(confirmText)) return;
 
-                    var body = new URLSearchParams();
-                    body.append(cfg.tokenName || '_token', csrfToken());
-                    // 允许按钮携带额外 data-param-* 作为 POST 参数
+                    // 统一走 XFAdmin.request：自动 CSRF、同源校验与 JSON 解析，
+                    // 避免裸 fetch 接受任意 data-url 造成请求伪造/外带。
+                    var payload = {};
+                    payload[cfg.tokenName || '_token'] = csrfToken();
                     Object.keys(btn.dataset).forEach(function (key) {
                         if (key.indexOf('param') === 0 && key.length > 5) {
-                            body.append(key.slice(5, 6).toLowerCase() + key.slice(6), btn.dataset[key]);
+                            payload[key.slice(5, 6).toLowerCase() + key.slice(6)] = btn.dataset[key];
                         }
                     });
                     btn.disabled = true;
-                    fetch(url, {
-                        method: 'POST',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: body.toString()
-                    }).then(function (resp) {
-                        return resp.json().catch(function () { return {}; }).then(function (data) {
-                            return { ok: resp.ok, data: data };
-                        });
-                    }).then(function (result) {
+                    XFAdmin.request(url, { method: 'POST', data: payload, silent: true }).then(function (result) {
                         btn.disabled = false;
                         var ok = result.ok && responseOk(result.data);
                         var message = (result.data && result.data.message)
@@ -6982,9 +7129,6 @@
                                 detail: { button: btn, url: url, data: result.data }
                             }));
                         }
-                    }).catch(function () {
-                        btn.disabled = false;
-                        toast('请求失败，请重试', false);
                     });
                 });
             });
@@ -7091,16 +7235,10 @@
                 };
                 var payload = {};
                 payload[refreshCfg.tokenName || '_token'] = refreshCfg.token || '';
-                var opts = {
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'X-CSRF-TOKEN': refreshCfg.token || '' },
-                    body: new URLSearchParams(payload)
-                };
-                fetch(refreshCfg.url, opts).then(function (resp) {
-                    return resp.json().catch(function () { return {}; }).then(function (data) {
-                        done(resp.ok, (data && data.message) ? data.message : (resp.ok ? '系统缓存已刷新' : '刷新失败'));
-                    });
-                }).catch(function () { done(false, '刷新失败，请稍后重试'); });
+                XFAdmin.request(refreshCfg.url, { method: 'POST', data: payload }).then(function (result) {
+                    var data = result.data || {};
+                    done(result.ok, (data && data.message) ? data.message : (result.ok ? '系统缓存已刷新' : '刷新失败'));
+                });
             };
             document.addEventListener('click', onRefresh);
             cleanups.push(function () { document.removeEventListener('click', onRefresh); });
@@ -7126,16 +7264,14 @@
             }
             function ensureIcons(cb) {
                 if (ICONS) { cb(ICONS); return; }
-                var xhr = window.jQuery ? window.jQuery.get(ipCfg.url) : null;
-                if (xhr && xhr.done) {
-                    xhr.done(function (res) { ICONS = (res && res.data) ? res.data : []; cb(ICONS); })
-                        .fail(function () { ICONS = []; cb(ICONS); });
-                } else {
-                    fetch(ipCfg.url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
-                        .then(function (r) { return r.json(); })
-                        .then(function (res) { ICONS = (res && res.data) ? res.data : []; cb(ICONS); })
-                        .catch(function () { ICONS = []; cb(ICONS); });
-                }
+                // 图标数据源必须是同源地址，否则拒绝请求，避免配置注入外带管理员 Cookie
+                var iconUrl = safeRedirect(ipCfg.url);
+                if (iconUrl === '') { ICONS = []; cb(ICONS); return; }
+                XFAdmin.request(iconUrl, { method: 'GET' }).then(function (result) {
+                    var res = result.ok ? (result.data || {}) : {};
+                    ICONS = (res && res.data) ? res.data : [];
+                    cb(ICONS);
+                });
             }
             function modalEl() { return document.getElementById('xf-icon-modal'); }
             function hideModal() { var m = modalEl(); if (m) m.style.display = 'none'; }
@@ -7182,12 +7318,12 @@
                 btn.addEventListener('mouseenter', function () { this.style.borderColor = '#6366f1'; this.style.background = 'rgba(99,102,241,.12)'; });
                 btn.addEventListener('mouseleave', function () { this.style.borderColor = 'var(--bs-border-color,#eee)'; this.style.background = 'var(--bs-tertiary-bg,#fff)'; });
                 btn.addEventListener('click', function () {
-                    var target = TARGET ? document.querySelector(TARGET) : null;
+                    var target = TARGET ? (TARGET.nodeType === 1 ? TARGET : safeQuery(TARGET)) : null;
                     if (target) {
                         target.value = cls;
                         target.dispatchEvent(new Event('input', { bubbles: true }));
                         if (ipCfg.previewSelector) {
-                            var prev = document.querySelector(ipCfg.previewSelector);
+                            var prev = safeQuery(ipCfg.previewSelector);
                             if (prev) prev.className = cls;
                         }
                     }
@@ -7238,9 +7374,13 @@
             // 输入框手动输入时同步预览
             if (ipCfg.previewSelector && ipCfg.inputTarget) {
                 var onPreview = function (e) {
-                    if (e.target && e.target.matches && e.target.matches(ipCfg.inputTarget)) {
-                        var prev = document.querySelector(ipCfg.previewSelector);
-                        if (prev) prev.className = e.target.value || 'ti ti-circle';
+                    var matched = false;
+                    if (e.target && e.target.matches) {
+                        try { matched = e.target.matches(ipCfg.inputTarget); } catch (error) { matched = false; }
+                    }
+                    if (matched) {
+                        var prev = safeQuery(ipCfg.previewSelector);
+                        if (prev) prev.className = XFAdmin.iconClass(e.target.value) || 'ti ti-circle';
                     }
                 };
                 document.addEventListener('input', onPreview);

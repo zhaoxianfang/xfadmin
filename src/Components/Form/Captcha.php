@@ -60,7 +60,7 @@ class Captcha extends Component
     {
         $mode = $this->enum($this->get('mode'), ['image', 'math', 'slide'], 'image');
         // id 解析与其它字段组件保持一致：配置 > attr() > 自动生成
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-captcha');
+        $id = $this->resolveId('xf-captcha');
         $name = $this->get('name');
         $label = $this->get('label');
         $req = ! empty($this->get('required'));

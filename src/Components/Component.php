@@ -247,6 +247,44 @@ abstract class Component implements Stringable
         return in_array($value, $allowed, true) ? (string) $value : $default;
     }
 
+    /**
+     * 安全读取数组型配置：误传标量 / null 时回退空数组。
+     * 避免 foreach / 数组下标访问对标量触发 PHP Warning。
+     */
+    protected function arrayOpt(string $key): array
+    {
+        $value = $this->get($key);
+
+        return is_array($value) ? $value : [];
+    }
+
+    /**
+     * 安全读取标量型配置：误传数组 / 不可转字符串对象时回退默认值。
+     * 避免 (string) 强转或字符串拼接触发 "Array to string conversion"。
+     */
+    protected function scalarOpt(string $key, string $default = ''): string
+    {
+        $value = $this->get($key);
+        if (is_array($value) || (is_object($value) && ! method_exists($value, '__toString'))) {
+            return $default;
+        }
+
+        return $value === null ? $default : (string) $value;
+    }
+
+    /**
+     * 安全取字符串：数组 / 不可字符串化对象统一返回空串。
+     * CSS/URL/ID/class 等标量入口共用，避免误传数组触发 PHP Warning。
+     */
+    protected function scalarText(mixed $value): string
+    {
+        if (is_array($value) || (is_object($value) && ! method_exists($value, '__toString'))) {
+            return '';
+        }
+
+        return $value === null ? '' : trim((string) $value);
+    }
+
     /** 常见枚举值白名单集合 */
     protected const ENUM_VARIANT = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'link'];
 
@@ -271,7 +309,7 @@ abstract class Component implements Stringable
      */
     protected function cssLen(mixed $value, string $default = ''): string
     {
-        $candidate = trim((string) $value);
+        $candidate = $this->scalarText($value);
         if ($candidate === '') {
             return $default;
         }
@@ -284,7 +322,7 @@ abstract class Component implements Stringable
      */
     protected function cssRatio(mixed $value, string $default = '4/3'): string
     {
-        $candidate = trim((string) str_replace(['x', 'X', ':', ' '], '/', (string) $value));
+        $candidate = str_replace(['x', 'X', ':', ' '], '/', $this->scalarText($value));
         if (preg_match('/^\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)?$/', $candidate) === 1) {
             return $candidate;
         }
@@ -298,7 +336,7 @@ abstract class Component implements Stringable
      */
     protected function cssColor(mixed $value, string $default = ''): string
     {
-        $candidate = trim((string) $value);
+        $candidate = $this->scalarText($value);
         if ($candidate === '') {
             return $default;
         }
@@ -314,7 +352,7 @@ abstract class Component implements Stringable
      */
     protected function cssBackground(mixed $value, string $default = ''): string
     {
-        $candidate = trim((string) $value);
+        $candidate = $this->scalarText($value);
         if ($candidate === '') {
             return $default;
         }
@@ -359,6 +397,9 @@ abstract class Component implements Stringable
             return implode(';', $parts);
         }
         // 字符串形式：切分声明后逐个校验
+        if (is_object($value) && ! method_exists($value, '__toString')) {
+            return '';
+        }
         $decls = explode(';', trim((string) $value));
         $parts = [];
         foreach ($decls as $decl) {
@@ -390,7 +431,7 @@ abstract class Component implements Stringable
      */
     protected function safeCssValue(mixed $value): string
     {
-        $candidate = trim((string) $value);
+        $candidate = $this->scalarText($value);
         if ($candidate === '') {
             return '';
         }
@@ -482,7 +523,7 @@ abstract class Component implements Stringable
      */
     protected function img(mixed $path): string
     {
-        $normalizedPath = trim((string) $path);
+        $normalizedPath = $this->scalarText($path);
         if ($normalizedPath === '') {
             // 空路径返回透明 1x1 GIF，避免组件输出 src="" 触发破图请求
             return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -514,7 +555,7 @@ abstract class Component implements Stringable
      */
     protected function iconClass(mixed $value, string $default = ''): string
     {
-        $candidate = trim((string) $value);
+        $candidate = $this->scalarText($value);
         if ($candidate === '') {
             return $default;
         }
@@ -527,6 +568,11 @@ abstract class Component implements Stringable
     /** 生成组件级唯一 id */
     protected function uid(string $prefix = 'xf'): string
     {
+        $prefix = $this->scalarText($prefix);
+        if ($prefix === '' || preg_match('/^[A-Za-z][A-Za-z0-9_-]*$/', $prefix) !== 1) {
+            $prefix = 'xf';
+        }
+
         return $prefix.'-'.(++self::$uidCounter);
     }
 
@@ -536,8 +582,8 @@ abstract class Component implements Stringable
         if (! empty($this->attributes['id'])) {
             return (string) $this->attributes['id'];
         }
-        if ($this->get('id')) {
-            return (string) $this->get('id');
+        if (($id = $this->scalarText($this->get('id'))) !== '') {
+            return $id;
         }
 
         return $this->attributes['id'] = $this->uid($prefix);
@@ -576,7 +622,7 @@ abstract class Component implements Stringable
      */
     protected function safeUrl(mixed $value, string $default = '#'): string
     {
-        $candidate = trim((string) $value);
+        $candidate = $this->scalarText($value);
         if ($candidate === '' || $candidate === '#') {
             return $candidate;
         }
@@ -597,6 +643,59 @@ abstract class Component implements Stringable
 
         // 含非常规协议（javascript:/vbscript:/data: 非图片 等）→ 拦截
         return $default;
+    }
+
+    /**
+     * 解析站点图标 URL（所有完整 HTML 文档组件共用）
+     *
+     * 默认使用项目根路径 /favicon.ico，而非扩展包内置图片；调用方可通过
+     * 组件参数 favicon 或全局配置 brand.favicon 覆盖。兼容三种写法：
+     *  - 以 / 开头：项目 public 下的路径（含 /favicon.ico），原样输出；
+     *  - http(s)://、//、data:image/：外链或内联图片，经协议白名单校验；
+     *  - 其它相对路径：按包内 images/ 资源解析（兼容历史 images/favicon.ico 写法）。
+     *
+     * 显式传 false 或 '' 可关闭 <link rel="shortcut icon"> 输出；传 null
+     * 表示未配置，依次回退全局配置与项目默认 /favicon.ico。非法类型（数组、
+     * 不可字符串化对象）一律回退项目默认，杜绝 Warning 与属性注入。
+     */
+    protected function faviconUrl(mixed $value = null): string
+    {
+        if ($value === false) {
+            return '';
+        }
+        if ($value === null) {
+            $value = XfAdmin::setting('brand.favicon');
+            // 全局配置显式 false 也表示关闭图标输出
+            if ($value === false) {
+                return '';
+            }
+        }
+        if (is_array($value) || (is_object($value) && ! method_exists($value, '__toString'))) {
+            return '/favicon.ico';
+        }
+        if ($value === '') {
+            return '';
+        }
+        $candidate = $this->scalarText($value);
+        if ($candidate === '') {
+            return '/favicon.ico';
+        }
+        if (str_starts_with($candidate, '/')) {
+            return $this->safeUrl($candidate, '/favicon.ico');
+        }
+        // 非图片伪协议（javascript:/vbscript:/mailto: 等）直接回退项目默认，
+        // 不交给 img() 转透明 GIF，避免出现「图标消失」而非「品牌图标」的静默失败
+        if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $candidate)
+            && ! preg_match('#^(?:https?:)?//#i', $candidate)
+            && ! preg_match('#^data:image/#i', $candidate)) {
+            return '/favicon.ico';
+        }
+        // 历史写法 'images/favicon.ico' 与 img() 的 images/ 前缀去重
+        if (str_starts_with($candidate, 'images/')) {
+            $candidate = substr($candidate, strlen('images/'));
+        }
+
+        return $this->safeUrl($this->img($candidate), '/favicon.ico');
     }
 
     /**

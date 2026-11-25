@@ -101,6 +101,7 @@ class AuthPage extends Component
                 'logo' => null,          // 图片地址（http(s):/data:/包内 images/ 相对路径）
             ],
             'title' => '',       // <title>
+            'favicon' => null,    // 站点图标；默认项目 /favicon.ico，false/'' 关闭
             'heading' => '',       // 主标题
             'subheading' => '',       // 副标题（历史字段名 subtitle 兼容）
             'copyright' => '',       // 底部版权
@@ -370,7 +371,7 @@ class AuthPage extends Component
     {
         $title = $this->get('title') ?: ($this->get('heading') ?: 'XfAdmin');
         $rootCls = 'auth-page auth-'.$this->escape($this->get('type')).' auth-layout-'.$this->escape($this->get('layout'));
-        $extraCls = (string) $this->get('class');
+        $extraCls = $this->scalarOpt('class');
         if ($extraCls !== '') {
             $rootCls .= ' '.$this->escape($extraCls);
         }
@@ -378,6 +379,8 @@ class AuthPage extends Component
         // 复用 XfAdmin 共享资产（与 INSPINIA 后台模板共用 app.min.css / xfadmin.css）
         $head = Assets::instance()->head();
         $scripts = Assets::instance()->scripts();
+        // 认证页也属于后台模板页面，站点图标统一默认项目的 /favicon.ico
+        $favicon = $this->faviconUrl($this->get('favicon'));
 
         return '<!DOCTYPE html>'."\n"
             .'<html lang="zh-CN">'."\n"
@@ -386,6 +389,7 @@ class AuthPage extends Component
             .'<meta name="viewport" content="width=device-width, initial-scale=1">'."\n"
             .'<meta name="csrf-token" content="'.$this->escape($this->csrfToken()).'">'."\n"
             .'<title>'.$this->escape($title).'</title>'."\n"
+            .($favicon !== '' ? '<link rel="shortcut icon" href="'.$this->escape($favicon).'">'."\n" : '')
             .$head."\n"
             .'</head>'."\n"
             .'<body class="'.$rootCls.'">'."\n"

@@ -36,7 +36,7 @@ class Kbd extends Component
      */
     protected function html(): string
     {
-        $text = (string) $this->get('text');
+        $text = $this->scalarOpt('text');
         if ($text !== '') {
             $inner = '<kbd>'.$this->escape($text).'</kbd>';
         } else {

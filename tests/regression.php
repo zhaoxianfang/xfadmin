@@ -933,5 +933,145 @@ check('暗色模式固定列表格 hover/条纹高亮规则存在', str_contains
     && str_contains($regCss, 'tr:nth-of-type(odd) > td:not(.xf-dt-sticky)'));
 check('xfadmin.css 大括号配平', substr_count($regCss, '{') === substr_count($regCss, '}'));
 
+/* ------------------------------------------------------------------ */
+/* 10 项缺陷整改回归：固定列 / 空头像 / 订阅 / 搜索 / 代码块 / Toast / 健壮性 */
+/* ------------------------------------------------------------------ */
+$regJs2 = (string) file_get_contents(__DIR__.'/../resources/assets/js/xfadmin.js');
+$dtSrc = (string) file_get_contents(__DIR__.'/../src/Components/Table/DataTable.php');
+
+// 缺陷1/9：分组 / 空数据下固定列仍生效，colspan 行不加 sticky
+check('固定列总列数取 DataTables API 而非 tbody 首行', str_contains($regJs2, 'total = api.columns().count();')
+    && ! str_contains($regJs2, "var bodyRow = el.querySelector('tbody tr');"));
+check('固定列总列数回退 thead 首行', str_contains($regJs2, 'total = headRow ? headRow.children.length : 0;'));
+check('固定列量宽跳过 colspan 分组/详情行', str_contains($regJs2, 'if (isPlainRow(bodyRows[bi])) { measureRow = bodyRows[bi]; break; }'));
+check('colspan 行整行不加 sticky', str_contains($regJs2, 'if (isSpanRow) return;'));
+
+// 缺陷4：空头像不再破图
+$regProfile = (string) XfAdmin::userProfile([]);
+check('空头像不再输出 src="" 且用透明 GIF 占位', ! str_contains($regProfile, 'src=""')
+    && str_contains($regProfile, 'data:image/gif;base64,'));
+check('空头像文字首字母占位仍生效', str_contains((string) XfAdmin::userProfile(['text' => '陈']), '>陈<'));
+
+// 缺陷5：订阅表单不再是死控件
+$regSoonOn = (string) XfAdmin::comingSoon(['subscribe_url' => '/subscribe']);
+check('订阅配置 URL 后表单有 action/method/name', str_contains($regSoonOn, 'action="/subscribe"')
+    && str_contains($regSoonOn, 'method="post"') && str_contains($regSoonOn, 'name="email"'));
+$regSoonOff = (string) XfAdmin::comingSoon([]);
+check('未配置订阅地址时无死表单且有禁用说明', str_contains($regSoonOff, '订阅功能暂未开放')
+    && str_contains($regSoonOff, 'disabled') && ! str_contains($regSoonOff, 'name="email"'));
+
+// 缺陷6：单字段回车不再双请求
+check('搜索按钮改为 type=submit', str_contains($dtSrc, '<button type="submit" class="btn btn-primary btn-search-submit"'));
+check('自定义搜索不再绑定 keyup Enter', ! str_contains($regJs2, "e.key === 'Enter') applyCustomSearch()")
+    && ! str_contains($regJs2, '// 回车即查'));
+check('自定义搜索仅 submit 与 reset 两处调用', substr_count($regJs2, 'applyCustomSearch();') === 2
+    && str_contains($regJs2, "_customSearchForm.addEventListener('submit', function (e) { e.preventDefault(); applyCustomSearch(); });"));
+
+// 缺陷7：title 与 language 共存
+$regCode = (string) XfAdmin::codeBlock(['code' => 'x', 'language' => 'php', 'title' => '示例']);
+check('CodeBlock 标题与语言标签并存且互不吞掉', str_contains($regCode, 'xf-code-title">示例</span>')
+    && str_contains($regCode, 'xf-code-lang">php</span>'));
+
+// 缺陷8：关闭按钮按 variant 白名单
+$regToastLight = (string) XfAdmin::toast(['variant' => 'warning', 'body' => 'x']);
+check('Toast warning 用深色关闭按钮', str_contains($regToastLight, 'btn-close me-2 m-auto')
+    && ! str_contains($regToastLight, 'btn-close-white'));
+$regToastDark = (string) XfAdmin::toast(['variant' => 'danger', 'body' => 'x']);
+check('Toast danger 用白色关闭按钮', str_contains($regToastDark, 'btn-close btn-close-white'));
+check('JS Toast 关闭按钮按 variant 白名单', str_contains($regJs2, "var lightToastVariants = ['light', 'warning'];"));
+
+// 缺陷2/3：ECharts 主题重建与 destroy 清理统一真相源
+check('ECharts 主题重建实例写回 meta 真相源', str_contains($regJs2, 'm.inst = inst;')
+    && str_contains($regJs2, "if (m.inst && typeof m.inst.dispose === 'function') m.inst.dispose();"));
+check('ECharts resize 镜像由 meta 统一重建', str_contains($regJs2, 'window.__xfEcharts = (window.__xfEchartsMeta || []).map('));
+check('ECharts destroy 钩子基于 meta 摘除登记并同步镜像', str_contains($regJs2, "window.__xfEchartsMeta.filter(function (m) { return !m || m.el !== el; })"));
+check('destroy.dt 监听仅注册一次且 sticky 清理不受 RO 条件限制',
+    preg_match("/addEventListener\('destroy\.dt'[\s\S]{0,600}\{ once: true \}\)/", $regJs2) === 1
+    && strpos($regJs2, 'XFAdmin.destroyTableSticky(el);') < strpos($regJs2, "if ('ResizeObserver' in window)"));
+
+// 缺陷10：arrayOpt / scalarOpt 守卫
+check('arrayOpt/scalarOpt 助手已加入 Component 基类', (static function (): bool {
+    $c = new ReflectionClass(zxf\XfAdmin\Components\Component::class);
+
+    return $c->hasMethod('arrayOpt') && $c->hasMethod('scalarOpt');
+})());
+check('四个代表点数组/标量误传均无 PHP Warning', noWarn(static function (): void {
+    (string) XfAdmin::userProfile(['name' => ['x'], 'stats' => 'bad']);
+    (string) XfAdmin::select(['name' => ['x'], 'groups' => 'bad']);
+    (string) XfAdmin::check(['label' => ['x'], 'options' => 'bad']);
+    (string) XfAdmin::icon(['name' => ['x'], 'title' => ['y']]);
+}));
+
+/* ------------------------------------------------------------------ */
+/* 站点图标：三套完整文档组件默认统一使用项目 /favicon.ico */
+/* ------------------------------------------------------------------ */
+$favPage = (string) XfAdmin::page(['title' => 'favicon', 'content' => 'x', 'customizer' => false]);
+check('Page 默认图标为项目 /favicon.ico', str_contains($favPage, 'rel="shortcut icon" href="/favicon.ico"')
+    && ! str_contains($favPage, '/zxf/xfadmin/images/favicon.ico'));
+$favAuth = (string) XfAdmin::authPage(['title' => 'sign-in']);
+check('AuthPage 默认图标为项目 /favicon.ico', str_contains($favAuth, 'rel="shortcut icon" href="/favicon.ico"'));
+$favLock = (string) XfAdmin::lockScreen(['heading' => 'locked']);
+check('LockScreen 默认图标为项目 /favicon.ico', str_contains($favLock, 'rel="shortcut icon" href="/favicon.ico"'));
+$favCustom = (string) XfAdmin::page(['favicon' => '/brand/favicon.ico', 'content' => 'x', 'customizer' => false]);
+check('favicon 参数可覆盖为项目内其它路径', str_contains($favCustom, 'rel="shortcut icon" href="/brand/favicon.ico"'));
+$favOff = (string) XfAdmin::page(['favicon' => false, 'content' => 'x', 'customizer' => false]);
+check('favicon=false 关闭图标 link', ! str_contains($favOff, 'rel="shortcut icon"'));
+$favLegacy = (string) XfAdmin::page(['favicon' => 'favicon.ico', 'content' => 'x', 'customizer' => false]);
+check('相对路径继续按包内 images/ 资源解析', preg_match('#rel="shortcut icon" href="/zxf/xfadmin/images/favicon\.ico\?v=#', $favLegacy) === 1);
+$favEvil = (string) XfAdmin::page(['favicon' => 'javascript:alert(1)', 'content' => 'x', 'customizer' => false]);
+check('危险协议图标回退项目默认', str_contains($favEvil, 'rel="shortcut icon" href="/favicon.ico"')
+    && ! str_contains($favEvil, 'javascript:'));
+check('favicon 误传数组不产生 PHP Warning 且回退默认', noWarn(static function (): void {
+    $html = (string) XfAdmin::page(['favicon' => ['x'], 'content' => 'y', 'customizer' => false]);
+    if (! str_contains($html, 'rel="shortcut icon" href="/favicon.ico"')) {
+        throw new RuntimeException('favicon 非法类型未回退默认');
+    }
+}));
+
+/* ------------------------------------------------------------------ */
+/* v1.0.4 深度加固：标量误传 / 注入 / 请求与回调契约 */
+/* ------------------------------------------------------------------ */
+check('常见标量配置误传数组/对象不再触发 PHP Warning', noWarn(static function (): void {
+    (string) XfAdmin::raw(['js' => ['x'], 'css' => ['y'], 'html' => 'x']);
+    (string) XfAdmin::videoEmbed(['src' => ['x'], 'title' => ['y']]);
+    (string) XfAdmin::videoPlayer(['src' => ['x'], 'title' => ['y']]);
+    (string) XfAdmin::breadcrumb(['items' => [], 'divider' => ['x']]);
+    (string) XfAdmin::toast(['body' => 'x', 'delay' => ['x']]);
+    (string) XfAdmin::button(['text' => 'x', 'label' => ['x'], 'icon_only' => true]);
+    (string) XfAdmin::switch(['label' => 'x', 'value' => ['x']]);
+    (string) XfAdmin::icon(['lib' => 'lucide', 'name' => ['x']]);
+    (string) XfAdmin::media(['image' => ['x'], 'title' => ['y']]);
+    (string) XfAdmin::divider(['text' => ['x'], 'icon' => ['y']]);
+    (string) XfAdmin::dataSourceSwitcher(['prefix' => ['x'], 'sections' => []]);
+    (string) XfAdmin::filterBar(['class' => ['x'], 'fields' => []]);
+    (string) XfAdmin::actionBar(['class' => ['x'], 'buttons' => []]);
+}));
+$hardVideo = (string) XfAdmin::videoEmbed(['src' => 'https://www.youtube.com/embed/abc', 'title' => '演示视频']);
+check('iframe 视频具备可访问名称 title', str_contains($hardVideo, '<iframe title="演示视频"'));
+$hardDivider = (string) XfAdmin::breadcrumb(['items' => [['text' => 'A']], 'divider' => "' onmouseover=alert(1)"]);
+check('面包屑分隔符 CSS 注入被净化', ! str_contains($hardDivider, 'onmouseover')
+    && str_contains($hardDivider, '--bs-breadcrumb-divider: &#039;&gt;&#039;;'));
+$hardLucide = (string) XfAdmin::icon(['lib' => 'lucide', 'name' => 'settings" onmouseover="alert(1)']);
+check('lucide 图标名注入被拦截', ! str_contains($hardLucide, 'onmouseover'));
+check('多实例内联脚本 key 按 id 隔离', (static function (): bool {
+    $src1 = (string) file_get_contents(__DIR__.'/../src/Components/UI/CommandPalette.php');
+    $src2 = (string) file_get_contents(__DIR__.'/../src/Components/UI/DropzoneUpload.php');
+
+    return str_contains($src1, "'command-palette-'.\$id")
+        && str_contains($src2, "'xf-dropzone-init-'.\$id")
+        && str_contains($src1, 'JSON_HEX_APOS | JSON_HEX_QUOT')
+        && str_contains($src2, 'JSON_HEX_APOS | JSON_HEX_QUOT');
+})());
+$hardJs = (string) file_get_contents(__DIR__.'/../resources/assets/js/xfadmin.js');
+check('JS URL/跳转白名单与同源请求入口已落地', str_contains($hardJs, 'function safeRedirect(value)')
+    && str_contains($hardJs, 'var requestUrl = safeRedirect(url);')
+    && str_contains($hardJs, 'var redirectUrl = safeRedirect(data.url);')
+    && substr_count($hardJs, 'fetch(') <= 2);
+check('拖拽上传调用已注册回调而非注册函数', str_contains($hardJs, 'var handler = XFAdmin.uploadHandlers[cfg.id];')
+    && str_contains($hardJs, 'handler(res.data, file);'));
+check('渲染器 variant/图标进入 class 前经过白名单', str_contains($hardJs, 'var XF_VARIANTS = [')
+    && str_contains($hardJs, 'safeToken(opts.variant')
+    && str_contains($hardJs, 'XFAdmin.iconClass(cfg.map[d])'));
+
 echo PHP_EOL.($fail === 0 ? 'ALL REGRESSION PASSED' : "{$fail} FAILED").PHP_EOL;
 exit($fail === 0 ? 0 : 1);

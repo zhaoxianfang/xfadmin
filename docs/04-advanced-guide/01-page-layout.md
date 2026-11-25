@@ -13,7 +13,7 @@
 | `description` | ?string | `null` | `<meta name="description">` |
 | `keywords` | ?string | `null` | `<meta name="keywords">` |
 | `author` | ?string | `null` | `<meta name="author">` |
-| `favicon` | ?string | `null` | 回退 `setting('brand.favicon')` → `images/favicon.ico` |
+| `favicon` | mixed | `null` | 回退 `setting('brand.favicon')` → 项目 `/favicon.ico`；`false`/`''` 关闭；相对路径按包内 images/ 解析 |
 | `layout` | string | `'vertical'` | `'horizontal'` / `'topnav'` 触发水平布局 |
 | `theme` | array | `[]` | 与全局 `theme` 合并后输出 `<html data-*>` |
 | `menu` | array | `[]` | 菜单数据，自动下发给 Sidenav / TopNav |

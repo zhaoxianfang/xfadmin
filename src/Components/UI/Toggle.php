@@ -62,7 +62,7 @@ class Toggle extends Component
         }
         $input = '<input id="'.$this->escape($id).'" class="form-check-input xf-switch-input" type="checkbox" role="switch"'
             .($this->get('name') !== '' ? ' name="'.$this->escape($this->get('name')).'"' : '')
-            .' value="'.$this->escape((string) $this->get('value')).'"'
+            .' value="'.$this->escape($this->scalarOpt('value')).'"'
             .($this->get('checked') ? ' checked' : '')
             .($this->get('disabled') ? ' disabled' : '')
             // variant 白名单（data-variant 供 JS/CSS 着色），非法值回退默认 primary

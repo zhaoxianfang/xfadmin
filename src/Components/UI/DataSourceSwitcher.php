@@ -70,7 +70,7 @@ class DataSourceSwitcher extends Component
     {
         $sources = (array) $this->get('sources');
         $panes = (array) $this->get('panes');
-        $prefix = (string) $this->get('prefix');
+        $prefix = $this->scalarOpt('prefix');
         $variant = $this->enum($this->get('variant'), ['tabs' => 'tabs', 'pills' => 'pills'], 'tabs');
         $active = $this->get('active');
 

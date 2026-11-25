@@ -91,7 +91,7 @@ class Kanban extends Component
             $boards .= '</div>'; // /.xf-kanban-col
         }
         // class 选项：仅放行合法 CSS 类名字符（字母/数字/-_ 与空白分隔），剥离其余字符
-        $extraCls = preg_replace('/[^A-Za-z0-9_\-\s]/', '', (string) $this->get('class')) ?? '';
+        $extraCls = $this->iconClass($this->scalarOpt('class'));
         $html = '<div class="xf-kanban '.$this->escape(trim($extraCls)).'" id="'.$id.'" data-xf="kanban">';
         $html .= '<div class="card h-100 mb-0 flex-grow-1">';
         $html .= $header;

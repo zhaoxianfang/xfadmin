@@ -40,8 +40,8 @@ class Divider extends Component
     {
         // variant 白名单（拼 xf-divider-* 类）；默认为空（纯线条，不着色），非法值同样不加类
         $variant = $this->enum($this->get('variant'), self::ENUM_VARIANT, '');
-        $text = (string) $this->get('text');
-        $icon = (string) $this->get('icon');
+        $text = $this->scalarOpt('text');
+        $icon = $this->iconClass($this->scalarOpt('icon'));
         $inner = '';
         if ($text !== '' || $icon !== '') {
             $inner = '<span class="xf-divider-inner">'

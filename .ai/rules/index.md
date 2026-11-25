@@ -19,7 +19,7 @@
 | --- | --- |
 | 包名 | `zxf/xfadmin` |
 | 定位 | 基于 INSPINIA v4.1.0 的 PHP 管理后台**组件化扩展包**（框架无关，Laravel/ThinkPHP 仅做服务注册） |
-| 版本 | **1.0.3**（`src/XfAdmin.php::VERSION` + `config/xfadmin.php` 两处；**composer.json 不写 version**） |
+| 版本 | **1.0.4**（`src/XfAdmin.php::VERSION` + `config/xfadmin.php` 两处；**composer.json 不写 version**） |
 | 组件类 | **225 个类文件**（`src/Components/**.php` 227 个 − `Component.php` 基类 − `Form/Concerns/FieldWrapper.php` trait） |
 | 注册组件类 | **225 个唯一类引用**（注册表 237 个别名，其中 5 类有多别名：TopNav/AuthPage/DiyLayoutPage/DateRangePicker/ClipboardButton） |
 | 注册别名 | **237 个**（`XfAdmin::$components`，含大小写/语义别名） |

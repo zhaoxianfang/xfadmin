@@ -61,7 +61,7 @@ class DatePicker extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-datepicker');
+        $id = $this->resolveId('xf-datepicker');
 
         $config = array_replace_recursive([
             'singleDatePicker' => true,

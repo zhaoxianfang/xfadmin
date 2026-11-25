@@ -799,9 +799,11 @@ use zxf\XfAdmin\Support\Html;
             .'<button type="button" class="btn btn-soft-secondary date-table-tools-search-btn" aria-label="展开搜索" aria-expanded="false">'
             .'<i class="ti ti-search"></i> 搜索</button></div>'
             .'<div class="custom-datatable-search" data-xf-search-for="#'.$this->escape($tableId).'">'
-            .'<form class="row g-3" onsubmit="return false;">'.$controls
+            .'<form class="row g-3">'.$controls
             .'<div class="col-12 d-flex gap-2 justify-content-end">'
-            .'<button type="button" class="btn btn-primary btn-search-submit" data-xf-search-submit><i class="ti ti-search"></i> 搜索</button>'
+            // type=submit 让回车与点击统一走 submit 监听（xfadmin.js 中已 preventDefault）；
+            // 不再用 type=button + keyup Enter，避免单字段表单一次回车发两次请求。
+            .'<button type="submit" class="btn btn-primary btn-search-submit" data-xf-search-submit><i class="ti ti-search"></i> 搜索</button>'
             .'<button type="button" class="btn btn-soft-secondary" data-xf-search-reset><i class="ti ti-rotate"></i> 重置</button>'
             .'</div></form></div>';
     }

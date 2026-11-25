@@ -44,7 +44,7 @@ class AvatarGroup extends Component
     {
         $users = (array) $this->get('users', []);
         $max = max(1, (int) $this->get('max'));
-        $size = (string) $this->get('size');
+        $size = $this->scalarOpt('size');
         $shown = array_slice($users, 0, $max);
         $extra = count($users) - count($shown);
 

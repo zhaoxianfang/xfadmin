@@ -48,7 +48,7 @@ class ActionBar extends Component
             'xf-action-bar',
             'xf-action-bar--'.$align,
             ! (bool) $this->get('wrap') ? 'xf-action-bar--nowrap' : '',
-            (string) ($this->get('class') ?? '')
+            $this->scalarOpt('class')
         );
         $attrs = ['class' => $root];
         if ($this->get('id') !== null) {

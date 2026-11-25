@@ -60,14 +60,14 @@ class VideoPlayer extends Component
      */
     protected function html(): string
     {
-        $src = (string) $this->get('src', '');
-        $poster = (string) $this->get('poster', '');
-        $type = (string) $this->get('type', 'video/mp4');
+        $src = $this->scalarOpt('src');
+        $poster = $this->scalarOpt('poster');
+        $type = $this->scalarOpt('type', 'video/mp4');
         $autoplay = (bool) $this->get('autoplay', false);
         $controls = (bool) $this->get('controls', true);
         $loop = (bool) $this->get('loop', false);
         $muted = (bool) $this->get('muted', false);
-        $title = (string) $this->get('title', '');
+        $title = $this->scalarOpt('title');
 
         $id = $this->uid('xf-video');
 

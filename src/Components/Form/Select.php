@@ -94,15 +94,17 @@ class Select extends Component
      */
     protected function html(): string
     {
-        $id = $this->get('id') ?? $this->attributes['id'] ?? $this->uid('xf-select');
+        $id = $this->resolveId('xf-select');
         // size 白名单兜底 ''（无尺寸类）：非法值不再回落成 lg，也不输出 "form-select-" 残类
         $size = $this->enum($this->get('size'), self::ENUM_SIZE, '');
         $sizeCls = $size !== '' ? 'form-select-'.$size : '';
 
+        // name 误传数组时强转会触发 "Array to string conversion"，统一走 scalarOpt
+        $name = $this->scalarOpt('name');
         $attrs = [
             'class' => Html::cls('form-select', $sizeCls, $this->controlStateClass()),
             'id' => $id,
-            'name' => $this->get('name').($this->get('multiple') && $this->get('name') && ! str_ends_with((string) $this->get('name'), '[]') ? '[]' : ''),
+            'name' => $name.($this->get('multiple') && $name !== '' && ! str_ends_with($name, '[]') ? '[]' : ''),
             'multiple' => (bool) $this->get('multiple'),
             'required' => (bool) $this->get('required'),
             'disabled' => (bool) $this->get('disabled'),
@@ -114,7 +116,7 @@ class Select extends Component
         // enhance 白名单：非法值不输出 data-xf（前端按 data-xf 值分发初始化器，任意值属于未定义行为）
         $enhance = $this->enum($this->get('enhance'), ['choices', 'select2'], '');
         if ($enhance !== '') {
-            $enhanceCfg = (array) $this->get('enhance_options', []);
+            $enhanceCfg = $this->arrayOpt('enhance_options');
             // 多选原生 select 无空白占位项，Choices/Select2 占位需由插件自身提供；
             // 仅在单选时把 placeholder 注入插件配置，避免「配置有占位却无 DOM 占位项」失效
             if ($this->get('placeholder') && ! $this->get('multiple')) {
@@ -130,7 +132,7 @@ class Select extends Component
         if ($this->get('placeholder') && ! $this->get('multiple')) {
             $inner .= '<option value="">'.$this->escape($this->get('placeholder')).'</option>';
         }
-        $groups = (array) $this->get('groups', []);
+        $groups = $this->arrayOpt('groups');
         if ($groups !== []) {
             foreach ($groups as $groupLabel => $groupOptions) {
                 $inner .= '<optgroup label="'.$this->escape($groupLabel).'">'.$this->renderOptions((array) $groupOptions).'</optgroup>';

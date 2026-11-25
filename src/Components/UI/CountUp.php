@@ -44,8 +44,8 @@ class CountUp extends Component
     {
         $cfg = [
             'value' => (float) $this->get('value'),
-            'prefix' => (string) $this->get('prefix'),
-            'suffix' => (string) $this->get('suffix'),
+            'prefix' => $this->scalarOpt('prefix'),
+            'suffix' => $this->scalarOpt('suffix'),
             'decimals' => (int) $this->get('decimals'),
             'duration' => (int) $this->get('duration'),
         ];

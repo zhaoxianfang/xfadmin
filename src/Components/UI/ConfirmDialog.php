@@ -114,7 +114,7 @@ class ConfirmDialog extends Component
         $html .= '</div></div></div>';
 
         if ($this->get('class') !== null) {
-            $html = '<span class="'.$this->escape($this->get('class')).'">'.$html.'</span>';
+            $html = '<span class="'.$this->escape($this->scalarOpt('class')).'">'.$html.'</span>';
         }
 
         return $html;

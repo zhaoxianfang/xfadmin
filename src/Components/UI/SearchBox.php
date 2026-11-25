@@ -59,7 +59,7 @@ class SearchBox extends Component
             .'<span class="input-group-text"><i class="ti ti-search"></i></span>'
             .'<input type="search" class="form-control" id="'.$this->escape($id).'"'
             .' name="'.$this->escape($this->get('name')).'"'
-            .' value="'.$this->escape((string) $this->get('value')).'"'
+            .' value="'.$this->escape($this->scalarOpt('value')).'"'
             .' placeholder="'.$this->escape($this->get('placeholder')).'">'
             .'</div>';
     }

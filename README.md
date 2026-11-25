@@ -178,8 +178,8 @@ echo XfAdmin::assets()->scripts();  // 放在 </body> 前
 
 ```php
 XfAdmin::has('dataTable');          // 是否已注册
-XfAdmin::version();                 // '1.0.3'
-XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=1.0.3
+XfAdmin::version();                 // '1.0.4'
+XfAdmin::asset('css/xfadmin.css');  // /zxf/xfadmin/css/xfadmin.css?v=1.0.4
 ```
 
 ---

@@ -44,10 +44,10 @@ class Media extends Component
      */
     protected function html(): string
     {
-        $img = (string) $this->get('image');
-        $title = (string) $this->get('title');
-        $text = (string) $this->get('text');
-        $meta = (string) $this->get('meta');
+        $img = $this->scalarOpt('image');
+        $title = $this->scalarOpt('title');
+        $text = $this->scalarOpt('text');
+        $meta = $this->scalarOpt('meta');
         $href = $this->safeUrl($this->get('href'));
 
         $inner = '<div class="xf-media d-flex gap-3">';

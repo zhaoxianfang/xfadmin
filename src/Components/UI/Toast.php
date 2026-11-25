@@ -42,6 +42,8 @@ class Toast extends Component
     protected function html(): string
     {
         $variant = $this->get('variant') !== null ? $this->escape($this->get('variant')) : null;
+        // 关闭按钮按底色深浅选择：light/warning 浅底用深色 ×，其余（dark/danger 等）深底用白色 ×
+        $closeCls = in_array($variant, ['light', 'warning'], true) ? 'btn-close' : 'btn-close btn-close-white';
 
         $attrs = [
             'class' => Html::cls('toast', ['show' => $this->get('show')], $variant ? 'text-bg-'.$this->escape($variant).' border-0' : ''),
@@ -49,7 +51,7 @@ class Toast extends Component
             'aria-live' => 'assertive',
             'aria-atomic' => 'true',
             'data-bs-autohide' => $this->get('autohide') ? 'true' : 'false',
-            'data-bs-delay' => (string) $this->get('delay'),
+            'data-bs-delay' => $this->scalarOpt('delay', '5000'),
             // 注册扫描入口：xfadmin.js 的 toast widget 据此初始化静态服务端 toast
             // （Bootstrap 5 toast 不自动初始化，关闭按钮与自动消失均依赖 JS 接管）
             'data-xf' => 'toast',
@@ -60,11 +62,11 @@ class Toast extends Component
             $html .= '<div class="toast-header">'
                 .'<strong class="me-auto">'.$this->escape($this->get('title')).'</strong>'
                 .($this->get('time') !== null ? '<small class="text-muted">'.$this->escape($this->get('time')).'</small>' : '')
-                .'<button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close"></button></div>';
+                .'<button type="button" class="'.$closeCls.' ms-2" data-bs-dismiss="toast" aria-label="Close"></button></div>';
             $html .= '<div class="toast-body">'.$this->raw($this->get('body')).'</div>';
         } else {
             $html .= '<div class="d-flex"><div class="toast-body">'.$this->raw($this->get('body')).'</div>'
-                .'<button type="button" class="btn-close '.($variant ? 'btn-close-white ' : '').'me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>';
+                .'<button type="button" class="'.$closeCls.' me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>';
         }
         $html .= '</div>';
 
